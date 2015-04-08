@@ -17,7 +17,7 @@ public class MapView{
 				g.dispose();
 			}
 		};
-		panel.setPreferredSize(new Dimension(640, 480));
+		panel.setPreferredSize(new Dimension(map.getCameraScale()*map.getSizeX(), map.getCameraScale()*map.getSizeZ()));
 	}
 	public JPanel getPanel(){ return panel; }
 }
