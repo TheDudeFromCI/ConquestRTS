@@ -7,8 +7,9 @@ import javax.swing.JPanel;
 import wraith.library.WorldManagement.TileGrid.Map;
 
 public class MapView{
-	private final JPanel panel;
-	private final Map map;
+	private boolean disposed;
+	private JPanel panel;
+	private Map map;
 	public MapView(Map m){
 		map=m;
 		panel=new JPanel(){
@@ -18,6 +19,14 @@ public class MapView{
 			}
 		};
 		panel.setPreferredSize(new Dimension(map.getCameraScale()*map.getSizeX(), map.getCameraScale()*map.getSizeZ()));
+		new Thread(new Runnable(){
+			public void run(){ while(!disposed)panel.paintImmediately(0, 0, panel.getWidth(), panel.getHeight()); }
+		}).start();
+	}
+	public void dispose(){
+		disposed=true;
+		panel=null;
+		map=null;
 	}
 	public JPanel getPanel(){ return panel; }
 }
