@@ -2,6 +2,7 @@ package me.ci;
 
 import java.io.File;
 import javax.imageio.ImageIO;
+import wraith.library.WorldManagement.TileGrid.MapView;
 import wraith.library.WorldManagement.TileGrid.Chipset;
 import wraith.library.WorldManagement.TileGrid.Map;
 
