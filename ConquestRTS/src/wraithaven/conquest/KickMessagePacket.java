@@ -6,4 +6,5 @@ public class KickMessagePacket implements Packet{
 	public void decode(String s){}
 	public PacketType getPacketType(){ return PacketType.kickMessage; }
 	public void setMessage(String message){ this.message=message; }
+	public String getMessage(){ return message; }
 }
