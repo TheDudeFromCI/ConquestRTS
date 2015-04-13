@@ -26,7 +26,7 @@ public class Player{
 		sendPacket(packet);
 		ServerLauncher.server.kickClient(client);
 	}
-	public void sendPacket(Packet packet){ outputStream.println(packet.compress()); }
+	public void sendPacket(Packet packet){ outputStream.println(packet.getPacketType().getHexId()+packet.compress()); }
 	public String getName(){ return name; }
 	public boolean awaitingHandshake(){ return awaitingHandshake; }
 	public void shakeHand(){ awaitingHandshake=false; }
