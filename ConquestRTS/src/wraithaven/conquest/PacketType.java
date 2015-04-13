@@ -11,6 +11,7 @@ public enum PacketType{
 		hexId=getHexCode(ordinal());
 		this.packetClass=packetClass;
 	}
+	public String getHexId(){ return hexId; }
 	public static Packet create(String code){
 		try{
 			Packet packet;
