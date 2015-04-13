@@ -8,13 +8,18 @@ public class ChatMessagePacket implements Packet{
 	public void setMessage(String sender, String message){
 		this.message=message;
 		this.sender=sender;
-		this.code=sender+"¥"+message;
+		this.code=sender+"¤"+message;
 	}
 	public void decode(String s){
-		String[] p = s.split("¥");
-		sender=p[0];
-		message=p[1];
 		code=s;
+		char[] chars = s.toCharArray();
+		for(int i = 0; i<s.length(); i++){
+			if(chars[i]=='¤'){
+				sender=s.substring(0, i);
+				message=s.substring(i+1);
+				return;
+			}
+		}
 	}
 	public String compress(){ return code; }
 	public PacketType getPacketType(){ return PacketType.chatMessage; }
