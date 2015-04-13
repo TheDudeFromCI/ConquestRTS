@@ -5,4 +5,6 @@ public class PrepareMediaSendPacket implements Packet{
 	public String compress(){ return fileName; }
 	public void decode(String s){ fileName=s; }
 	public PacketType getPacketType(){ return PacketType.prepareMediaSend; }
+	public void setFileName(String fileName){ this.fileName=fileName; }
+	public String getFileName(){ return fileName; }
 }
