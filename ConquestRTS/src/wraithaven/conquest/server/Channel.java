@@ -17,4 +17,5 @@ public class Channel{
 	public String getName(){ return name; }
 	public boolean isLobby(){ return lobby; }
 	public void sendChannelPacket(Packet packet){ for(Player player : players)player.sendPacket(packet); }
+	public ArrayList<Player> getPlayers(){ return players; }
 }

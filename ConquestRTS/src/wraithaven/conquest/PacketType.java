@@ -4,9 +4,7 @@ package wraithaven.conquest;
 public enum PacketType{
 	chatMessage(ChatMessagePacket.class),
 	handshake(HandshakePacket.class),
-	kickMessage(KickMessagePacket.class),
-	prepareMediaSend(PrepareMediaSendPacket.class),
-	mediaSend(MediaSendPacket.class);
+	kickMessage(KickMessagePacket.class);
 	private final String hexId;
 	private final Class packetClass;
 	private PacketType(Class packetClass){

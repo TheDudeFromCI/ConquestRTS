@@ -1,9 +1,6 @@
 package wraithaven.conquest.server;
 
-import java.io.File;
 import java.io.PrintWriter;
-import wraithaven.conquest.MediaSendPacket;
-import wraithaven.conquest.PrepareMediaSendPacket;
 import wraithaven.conquest.KickMessagePacket;
 import wraithaven.conquest.Packet;
 import wraith.library.Multiplayer.ClientInstance;
@@ -28,14 +25,6 @@ public class Player{
 		packet.setMessage(message);
 		sendPacket(packet);
 		ServerLauncher.server.kickClient(client);
-	}
-	public void sendFile(File file){
-		PrepareMediaSendPacket packet1 = new PrepareMediaSendPacket();
-		packet1.setFileName(file.getName());
-		sendPacket(packet1);
-		MediaSendPacket packet2 = new MediaSendPacket();
-		packet2.encode(file);
-		sendPacket(packet2);
 	}
 	public void sendPacket(Packet packet){ outputStream.println(packet.getPacketType().getHexId()+packet.compress()); }
 	public String getName(){ return name; }
