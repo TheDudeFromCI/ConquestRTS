@@ -3,7 +3,9 @@ package wraithaven.conquest.client;
 import wraith.library.WindowUtil.GameScreen;
 
 public class ClientLauncher{
+	public static GameThread gameThread;
 	public static void main(String[] args){
+		gameThread=new GameThread();
 		RenderingPanel renderingPanel = new RenderingPanel();
 		GameScreen game = new GameScreen("Wraithaven's Conquest", renderingPanel, renderingPanel);
 		game.setRenderSize(4, 3, true);
