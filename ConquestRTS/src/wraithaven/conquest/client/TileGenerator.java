@@ -10,7 +10,6 @@ public class TileGenerator implements WorldPopulator{
 	private Chipset chipset;
 	private int[] near = new int[8];
 	private final GeneratorProperties generatorProperties;
-	public TileGenerator(GeneratorProperties generatorProperties){ this.generatorProperties=generatorProperties; }
 	public void generate(Tile[][][] tiles){
 		NoiseGenerator noise = new NoiseGenerator(generatorProperties.heightMapSeed, generatorProperties.heightMapSmoothing, generatorProperties.heightMapDetail);
 		noise.setFunction(generatorProperties.heightMapInterpolation);
@@ -145,5 +144,6 @@ public class TileGenerator implements WorldPopulator{
 		if(up>=0&&left>=0&&right>=0&&down>=0)return y!=0?null:chipset.getTileMaterial(tileMaterialX+1, 16);
 		return null;
 	}
+	public TileGenerator(GeneratorProperties generatorProperties){ this.generatorProperties=generatorProperties; }
 	private static int sign(int a, int b){ return a==b?0:a>b?1:-1; }
 }
