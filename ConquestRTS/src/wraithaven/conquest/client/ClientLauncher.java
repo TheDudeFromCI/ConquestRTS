@@ -1,5 +1,7 @@
 package wraithaven.conquest.client;
 
+import java.io.File;
+import javax.imageio.ImageIO;
 import wraith.library.WindowUtil.GameScreen;
 
 public class ClientLauncher{
@@ -20,7 +22,7 @@ public class ClientLauncher{
 			gameThread=new GameThread();
 //			RenderingPanel renderingPanel = new RenderingPanel(chipset, genProp);
 			TitleScreen titleScreen = new TitleScreen();
-			GameScreen game = new GameScreen("Wraithaven's Conquest", titleScreen, titleScreen);
+			GameScreen game = new GameScreen("Wraithaven's Conquest", ImageIO.read(new File("C:/Users/Phealoon/Desktop/Conquest Folder/Icon.png")), titleScreen, titleScreen);
 			game.setRenderSize(4, 3, true);
 //			renderingPanel.setDimensions(game.getRenderSize().width, game.getRenderSize().height);
 		}catch(Exception exception){
