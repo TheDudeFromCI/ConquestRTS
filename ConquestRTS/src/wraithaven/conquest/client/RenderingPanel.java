@@ -7,8 +7,9 @@ import java.io.File;
 import wraith.library.MiscUtil.ImageUtil;
 import wraith.library.WorldManagement.TileGrid.Chipset;
 import wraith.library.WorldManagement.TileGrid.Map;
-import wraith.library.WindowUtil.GameRenderer;
 import wraith.library.WindowUtil.UserInputAdapter;
+import wraith.library.WindowUtil.GameWindow.GameRenderer;
+import wraith.library.WindowUtil.GameWindow.RepeatingTask;
 
 public class RenderingPanel extends UserInputAdapter implements GameRenderer{
 	private Map map;
@@ -22,7 +23,7 @@ public class RenderingPanel extends UserInputAdapter implements GameRenderer{
 	public RenderingPanel(Chipset chipset, GeneratorProperties genProp){
 		map=new Map(genProp.mapXSize, 2, genProp.mapZSize, new TileGenerator(genProp), chipset);
 		map.setCameraScale(32);
-		new RepeatingTask(0, 1){
+		new RepeatingTask(null, 0, 1){
 			public void run(){
 				int x = 0;
 				int z = 0;
@@ -39,6 +40,7 @@ public class RenderingPanel extends UserInputAdapter implements GameRenderer{
 					map.updateImageCompilation();
 				}
 			}
+			public int getPriority(){ return 0; }
 		};
 	}
 	public void setDimensions(int width, int height){
