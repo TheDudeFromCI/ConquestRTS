@@ -1,6 +1,5 @@
 package wraithaven.conquest.client;
 
-import wraith.library.RandomGeneration.CosineInterpolation;
 import wraith.library.RandomGeneration.NoiseGenerator;
 import wraith.library.WorldManagement.TileGrid.Chipset;
 import wraith.library.WorldManagement.TileGrid.Tile;
@@ -10,25 +9,14 @@ import wraith.library.WorldManagement.TileGrid.WorldPopulator;
 public class TileGenerator implements WorldPopulator{
 	private Chipset chipset;
 	private int[] near = new int[8];
-	private final long[] seeds;
-	private final MapHeightScaler mapHeightScaler;
-	public TileGenerator(Chipset chipset, long[] seeds, MapHeightScaler mapHeightScaler){
-		this.seeds=seeds;
-		this.mapHeightScaler=mapHeightScaler;
-		this.chipset=chipset;
-	}
+	private final GeneratorProperties generatorProperties;
+	public TileGenerator(GeneratorProperties generatorProperties){ this.generatorProperties=generatorProperties; }
 	public void generate(Tile[][][] tiles){
-		NoiseGenerator noise = new NoiseGenerator(seeds[0], 60, 2);
-		noise.setFunction(new CosineInterpolation());
+		NoiseGenerator noise = new NoiseGenerator(generatorProperties.heightMapSeed, generatorProperties.heightMapSmoothing, generatorProperties.heightMapDetail);
+		noise.setFunction(generatorProperties.heightMapInterpolation);
 		int[][] mountains = new int[tiles.length+2][tiles[0][0].length+2];
 		int x, y, z;
-		float n;
-		for(x=0; x<mountains.length; x++){
-			for(z=0; z<mountains[x].length; z++){
-				n=mapHeightScaler.scale(noise.noise(x, z));
-				mountains[x][z]=(int)(30*n);
-			}
-		}
+		for(x=0; x<mountains.length; x++)for(z=0; z<mountains[x].length; z++)mountains[x][z]=(int)(generatorProperties.layerCount*generatorProperties.mapHeightScaler.scale(noise.noise(x, z)));
 		TileMaterial tileMaterial;
 		for(x=0; x<tiles.length; x++){
 			for(y=0; y<tiles[x].length; y++){
