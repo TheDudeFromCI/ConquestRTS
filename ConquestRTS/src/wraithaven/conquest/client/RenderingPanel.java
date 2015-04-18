@@ -5,6 +5,7 @@ import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import wraith.library.MiscUtil.ImageUtil;
+import wraith.library.WorldManagement.TileGrid.Chipset;
 import wraith.library.WorldManagement.TileGrid.Map;
 import wraith.library.WindowUtil.GameRenderer;
 import wraith.library.WindowUtil.UserInputAdapter;
@@ -16,10 +17,9 @@ public class RenderingPanel extends UserInputAdapter implements GameRenderer{
 	private boolean sHeld;
 	private boolean dHeld;
 	private int cameraPanSpeed = 100;
-	public RenderingPanel(){
-		map=new Map(150, 2, 150, new TileGenerator());
-		map.setCameraRawScale(32);
-		map.setCameraScale(32);
+	public RenderingPanel(Chipset chipset){
+		map=new Map(150, 2, 150, new TileGenerator(chipset, new long[]{10, 10}, new MapHeightScaler(1)), chipset);
+		map.setCameraScale(4);
 		new RepeatingTask(0, 1){
 			public void run(){
 				int x = 0;

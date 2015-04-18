@@ -1,7 +1,5 @@
 package wraithaven.conquest.client;
 
-import java.io.File;
-import javax.imageio.ImageIO;
 import wraith.library.RandomGeneration.LinearInterpolation;
 import wraith.library.RandomGeneration.NoiseGenerator;
 import wraith.library.RandomGeneration.RandomInterpolation;
@@ -13,33 +11,23 @@ import wraith.library.WorldManagement.TileGrid.WorldPopulator;
 public class TileGenerator implements WorldPopulator{
 	private Chipset chipset;
 	private int[] near = new int[8];
-//	private static final int deepWaterMaterial = 16;
-//	private static final int shallowWaterMaterial = 19;
-//	private static final int beachMaterial = 13;
-//	private static final int lowGrassMaterial = 1;
-//	private static final int highGrassMaterial = 4;
-//	private static final int lowMountainMaterial = 10;
-//	private static final int highMountainMaterial = 7;
-	private static final int deepWaterMaterial = 1;
-	private static final int shallowWaterMaterial = 1;
-	private static final int beachMaterial = 1;
+	private final long[] seeds;
+	private final MapHeightScaler mapHeightScaler;
+	private static final int deepWaterMaterial = 16;
+	private static final int shallowWaterMaterial = 19;
+	private static final int beachMaterial = 13;
 	private static final int lowGrassMaterial = 1;
-	private static final int highGrassMaterial = 1;
-	private static final int lowMountainMaterial = 1;
-	private static final int highMountainMaterial = 1;
-	public TileGenerator(){
-		try{
-			chipset=new Chipset(ImageIO.read(new File("C:/Users/Phealoon/Desktop/Conquest Folder/Terrain.png")), 32);
-			chipset.generateTileMaterials();
-		}catch(Exception exception){
-			exception.printStackTrace();
-			System.exit(1);
-		}
+	private static final int highGrassMaterial = 4;
+	private static final int lowMountainMaterial = 10;
+	private static final int highMountainMaterial = 7;
+	public TileGenerator(Chipset chipset, long[] seeds, MapHeightScaler mapHeightScaler){
+		this.seeds=seeds;
+		this.mapHeightScaler=mapHeightScaler;
+		this.chipset=chipset;
 	}
 	public void generate(Tile[][][] tiles){
-		long seed = 2654984;
-		NoiseGenerator noise = new NoiseGenerator(seed, 50, 2);
-		RandomInterpolation lerp = new RandomInterpolation(new LinearInterpolation(), 0.1f, 100);
+		NoiseGenerator noise = new NoiseGenerator(seeds[0], 50, 2);
+		RandomInterpolation lerp = new RandomInterpolation(new LinearInterpolation(), 0.1f, seeds[1]);
 		lerp.setDirection(RandomInterpolation.TOWARDS_HIGHER);
 		noise.setFunction(lerp);
 		int[][] mountains = new int[tiles.length+2][tiles[0][0].length+2];
@@ -47,7 +35,7 @@ public class TileGenerator implements WorldPopulator{
 		float n;
 		for(x=0; x<mountains.length; x++){
 			for(z=0; z<mountains[x].length; z++){
-				n=noise.noise(x, z);
+				n=mapHeightScaler.scale(noise.noise(x, z));
 				if(n<0.26)mountains[x][z]=0;       //Deep water
 				else if(n<0.3)mountains[x][z]=1;   //Shallow water
 				else if(n<0.33)mountains[x][z]=2;  //Beach
