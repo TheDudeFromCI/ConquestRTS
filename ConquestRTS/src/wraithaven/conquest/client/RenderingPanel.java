@@ -16,10 +16,12 @@ public class RenderingPanel extends UserInputAdapter implements GameRenderer{
 	private boolean aHeld;
 	private boolean sHeld;
 	private boolean dHeld;
+	private boolean upHeld;
+	private boolean downHeld;
 	private int cameraPanSpeed = 100;
 	public RenderingPanel(Chipset chipset){
 		map=new Map(150, 2, 150, new TileGenerator(chipset, new long[]{10, 10}, new MapHeightScaler(1)), chipset);
-		map.setCameraScale(4);
+		map.setCameraScale(32);
 		new RepeatingTask(0, 1){
 			public void run(){
 				int x = 0;
@@ -28,8 +30,12 @@ public class RenderingPanel extends UserInputAdapter implements GameRenderer{
 				if(aHeld)x-=cameraPanSpeed;
 				if(sHeld)z+=cameraPanSpeed;
 				if(dHeld)x+=cameraPanSpeed;
-				if(x!=0||z!=0){
+				if(x!=0||z!=0||upHeld!=downHeld){
 					map.setCameraPosition(x+map.getCameraX(), z+map.getCameraZ());
+					if(upHeld!=downHeld){
+						if(upHeld)map.setCameraScale(map.getCameraScale()+1);
+						else map.setCameraScale(map.getCameraScale()-1);
+					}
 					map.updateImageCompilation();
 				}
 			}
@@ -51,11 +57,15 @@ public class RenderingPanel extends UserInputAdapter implements GameRenderer{
 		if(e.getKeyCode()==KeyEvent.VK_A)aHeld=true;
 		if(e.getKeyCode()==KeyEvent.VK_S)sHeld=true;
 		if(e.getKeyCode()==KeyEvent.VK_D)dHeld=true;
+		if(e.getKeyCode()==KeyEvent.VK_UP)upHeld=true;
+		if(e.getKeyCode()==KeyEvent.VK_DOWN)downHeld=true;
 	}
 	@Override public void keyReleased(KeyEvent e){
 		if(e.getKeyCode()==KeyEvent.VK_W)wHeld=false;
 		if(e.getKeyCode()==KeyEvent.VK_A)aHeld=false;
 		if(e.getKeyCode()==KeyEvent.VK_S)sHeld=false;
 		if(e.getKeyCode()==KeyEvent.VK_D)dHeld=false;
+		if(e.getKeyCode()==KeyEvent.VK_UP)upHeld=false;
+		if(e.getKeyCode()==KeyEvent.VK_DOWN)downHeld=false;
 	}
 }
