@@ -9,4 +9,6 @@ public class GeneratorProperties{
 	public InterpolationFunction heightMapInterpolation;
 	public int layerCount;
 	public MapHeightScaler mapHeightScaler;
+	public int mapXSize;
+	public int mapZSize;
 }
