@@ -19,5 +19,6 @@ public class ServerListLayout implements GuiLayout{
 		if(components.isEmpty())return;
 		components.get(0).setSizeAndLocation(tempX, tempY, tempWidth, tempHeight);
 		components.get(1).setSizeAndLocation(tempX+BACK_BUTTON_EDGE_BUFFER, tempY+tempHeight-BACK_BUTTON_HEIGHT-BACK_BUTTON_EDGE_BUFFER, BACK_BUTTON_WIDTH, BACK_BUTTON_HEIGHT);
+		components.get(2).setSizeAndLocation((int)(tempWidth*0.05), (int)(tempHeight*0.05), (int)(tempWidth*0.9), (int)(tempHeight*0.8));
 	}
 }
