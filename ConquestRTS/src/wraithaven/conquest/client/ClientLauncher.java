@@ -9,11 +9,7 @@ public class ClientLauncher{
 		final Game game = new Game("Wraithaven's Conquest", new File("C:/Users/Phealoon/Desktop/Conquest Folder"));
 		game.getScreen().setRenderSize(4, 3, true);
 		new PendingTask(game.getGameThread(), 0){
-			public void run(){
-				TitleScreen titleScreen = new TitleScreen(game);
-				game.setGameRenderer(titleScreen);
-				game.setInputListener(titleScreen.getGui());
-			}
+			public void run(){ game.setGameRenderer(new TitleScreen(game)); }
 			public int getPriority(){ return 100; }
 		};
 	}
