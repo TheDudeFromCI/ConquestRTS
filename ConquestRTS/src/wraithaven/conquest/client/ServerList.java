@@ -35,7 +35,7 @@ public class ServerList implements GameRenderer{
 		addServerButton=new GuiButton(gui, game.getFolder().getImage("Add Server Button.png"), true, new Runnable(){
 			public void run(){
 				//TODO Load actual ip and port.
-				list.addScrollPanelEntry(new ServerListSlot(ServerList.this, "localhost", 10050));
+				list.addScrollPanelEntry(new ServerListSlot(ServerList.this, null, "localhost", 10050));
 			}
 		});
 		refreashButton=new GuiButton(gui, game.getFolder().getImage("Refreash Button.png"), true, new Runnable(){

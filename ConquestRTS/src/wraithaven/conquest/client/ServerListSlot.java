@@ -10,6 +10,7 @@ import wraithaven.conquest.PacketType;
 
 public class ServerListSlot implements ScrollPaneEntry{
 	private String ip;
+	private String serverName;
 	private int port;
 	private boolean selected;
 	private long clickTime;
@@ -19,10 +20,11 @@ public class ServerListSlot implements ScrollPaneEntry{
 	private ServerList serverList;
 	private Client client;
 	private Pong pong;
-	public ServerListSlot(ServerList serverList, String ip, int port){
+	public ServerListSlot(ServerList serverList, String lastName, String ip, int port){
 		this.ip=ip;
 		this.port=port;
 		this.serverList=serverList;
+		serverName=lastName;
 		refreash();
 	}
 	public void renderEntry(Graphics2D g, int x, int y, int width, int height){
@@ -32,16 +34,22 @@ public class ServerListSlot implements ScrollPaneEntry{
 		g.drawRect(x, y, width, height);
 		g.drawString("Ip: "+ip, x+3, y+13);
 		g.drawString("Port: "+port, x+3, y+26);
-		if(pinging)g.drawString("Status: Pinging...", x+3, y+39);
-		else{
-			if(unknownHost)g.drawString("Status: Unknown Host", x+3, y+39);
-			else if(!serverUp)g.drawString("Status: Could Not Connect", x+3, y+39);
-			else{
-				g.drawString("Status: Server Online", x+3, y+39);
+		if(pinging){
+			g.drawString("Server Name: "+(serverName==null?"Unknown":serverName), x+3, y+39);
+			g.drawString("Status: Pinging...", x+3, y+52);
+		}else{
+			if(unknownHost){
+				g.drawString("Server Name: "+(serverName==null?"Unknown":serverName), x+3, y+39);
+				g.drawString("Status: Unknown Host", x+3, y+52);
+			}else if(!serverUp){
+				g.drawString("Server Name: "+(serverName==null?"Unknown":serverName), x+3, y+39);
+				g.drawString("Status: Could Not Connect", x+3, y+52);
+			}else{
+				g.drawString("Server Name: "+pong.getName(), x+3, y+39);
+				g.drawString("Status: Server Online", x+3, y+52);
 				g.drawString("Player Count: "+pong.getPlayerCount()+"/"+pong.getMaxPlayerCount(), x+200, y+13);
 				g.drawString("Channel Count: "+pong.getChannelCount()+"/"+pong.getMaxChannelCount(), x+200, y+26);
-				g.drawString("Server Name: "+pong.getName(), x+200, y+39);
-				g.drawString("MOTD: "+pong.getMOTD(), x+200, y+52);
+				g.drawString("MOTD: "+pong.getMOTD(), x+200, y+39);
 			}
 		}
 	}
