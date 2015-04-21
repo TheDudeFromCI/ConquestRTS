@@ -90,7 +90,15 @@ public class ServerListSlot implements ScrollPaneEntry{
 							repaint();
 							client.dispose();
 						}
-						public void recivedInput(String msg){ pong=new Pong(msg); }
+						public void recivedInput(String msg){
+							try{ pong=new Pong(msg);
+							}catch(Exception exception){
+								serverUp=false;
+								pinging=false;
+								repaint();
+								if(client.isConnected())client.dispose();
+							}
+						}
 						public void connectedToServer(){}
 					});
 					if(client.isConnected())client.send(PacketType.ping.getHexId());

@@ -8,8 +8,9 @@ public class Pong{
 	private String name;
 	private String motd;
 	private String code;
-	public Pong(String s){
-		String[] parts = s.substring(3).split("¤");
+	public Pong(String s)throws Exception{
+		if(!s.startsWith(PacketType.kickMessage.getHexId()+"Pong"))throw new Exception("Unknown format!");
+		String[] parts = s.substring(7).split("¤");
 		playerCount=Integer.valueOf(parts[0]);
 		maxPlayerCount=Integer.valueOf(parts[1]);
 		channelCount=Integer.valueOf(parts[2]);
@@ -25,6 +26,7 @@ public class Pong{
 		this.name=name;
 		this.motd=motd;
 		StringBuilder sb = new StringBuilder();
+		sb.append("Pong");
 		sb.append(playerCount).append('¤');
 		sb.append(maxPlayerCount).append('¤');
 		sb.append(channelCount).append('¤');
