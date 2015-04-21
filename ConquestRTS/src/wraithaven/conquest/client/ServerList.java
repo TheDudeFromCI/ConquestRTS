@@ -15,6 +15,7 @@ public class ServerList implements GameRenderer{
 	private GuiFrame gui;
 	private GuiButton backButton;
 	private GuiScrollPanel list;
+	private GuiButton addServerButton;
 	public ServerList(final Game game){
 		gui=new GuiFrame(game.getScreenWidth(), game.getScreenHeight());
 		gui.getOffset().x=game.getRenderX();
@@ -24,29 +25,33 @@ public class ServerList implements GameRenderer{
 			public void run(){
 				game.getScreen().removeUserInputListener(backButton);
 				game.getScreen().removeUserInputListener(list);
+				game.getScreen().removeUserInputListener(addServerButton);
 				gui.dispose();
 				game.setGameRenderer(new TitleScreen(game));
 			}
 		});
 		list=new GuiScrollPanel(gui, (int)(game.getScreenWidth()*0.9), (int)(game.getScreenHeight()*0.8), 100);
-		for(int i = 0; i<7; i++){
-			list.addScrollPanelEntry(new ScrollPaneEntry(){
-				private Color color = Color.green;
-				public void renderEntry(Graphics2D g, int x, int y, int width, int height){
-					g.setColor(color);
-					g.fillRect(x, y, width-1, height-1);
-					g.setColor(Color.black);
-					g.drawRect(x, y, width-1, height-1);
-				}
-				public void onEntryClick(){
-					color=color==Color.green?Color.red:Color.green;
-					list.setNeedsRepaint();
-				}
-			});
-		}
+		addServerButton=new GuiButton(gui, game.getGameDataFolder().getImage("Add Server Button.png"), true, new Runnable(){
+			public void run(){
+				list.addScrollPanelEntry(new ScrollPaneEntry(){
+					private Color color = Color.green;
+					public void renderEntry(Graphics2D g, int x, int y, int width, int height){
+						g.setColor(color);
+						g.fillRect(x, y, width-1, height-1);
+						g.setColor(Color.black);
+						g.drawRect(x, y, width-1, height-1);
+					}
+					public void onEntryClick(){
+						color=color==Color.green?Color.red:Color.green;
+						list.setNeedsRepaint();
+					}
+				});
+			}
+		});
 		game.getScreen().addUserInputListener(backButton);
 		game.getScreen().addUserInputListener(list);
-		gui.addComponent(new GuiImage(gui, game.getGameDataFolder().getImage("Server List Background.png"), true), backButton, list);
+		game.getScreen().addUserInputListener(addServerButton);
+		gui.addComponent(new GuiImage(gui, game.getGameDataFolder().getImage("Server List Background.png"), true), backButton, list, addServerButton);
 		new RepeatingTask(game.getGameThread(), 1, 1){
 			public int getPriority(){ return 0; }
 			public void run(){
