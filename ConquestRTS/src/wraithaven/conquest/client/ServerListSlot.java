@@ -50,9 +50,9 @@ public class ServerListSlot implements ScrollPaneEntry{
 			}else{
 				g.drawString("Server Name: "+pong.getName(), x+3, y+39);
 				g.drawString("Status: Server Online", x+3, y+52);
-				g.drawString("Player Count: "+pong.getPlayerCount()+"/"+pong.getMaxPlayerCount(), x+200, y+13);
-				g.drawString("Channel Count: "+pong.getChannelCount()+"/"+pong.getMaxChannelCount(), x+200, y+26);
-				g.drawString("MOTD: "+pong.getMOTD(), x+200, y+39);
+				g.drawString("Player Count: "+pong.getPlayerCount()+"/"+pong.getMaxPlayerCount(), x+300, y+13);
+				g.drawString("Channel Count: "+pong.getChannelCount()+"/"+pong.getMaxChannelCount(), x+300, y+26);
+				g.drawString("MOTD: "+pong.getMOTD(), x+300, y+39);
 			}
 		}
 	}
