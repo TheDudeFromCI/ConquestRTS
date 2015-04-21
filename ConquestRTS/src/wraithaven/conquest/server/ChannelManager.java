@@ -3,6 +3,7 @@ package wraithaven.conquest.server;
 import java.util.ArrayList;
 import java.util.HashMap;
 import wraith.library.Multiplayer.ClientInstance;
+import wraithaven.conquest.Pong;
 
 public class ChannelManager{
 	private HashMap<Player,Channel> players = new HashMap();
@@ -27,6 +28,9 @@ public class ChannelManager{
 	public Player getPlayer(ClientInstance client){
 		for(Player player : players.keySet())if(player.equals(client))return player;
 		return null;
+	}
+	public Pong createPingPacket(){
+		return new Pong(players.size(), 0, 0, channels.size(), "CI's Testing Grounds", "I'm still coding.");
 	}
 	public Channel getLobby(){ return channels.get(0); }
 }

@@ -2,15 +2,23 @@ package wraithaven.conquest.client;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import wraith.library.Multiplayer.Client;
+import wraith.library.Multiplayer.ClientListener;
 import wraith.library.WindowUtil.GUI.ScrollPaneEntry;
+import wraithaven.conquest.Pong;
+import wraithaven.conquest.PacketType;
 
 public class ServerListSlot implements ScrollPaneEntry{
 	private String ip;
 	private int port;
 	private boolean selected;
 	private long clickTime;
-	private int refreashCount;
+	private boolean serverUp;
+	private boolean unknownHost;
+	private boolean pinging;
 	private ServerList serverList;
+	private Client client;
+	private Pong pong;
 	public ServerListSlot(ServerList serverList, String ip, int port){
 		this.ip=ip;
 		this.port=port;
@@ -24,7 +32,18 @@ public class ServerListSlot implements ScrollPaneEntry{
 		g.drawRect(x, y, width, height);
 		g.drawString("Ip: "+ip, x+3, y+13);
 		g.drawString("Port: "+port, x+3, y+26);
-		g.drawString("Refreash Count: "+refreashCount, x+3, y+39);
+		if(pinging)g.drawString("Status: Pinging...", x+3, y+39);
+		else{
+			if(unknownHost)g.drawString("Status: Unknown Host", x+3, y+39);
+			else if(!serverUp)g.drawString("Status: Could Not Connect", x+3, y+39);
+			else{
+				g.drawString("Status: Server Online", x+3, y+39);
+				g.drawString("Player Count: "+pong.getPlayerCount()+"/"+pong.getMaxPlayerCount(), x+200, y+13);
+				g.drawString("Channel Count: "+pong.getChannelCount()+"/"+pong.getMaxChannelCount(), x+200, y+26);
+				g.drawString("Server Name: "+pong.getName(), x+200, y+39);
+				g.drawString("MOTD: "+pong.getMOTD(), x+200, y+52);
+			}
+		}
 	}
 	public void onEntryClick(){
 		long time = System.currentTimeMillis();
@@ -39,8 +58,48 @@ public class ServerListSlot implements ScrollPaneEntry{
 		repaint();
 	}
 	public void refreash(){
-		refreashCount++;
+		pinging=true;
+		createClient();
 		repaint();
+	}
+	private void createClient(){
+		unknownHost=false;
+		serverUp=true;
+		new Thread(new Runnable(){
+			public void run(){
+				try{
+					client=new Client(ip, port, new ClientListener(){
+						public void unknownHost(){
+							unknownHost=true;
+							pinging=false;
+							repaint();
+						}
+						public void couldNotConnect(){
+							serverUp=false;
+							pinging=false;
+							repaint();
+						}
+						public void serverClosed(){
+							serverUp=false;
+							pinging=false;
+							repaint();
+							client.dispose();
+						}
+						public void disconnected(){
+							pinging=false;
+							repaint();
+							client.dispose();
+						}
+						public void recivedInput(String msg){ pong=new Pong(msg); }
+						public void connectedToServer(){}
+					});
+					if(client.isConnected())client.send(PacketType.ping.getHexId());
+				}catch(Exception exception){
+					exception.printStackTrace();
+					System.exit(1);
+				}
+			}
+		}).start();
 	}
 	public boolean isSelected(){ return selected; }
 	public String getIp(){ return ip; }

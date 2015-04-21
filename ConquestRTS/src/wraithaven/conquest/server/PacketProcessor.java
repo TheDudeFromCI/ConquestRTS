@@ -15,6 +15,10 @@ public class PacketProcessor implements ServerListener{
 			player.kick("Sent unknown packet.");
 			return;
 		}
+		if(packet.getPacketType()==PacketType.ping){
+			player.kick(ServerLauncher.channelManager.createPingPacket().getCode());
+			return;
+		}
 		if(packet.getPacketType()==PacketType.handshake){
 			if(((HandshakePacket)packet).isCorrectFormat()){
 				if(player.awaitingHandshake())player.shakeHand();
