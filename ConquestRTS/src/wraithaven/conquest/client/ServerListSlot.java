@@ -20,6 +20,8 @@ public class ServerListSlot implements ScrollPaneEntry{
 	private ServerList serverList;
 	private Client client;
 	private Pong pong;
+	private long pingStart;
+	private int pingSpeed;
 	public ServerListSlot(ServerList serverList, String lastName, String ip, int port){
 		this.ip=ip;
 		this.port=port;
@@ -34,6 +36,7 @@ public class ServerListSlot implements ScrollPaneEntry{
 		g.drawRect(x, y, width, height);
 		g.drawString("Ip: "+ip, x+3, y+13);
 		g.drawString("Port: "+port, x+3, y+26);
+		g.drawString("Ping: "+pingSpeed, x+3, y+65);
 		if(pinging){
 			g.drawString("Server Name: "+(serverName==null?"Unknown":serverName), x+3, y+39);
 			g.drawString("Status: Pinging...", x+3, y+52);
@@ -66,6 +69,7 @@ public class ServerListSlot implements ScrollPaneEntry{
 		repaint();
 	}
 	public void refreash(){
+		pingStart=System.currentTimeMillis();
 		pinging=true;
 		createClient();
 		repaint();
@@ -80,21 +84,25 @@ public class ServerListSlot implements ScrollPaneEntry{
 						public void unknownHost(){
 							unknownHost=true;
 							pinging=false;
+							pingSpeed=(int)(System.currentTimeMillis()-pingStart);
 							repaint();
 						}
 						public void couldNotConnect(){
 							serverUp=false;
 							pinging=false;
+							pingSpeed=(int)(System.currentTimeMillis()-pingStart);
 							repaint();
 						}
 						public void serverClosed(){
 							serverUp=false;
 							pinging=false;
+							pingSpeed=(int)(System.currentTimeMillis()-pingStart);
 							repaint();
 							client.dispose();
 						}
 						public void disconnected(){
 							pinging=false;
+							pingSpeed=(int)(System.currentTimeMillis()-pingStart);
 							repaint();
 							client.dispose();
 						}
@@ -103,6 +111,7 @@ public class ServerListSlot implements ScrollPaneEntry{
 							}catch(Exception exception){
 								serverUp=false;
 								pinging=false;
+								pingSpeed=(int)(System.currentTimeMillis()-pingStart);
 								repaint();
 								if(client.isConnected())client.dispose();
 							}
