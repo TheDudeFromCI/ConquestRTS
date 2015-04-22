@@ -8,4 +8,6 @@ public interface ChannelVisualPart{
 	public float getYPercent();
 	public float getWidthPercent();
 	public float getHeightPercent();
+	public String compressToText();
+	public void decompressFromText(String s);
 }
