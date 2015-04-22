@@ -1,6 +1,7 @@
 package wraithaven.conquest.server;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import wraithaven.conquest.HandshakePacket;
 import wraithaven.conquest.Packet;
 import wraithaven.conquest.PacketType;
@@ -8,33 +9,72 @@ import wraith.library.Multiplayer.ClientInstance;
 import wraith.library.Multiplayer.ServerListener;
 
 public class PacketProcessor implements ServerListener{
+	private ArrayList<ConnectedClient> pendingClients = new ArrayList();
 	public void recivedInput(ClientInstance client, String s){
 		Packet packet = PacketType.create(s);
-		Player player = ServerLauncher.channelManager.getPlayer(client);
 		if(packet==null){
-			player.kick("Sent unknown packet.");
+			Player player = ServerLauncher.channelManager.getPlayer(client);
+			if(player!=null){
+				player.kick("Sent unknown packet.");
+				return;
+			}
+			ConnectedClient c = getClient(client);
+			if(c!=null){
+				c.kick();
+				pendingClients.remove(c);
+			}else ServerLauncher.server.kickClient(client);  //Running this method is a last resort, and may lead to possible errors.
 			return;
 		}
 		if(packet.getPacketType()==PacketType.ping){
-			player.kick(ServerLauncher.channelManager.createPingPacket().getCode());
+			ConnectedClient c = getClient(client);
+			if(c!=null){
+				c.out.println(ServerLauncher.channelManager.createPingPacket().getCode());
+				c.kick();
+				pendingClients.remove(c);
+			}else ServerLauncher.server.kickClient(client);
 			return;
 		}
 		if(packet.getPacketType()==PacketType.handshake){
 			if(((HandshakePacket)packet).isCorrectFormat()){
-				if(player.awaitingHandshake())player.shakeHand();
-				else player.kick("Tried to handshake twice.");
-			}else player.kick("Wrong handshake format.");
-			return;
-		}else{
-			if(player.awaitingHandshake()){
-				player.kick("Failed to handshake.");
-				return;
+				ConnectedClient c = getClient(client);
+				if(c!=null){
+					pendingClients.remove(c);
+					ServerLauncher.channelManager.addPlayer(new Player(c));
+				}else{
+					Player player = ServerLauncher.channelManager.getPlayer(client);
+					if(player!=null)player.kick("Tried to handshake twice.");
+					else ServerLauncher.server.kickClient(client);
+				}
+			}else{
+				ConnectedClient c = getClient(client);
+				if(c!=null){
+					pendingClients.remove(c);
+					c.kick("Wrong handshake format.");
+				}else{
+					Player player = ServerLauncher.channelManager.getPlayer(client);
+					if(player!=null)player.kick("Wrong handshake format.");
+					else ServerLauncher.server.kickClient(client);
+				}
 			}
-			//TODO Process other packets.
+			return;
 		}
+		ConnectedClient pending = getClient(client);
+		if(pending!=null){
+			pendingClients.remove(pending);
+			pending.kick("Failed to handshake.");
+			return;
+		}
+		//TODO Process other packets.
 		ServerLauncher.channelManager.getLobby().sendChannelPacket(packet);
 	}
+	private ConnectedClient getClient(ClientInstance client){
+		for(int i = 0; i<pendingClients.size(); i++)if(pendingClients.get(i).client==client)return pendingClients.get(i);
+		return null;
+	}
+	public void clientDisconnected(ClientInstance client){
+		Player player = ServerLauncher.channelManager.getPlayer(client);
+		if(player!=null)ServerLauncher.channelManager.removePlayer(player);
+	}
 	public void serverClosed(){ System.exit(0); }
-	public void clientDisconnected(ClientInstance client){ ServerLauncher.channelManager.removePlayer(ServerLauncher.channelManager.getPlayer(client)); }
-	public void clientConncted(ClientInstance client, PrintWriter out){ ServerLauncher.channelManager.addPlayer(new Player(client, out)); }
+	public void clientConncted(ClientInstance client, PrintWriter out){ pendingClients.add(new ConnectedClient(client, out)); }
 }

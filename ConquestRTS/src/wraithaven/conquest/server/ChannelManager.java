@@ -26,7 +26,7 @@ public class ChannelManager{
 		channel.addPlayer(player);
 	}
 	public Player getPlayer(ClientInstance client){
-		for(Player player : players.keySet())if(player.equals(client))return player;
+		for(Player player : players.keySet())if(player.getClient().client==client)return player;
 		return null;
 	}
 	public Pong createPingPacket(){
