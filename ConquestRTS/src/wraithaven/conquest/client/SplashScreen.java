@@ -7,6 +7,8 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.Timer;
+import java.util.TimerTask;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import wraith.library.MiscUtil.FadeListener;
@@ -19,14 +21,26 @@ public class SplashScreen extends ImageWindow{
 	private String password;
 	private String usernameCarret;
 	private String passwordCarret;
+	private String usernameCarretCharacter;
+	private String passwordCarretCharacter;
 	private int showCarret;
 	private Font font;
+	private boolean carretTick;
 	private static final int TEXT_X_POSITION = LogInSplash.TEXT_BOX_X+3;
 	public SplashScreen(BufferedImage image, SplashScreenListener listener){
 		super(image);
 		this.listener=listener;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		font=new Font("Aerial", Font.PLAIN, 15);
+		new Timer().schedule(new TimerTask(){
+			public void run(){
+				if(!isVisible())cancel();
+				else{
+					carretTick=!carretTick;
+					repaint();
+				}
+			}
+		}, 400, 400);
 	}
 	public void fadeIn(int fadeTicks, int tickDelay){
 		final FadeTimer fadeTimer = new FadeTimer(fadeTicks, 0, 0, tickDelay);
@@ -64,14 +78,15 @@ public class SplashScreen extends ImageWindow{
 				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fade));
 				g.drawImage(img, 0, 0, this);
 				g.setColor(Color.black);
-				int ver = centerTextVertically(g.getFontMetrics());
+				FontMetrics fm = g.getFontMetrics();
+				int ver = centerTextVertically(fm);
 				if(username!=null){
-					if(showCarret==1)g.drawString(usernameCarret, TEXT_X_POSITION, LogInSplash.TEXT_BOX_1_Y+ver);
-					else g.drawString(username, TEXT_X_POSITION, LogInSplash.TEXT_BOX_1_Y+ver);
+					g.drawString(username, TEXT_X_POSITION, LogInSplash.TEXT_BOX_1_Y+ver);
+					if(showCarret==1&&carretTick)g.drawString(usernameCarretCharacter, TEXT_X_POSITION+fm.stringWidth(usernameCarret), LogInSplash.TEXT_BOX_1_Y+ver);
 				}
 				if(password!=null){
-					if(showCarret==2)g.drawString(passwordCarret, TEXT_X_POSITION, LogInSplash.TEXT_BOX_2_Y+ver);
-					else g.drawString(password, TEXT_X_POSITION, LogInSplash.TEXT_BOX_2_Y+ver);
+					g.drawString(password, TEXT_X_POSITION, LogInSplash.TEXT_BOX_2_Y+ver);
+					if(showCarret==2&&carretTick)g.drawString(passwordCarretCharacter, TEXT_X_POSITION+fm.stringWidth(passwordCarret), LogInSplash.TEXT_BOX_2_Y+ver);
 				}
 				g.dispose();
 			}
@@ -79,15 +94,13 @@ public class SplashScreen extends ImageWindow{
 	}
 	public void setUsername(String username, int carretPosition, boolean insert){
 		this.username=username;
-		StringBuilder sb = new StringBuilder(username);
-		sb.insert(carretPosition, insert?'_':'|');
-		usernameCarret=sb.toString();
+		usernameCarret=username.substring(0, carretPosition);
+		usernameCarretCharacter=insert?"_":"|";
 	}
 	public void setPassword(String password, int carretPosition, boolean insert){
 		this.password=password;
-		StringBuilder sb = new StringBuilder(password);
-		sb.insert(carretPosition, insert?'_':'|');
-		passwordCarret=sb.toString();
+		passwordCarret=password.substring(0, carretPosition);
+		passwordCarretCharacter=insert?"_":"|";
 	}
 	public void setShowCarret(int box){
 		showCarret=box;
