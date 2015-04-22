@@ -40,22 +40,22 @@ public class LogInSplash implements SplashScreenProtocol{
 					@Override public void keyPressed(KeyEvent e){
 						if(selectedBox==1){
 							username.keyPressed(e);
-							splash.setUsername(username.toString(), username.getCarrentPosition());
+							splash.setUsername(username.toString(), username.getCarrentPosition(), username.isInsert());
 						}
 						if(selectedBox==2){
 							password.keyPressed(e);
-							splash.setPassword(password.toString(), password.getCarrentPosition());
+							splash.setPassword(password.toString(), password.getCarrentPosition(), password.isInsert());
 						}
 						splash.repaint();
 					}
 					@Override public void keyTyped(KeyEvent e){
 						if(selectedBox==1){
 							username.keyTyped(e);
-							splash.setUsername(username.toString(), username.getCarrentPosition());
+							splash.setUsername(username.toString(), username.getCarrentPosition(), username.isInsert());
 						}
 						if(selectedBox==2){
 							password.keyTyped(e);
-							splash.setPassword(password.toString(), password.getCarrentPosition());
+							splash.setPassword(password.toString(), password.getCarrentPosition(), password.isInsert());
 						}
 						splash.repaint();
 					}
@@ -74,6 +74,9 @@ public class LogInSplash implements SplashScreenProtocol{
 								password.setCarretPosition(password.getLength());
 							}else selectedBox=0;
 						}else selectedBox=0;
+						splash.setShowCarret(selectedBox);
+						splash.setUsername(username.toString(), username.getCarrentPosition(), username.isInsert());
+						splash.setPassword(password.toString(), password.getCarrentPosition(), password.isInsert());
 						splash.repaint();
 					}
 				});
