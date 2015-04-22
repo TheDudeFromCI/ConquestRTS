@@ -26,9 +26,21 @@ public class SplashScreen extends ImageWindow{
 	private int showCarret;
 	private Font font;
 	private boolean carretTick;
+	private boolean isPlayButtonDown;
+	private boolean isSignUpButtonDown;
+	private BufferedImage playButtonUp, playButtonDown, signUpButtonUp, signUpButtonDown;
 	private static final int TEXT_X_POSITION = LogInSplash.TEXT_BOX_X+3;
+	public static final int PLAY_BUTTON_X = 504;
+	public static final int SIGN_UP_BUTTON_X = 411;
+	public static final int BUTTON_Y = 151;
+	public static final int BUTTON_HEIGHT = 40;
+	public static final int BUTTON_WIDTH = 83;
 	public SplashScreen(BufferedImage image, SplashScreenListener listener){
 		super(image);
+		playButtonUp=ClientLauncher.game.getFolder().getImage("Play Button Up.png");
+		playButtonDown=ClientLauncher.game.getFolder().getImage("Play Button Down.png");
+		signUpButtonUp=ClientLauncher.game.getFolder().getImage("Sign Up Button Up.png");
+		signUpButtonDown=ClientLauncher.game.getFolder().getImage("Sign Up Button Down.png");
 		this.listener=listener;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		font=new Font("Aerial", Font.PLAIN, 15);
@@ -77,6 +89,8 @@ public class SplashScreen extends ImageWindow{
 				g.clearRect(0, 0, getWidth(), getHeight());
 				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fade));
 				g.drawImage(img, 0, 0, this);
+				g.drawImage(isPlayButtonDown?playButtonDown:playButtonUp, PLAY_BUTTON_X, BUTTON_Y, null);
+				g.drawImage(isSignUpButtonDown?signUpButtonDown:signUpButtonUp, SIGN_UP_BUTTON_X, BUTTON_Y, null);
 				g.setColor(Color.black);
 				FontMetrics fm = g.getFontMetrics();
 				int ver = centerTextVertically(fm);
@@ -105,6 +119,10 @@ public class SplashScreen extends ImageWindow{
 	public void setShowCarret(int box){
 		showCarret=box;
 		repaint();
+	}
+	public void setButtonStates(boolean play, boolean signUp){
+		isPlayButtonDown=play;
+		isSignUpButtonDown=signUp;
 	}
 	public JPanel getPanel(){ return panel; }
 	private static int centerTextVertically(FontMetrics fm){ return fm.getAscent()+(LogInSplash.TEXT_BOX_HEIGHT-(fm.getAscent()+fm.getDescent()))/2; }

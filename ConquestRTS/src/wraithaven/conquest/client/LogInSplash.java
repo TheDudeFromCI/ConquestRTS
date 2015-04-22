@@ -77,6 +77,13 @@ public class LogInSplash implements SplashScreenProtocol{
 						splash.setShowCarret(selectedBox);
 						splash.setUsername(username.toString(), username.getCarrentPosition(), username.isInsert());
 						splash.setPassword(password.toString(), password.getCarrentPosition(), password.isInsert());
+						boolean playButton = p.x>=SplashScreen.PLAY_BUTTON_X&&p.x<SplashScreen.PLAY_BUTTON_X+SplashScreen.BUTTON_WIDTH&&p.y>=SplashScreen.BUTTON_Y&&p.y<SplashScreen.BUTTON_Y+SplashScreen.BUTTON_HEIGHT;
+						boolean signUpButton = p.x>=SplashScreen.SIGN_UP_BUTTON_X&&p.x<SplashScreen.SIGN_UP_BUTTON_X+SplashScreen.BUTTON_WIDTH&&p.y>=SplashScreen.BUTTON_Y&&p.y<SplashScreen.BUTTON_Y+SplashScreen.BUTTON_HEIGHT;
+						splash.setButtonStates(playButton, signUpButton);
+						splash.repaint();
+					}
+					@Override public void mouseReleased(MouseEvent e){
+						splash.setButtonStates(false, false);
 						splash.repaint();
 					}
 				});
