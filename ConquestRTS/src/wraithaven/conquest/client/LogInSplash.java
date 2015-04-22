@@ -1,11 +1,13 @@
 package wraithaven.conquest.client;
 
+import java.awt.Desktop;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.net.URI;
 import wraith.library.MiscUtil.TypeListener;
 import wraith.library.WindowUtil.SplashScreenProtocol;
 
@@ -17,6 +19,8 @@ public class LogInSplash implements SplashScreenProtocol{
 	private int selectedBox;
 	private TypeListener username;
 	private TypeListener password;
+	private KeyAdapter keyListener;
+	private MouseAdapter mouseListener;
 	private static final int FADE_TICKS = 40;
 	private static final int FADE_DELAY = 20;
 	private static final String ALLOWED_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
@@ -36,7 +40,7 @@ public class LogInSplash implements SplashScreenProtocol{
 				password=new TypeListener(ALLOWED_CHARACTERS, null);
 				username.setCharacterCap(15);
 				password.setCharacterCap(15);
-				splash.addKeyListener(new KeyAdapter(){
+				splash.addKeyListener(keyListener=new KeyAdapter(){
 					@Override public void keyPressed(KeyEvent e){
 						if(selectedBox==1){
 							username.keyPressed(e);
@@ -60,7 +64,8 @@ public class LogInSplash implements SplashScreenProtocol{
 						splash.repaint();
 					}
 				});
-				splash.addMouseListener(new MouseAdapter(){
+				splash.addMouseListener(mouseListener=new MouseAdapter(){
+					private boolean playButton, signUpButton;
 					@Override public void mousePressed(MouseEvent e){
 						Point p = e.getPoint();
 						if(p.x>=TEXT_BOX_X&&p.x<TEXT_BOX_X+TEXT_BOX_WIDTH){
@@ -77,12 +82,33 @@ public class LogInSplash implements SplashScreenProtocol{
 						splash.setShowCarret(selectedBox);
 						splash.setUsername(username.toString(), username.getCarrentPosition(), username.isInsert());
 						splash.setPassword(password.toString(), password.getCarrentPosition(), password.isInsert());
-						boolean playButton = p.x>=SplashScreen.PLAY_BUTTON_X&&p.x<SplashScreen.PLAY_BUTTON_X+SplashScreen.BUTTON_WIDTH&&p.y>=SplashScreen.BUTTON_Y&&p.y<SplashScreen.BUTTON_Y+SplashScreen.BUTTON_HEIGHT;
-						boolean signUpButton = p.x>=SplashScreen.SIGN_UP_BUTTON_X&&p.x<SplashScreen.SIGN_UP_BUTTON_X+SplashScreen.BUTTON_WIDTH&&p.y>=SplashScreen.BUTTON_Y&&p.y<SplashScreen.BUTTON_Y+SplashScreen.BUTTON_HEIGHT;
+						playButton=p.x>=SplashScreen.PLAY_BUTTON_X&&p.x<SplashScreen.PLAY_BUTTON_X+SplashScreen.BUTTON_WIDTH&&p.y>=SplashScreen.BUTTON_Y&&p.y<SplashScreen.BUTTON_Y+SplashScreen.BUTTON_HEIGHT;
+						signUpButton=p.x>=SplashScreen.SIGN_UP_BUTTON_X&&p.x<SplashScreen.SIGN_UP_BUTTON_X+SplashScreen.BUTTON_WIDTH&&p.y>=SplashScreen.BUTTON_Y&&p.y<SplashScreen.BUTTON_Y+SplashScreen.BUTTON_HEIGHT;
 						splash.setButtonStates(playButton, signUpButton);
 						splash.repaint();
 					}
 					@Override public void mouseReleased(MouseEvent e){
+						Point p = e.getPoint();
+						playButton=playButton&&p.x>=SplashScreen.PLAY_BUTTON_X&&p.x<SplashScreen.PLAY_BUTTON_X+SplashScreen.BUTTON_WIDTH&&p.y>=SplashScreen.BUTTON_Y&&p.y<SplashScreen.BUTTON_Y+SplashScreen.BUTTON_HEIGHT;
+						signUpButton=signUpButton&&p.x>=SplashScreen.SIGN_UP_BUTTON_X&&p.x<SplashScreen.SIGN_UP_BUTTON_X+SplashScreen.BUTTON_WIDTH&&p.y>=SplashScreen.BUTTON_Y&&p.y<SplashScreen.BUTTON_Y+SplashScreen.BUTTON_HEIGHT;
+						if(playButton){
+							String username = LogInSplash.this.username.toString();
+							String password = LogInSplash.this.password.toString();
+							if(authinticate(username, password)){
+								splash.removeKeyListener(keyListener);
+								splash.removeMouseListener(mouseListener);
+								splash.fadeOut(FADE_TICKS, FADE_DELAY);
+							}else{
+								//TODO Yell at player.
+							}
+						}
+						if(signUpButton){
+							try{
+								Desktop.getDesktop().browse(new URI("https://google.com"));
+							}catch(Exception exception){
+								//TODO Tell player "could not connect to account web site".
+							}
+						}
 						splash.setButtonStates(false, false);
 						splash.repaint();
 					}
@@ -92,7 +118,10 @@ public class LogInSplash implements SplashScreenProtocol{
 		splash.setTitle(title);
 		splash.setIconImage(icon);
 		splash.fadeIn(FADE_TICKS, FADE_DELAY);
-		//splash.fadeOut(FADE_TICKS, FADE_DELAY);
+	}
+	@SuppressWarnings("unused")private boolean authinticate(String username, String password){
+		//TODO Ping account server for stuff.
+		return true;
 	}
 	public void addCompletionListener(Runnable run){ this.run=run; }
 	public void setTitle(String title){ this.title=title; }
