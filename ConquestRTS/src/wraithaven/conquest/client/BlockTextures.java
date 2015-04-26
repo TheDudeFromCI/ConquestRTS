@@ -19,7 +19,8 @@ public enum BlockTextures{
 	}
 	public CubeTextures getTextures(){ return texture; }
 	public static void genTextures(){
-		for(int i = 0; i<textureList.length; i++)textures[i]=new Texture(new File(getFolder(), textureList[i]));
+		String folder = getFolder();
+		for(int i = 0; i<textureList.length; i++)textures[i]=new Texture(new File(folder, textureList[i]));
 		for(BlockTextures t : values()){
 			t.texture.xUp=textures[t.indices[0]];
 			t.texture.xDown=textures[t.indices[1]];
@@ -29,5 +30,9 @@ public enum BlockTextures{
 			t.texture.zDown=textures[t.indices[5]];
 		}
 	}
-	private static String getFolder(){ return "C:/Users/Phealoon/Desktop/Conquest Folder"; }
+	private static String getFolder(){
+		File file = new File(System.getProperty("user.dir")+File.separatorChar+"Assets");
+		if(!file.exists())file.mkdirs();
+		return file.getAbsolutePath();
+	}
 }
