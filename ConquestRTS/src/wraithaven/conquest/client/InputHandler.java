@@ -30,6 +30,7 @@ public class InputHandler{
 	private static final float MOVE_SPEED = 8;
 	private static final int WORLD_RADIUS = 7;
 	private static final int WORLD_HEIGHT = WorldGenerator.WORLD_HEIGHT>>4;
+	public static final boolean NO_CLIP = true;
 	public InputHandler(Camera cam, long window){
 		this.cam=cam;
 		this.window=window;
@@ -128,6 +129,7 @@ public class InputHandler{
 		}
 	}
 	private boolean canMoveTo(VoxelWorld world, float sx, float sy, float sz){
+		if(NO_CLIP)return true;
 		VoxelBlock block;
 		cameraSphere.x=sx;
 		cameraSphere.y=sy;

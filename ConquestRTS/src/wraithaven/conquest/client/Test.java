@@ -39,11 +39,21 @@ public class Test{
 				voxelWorld=new VoxelWorld(worldGen);
 				worldGen.setWorld(voxelWorld);
 				inputHandler=new InputHandler(cam, loop.getWindow());
+				lastPrint=System.currentTimeMillis();
 			}
+			private long lastPrint, time;
+			private int frames;
 			public void render(){
 				GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 				cam.translateInvertMatrix();
 				voxelWorld.render();
+				time=System.currentTimeMillis();
+				frames++;
+				if(time-lastPrint>=1000){
+					System.out.println(frames);
+					lastPrint=time;
+					frames=0;
+				}
 			}
 			public void update(float delta, long time){
 				inputHandler.update(voxelWorld, delta);

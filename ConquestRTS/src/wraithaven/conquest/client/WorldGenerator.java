@@ -35,16 +35,31 @@ public class WorldGenerator implements VoxelWorldListener{
 			}
 		};
 	}
-	public VoxelChunk loadChunk(int chunkX, int chunkY, int chunkZ){
-		VoxelChunk chunk = new VoxelChunk(voxelWorld, chunkX, chunkY, chunkZ);
+	public void loadChunk(VoxelChunk chunk){
+		if(chunk.chunkY<0)return;
 		for(x=0; x<16; x++){
 			for(z=0; z<16; z++){
 				h=Math.min((int)(noise.noise(x+chunk.startX, z+chunk.startZ)*WORLD_HEIGHT)-chunk.startY, 15);
 				for(y=0; y<=h; y++)chunk.createBlock(x+chunk.startX, y+chunk.startY, z+chunk.startZ, type);
 			}
 		}
-		chunk.optimize();
-		return chunk;
+		chunk.optimize(true);
+		optimizeNearbyChunks(chunk.chunkX, chunk.chunkY, chunk.chunkZ);
+	}
+	private void optimizeNearbyChunks(int chunkX, int chunkY, int chunkZ){
+		VoxelChunk chunk;
+		chunk=voxelWorld.getChunk(chunkX-1, chunkY, chunkZ, false);
+		if(chunk!=null)chunk.optimizeSide(0, true);
+		chunk=voxelWorld.getChunk(chunkX+1, chunkY, chunkZ, false);
+		if(chunk!=null)chunk.optimizeSide(1, true);
+		chunk=voxelWorld.getChunk(chunkX, chunkY-1, chunkZ, false);
+		if(chunk!=null)chunk.optimizeSide(2, true);
+		chunk=voxelWorld.getChunk(chunkX, chunkY+1, chunkZ, false);
+		if(chunk!=null)chunk.optimizeSide(3, true);
+		chunk=voxelWorld.getChunk(chunkX, chunkY, chunkZ-1, false);
+		if(chunk!=null)chunk.optimizeSide(4, true);
+		chunk=voxelWorld.getChunk(chunkX, chunkY, chunkZ+1, false);
+		if(chunk!=null)chunk.optimizeSide(5, true);
 	}
 	public boolean isChunkVisible(VoxelChunk chunk){ return Math.pow(chunk.chunkX-((int)cam.x>>4), 2)+Math.pow(chunk.chunkY-((int)cam.y>>4), 2)+Math.pow(chunk.chunkZ-((int)cam.z>>4), 2)<25; }
 	public void setWorld(VoxelWorld voxelWorld){ this.voxelWorld=voxelWorld; }
