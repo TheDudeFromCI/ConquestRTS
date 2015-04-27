@@ -18,9 +18,10 @@ public class WorldGenerator implements VoxelWorldListener{
 	private final Camera cam;
 	public static final int WORLD_HEIGHT = 40;
 	public static final int CAMERA_RADIUS = 5;
+	public static final int CHUNK_HEIGHT = WORLD_HEIGHT>>4;
 	public WorldGenerator(Camera cam){
 		this.cam=cam;
-		noise=new NoiseGenerator((long)(Math.random()*Integer.MAX_VALUE), 60, 2);
+		noise=new NoiseGenerator((long)(Math.random()*Integer.MAX_VALUE), 200, 3);
 		noise.setFunction(new CosineInterpolation());
 		final CubeTextures cubeTextures = BlockTextures.grass.getTextures();
 		type=new BlockType(){
@@ -37,15 +38,17 @@ public class WorldGenerator implements VoxelWorldListener{
 	}
 	public void loadChunk(VoxelChunk chunk){
 		if(chunk.chunkY<0)return;
-		for(x=0; x<16; x++){
-			for(z=0; z<16; z++){
-				h=Math.min((int)(noise.noise(x+chunk.startX, z+chunk.startZ)*WORLD_HEIGHT)-chunk.startY, 15);
-				for(y=0; y<=h; y++)chunk.createBlock(x+chunk.startX, y+chunk.startY, z+chunk.startZ, type);
+		if(chunk.chunkY>CHUNK_HEIGHT)return;
+		for(x=chunk.startX; x<=chunk.endX; x++){
+			for(z=chunk.startZ; z<=chunk.endZ; z++){
+				h=(int)calculateHeight(x, z, chunk);
+				for(y=chunk.startY; y<=h; y++)chunk.createBlock(x, y, z, type);
 			}
 		}
 		chunk.optimize(true);
 		optimizeNearbyChunks(chunk.chunkX, chunk.chunkY, chunk.chunkZ);
 	}
+	private float calculateHeight(int x, int z, VoxelChunk chunk){ return Math.min(noise.noise(x, z)*WORLD_HEIGHT, chunk.endY); }
 	private void optimizeNearbyChunks(int chunkX, int chunkY, int chunkZ){
 		VoxelChunk chunk;
 		chunk=voxelWorld.getChunk(chunkX-1, chunkY, chunkZ, false);

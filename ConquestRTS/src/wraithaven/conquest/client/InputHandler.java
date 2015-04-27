@@ -7,7 +7,6 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import wraith.library.LWJGL.Camera;
 import wraith.library.LWJGL.Voxel.VoxelBlock;
-import wraith.library.LWJGL.Voxel.VoxelChunk;
 import wraith.library.LWJGL.Voxel.VoxelWorld;
 import wraith.library.MiscUtil.BoundingBox;
 import wraith.library.MiscUtil.Sphere;
@@ -15,7 +14,7 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class InputHandler{
 	private boolean w, a, s, d, shift, space, q, e;
-	private int x, y, z, camChunkX, camChunkY, camChunkZ, cStartX, cStartY, cStartZ, cEndX, cEndY, cEndZ, lastCamChunkX, lastCamChunkY, lastCamChunkZ;
+	private int x, y, z;
 	private int bcx1, bcy1, bcz1, bcx2, bcy2, bcz2;
 	private Sphere cameraSphere = new Sphere();
 	private BoundingBox boundingBox = new BoundingBox();
@@ -26,10 +25,8 @@ public class InputHandler{
 	private final DoubleBuffer mouseY = BufferUtils.createDoubleBuffer(1);
 	private final IntBuffer screenWidth = BufferUtils.createIntBuffer(1);
 	private final IntBuffer screenHeight = BufferUtils.createIntBuffer(1);
-	private static final float MOUSE_SENSITIVITY = 3;
+	private static final float MOUSE_SENSITIVITY = 8;
 	private static final float MOVE_SPEED = 8;
-	private static final int WORLD_RADIUS = 7;
-	private static final int WORLD_HEIGHT = WorldGenerator.WORLD_HEIGHT>>4;
 	public static final boolean NO_CLIP = true;
 	public InputHandler(Camera cam, long window){
 		this.cam=cam;
@@ -69,32 +66,12 @@ public class InputHandler{
 		if(key==GLFW.GLFW_KEY_Q)if(action==GLFW.GLFW_PRESS)q=true;
 		if(key==GLFW.GLFW_KEY_E)if(action==GLFW.GLFW_PRESS)e=true;
 	}
-	public void updateChunks(VoxelWorld world){
-		VoxelChunk chunk;
-		camChunkX=(int)cam.x>>4;
-		camChunkY=(int)cam.y>>4;
-		camChunkZ=(int)cam.z>>4;
-		if(camChunkX==lastCamChunkX&&camChunkY==lastCamChunkY&&camChunkZ==lastCamChunkZ)return;
-		lastCamChunkX=camChunkX;
-		lastCamChunkY=camChunkY;
-		lastCamChunkZ=camChunkZ;
-		for(int i = 0; i<world.getChunkCount(); i++){
-			chunk=world.getChunk(i);
-			if(Math.abs(camChunkX-chunk.chunkX)>WORLD_RADIUS||Math.abs(camChunkY-chunk.chunkY)>WORLD_RADIUS||Math.abs(camChunkZ-chunk.chunkZ)>WORLD_RADIUS)world.unloadChunk(chunk);
-		}
-		cStartX=camChunkX-WorldGenerator.CAMERA_RADIUS;
-		cStartY=Math.max(camChunkY-WorldGenerator.CAMERA_RADIUS, 0);
-		cStartZ=camChunkZ-WorldGenerator.CAMERA_RADIUS;
-		cEndX=camChunkX+WorldGenerator.CAMERA_RADIUS;
-		cEndY=Math.min(camChunkY+WorldGenerator.CAMERA_RADIUS, WORLD_HEIGHT);
-		cEndZ=camChunkZ+WorldGenerator.CAMERA_RADIUS;
-		for(x=cStartX; x<=cEndX; x++)for(y=cStartY; y<=cEndY; y++)for(z=cStartZ; z<=cEndZ; z++)world.getChunk(x, y, z);
-	}
 	public void update(VoxelWorld world, float delta){
 		processMouse(delta*MOUSE_SENSITIVITY);
 		processWalk(world, delta*MOVE_SPEED);
 	}
 	private void processMouse(float delta){
+		//TODO Switch to call back system for move fluid mouse speed during lag.
 		glfwGetCursorPos(window, mouseX, mouseY);
 		cam.goalRY=cam.ry+=(mouseX.get(0)-screenWidth.get(0))*delta;
 		cam.goalRX=cam.rx=(float)Math.max(Math.min(cam.rx+(mouseY.get(0)-screenHeight.get(0))*delta, 90), -90);

@@ -22,6 +22,10 @@ public class Test{
 			Camera cam;
 			VoxelWorld voxelWorld;
 			InputHandler inputHandler;
+			CatcheChunkLoader chunkLoader;
+			long lastPrint, time;
+			int frames;
+			private static final int CHUNK_UPDATES_PER_SECOND = 4096;
 			public void preLoop(){
 				GL11.glEnable(GL11.GL_TEXTURE_2D);
 				GL11.glEnable(GL11.GL_CULL_FACE);
@@ -33,16 +37,13 @@ public class Test{
 				//cam=new Camera(60, 0.3f, 1000);
 				cam.goalY=cam.y=40;
 				cam.goalRX=cam.rx=45;
-				cam.goalRY=cam.ry=45;
 				cam.cameraSpeed=5;
-				WorldGenerator worldGen =new WorldGenerator(cam);
-				voxelWorld=new VoxelWorld(worldGen);
-				worldGen.setWorld(voxelWorld);
+				voxelWorld=new VoxelWorld(chunkLoader=new CatcheChunkLoader());
+				chunkLoader.setup(voxelWorld, cam);
+				VoxelChunkQue.setupTextures();
 				inputHandler=new InputHandler(cam, loop.getWindow());
 				lastPrint=System.currentTimeMillis();
 			}
-			private long lastPrint, time;
-			private int frames;
 			public void render(){
 				GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 				cam.translateInvertMatrix();
@@ -50,7 +51,7 @@ public class Test{
 				time=System.currentTimeMillis();
 				frames++;
 				if(time-lastPrint>=1000){
-					System.out.println(frames);
+					System.out.println("FPS: "+frames);
 					lastPrint=time;
 					frames=0;
 				}
@@ -58,7 +59,7 @@ public class Test{
 			public void update(float delta, long time){
 				inputHandler.update(voxelWorld, delta);
 				cam.update(delta, time);
-				inputHandler.updateChunks(voxelWorld);
+				chunkLoader.update(Math.max((int)(CHUNK_UPDATES_PER_SECOND*delta), 1));
 			}
 			public void key(long window, int key, int action){ inputHandler.onKey(window, key, action); }
 		};
