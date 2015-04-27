@@ -9,8 +9,8 @@ public enum BlockTextures{
 	private final int[] indices;
 	private final CubeTextures texture;
 	private static final String[] textureList = {
-		"Grass.png",
-		"Dirt.png"
+		"Grass1.png",
+		"Dirt1.png"
 	};
 	private static Texture[] textures = new Texture[textureList.length];
 	private BlockTextures(int[] indices){

@@ -19,15 +19,15 @@ public class InputHandler{
 	private Sphere cameraSphere = new Sphere();
 	private BoundingBox boundingBox = new BoundingBox();
 	private float currentCamX, currentCamY, currentCamZ;
+	public float mouseSensitivity = 8;
+	public float moveSpeed = 8;
+	public boolean noClip = true;
 	private final Camera cam;
 	private final long window;
 	private final DoubleBuffer mouseX = BufferUtils.createDoubleBuffer(1);
 	private final DoubleBuffer mouseY = BufferUtils.createDoubleBuffer(1);
 	private final IntBuffer screenWidth = BufferUtils.createIntBuffer(1);
 	private final IntBuffer screenHeight = BufferUtils.createIntBuffer(1);
-	private static final float MOUSE_SENSITIVITY = 8;
-	private static final float MOVE_SPEED = 8;
-	public static final boolean NO_CLIP = true;
 	public InputHandler(Camera cam, long window){
 		this.cam=cam;
 		this.window=window;
@@ -67,8 +67,8 @@ public class InputHandler{
 		if(key==GLFW.GLFW_KEY_E)if(action==GLFW.GLFW_PRESS)e=true;
 	}
 	public void update(VoxelWorld world, float delta){
-		processMouse(delta*MOUSE_SENSITIVITY);
-		processWalk(world, delta*MOVE_SPEED);
+		processMouse(delta*mouseSensitivity);
+		processWalk(world, delta*moveSpeed);
 	}
 	private void processMouse(float delta){
 		//TODO Switch to call back system for move fluid mouse speed during lag.
@@ -95,9 +95,11 @@ public class InputHandler{
 		if(d)currentCamZ-=delta*(float)Math.cos(Math.toRadians(cam.ry+90));
 		if(canMoveTo(world, currentCamX, currentCamY, currentCamZ))cam.goalZ=cam.z=currentCamZ;
 		currentCamZ=cam.goalZ;
-		if(shift)currentCamY-=delta;
-		if(space)currentCamY+=delta;
-		if(canMoveTo(world, currentCamX, currentCamY, currentCamZ))cam.goalY=cam.y=currentCamY;
+		if(!Test.ISOMETRIC){
+			if(shift)currentCamY-=delta;
+			if(space)currentCamY+=delta;
+			if(canMoveTo(world, currentCamX, currentCamY, currentCamZ))cam.goalY=cam.y=currentCamY;
+		}
 		if(q){
 			cam.goalRY-=22.5f;
 			q=false;
@@ -108,7 +110,7 @@ public class InputHandler{
 		}
 	}
 	private boolean canMoveTo(VoxelWorld world, float sx, float sy, float sz){
-		if(NO_CLIP)return true;
+		if(noClip)return true;
 		VoxelBlock block;
 		cameraSphere.x=sx;
 		cameraSphere.y=sy;
