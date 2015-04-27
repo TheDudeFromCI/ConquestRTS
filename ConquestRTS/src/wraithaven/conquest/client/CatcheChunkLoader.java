@@ -15,7 +15,7 @@ public class CatcheChunkLoader implements VoxelWorldListener{
 	private final ArrayList<VoxelChunkQue> que = new ArrayList();
 	public static final int CATCHE_RANGE = 12;
 	private static final int CATCHE_RANGE_SQUARED = CATCHE_RANGE*CATCHE_RANGE;
-	public static final int CAMERA_RANGE = 5;
+	public static final int CAMERA_RANGE = 7;
 	private static final int CAMERA_RANGE_SQUARED = CAMERA_RANGE*CAMERA_RANGE;
 	public void setup(VoxelWorld world, Camera cam){
 		this.world=world;
@@ -57,6 +57,7 @@ public class CatcheChunkLoader implements VoxelWorldListener{
 		for(x=startX; x<=endX; x++)for(y=startY; y<=endY; y++)for(z=startZ; z<=endZ; z++)world.getChunk(x, y, z);
 	}
 	private void sortList(){
+		for(VoxelChunkQue q : que)q.tempDistance=getDistanceSquared(camX, camY, camZ, q.chunk.chunkX, q.chunk.chunkY, q.chunk.chunkZ);
 		que.sort(new Comparator<VoxelChunkQue>(){
 			public int compare(VoxelChunkQue a, VoxelChunkQue b){ return a.tempDistance==b.tempDistance?0:a.tempDistance>b.tempDistance?1:-1; }
 		});

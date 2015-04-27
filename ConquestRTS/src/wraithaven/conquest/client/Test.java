@@ -10,6 +10,7 @@ import wraith.library.LWJGL.WindowInitalizer;
 import wraith.library.LWJGL.Voxel.VoxelWorld;
 
 public class Test{
+	public static final boolean ISOMETRIC = false;
 	public static void main(String[] args){
 		final MainLoop loop = new MainLoop();
 		WindowInitalizer init = new WindowInitalizer();
@@ -31,10 +32,8 @@ public class Test{
 				GL11.glEnable(GL11.GL_CULL_FACE);
 				GL11.glCullFace(GL11.GL_BACK);
 				BlockTextures.genTextures();
-				//First person view.
-				cam=new Camera(70, screenRes.width/(float)screenRes.height, 0.1f, 1000);
-				//Iso view.
-				//cam=new Camera(60, 0.3f, 1000);
+				if(ISOMETRIC)cam=new Camera(60, 0.3f, 1000);
+				else cam=new Camera(70, screenRes.width/(float)screenRes.height, 0.1f, 1000);
 				cam.goalY=cam.y=40;
 				cam.goalRX=cam.rx=45;
 				cam.cameraSpeed=5;

@@ -73,8 +73,10 @@ public class InputHandler{
 	private void processMouse(float delta){
 		//TODO Switch to call back system for move fluid mouse speed during lag.
 		glfwGetCursorPos(window, mouseX, mouseY);
-		cam.goalRY=cam.ry+=(mouseX.get(0)-screenWidth.get(0))*delta;
-		cam.goalRX=cam.rx=(float)Math.max(Math.min(cam.rx+(mouseY.get(0)-screenHeight.get(0))*delta, 90), -90);
+		if(!Test.ISOMETRIC){
+			cam.goalRY=cam.ry+=(mouseX.get(0)-screenWidth.get(0))*delta;
+			cam.goalRX=cam.rx=(float)Math.max(Math.min(cam.rx+(mouseY.get(0)-screenHeight.get(0))*delta, 90), -90);
+		}
 		glfwSetCursorPos(window, screenWidth.get(0), screenHeight.get(0));
 	}
 	private void processWalk(VoxelWorld world, float delta){
