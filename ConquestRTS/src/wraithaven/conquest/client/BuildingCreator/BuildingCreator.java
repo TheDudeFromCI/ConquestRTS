@@ -1,4 +1,4 @@
-package wraithaven.conquest.client;
+package wraithaven.conquest.client.BuildingCreator;
 
 import wraith.library.LWJGL.Camera;
 import wraith.library.LWJGL.LoopObjective;
