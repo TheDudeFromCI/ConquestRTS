@@ -78,7 +78,7 @@ public class Test{
 				chunkLoader.update(Math.max((int)(CHUNK_UPDATES_PER_SECOND*delta), 1));
 			}
 			public void key(long window, int key, int action){ inputHandler.onKey(window, key, action); }
-			public void mouse(long window, int button, int action){ inputHandler.onMouse(window, button, action); }
+			public void mouse(long window, int button, int action){ inputHandler.onMouse(button, action); }
 		};
 		loop.create(init);
 	}

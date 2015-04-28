@@ -1,4 +1,4 @@
-package wraithaven.conquest.client;
+package wraithaven.conquest.client.BuildingCreator;
 
 import java.nio.DoubleBuffer;
 import java.nio.IntBuffer;
@@ -11,27 +11,33 @@ import wraith.library.LWJGL.Voxel.VoxelBlock;
 import wraith.library.LWJGL.Voxel.VoxelWorld;
 import wraith.library.MiscUtil.BoundingBox;
 import wraith.library.MiscUtil.Sphere;
-import static org.lwjgl.glfw.GLFW.*;
+import wraithaven.conquest.client.Test;
+import static org.lwjgl.glfw.GLFW.glfwGetCursorPos;
+import static org.lwjgl.glfw.GLFW.glfwGetWindowSize;
+import static org.lwjgl.glfw.GLFW.glfwSetCursorPos;
+import static org.lwjgl.glfw.GLFW.glfwSetInputMode;
+import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
+import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_HIDDEN;
 
-public class InputHandler{
-	private boolean w, a, s, d, shift, space, q, e;
+public class InputController{
+	private boolean w, a, s, d, shift, space;
 	private int x, y, z;
 	private int bcx1, bcy1, bcz1, bcx2, bcy2, bcz2;
-	private Sphere cameraSphere = new Sphere();
-	private BoundingBox boundingBox = new BoundingBox();
 	private float currentCamX, currentCamY, currentCamZ;
 	public float mouseSensitivity = 8;
 	public float moveSpeed = 8;
+	private final Sphere cameraSphere = new Sphere();
+	private final BoundingBox boundingBox = new BoundingBox();
 	private final Camera cam;
 	private final long window;
 	private final DoubleBuffer mouseX = BufferUtils.createDoubleBuffer(1);
 	private final DoubleBuffer mouseY = BufferUtils.createDoubleBuffer(1);
 	private final IntBuffer screenWidth = BufferUtils.createIntBuffer(1);
 	private final IntBuffer screenHeight = BufferUtils.createIntBuffer(1);
-	public InputHandler(Camera cam, long window){
+	public InputController(Camera cam, long window){
 		this.cam=cam;
 		this.window=window;
-//		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 		glfwGetWindowSize(window, screenWidth, screenHeight);
 		screenWidth.put(0, screenWidth.get(0)/2);
 		screenHeight.put(0, screenHeight.get(0)/2);
@@ -63,8 +69,6 @@ public class InputHandler{
 			if(action==GLFW.GLFW_PRESS)space=true;
 			else if(action==GLFW.GLFW_RELEASE)space=false;
 		}
-		if(key==GLFW.GLFW_KEY_Q)if(action==GLFW.GLFW_PRESS)q=true;
-		if(key==GLFW.GLFW_KEY_E)if(action==GLFW.GLFW_PRESS)e=true;
 	}
 	private CameraTarget cameraTarget;
 	public void onMouse(int key, int action){
@@ -81,13 +85,10 @@ public class InputHandler{
 		processWalk(world, delta*moveSpeed);
 	}
 	private void processMouse(float delta){
-		//TODO Switch to call back system for move fluid mouse speed during lag.
-		if(!Test.ISOMETRIC){
-			glfwGetCursorPos(window, mouseX, mouseY);
-			cam.goalRY=cam.ry+=(mouseX.get(0)-screenWidth.get(0))*delta;
-			cam.goalRX=cam.rx=(float)Math.max(Math.min(cam.rx+(mouseY.get(0)-screenHeight.get(0))*delta, 90), -90);
-			glfwSetCursorPos(window, screenWidth.get(0), screenHeight.get(0));
-		}
+		glfwGetCursorPos(window, mouseX, mouseY);
+		cam.goalRY=cam.ry+=(mouseX.get(0)-screenWidth.get(0))*delta;
+		cam.goalRX=cam.rx=(float)Math.max(Math.min(cam.rx+(mouseY.get(0)-screenHeight.get(0))*delta, 90), -90);
+		glfwSetCursorPos(window, screenWidth.get(0), screenHeight.get(0));
 	}
 	private void processWalk(VoxelWorld world, float delta){
 		currentCamX=cam.goalX;
@@ -105,22 +106,11 @@ public class InputHandler{
 		if(d)currentCamZ-=delta*(float)Math.cos(Math.toRadians(cam.ry+90));
 		if(canMoveTo(world, currentCamX, currentCamY, currentCamZ))cam.goalZ=cam.z=currentCamZ;
 		currentCamZ=cam.goalZ;
-		if(!Test.ISOMETRIC){
-			if(shift)currentCamY-=delta;
-			if(space)currentCamY+=delta;
-			if(canMoveTo(world, currentCamX, currentCamY, currentCamZ))cam.goalY=cam.y=currentCamY;
-		}
-		if(q){
-			cam.goalRY-=22.5f;
-			q=false;
-		}
-		if(e){
-			cam.goalRY+=22.5f;
-			e=false;
-		}
+		if(shift)currentCamY-=delta;
+		if(space)currentCamY+=delta;
+		if(canMoveTo(world, currentCamX, currentCamY, currentCamZ))cam.goalY=cam.y=currentCamY;
 	}
 	private boolean canMoveTo(VoxelWorld world, float sx, float sy, float sz){
-		if(Test.DEBUG)return true;
 		VoxelBlock block;
 		cameraSphere.x=sx;
 		cameraSphere.y=sy;

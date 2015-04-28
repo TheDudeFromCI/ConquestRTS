@@ -2,6 +2,7 @@ package wraithaven.conquest.client;
 
 import java.io.File;
 import wraith.library.LWJGL.CubeTextures;
+import wraith.library.LWJGL.MipmapQuality;
 import wraith.library.LWJGL.Texture;
 
 public enum BlockTextures{
@@ -25,7 +26,7 @@ public enum BlockTextures{
 	public CubeTextures getTextures(){ return texture; }
 	public static void genTextures(){
 		String folder = getFolder();
-		for(int i = 0; i<textureList.length; i++)textures[i]=new Texture(new File(folder, textureList[i]), 4);
+		for(int i = 0; i<textureList.length; i++)textures[i]=new Texture(new File(folder, textureList[i]), 4, MipmapQuality.HIGH);
 		for(BlockTextures t : values()){
 			t.texture.xUp=textures[t.indices[0]];
 			t.texture.xDown=textures[t.indices[1]];
