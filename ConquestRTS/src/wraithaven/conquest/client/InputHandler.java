@@ -21,7 +21,6 @@ public class InputHandler{
 	private float currentCamX, currentCamY, currentCamZ;
 	public float mouseSensitivity = 8;
 	public float moveSpeed = 8;
-	public boolean noClip = true;
 	private final Camera cam;
 	private final long window;
 	private final DoubleBuffer mouseX = BufferUtils.createDoubleBuffer(1);
@@ -31,7 +30,7 @@ public class InputHandler{
 	public InputHandler(Camera cam, long window){
 		this.cam=cam;
 		this.window=window;
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+//		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 		glfwGetWindowSize(window, screenWidth, screenHeight);
 		screenWidth.put(0, screenWidth.get(0)/2);
 		screenHeight.put(0, screenHeight.get(0)/2);
@@ -65,6 +64,12 @@ public class InputHandler{
 		}
 		if(key==GLFW.GLFW_KEY_Q)if(action==GLFW.GLFW_PRESS)q=true;
 		if(key==GLFW.GLFW_KEY_E)if(action==GLFW.GLFW_PRESS)e=true;
+	}
+	public void onMouse(long window, int key, int action){
+		if(action==GLFW.GLFW_PRESS){
+			VoxelBlock block = cam.getTargetBlock(Test.voxelWorld, 200, false);
+			if(block!=null)block.getChunk().setBlock(block.x, block.y, block.z, null);
+		}
 	}
 	public void update(VoxelWorld world, float delta){
 		processMouse(delta*mouseSensitivity);
@@ -110,7 +115,7 @@ public class InputHandler{
 		}
 	}
 	private boolean canMoveTo(VoxelWorld world, float sx, float sy, float sz){
-		if(noClip)return true;
+		if(Test.DEBUG)return true;
 		VoxelBlock block;
 		cameraSphere.x=sx;
 		cameraSphere.y=sy;

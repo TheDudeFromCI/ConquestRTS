@@ -3,6 +3,7 @@ package wraithaven.conquest.client;
 import java.util.ArrayList;
 import java.util.Comparator;
 import wraith.library.LWJGL.Camera;
+import wraith.library.LWJGL.Voxel.VoxelBlock;
 import wraith.library.LWJGL.Voxel.VoxelChunk;
 import wraith.library.LWJGL.Voxel.VoxelWorld;
 import wraith.library.LWJGL.Voxel.VoxelWorldListener;
@@ -12,18 +13,21 @@ public class CatcheChunkLoader implements VoxelWorldListener{
 	private int lastCamX, lastCamY=-100, lastCamZ, tempRange;
 	private VoxelWorld world;
 	private Camera cam;
+	private VoxelBlock block;
+	private long lastPing;
 	private final ArrayList<VoxelChunkQue> que = new ArrayList();
-	public static final int CATCHE_RANGE = 15;
+	public static final int CATCHE_RANGE = 18;
 	private static final int CATCHE_RANGE_SQUARED = CATCHE_RANGE*CATCHE_RANGE;
 	public static final int CAMERA_RANGE = 15;
 	private static final int CAMERA_RANGE_SQUARED = CAMERA_RANGE*CAMERA_RANGE;
-	public static final int WORLD_HEIGHT = 40;
+	public static final int WORLD_HEIGHT = 15;
 	public static final int CHUNK_HEIGHT = WORLD_HEIGHT>>4;
+	public static final int CHUNK_RING_TIME = 0;
 	public void setup(VoxelWorld world, Camera cam){
 		this.world=world;
 		this.cam=cam;
 	}
-	public void update(int blockCount){
+	public void update(int blockCount, long time){
 		getPosition();
 		if(lastCamX!=camX||lastCamY!=camY||lastCamZ!=camZ){
 			lastCamX=camX;
@@ -32,7 +36,8 @@ public class CatcheChunkLoader implements VoxelWorldListener{
 			unloadUneededChunks();
 			tempRange=0;
 		}
-		if(tempRange<CATCHE_RANGE){
+		if(tempRange<CATCHE_RANGE&&(time-lastPing>CHUNK_RING_TIME||que.isEmpty())){
+			lastPing=time;
 			startX=camX-tempRange;
 			startY=Math.max(camY-tempRange, 0);
 			startZ=camZ-tempRange;
@@ -42,13 +47,27 @@ public class CatcheChunkLoader implements VoxelWorldListener{
 			for(x=startX; x<=endX; x++)for(y=startY; y<=endY; y++)for(z=startZ; z<=endZ; z++)if(x==startX||x==endX||y==startY||y==endY||z==startZ||z==endZ)world.getChunk(x, y, z);
 			tempRange++;
 			sortList();
-		}
+		}else tempRange=0;
 		for(int i = 0; i<blockCount; i++)if(updateList())return;
 	}
 	private void getPosition(){
-		camX=(int)Math.floor(cam.x)>>4;
-		camY=(int)Math.floor(cam.y)>>4;
-		camZ=(int)Math.floor(cam.z)>>4;
+		if(Test.ISOMETRIC){
+			block=cam.getTargetBlock(world, 200, false);
+			if(block==null){
+				camX=(int)Math.floor(cam.x)>>4;
+				camY=(int)Math.floor(cam.y)>>4;
+				camZ=(int)Math.floor(cam.z)>>4;
+			}else{
+				camX=block.getChunk().chunkX;
+				camY=block.getChunk().chunkY;
+				camZ=block.getChunk().chunkZ;
+				block.getChunk().setBlock(block.x, block.y, block.z, null);
+			}
+		}else{
+			camX=(int)Math.floor(cam.x)>>4;
+			camY=(int)Math.floor(cam.y)>>4;
+			camZ=(int)Math.floor(cam.z)>>4;
+		}
 	}
 	private void unloadUneededChunks(){
 		VoxelChunk chunk;
@@ -61,7 +80,7 @@ public class CatcheChunkLoader implements VoxelWorldListener{
 	private void sortList(){
 		for(VoxelChunkQue q : que){
 			q.tempDistance=getDistanceSquared(camX, camY, camZ, q.chunk.chunkX, q.chunk.chunkY, q.chunk.chunkZ);
-			if(!cam.frustum.cubeInFrustum(q.chunk.startX, q.chunk.startY, q.chunk.startZ, 16))q.tempDistance+=CATCHE_RANGE_SQUARED;
+			if(getDistanceSquared(camX, camY, camZ, q.chunk.chunkX, q.chunk.chunkY, q.chunk.chunkZ)>CAMERA_RANGE_SQUARED||!cam.frustum.cubeInFrustum(q.chunk.startX, q.chunk.startY, q.chunk.startZ, 16))q.tempDistance+=CAMERA_RANGE_SQUARED;
 		}
 		que.sort(new Comparator<VoxelChunkQue>(){
 			public int compare(VoxelChunkQue a, VoxelChunkQue b){ return a.tempDistance==b.tempDistance?0:a.tempDistance>b.tempDistance?1:-1; }
@@ -80,7 +99,7 @@ public class CatcheChunkLoader implements VoxelWorldListener{
 			}
 		}
 	}
-	public boolean isChunkVisible(VoxelChunk chunk){ return !chunk.isHidden()&&cam.frustum.cubeInFrustum(chunk.startX, chunk.startY, chunk.startZ, 16)&&getDistanceSquared(camX, camY, camZ, chunk.chunkX, chunk.chunkY, chunk.chunkZ)<CAMERA_RANGE_SQUARED; }
+	public boolean isChunkVisible(VoxelChunk chunk){ return !chunk.isHidden()&&getDistanceSquared(camX, camY, camZ, chunk.chunkX, chunk.chunkY, chunk.chunkZ)<CAMERA_RANGE_SQUARED&&cam.frustum.cubeInFrustum(chunk.startX, chunk.startY, chunk.startZ, 16); }
 	public void loadChunk(VoxelChunk chunk){ que.add(new VoxelChunkQue(world, chunk)); }
 	private static double getDistanceSquared(int x1, int y1, int z1, int x2, int y2, int z2){ return Math.pow(x1-x2, 2)+Math.pow(y1-y2, 2)+Math.pow(z1-z2, 2); }
 }
