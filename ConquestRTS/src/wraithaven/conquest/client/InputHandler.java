@@ -6,6 +6,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import wraith.library.LWJGL.Camera;
+import wraith.library.LWJGL.CameraTarget;
 import wraith.library.LWJGL.Voxel.VoxelBlock;
 import wraith.library.LWJGL.Voxel.VoxelWorld;
 import wraith.library.MiscUtil.BoundingBox;
@@ -65,9 +66,11 @@ public class InputHandler{
 		if(key==GLFW.GLFW_KEY_Q)if(action==GLFW.GLFW_PRESS)q=true;
 		if(key==GLFW.GLFW_KEY_E)if(action==GLFW.GLFW_PRESS)e=true;
 	}
+	private CameraTarget cameraTarget;
 	public void onMouse(long window, int key, int action){
+		if(cameraTarget==null)cameraTarget=new CameraTarget(cam);
 		if(action==GLFW.GLFW_PRESS){
-			VoxelBlock block = cam.getTargetBlock(Test.voxelWorld, 200, false);
+			VoxelBlock block = cameraTarget.getTargetBlock(Test.voxelWorld, 500, false);
 			if(block!=null)block.getChunk().setBlock(block.x, block.y, block.z, null);
 		}
 	}
@@ -77,12 +80,12 @@ public class InputHandler{
 	}
 	private void processMouse(float delta){
 		//TODO Switch to call back system for move fluid mouse speed during lag.
-		glfwGetCursorPos(window, mouseX, mouseY);
 		if(!Test.ISOMETRIC){
+			glfwGetCursorPos(window, mouseX, mouseY);
 			cam.goalRY=cam.ry+=(mouseX.get(0)-screenWidth.get(0))*delta;
 			cam.goalRX=cam.rx=(float)Math.max(Math.min(cam.rx+(mouseY.get(0)-screenHeight.get(0))*delta, 90), -90);
+			glfwSetCursorPos(window, screenWidth.get(0), screenHeight.get(0));
 		}
-		glfwSetCursorPos(window, screenWidth.get(0), screenHeight.get(0));
 	}
 	private void processWalk(VoxelWorld world, float delta){
 		currentCamX=cam.goalX;

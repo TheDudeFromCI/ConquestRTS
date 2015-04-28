@@ -8,15 +8,13 @@ public enum BlockTextures{
 	grass1(new int[]{1, 1, 0, 0, 1, 1}, new int[]{2, 0, 0, 0, 3, 0}),
 	grass2(new int[]{1, 1, 0, 0, 1, 1}, new int[]{2, 0, 1, 0, 3, 0}),
 	grass3(new int[]{1, 1, 0, 0, 1, 1}, new int[]{2, 0, 2, 0, 3, 0}),
-	grass4(new int[]{1, 1, 0, 0, 1, 1}, new int[]{2, 0, 3, 0, 3, 0}),
-	selected(new int[]{2, 2, 2, 2, 2, 2}, new int[]{0, 0, 0, 0, 0, 0});
+	grass4(new int[]{1, 1, 0, 0, 1, 1}, new int[]{2, 0, 3, 0, 3, 0});
 	private final int[] indices;
 	private final int[] rotations;
 	private final CubeTextures texture;
 	private static final String[] textureList = {
 		"Grass.png",
-		"Dirt.png",
-		"Selected.png"
+		"Dirt.png"
 	};
 	private static Texture[] textures = new Texture[textureList.length];
 	private BlockTextures(int[] indices, int[] rotations){

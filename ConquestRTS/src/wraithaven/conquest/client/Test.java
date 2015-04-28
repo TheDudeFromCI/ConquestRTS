@@ -11,8 +11,8 @@ import wraith.library.LWJGL.Voxel.VoxelWorld;
 
 public class Test{
 	public static VoxelWorld voxelWorld;
-	public static final boolean ISOMETRIC = false;
-	public static final boolean DEBUG = false;
+	public static final boolean ISOMETRIC = true;
+	public static final boolean DEBUG = true;
 	public static void main(String[] args){
 		final MainLoop loop = new MainLoop();
 		WindowInitalizer init = new WindowInitalizer();
@@ -34,7 +34,7 @@ public class Test{
 				GL11.glCullFace(GL11.GL_BACK);
 				BlockTextures.genTextures();
 				if(ISOMETRIC){
-					cam=new Camera(screenRes.width*0.1f, screenRes.height*0.1f, 0.3f, 1000, true);
+					cam=new Camera(screenRes.width*0.06f, screenRes.height*0.06f, -1000, 1000, true);
 					cam.goalY=cam.y=100;
 				}else{
 					cam=new Camera(70, screenRes.width/(float)screenRes.height, 0.1f, 1000, false);
@@ -75,7 +75,7 @@ public class Test{
 			public void update(float delta, long time){
 				inputHandler.update(voxelWorld, delta);
 				cam.update(delta, time);
-				chunkLoader.update(Math.max((int)(CHUNK_UPDATES_PER_SECOND*delta), 1), time);
+				chunkLoader.update(Math.max((int)(CHUNK_UPDATES_PER_SECOND*delta), 1));
 			}
 			public void key(long window, int key, int action){ inputHandler.onKey(window, key, action); }
 			public void mouse(long window, int button, int action){ inputHandler.onMouse(window, button, action); }

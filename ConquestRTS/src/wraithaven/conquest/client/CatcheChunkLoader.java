@@ -3,6 +3,7 @@ package wraithaven.conquest.client;
 import java.util.ArrayList;
 import java.util.Comparator;
 import wraith.library.LWJGL.Camera;
+import wraith.library.LWJGL.CameraTarget;
 import wraith.library.LWJGL.Voxel.VoxelBlock;
 import wraith.library.LWJGL.Voxel.VoxelChunk;
 import wraith.library.LWJGL.Voxel.VoxelWorld;
@@ -14,7 +15,6 @@ public class CatcheChunkLoader implements VoxelWorldListener{
 	private VoxelWorld world;
 	private Camera cam;
 	private VoxelBlock block;
-	private long lastPing;
 	private final ArrayList<VoxelChunkQue> que = new ArrayList();
 	public static final int CATCHE_RANGE = 18;
 	private static final int CATCHE_RANGE_SQUARED = CATCHE_RANGE*CATCHE_RANGE;
@@ -22,12 +22,12 @@ public class CatcheChunkLoader implements VoxelWorldListener{
 	private static final int CAMERA_RANGE_SQUARED = CAMERA_RANGE*CAMERA_RANGE;
 	public static final int WORLD_HEIGHT = 15;
 	public static final int CHUNK_HEIGHT = WORLD_HEIGHT>>4;
-	public static final int CHUNK_RING_TIME = 0;
 	public void setup(VoxelWorld world, Camera cam){
 		this.world=world;
 		this.cam=cam;
+		cameraTarget=new CameraTarget(cam);
 	}
-	public void update(int blockCount, long time){
+	public void update(int blockCount){
 		getPosition();
 		if(lastCamX!=camX||lastCamY!=camY||lastCamZ!=camZ){
 			lastCamX=camX;
@@ -36,8 +36,7 @@ public class CatcheChunkLoader implements VoxelWorldListener{
 			unloadUneededChunks();
 			tempRange=0;
 		}
-		if(tempRange<CATCHE_RANGE&&(time-lastPing>CHUNK_RING_TIME||que.isEmpty())){
-			lastPing=time;
+		if(tempRange<CATCHE_RANGE){
 			startX=camX-tempRange;
 			startY=Math.max(camY-tempRange, 0);
 			startZ=camZ-tempRange;
@@ -50,9 +49,10 @@ public class CatcheChunkLoader implements VoxelWorldListener{
 		}else tempRange=0;
 		for(int i = 0; i<blockCount; i++)if(updateList())return;
 	}
+	private CameraTarget cameraTarget;
 	private void getPosition(){
 		if(Test.ISOMETRIC){
-			block=cam.getTargetBlock(world, 200, false);
+			block=cameraTarget.getTargetBlock(world, 500, true);
 			if(block==null){
 				camX=(int)Math.floor(cam.x)>>4;
 				camY=(int)Math.floor(cam.y)>>4;
@@ -61,7 +61,6 @@ public class CatcheChunkLoader implements VoxelWorldListener{
 				camX=block.getChunk().chunkX;
 				camY=block.getChunk().chunkY;
 				camZ=block.getChunk().chunkZ;
-				block.getChunk().setBlock(block.x, block.y, block.z, null);
 			}
 		}else{
 			camX=(int)Math.floor(cam.x)>>4;
