@@ -34,7 +34,6 @@ public class InputController{
 	private final DoubleBuffer mouseY = BufferUtils.createDoubleBuffer(1);
 	private final IntBuffer screenWidth = BufferUtils.createIntBuffer(1);
 	private final IntBuffer screenHeight = BufferUtils.createIntBuffer(1);
-	private static final int WORLD_BOUNDS_SIZE = 256;
 	public InputController(Camera cam, long window){
 		this.cam=cam;
 		this.window=window;
@@ -112,7 +111,7 @@ public class InputController{
 		if(canMoveTo(world, currentCamX, currentCamY, currentCamZ))cam.goalY=cam.y=currentCamY;
 	}
 	private boolean canMoveTo(VoxelWorld world, float sx, float sy, float sz){
-		if(sx<0||sy<0||sz<0||sx>=WORLD_BOUNDS_SIZE||sy>=WORLD_BOUNDS_SIZE||sz>=WORLD_BOUNDS_SIZE)return false;
+		if(sx<0||sy<0||sz<0||sx>=BuildingCreator.WORLD_BOUNDS_SIZE||sy>=BuildingCreator.WORLD_BOUNDS_SIZE||sz>=BuildingCreator.WORLD_BOUNDS_SIZE)return false;
 		VoxelBlock block;
 		cameraSphere.x=sx;
 		cameraSphere.y=sy;
