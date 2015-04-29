@@ -1,9 +1,11 @@
 package wraithaven.conquest.client.BuildingCreator;
 
+import java.awt.Dimension;
 import org.lwjgl.opengl.GL11;
 import wraith.library.LWJGL.Camera;
 import wraith.library.LWJGL.LoopObjective;
 import wraith.library.LWJGL.Voxel.VoxelWorld;
+import wraith.library.LWJGL.Voxel.VoxelWorldBounds;
 import wraithaven.conquest.client.BlockTextures;
 
 public class Loop implements LoopObjective{
@@ -12,15 +14,15 @@ public class Loop implements LoopObjective{
 	private BuildCreatorWorld creatorWorld;
 	private InputController inputController;
 	private UserBlockHandler userBlockHandler;
-	private final float aspect;
+	private final Dimension screenRes;
 	public void preLoop(){
-		camera=new Camera(70, aspect, 0.1f, 1000, false);
+		camera=new Camera(70, screenRes.width/(float)screenRes.height, 0.1f, 1000, false);
 		BlockTextures.genTextures();
 		creatorWorld=new BuildCreatorWorld();
-		world=new VoxelWorld(creatorWorld, false);
-		creatorWorld.setup(camera);
-		inputController=new InputController(camera, BuildingCreator.loop.getWindow());
-		userBlockHandler=new UserBlockHandler(world, camera);
+		world=new VoxelWorld(creatorWorld, new VoxelWorldBounds(0, 0, 0, BuildingCreator.WORLD_BOUNDS_SIZE-1, BuildingCreator.WORLD_BOUNDS_SIZE-1, BuildingCreator.WORLD_BOUNDS_SIZE-1));
+		creatorWorld.setup(world, camera);
+		inputController=new InputController(camera, BuildingCreator.loop.getWindow(), screenRes);
+		userBlockHandler=new UserBlockHandler(world, camera, inputController);
 		generateWorld();
 		setupCameraPosition();
 		setupOGL();
@@ -38,11 +40,12 @@ public class Loop implements LoopObjective{
 	private void setupCameraPosition(){
 		float center = (BuildingCreator.WORLD_BOUNDS_SIZE-1)/2f;
 		camera.goalX=camera.x=center;
-		camera.goalY=camera.y=center;
+		camera.goalY=camera.y=5;
 		camera.goalZ=camera.z=center;
+		camera.cameraSpeed=3;
 	}
+	public Loop(Dimension screenRes){ this.screenRes=screenRes; }
 	public void mouseMove(long window, double x, double y){ inputController.processMouse(x, y); }
-	public Loop(float aspect){ this.aspect=aspect; }
 	public void render(){ world.render(); }
 	public void mouse(long window, int button, int action){ userBlockHandler.mouseClick(button, action); }
 	public void key(long window, int key, int action){ inputController.onKey(window, key, action); }

@@ -10,15 +10,18 @@ public class UserBlockHandler{
 	private CameraTargetCallback callback;
 	private final VoxelWorld world;
 	private final CameraTarget cameraTarget;
-	public UserBlockHandler(VoxelWorld world, Camera camera){
+	private final InputController controller;
+	public UserBlockHandler(VoxelWorld world, Camera camera, InputController controller){
 		cameraTarget=new CameraTarget(camera);
 		this.world=world;
+		this.controller=controller;
 	}
 	public void mouseClick(int button, int action){
+		if(controller.iso)return;
 		if(button==GLFW_MOUSE_BUTTON_LEFT){
 			if(action==GLFW_PRESS){
 				callback=cameraTarget.getTargetBlock(world, 500, false);
-				if(callback.block!=null)callback.block.chunk.setBlock(callback.block.x, callback.block.y, callback.block.z, null);
+				if(callback.block!=null&&callback.block.y>0)callback.block.chunk.setBlock(callback.block.x, callback.block.y, callback.block.z, null);
 			}
 		}else if(button==GLFW_MOUSE_BUTTON_RIGHT){
 			if(action==GLFW_PRESS){

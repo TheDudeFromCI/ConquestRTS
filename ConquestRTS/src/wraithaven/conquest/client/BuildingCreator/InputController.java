@@ -1,35 +1,37 @@
 package wraithaven.conquest.client.BuildingCreator;
 
+import java.awt.Dimension;
 import java.nio.IntBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import wraith.library.LWJGL.Camera;
+import wraith.library.LWJGL.MatrixUtils;
 import wraith.library.LWJGL.Voxel.VoxelBlock;
 import wraith.library.LWJGL.Voxel.VoxelWorld;
 import wraith.library.MiscUtil.BoundingBox;
 import wraith.library.MiscUtil.Sphere;
-import static org.lwjgl.glfw.GLFW.glfwGetWindowSize;
-import static org.lwjgl.glfw.GLFW.glfwSetCursorPos;
-import static org.lwjgl.glfw.GLFW.glfwSetInputMode;
-import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
-import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_HIDDEN;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class InputController{
 	private boolean w, a, s, d, shift, space;
+	public boolean iso;
 	private int x, y, z;
 	private int bcx1, bcy1, bcz1, bcx2, bcy2, bcz2;
 	private float currentCamX, currentCamY, currentCamZ;
 	public float mouseSensitivity = 0.1f;
 	public float moveSpeed = 8;
+	private VoxelBlock block;
+	private final Dimension screenRes;
 	private final Sphere cameraSphere = new Sphere();
 	private final BoundingBox boundingBox = new BoundingBox();
 	private final Camera cam;
 	private final long window;
 	private final IntBuffer screenWidth = BufferUtils.createIntBuffer(1);
 	private final IntBuffer screenHeight = BufferUtils.createIntBuffer(1);
-	public InputController(Camera cam, long window){
+	public InputController(Camera cam, long window, Dimension screenRes){
 		this.cam=cam;
+		this.screenRes=screenRes;
 		this.window=window;
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 		glfwGetWindowSize(window, screenWidth, screenHeight);
@@ -63,11 +65,36 @@ public class InputController{
 			if(action==GLFW.GLFW_PRESS)space=true;
 			else if(action==GLFW.GLFW_RELEASE)space=false;
 		}
+		if(key==GLFW.GLFW_KEY_F9){
+			if(action==GLFW.GLFW_PRESS){
+				if(iso){
+					MatrixUtils.setupPerspective(70, screenRes.width/(float)screenRes.height, 0.1f, 1000);
+					glfwSetCursorPos(window, screenWidth.get(0), screenHeight.get(0));
+					cam.goalY=5;
+					glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+					moveSpeed=8;
+				}else{
+					MatrixUtils.setupOrtho(screenRes.width*0.06f, screenRes.height*0.06f, -1000, 1000);
+					cam.goalRX=30;
+					cam.goalRY=0;
+					cam.goalY=100;
+					glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+					moveSpeed=30;
+				}
+				iso=!iso;
+			}
+		}
+		if(iso){
+			if(key==GLFW.GLFW_KEY_Q)if(action==GLFW.GLFW_PRESS)cam.goalRY-=22.5f;
+			if(key==GLFW.GLFW_KEY_E)if(action==GLFW.GLFW_PRESS)cam.goalRY+=22.5f;
+		}
 	}
 	public void processMouse(double x, double y){
-		cam.goalRY=cam.ry+=(x-screenWidth.get(0))*mouseSensitivity;
-		cam.goalRX=cam.rx=(float)Math.max(Math.min(cam.rx+(y-screenHeight.get(0))*mouseSensitivity, 90), -90);
-		glfwSetCursorPos(window, screenWidth.get(0), screenHeight.get(0));
+		if(!iso){
+			cam.goalRY=cam.ry+=(x-screenWidth.get(0))*mouseSensitivity;
+			cam.goalRX=cam.rx=(float)Math.max(Math.min(cam.rx+(y-screenHeight.get(0))*mouseSensitivity, 90), -90);
+			glfwSetCursorPos(window, screenWidth.get(0), screenHeight.get(0));
+		}
 	}
 	public void processWalk(VoxelWorld world, double delta){
 		delta*=moveSpeed;
@@ -86,13 +113,15 @@ public class InputController{
 		if(d)currentCamZ-=delta*(float)Math.cos(Math.toRadians(cam.ry+90));
 		if(canMoveTo(world, currentCamX, currentCamY, currentCamZ))cam.goalZ=cam.z=currentCamZ;
 		currentCamZ=cam.goalZ;
-		if(shift)currentCamY-=delta;
-		if(space)currentCamY+=delta;
-		if(canMoveTo(world, currentCamX, currentCamY, currentCamZ))cam.goalY=cam.y=currentCamY;
+		if(!iso){
+			if(shift)currentCamY-=delta;
+			if(space)currentCamY+=delta;
+			if(canMoveTo(world, currentCamX, currentCamY, currentCamZ))cam.goalY=cam.y=currentCamY;
+		}
 	}
 	private boolean canMoveTo(VoxelWorld world, float sx, float sy, float sz){
-		if(sx<0||sy<0||sz<0||sx>=BuildingCreator.WORLD_BOUNDS_SIZE||sy>=BuildingCreator.WORLD_BOUNDS_SIZE||sz>=BuildingCreator.WORLD_BOUNDS_SIZE)return false;
-		VoxelBlock block;
+		if(iso)return true;
+		if(sx<0||sy<0||sz<0||sx>=BuildingCreator.WORLD_BOUNDS_SIZE||sz>=BuildingCreator.WORLD_BOUNDS_SIZE||sz>=BuildingCreator.WORLD_BOUNDS_SIZE)return false;
 		cameraSphere.x=sx;
 		cameraSphere.y=sy;
 		cameraSphere.z=sz;
