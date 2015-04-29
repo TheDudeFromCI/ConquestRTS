@@ -11,9 +11,9 @@ import wraith.library.MiscUtil.BoundingBox;
 import wraith.library.MiscUtil.Sphere;
 import static org.lwjgl.glfw.GLFW.glfwGetWindowSize;
 import static org.lwjgl.glfw.GLFW.glfwSetCursorPos;
-//import static org.lwjgl.glfw.GLFW.glfwSetInputMode;
-//import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
-//import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_HIDDEN;
+import static org.lwjgl.glfw.GLFW.glfwSetInputMode;
+import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
+import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_HIDDEN;
 
 public class InputController{
 	private boolean w, a, s, d, shift, space;
@@ -31,7 +31,7 @@ public class InputController{
 	public InputController(Camera cam, long window){
 		this.cam=cam;
 		this.window=window;
-//		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 		glfwGetWindowSize(window, screenWidth, screenHeight);
 		screenWidth.put(0, screenWidth.get(0)/2);
 		screenHeight.put(0, screenHeight.get(0)/2);
