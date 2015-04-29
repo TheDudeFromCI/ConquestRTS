@@ -35,7 +35,7 @@ public class InputController{
 		glfwGetWindowSize(window, screenWidth, screenHeight);
 		screenWidth.put(0, screenWidth.get(0)/2);
 		screenHeight.put(0, screenHeight.get(0)/2);
-		cameraSphere.r=0.5f;
+		cameraSphere.r=0.3f;
 	}
 	public void onKey(long window, int key, int action){
 		if(key==GLFW.GLFW_KEY_F12&&action==GLFW.GLFW_RELEASE)GLFW.glfwSetWindowShouldClose(window, GL11.GL_TRUE);
