@@ -15,7 +15,7 @@ public class Loop implements LoopObjective{
 		camera=new Camera(70, aspect, 0.3f, 100, false);
 		creatorWorld=new BuildCreatorWorld();
 		world=new VoxelWorld(creatorWorld, false);
-		creatorWorld.setup(world);
+		creatorWorld.setup(world, camera);
 		inputController=new InputController(camera, BuildingCreator.loop.getWindow());
 		generateWorld();
 		setupOGL();
