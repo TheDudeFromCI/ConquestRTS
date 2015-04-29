@@ -1,6 +1,5 @@
 package wraithaven.conquest.client.BuildingCreator;
 
-import java.nio.DoubleBuffer;
 import java.nio.IntBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
@@ -12,7 +11,6 @@ import wraith.library.LWJGL.Voxel.VoxelWorld;
 import wraith.library.MiscUtil.BoundingBox;
 import wraith.library.MiscUtil.Sphere;
 import wraithaven.conquest.client.Test;
-import static org.lwjgl.glfw.GLFW.glfwGetCursorPos;
 import static org.lwjgl.glfw.GLFW.glfwGetWindowSize;
 import static org.lwjgl.glfw.GLFW.glfwSetCursorPos;
 import static org.lwjgl.glfw.GLFW.glfwSetInputMode;
@@ -24,14 +22,12 @@ public class InputController{
 	private int x, y, z;
 	private int bcx1, bcy1, bcz1, bcx2, bcy2, bcz2;
 	private float currentCamX, currentCamY, currentCamZ;
-	public float mouseSensitivity = 8;
+	public float mouseSensitivity = 0.1f;
 	public float moveSpeed = 8;
 	private final Sphere cameraSphere = new Sphere();
 	private final BoundingBox boundingBox = new BoundingBox();
 	private final Camera cam;
 	private final long window;
-	private final DoubleBuffer mouseX = BufferUtils.createDoubleBuffer(1);
-	private final DoubleBuffer mouseY = BufferUtils.createDoubleBuffer(1);
 	private final IntBuffer screenWidth = BufferUtils.createIntBuffer(1);
 	private final IntBuffer screenHeight = BufferUtils.createIntBuffer(1);
 	public InputController(Camera cam, long window){
@@ -41,7 +37,7 @@ public class InputController{
 		glfwGetWindowSize(window, screenWidth, screenHeight);
 		screenWidth.put(0, screenWidth.get(0)/2);
 		screenHeight.put(0, screenHeight.get(0)/2);
-		cameraSphere.r=0.2f;
+		cameraSphere.r=0.5f;
 	}
 	public void onKey(long window, int key, int action){
 		if(key==GLFW.GLFW_KEY_F12&&action==GLFW.GLFW_RELEASE)GLFW.glfwSetWindowShouldClose(window, GL11.GL_TRUE);
@@ -80,17 +76,13 @@ public class InputController{
 			}
 		}
 	}
-	public void update(VoxelWorld world, float delta){
-		processMouse(delta*mouseSensitivity);
-		processWalk(world, delta*moveSpeed);
-	}
-	private void processMouse(float delta){
-		glfwGetCursorPos(window, mouseX, mouseY);
-		cam.goalRY=cam.ry+=(mouseX.get(0)-screenWidth.get(0))*delta;
-		cam.goalRX=cam.rx=(float)Math.max(Math.min(cam.rx+(mouseY.get(0)-screenHeight.get(0))*delta, 90), -90);
+	public void processMouse(double x, double y){
+		cam.goalRY=cam.ry+=(x-screenWidth.get(0))*mouseSensitivity;
+		cam.goalRX=cam.rx=(float)Math.max(Math.min(cam.rx+(y-screenHeight.get(0))*mouseSensitivity, 90), -90);
 		glfwSetCursorPos(window, screenWidth.get(0), screenHeight.get(0));
 	}
-	private void processWalk(VoxelWorld world, float delta){
+	public void processWalk(VoxelWorld world, double delta){
+		delta*=moveSpeed;
 		currentCamX=cam.goalX;
 		currentCamY=cam.goalY;
 		currentCamZ=cam.goalZ;
@@ -125,7 +117,7 @@ public class InputController{
 		for(x=bcx1; x<=bcx2; x++){
 			for(y=bcy1; y<=bcy2; y++){
 				for(z=bcz1; z<=bcz2; z++){
-					block=world.getBlock(x, y, z);
+					block=world.getBlock(x, y, z, false);
 					if(block==null)continue;
 					boundingBox.x1=block.x;
 					boundingBox.y1=block.y;
@@ -145,8 +137,8 @@ public class InputController{
 		else if(sphere.x>bb.x2)dmin+=Math.pow(sphere.x-bb.x2, 2);
 		if(sphere.y<bb.y1)dmin+=Math.pow(sphere.y-bb.y1, 2);
 		else if(sphere.y>bb.y2)dmin+=Math.pow(sphere.y-bb.y2, 2);
-		if(sphere.z<bb.z1)dmin += Math.pow(sphere.z-bb.z1, 2);
-		else if(sphere.z>bb.z2)dmin+=Math.pow(sphere.z-bb.z1, 2);
+		if(sphere.z<bb.z1)dmin+=Math.pow(sphere.z-bb.z1, 2);
+		else if(sphere.z>bb.z2)dmin+=Math.pow(sphere.z-bb.z2, 2);
 		return dmin<=Math.pow(sphere.r, 2);
 	}
 }

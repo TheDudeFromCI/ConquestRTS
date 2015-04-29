@@ -20,6 +20,7 @@ public class BuildingCreator{
 		init.width=dimension.width;
 		init.windowName="Building Creator";
 		init.loopObjective=new Loop(dimension.width/(float)dimension.height);
+		init.fullscreen=true;
 		return init;
 	}
 }
