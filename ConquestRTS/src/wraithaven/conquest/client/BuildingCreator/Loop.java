@@ -39,7 +39,7 @@ public class Loop implements LoopObjective{
 		float center = (BuildingCreator.WORLD_BOUNDS_SIZE-1)/2f;
 		camera.goalX=camera.x=center;
 		camera.goalY=camera.y=center;
-		camera.goalX=camera.x=center;
+		camera.goalZ=camera.z=center;
 	}
 	public void mouseMove(long window, double x, double y){ inputController.processMouse(x, y); }
 	public Loop(float aspect){ this.aspect=aspect; }
