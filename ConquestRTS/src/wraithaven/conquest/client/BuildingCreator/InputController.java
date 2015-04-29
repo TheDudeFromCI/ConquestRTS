@@ -5,17 +5,15 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import wraith.library.LWJGL.Camera;
-import wraith.library.LWJGL.CameraTarget;
 import wraith.library.LWJGL.Voxel.VoxelBlock;
 import wraith.library.LWJGL.Voxel.VoxelWorld;
 import wraith.library.MiscUtil.BoundingBox;
 import wraith.library.MiscUtil.Sphere;
-import wraithaven.conquest.client.Test;
 import static org.lwjgl.glfw.GLFW.glfwGetWindowSize;
 import static org.lwjgl.glfw.GLFW.glfwSetCursorPos;
-import static org.lwjgl.glfw.GLFW.glfwSetInputMode;
-import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
-import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_HIDDEN;
+//import static org.lwjgl.glfw.GLFW.glfwSetInputMode;
+//import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
+//import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_HIDDEN;
 
 public class InputController{
 	private boolean w, a, s, d, shift, space;
@@ -33,7 +31,7 @@ public class InputController{
 	public InputController(Camera cam, long window){
 		this.cam=cam;
 		this.window=window;
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+//		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 		glfwGetWindowSize(window, screenWidth, screenHeight);
 		screenWidth.put(0, screenWidth.get(0)/2);
 		screenHeight.put(0, screenHeight.get(0)/2);
@@ -64,16 +62,6 @@ public class InputController{
 		if(key==GLFW.GLFW_KEY_SPACE){
 			if(action==GLFW.GLFW_PRESS)space=true;
 			else if(action==GLFW.GLFW_RELEASE)space=false;
-		}
-	}
-	private CameraTarget cameraTarget;
-	public void onMouse(int key, int action){
-		if(cameraTarget==null)cameraTarget=new CameraTarget(cam);
-		if(key==GLFW.GLFW_MOUSE_BUTTON_LEFT){
-			if(action==GLFW.GLFW_PRESS){
-				VoxelBlock block = cameraTarget.getTargetBlock(Test.voxelWorld, 500, false);
-				if(block!=null)block.getChunk().setBlock(block.x, block.y, block.z, null);
-			}
 		}
 	}
 	public void processMouse(double x, double y){
