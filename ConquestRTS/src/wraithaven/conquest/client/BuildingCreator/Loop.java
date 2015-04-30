@@ -44,9 +44,23 @@ public class Loop implements LoopObjective{
 		camera.goalZ=camera.z=center;
 		camera.cameraSpeed=3;
 	}
+	public void render(){
+		world.render();
+		if(BuildingCreator.DEBUG){
+			GL11.glBegin(GL11.GL_LINES);
+			GL11.glColor3f(1, 0, 0);
+			GL11.glVertex3f(camera.x, camera.y-2, camera.z);
+			GL11.glColor3f(1, 0, 0);
+			GL11.glVertex3f(camera.x+5, camera.y-2, camera.z);
+			GL11.glColor3f(0, 0, 1);
+			GL11.glVertex3f(camera.x, camera.y-2, camera.z);
+			GL11.glColor3f(0, 0, 1);
+			GL11.glVertex3f(camera.x, camera.y-2, camera.z+5);
+			GL11.glEnd();
+		}
+	}
 	public Loop(Dimension screenRes){ this.screenRes=screenRes; }
 	public void mouseMove(long window, double x, double y){ inputController.processMouse(x, y); }
-	public void render(){ world.render(); }
 	public void mouse(long window, int button, int action){ userBlockHandler.mouseClick(button, action); }
 	public void key(long window, int key, int action){ inputController.onKey(window, key, action); }
 	private static void setupOGL(){
