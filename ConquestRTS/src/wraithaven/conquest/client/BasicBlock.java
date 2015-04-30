@@ -141,9 +141,33 @@ public class BasicBlock implements BlockType{
 			if(block_ud||block_0d||block_u0)colors[9]=colors[10]=colors[11]=shadowIntensity;
 			else colors[9]=colors[10]=colors[11]=1f;
 		}
-		if((block_d0&&block_u0)||(block_0d&&block_0u)||(block_0d&&block_d0)||(block_0u&&block_u0)||(block_0d&&block_u0)||(block_0u&&block_d0))colors[12]=colors[13]=colors[14]=shadowIntensity;
-		else if(block_d0||block_u0||block_0d||block_0u)return false;
+		if((block_d0&&block_0d)||(block_u0&&block_0u))colors[12]=colors[13]=colors[14]=shadowIntensity;
+		else if(flat())return false;
 		else colors[12]=colors[13]=colors[14]=1f;
 		return true;
+	}
+	private boolean flat(){
+		if(block_dd||block_ud||block_du||block_uu){
+			if(block_dd){
+				if(block_d0||block_0d)return true;
+				return false;
+			}
+			if(block_du){
+				if(block_d0||block_0u)return true;
+				return false;
+			}
+			if(block_ud){
+				if(block_u0||block_0d)return true;
+				return false;
+			}
+			if(block_uu){
+				if(block_u0||block_0u)return true;
+				return false;
+			}
+		}else{
+			if(block_d0==block_u0)return true;
+			if(block_0d==block_0u)return true;
+		}
+		return false;
 	}
 }
