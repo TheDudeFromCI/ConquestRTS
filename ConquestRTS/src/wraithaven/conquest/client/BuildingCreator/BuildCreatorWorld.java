@@ -14,16 +14,12 @@ public class BuildCreatorWorld implements VoxelWorldListener{
 	public void setup(VoxelWorld world, Camera camera){
 		this.camera=camera;
 		this.world=world;
-		block=new BasicBlock(BlockTextures.grass1.getTextures());
+		block=new BasicBlock(BlockTextures.grass.getTextures(), world);
 	}
 	public void loadChunk(VoxelChunk chunk){
 		if(chunk.chunkY==0){
 			int x, z;
-			for(x=chunk.startX; x<=chunk.endX; x++){
-				for(z=chunk.startZ; z<=chunk.endZ; z++){
-					chunk.quickSetBlock(x, 0, z, block);
-				}
-			}
+			for(x=chunk.startX; x<=chunk.endX; x++)for(z=chunk.startZ; z<=chunk.endZ; z++)chunk.createBlock(x, 0, z, block).getQuad(2).setRotation((int)(Math.random()*4));
 			chunk.optimize();
 			optimizeNearbyChunks(chunk.chunkX, chunk.chunkY, chunk.chunkZ);
 		}
