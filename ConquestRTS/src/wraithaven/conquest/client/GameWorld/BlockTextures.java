@@ -1,4 +1,4 @@
-package wraithaven.conquest.client;
+package wraithaven.conquest.client.GameWorld;
 
 import java.io.File;
 import wraith.library.LWJGL.CubeTextures;

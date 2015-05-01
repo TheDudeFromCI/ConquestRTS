@@ -1,4 +1,4 @@
-package wraithaven.conquest.client;
+package wraithaven.conquest.client.GameWorld;
 
 import java.util.ArrayList;
 import java.util.Comparator;

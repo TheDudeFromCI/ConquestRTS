@@ -4,8 +4,8 @@ import wraith.library.LWJGL.Camera;
 import wraith.library.LWJGL.Voxel.VoxelChunk;
 import wraith.library.LWJGL.Voxel.VoxelWorld;
 import wraith.library.LWJGL.Voxel.VoxelWorldListener;
-import wraithaven.conquest.client.BlockTextures;
-import wraithaven.conquest.client.BasicBlock;
+import wraithaven.conquest.client.GameWorld.BasicBlock;
+import wraithaven.conquest.client.GameWorld.BlockTextures;
 
 public class BuildCreatorWorld implements VoxelWorldListener{
 	private Camera camera;

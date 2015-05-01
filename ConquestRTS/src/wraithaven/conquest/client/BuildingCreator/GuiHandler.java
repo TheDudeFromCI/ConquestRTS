@@ -4,7 +4,7 @@ import java.awt.Dimension;
 import java.io.File;
 import wraith.library.LWJGL.GuiComponents;
 import wraith.library.LWJGL.GuiImage;
-import wraithaven.conquest.client.BlockTextures;
+import wraithaven.conquest.client.GameWorld.BlockTextures;
 
 public class GuiHandler{
 	private GuiComponents components;

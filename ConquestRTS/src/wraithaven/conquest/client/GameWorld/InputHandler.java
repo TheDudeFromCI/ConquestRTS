@@ -1,4 +1,4 @@
-package wraithaven.conquest.client;
+package wraithaven.conquest.client.GameWorld;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;

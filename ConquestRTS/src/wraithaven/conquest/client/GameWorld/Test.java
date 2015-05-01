@@ -1,4 +1,4 @@
-package wraithaven.conquest.client;
+package wraithaven.conquest.client.GameWorld;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;

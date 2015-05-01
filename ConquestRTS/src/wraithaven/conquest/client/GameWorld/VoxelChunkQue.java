@@ -1,4 +1,4 @@
-package wraithaven.conquest.client;
+package wraithaven.conquest.client.GameWorld;
 
 import wraith.library.LWJGL.Voxel.BlockType;
 import wraith.library.LWJGL.Voxel.VoxelChunk;

@@ -7,7 +7,7 @@ import wraith.library.LWJGL.LoopObjective;
 import wraith.library.LWJGL.MatrixUtils;
 import wraith.library.LWJGL.Voxel.VoxelWorld;
 import wraith.library.LWJGL.Voxel.VoxelWorldBounds;
-import wraithaven.conquest.client.BlockTextures;
+import wraithaven.conquest.client.GameWorld.BlockTextures;
 
 public class Loop implements LoopObjective{
 	private Camera camera;
