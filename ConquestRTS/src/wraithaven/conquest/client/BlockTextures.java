@@ -39,7 +39,7 @@ public enum BlockTextures{
 			t.texture.zDownRotation=t.rotations[5];
 		}
 	}
-	private static String getFolder(){
+	public static String getFolder(){
 		File file = new File(System.getProperty("user.dir")+File.separatorChar+"Assets");
 		if(!file.exists())file.mkdirs();
 		return file.getAbsolutePath();
