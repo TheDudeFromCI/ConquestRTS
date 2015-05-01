@@ -1,7 +1,9 @@
 package wraithaven.conquest.client.BuildingCreator;
 
 import java.awt.Dimension;
+import java.io.File;
 import java.nio.IntBuffer;
+import java.util.GregorianCalendar;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
@@ -11,6 +13,7 @@ import wraith.library.LWJGL.Voxel.VoxelBlock;
 import wraith.library.LWJGL.Voxel.VoxelWorld;
 import wraith.library.MiscUtil.BoundingBox;
 import wraith.library.MiscUtil.Sphere;
+import wraithaven.conquest.client.ClientLauncher;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class InputController{
@@ -83,6 +86,9 @@ public class InputController{
 				}
 				iso=!iso;
 			}
+		}
+		if(key==GLFW.GLFW_KEY_F1){
+			if(action==GLFW.GLFW_PRESS)MatrixUtils.takeScreenShot(new File(ClientLauncher.screenShotFolder, System.currentTimeMillis()+".png"), BuildingCreator.WINDOW_INIT.width, BuildingCreator.WINDOW_INIT.height);
 		}
 		if(iso){
 			if(key==GLFW.GLFW_KEY_Q)if(action==GLFW.GLFW_PRESS)cam.goalRY-=22.5f;
