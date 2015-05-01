@@ -52,9 +52,11 @@ public class Loop implements LoopObjective{
 	public void render(){
 		world.render();
 		GL11.glPopMatrix();
-		guiHandler.render();
-		if(inputController.iso)MatrixUtils.setupOrtho(screenRes.width*0.06f, screenRes.height*0.06f, -1000, 1000);
-		else MatrixUtils.setupPerspective(70, screenRes.width/(float)screenRes.height, 0.2f, 1000);
+		if(!inputController.iso){
+			guiHandler.render();
+			if(inputController.iso)MatrixUtils.setupOrtho(screenRes.width*0.06f, screenRes.height*0.06f, -1000, 1000);
+			else MatrixUtils.setupPerspective(70, screenRes.width/(float)screenRes.height, 0.2f, 1000);
+		}
 		if(BuildingCreator.DEBUG){
 			GL11.glBegin(GL11.GL_LINES);
 			GL11.glColor3f(1, 0, 0);
