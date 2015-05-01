@@ -10,12 +10,15 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class UserBlockHandler{
 	private CameraTargetCallback callback;
+	private boolean holdingLeftButton, holdingRightButton;
+	private double lastButtonPing;
 	private final BoundingBox boundingBox = new BoundingBox();
 	private final Sphere cameraSphere = new Sphere();
 	private final Camera camera;
 	private final VoxelWorld world;
 	private final CameraTarget cameraTarget;
 	private final InputController controller;
+	private static final double CLICK_PING_RATE = 0.15;
 	public UserBlockHandler(VoxelWorld world, Camera camera, InputController controller){
 		cameraTarget=new CameraTarget(this.camera=camera);
 		this.world=world;
@@ -26,33 +29,16 @@ public class UserBlockHandler{
 		if(controller.iso)return;
 		if(button==GLFW_MOUSE_BUTTON_LEFT){
 			if(action==GLFW_PRESS){
-				callback=cameraTarget.getTargetBlock(world, 500, false);
-				if(callback.block!=null&&callback.block.y>0)callback.block.chunk.setBlock(callback.block.x, callback.block.y, callback.block.z, null);
-			}
+				holdingRightButton=true;
+				lastButtonPing=glfwGetTime();
+				deleteBlock();
+			}else if(action==GLFW_RELEASE)holdingRightButton=false;
 		}else if(button==GLFW_MOUSE_BUTTON_RIGHT){
 			if(action==GLFW_PRESS){
-				callback=cameraTarget.getTargetBlock(world, 500, false);
-				if(callback.block!=null){
-					if(callback.side==0){
-						if(callback.block.chunk.world.getBlock(callback.block.x+1, callback.block.y, callback.block.z, false)==null&&!collidesWithCamera(callback.block.x+1, callback.block.y, callback.block.z))callback.block.chunk.world.setBlock(callback.block.x+1, callback.block.y, callback.block.z, callback.block.type);
-					}
-					if(callback.side==1){
-						if(callback.block.chunk.world.getBlock(callback.block.x-1, callback.block.y, callback.block.z, false)==null&&!collidesWithCamera(callback.block.x-1, callback.block.y, callback.block.z))callback.block.chunk.world.setBlock(callback.block.x-1, callback.block.y, callback.block.z, callback.block.type);
-					}
-					if(callback.side==2){
-						if(callback.block.chunk.world.getBlock(callback.block.x, callback.block.y+1, callback.block.z, false)==null&&!collidesWithCamera(callback.block.x, callback.block.y+1, callback.block.z))callback.block.chunk.world.setBlock(callback.block.x, callback.block.y+1, callback.block.z, callback.block.type);
-					}
-					if(callback.side==3){
-						if(callback.block.chunk.world.getBlock(callback.block.x, callback.block.y-1, callback.block.z, false)==null&&!collidesWithCamera(callback.block.x, callback.block.y-1, callback.block.z))callback.block.chunk.world.setBlock(callback.block.x, callback.block.y-1, callback.block.z, callback.block.type);
-					}
-					if(callback.side==4){
-						if(callback.block.chunk.world.getBlock(callback.block.x, callback.block.y, callback.block.z+1, false)==null&&!collidesWithCamera(callback.block.x, callback.block.y, callback.block.z+1))callback.block.chunk.world.setBlock(callback.block.x, callback.block.y, callback.block.z+1, callback.block.type);
-					}
-					if(callback.side==5){
-						if(callback.block.chunk.world.getBlock(callback.block.x, callback.block.y, callback.block.z-1, false)==null&&!collidesWithCamera(callback.block.x, callback.block.y, callback.block.z-1))callback.block.chunk.world.setBlock(callback.block.x, callback.block.y, callback.block.z-1, callback.block.type);
-					}
-				}
-			}
+				holdingLeftButton=true;
+				lastButtonPing=glfwGetTime();
+				placeBlock();
+			}else if(action==GLFW_RELEASE)holdingLeftButton=false;
 		}
 	}
 	private boolean collidesWithCamera(int x, int y, int z){
@@ -66,6 +52,45 @@ public class UserBlockHandler{
 		cameraSphere.y=camera.y;
 		cameraSphere.z=camera.z;
 		return intersectsWith(boundingBox, cameraSphere);
+	}
+	private void placeBlock(){
+		callback=cameraTarget.getTargetBlock(world, 500, false);
+		if(callback.block!=null){
+			if(callback.side==0){
+				if(callback.block.chunk.world.getBlock(callback.block.x+1, callback.block.y, callback.block.z, false)==null&&!collidesWithCamera(callback.block.x+1, callback.block.y, callback.block.z))callback.block.chunk.world.setBlock(callback.block.x+1, callback.block.y, callback.block.z, callback.block.type);
+			}
+			if(callback.side==1){
+				if(callback.block.chunk.world.getBlock(callback.block.x-1, callback.block.y, callback.block.z, false)==null&&!collidesWithCamera(callback.block.x-1, callback.block.y, callback.block.z))callback.block.chunk.world.setBlock(callback.block.x-1, callback.block.y, callback.block.z, callback.block.type);
+			}
+			if(callback.side==2){
+				if(callback.block.chunk.world.getBlock(callback.block.x, callback.block.y+1, callback.block.z, false)==null&&!collidesWithCamera(callback.block.x, callback.block.y+1, callback.block.z))callback.block.chunk.world.setBlock(callback.block.x, callback.block.y+1, callback.block.z, callback.block.type);
+			}
+			if(callback.side==3){
+				if(callback.block.chunk.world.getBlock(callback.block.x, callback.block.y-1, callback.block.z, false)==null&&!collidesWithCamera(callback.block.x, callback.block.y-1, callback.block.z))callback.block.chunk.world.setBlock(callback.block.x, callback.block.y-1, callback.block.z, callback.block.type);
+			}
+			if(callback.side==4){
+				if(callback.block.chunk.world.getBlock(callback.block.x, callback.block.y, callback.block.z+1, false)==null&&!collidesWithCamera(callback.block.x, callback.block.y, callback.block.z+1))callback.block.chunk.world.setBlock(callback.block.x, callback.block.y, callback.block.z+1, callback.block.type);
+			}
+			if(callback.side==5){
+				if(callback.block.chunk.world.getBlock(callback.block.x, callback.block.y, callback.block.z-1, false)==null&&!collidesWithCamera(callback.block.x, callback.block.y, callback.block.z-1))callback.block.chunk.world.setBlock(callback.block.x, callback.block.y, callback.block.z-1, callback.block.type);
+			}
+		}
+	}
+	private void deleteBlock(){
+		callback=cameraTarget.getTargetBlock(world, 500, false);
+		if(callback.block!=null&&callback.block.y>0)callback.block.chunk.setBlock(callback.block.x, callback.block.y, callback.block.z, null);
+	}
+	public void update(double time){
+		if(time>lastButtonPing+CLICK_PING_RATE){
+			if(holdingLeftButton){
+				lastButtonPing=time;
+				placeBlock();
+			}
+			if(holdingRightButton){
+				lastButtonPing=time;
+				deleteBlock();
+			}
+		}
 	}
 	private static boolean intersectsWith(BoundingBox bb, Sphere sphere){
 		float dmin = 0;

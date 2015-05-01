@@ -35,6 +35,7 @@ public class Loop implements LoopObjective{
 		inputController.processWalk(world, delta);
 		GL11.glPushMatrix();
 		camera.update(delta, time);
+		userBlockHandler.update(time);
 		world.setNeedsRebatch();
 	}
 	private void generateWorld(){
