@@ -8,7 +8,7 @@ import wraith.library.LWJGL.WindowInitalizer;
 public class BuildingCreator{
 	public static MainLoop loop;
 	public static final int WORLD_BOUNDS_SIZE = 128;
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 	public static void main(String[] args){
 		loop=new MainLoop();
 		loop.create(createInitalizer());

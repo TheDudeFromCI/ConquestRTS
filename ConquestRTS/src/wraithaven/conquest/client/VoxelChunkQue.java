@@ -11,7 +11,7 @@ public class VoxelChunkQue{
 	public double tempDistance;
 	public final VoxelChunk chunk;
 	public final VoxelWorld world;
-	public static BlockType[] type;
+	public static BlockType type;
 	private static final NoiseGenerator noise = new NoiseGenerator((long)(Math.random()*Integer.MAX_VALUE), 200, 3);
 	public VoxelChunkQue(VoxelWorld world, VoxelChunk chunk){
 		this.world=world;
@@ -24,7 +24,7 @@ public class VoxelChunkQue{
 		if(chunk.chunkY<0)return true;
 		if(chunk.chunkY>CatcheChunkLoader.CHUNK_HEIGHT)return true;
 		h=(int)Math.min(noise.noise(x, z)*CatcheChunkLoader.WORLD_HEIGHT, chunk.endY);
-		for(y=chunk.startY; y<=h; y++)chunk.setBlock(x, y, z, type[(int)(Math.random()*4)]);
+		for(y=chunk.startY; y<=h; y++)chunk.createBlock(x, y, z, type).getQuad(2).setRotation((int)(Math.random()*4));
 		if(next()){
 			optimize();
 			return true;
@@ -50,18 +50,13 @@ public class VoxelChunkQue{
 		if(chunk!=null)chunk.optimizeSide(0);
 		chunk=world.getChunk(chunkX+1, chunkY, chunkZ, false);
 		if(chunk!=null)chunk.optimizeSide(1);
-		chunk=world.getChunk(chunkX, chunkY-1, chunkZ, false);
-		if(chunk!=null)chunk.optimizeSide(2);
-		chunk=world.getChunk(chunkX, chunkY+1, chunkZ, false);
-		if(chunk!=null)chunk.optimizeSide(3);
 		chunk=world.getChunk(chunkX, chunkY, chunkZ-1, false);
 		if(chunk!=null)chunk.optimizeSide(4);
 		chunk=world.getChunk(chunkX, chunkY, chunkZ+1, false);
 		if(chunk!=null)chunk.optimizeSide(5);
 	}
-	public static void setupTextures(){
+	public static void setupTextures(VoxelWorld world){
 		noise.setFunction(new CosineInterpolation());
-		type=new BlockType[BlockTextures.values().length];
-		for(int i = 0; i<type.length; i++)type[i]=new BasicBlock(BlockTextures.values()[i].getTextures());
+		type=new BasicBlock(BlockTextures.grass.getTextures(), world);
 	}
 }

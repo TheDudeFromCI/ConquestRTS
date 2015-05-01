@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import wraith.library.LWJGL.Camera;
 import wraith.library.LWJGL.CameraTarget;
-import wraith.library.LWJGL.Voxel.VoxelBlock;
+import wraith.library.LWJGL.CameraTargetCallback;
 import wraith.library.LWJGL.Voxel.VoxelChunk;
 import wraith.library.LWJGL.Voxel.VoxelWorld;
 import wraith.library.LWJGL.Voxel.VoxelWorldListener;
@@ -14,7 +14,8 @@ public class CatcheChunkLoader implements VoxelWorldListener{
 	private int lastCamX, lastCamY=-100, lastCamZ, tempRange;
 	private VoxelWorld world;
 	private Camera cam;
-	private VoxelBlock block;
+	private CameraTarget cameraTarget;
+	private CameraTargetCallback callback;
 	private final ArrayList<VoxelChunkQue> que = new ArrayList();
 	public static final int CATCHE_RANGE = 18;
 	private static final int CATCHE_RANGE_SQUARED = CATCHE_RANGE*CATCHE_RANGE;
@@ -49,23 +50,16 @@ public class CatcheChunkLoader implements VoxelWorldListener{
 		}else tempRange=0;
 		for(int i = 0; i<blockCount; i++)if(updateList())return;
 	}
-	private CameraTarget cameraTarget;
 	private void getPosition(){
-		if(Test.ISOMETRIC){
-			block=cameraTarget.getTargetBlock(world, 500, true);
-			if(block==null){
-				camX=(int)Math.floor(cam.x)>>4;
-				camY=(int)Math.floor(cam.y)>>4;
-				camZ=(int)Math.floor(cam.z)>>4;
-			}else{
-				camX=block.getChunk().chunkX;
-				camY=block.getChunk().chunkY;
-				camZ=block.getChunk().chunkZ;
-			}
-		}else{
+		callback=cameraTarget.getTargetBlock(world, 500, true);
+		if(callback.block==null){
 			camX=(int)Math.floor(cam.x)>>4;
 			camY=(int)Math.floor(cam.y)>>4;
 			camZ=(int)Math.floor(cam.z)>>4;
+		}else{
+			camX=callback.block.chunk.chunkX;
+			camY=callback.block.chunk.chunkY;
+			camZ=callback.block.chunk.chunkZ;
 		}
 	}
 	private void unloadUneededChunks(){

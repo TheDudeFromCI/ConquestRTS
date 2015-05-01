@@ -12,7 +12,7 @@ import wraith.library.LWJGL.Voxel.VoxelWorld;
 public class Test{
 	public static VoxelWorld voxelWorld;
 	public static final boolean ISOMETRIC = true;
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 	public static void main(String[] args){
 		final MainLoop loop = new MainLoop();
 		WindowInitalizer init = new WindowInitalizer();
@@ -42,10 +42,10 @@ public class Test{
 				}
 				cam.goalRX=cam.rx=30;
 				cam.cameraSpeed=5;
-				voxelWorld=new VoxelWorld(chunkLoader=new CatcheChunkLoader(), true);
+				voxelWorld=new VoxelWorld(chunkLoader=new CatcheChunkLoader(), null);
 				chunkLoader.setup(voxelWorld, cam);
-				VoxelChunkQue.setupTextures();
-				inputHandler=new InputHandler(cam, loop.getWindow());
+				VoxelChunkQue.setupTextures(voxelWorld);
+				inputHandler=new InputHandler(cam);
 				if(ISOMETRIC)inputHandler.moveSpeed=30;
 				lastPrint=System.currentTimeMillis();
 			}
@@ -72,13 +72,14 @@ public class Test{
 					GL11.glEnd();
 				}
 			}
-			public void update(float delta, long time){
-				inputHandler.update(voxelWorld, delta);
+			public void update(double delta, double time){
+				inputHandler.processWalk(voxelWorld, delta);
 				cam.update(delta, time);
 				chunkLoader.update(Math.max((int)(CHUNK_UPDATES_PER_SECOND*delta), 1));
 			}
 			public void key(long window, int key, int action){ inputHandler.onKey(window, key, action); }
-			public void mouse(long window, int button, int action){ inputHandler.onMouse(button, action); }
+			public void mouse(long window, int button, int action){}
+			public void mouseMove(long window, double xpos, double ypos){}
 		};
 		loop.create(init);
 	}

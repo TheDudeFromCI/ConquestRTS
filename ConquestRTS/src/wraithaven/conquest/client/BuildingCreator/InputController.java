@@ -68,7 +68,7 @@ public class InputController{
 		if(key==GLFW.GLFW_KEY_F9){
 			if(action==GLFW.GLFW_PRESS){
 				if(iso){
-					MatrixUtils.setupPerspective(70, screenRes.width/(float)screenRes.height, 0.1f, 1000);
+					MatrixUtils.setupPerspective(70, screenRes.width/(float)screenRes.height, 0.2f, 1000);
 					glfwSetCursorPos(window, screenWidth.get(0), screenHeight.get(0));
 					cam.goalY=5;
 					glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);

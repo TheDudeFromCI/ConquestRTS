@@ -10,13 +10,14 @@ import wraithaven.conquest.client.BlockTextures;
 
 public class Loop implements LoopObjective{
 	private Camera camera;
+	@SuppressWarnings("unused")private float aspect;
 	private VoxelWorld world;
 	private BuildCreatorWorld creatorWorld;
 	private InputController inputController;
 	private UserBlockHandler userBlockHandler;
 	private final Dimension screenRes;
 	public void preLoop(){
-		camera=new Camera(70, screenRes.width/(float)screenRes.height, 0.1f, 1000, false);
+		camera=new Camera(70, aspect=(screenRes.width/(float)screenRes.height), 0.2f, 1000, false);
 		BlockTextures.genTextures();
 		creatorWorld=new BuildCreatorWorld();
 		world=new VoxelWorld(creatorWorld, new VoxelWorldBounds(0, 0, 0, BuildingCreator.WORLD_BOUNDS_SIZE-1, BuildingCreator.WORLD_BOUNDS_SIZE-1, BuildingCreator.WORLD_BOUNDS_SIZE-1));
