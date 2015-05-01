@@ -18,6 +18,7 @@ public class Loop implements LoopObjective{
 	private UserBlockHandler userBlockHandler;
 	private GuiHandler guiHandler;
 	private final Dimension screenRes;
+	public static final float ISO_ZOOM = 0.12f;
 	public void preLoop(){
 		camera=new Camera(70, aspect=(screenRes.width/(float)screenRes.height), 0.15f, 1000, false);
 		BlockTextures.genTextures();
@@ -55,7 +56,7 @@ public class Loop implements LoopObjective{
 		GL11.glPopMatrix();
 		if(!inputController.iso){
 			guiHandler.render();
-			if(inputController.iso)MatrixUtils.setupOrtho(screenRes.width*0.06f, screenRes.height*0.06f, -1000, 1000);
+			if(inputController.iso)MatrixUtils.setupOrtho(screenRes.width*ISO_ZOOM, screenRes.height*ISO_ZOOM, -1000, 1000);
 			else MatrixUtils.setupPerspective(70, screenRes.width/(float)screenRes.height, 0.15f, 1000);
 		}
 		if(BuildingCreator.DEBUG){

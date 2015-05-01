@@ -18,7 +18,7 @@ public class UserBlockHandler{
 	private final VoxelWorld world;
 	private final CameraTarget cameraTarget;
 	private final InputController controller;
-	private static final double CLICK_PING_RATE = 0.15;
+	private static final double CLICK_PING_RATE = 0.2;
 	public UserBlockHandler(VoxelWorld world, Camera camera, InputController controller){
 		cameraTarget=new CameraTarget(this.camera=camera);
 		this.world=world;

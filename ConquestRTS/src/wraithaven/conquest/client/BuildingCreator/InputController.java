@@ -20,7 +20,7 @@ public class InputController{
 	private int bcx1, bcy1, bcz1, bcx2, bcy2, bcz2;
 	private float currentCamX, currentCamY, currentCamZ;
 	public float mouseSensitivity = 0.1f;
-	public float moveSpeed = 8;
+	public float moveSpeed = 10.8f;
 	private VoxelBlock block;
 	private final Dimension screenRes;
 	private final Sphere cameraSphere = new Sphere();
@@ -74,7 +74,7 @@ public class InputController{
 					glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 					moveSpeed=8;
 				}else{
-					MatrixUtils.setupOrtho(screenRes.width*0.06f, screenRes.height*0.06f, -1000, 1000);
+					MatrixUtils.setupOrtho(screenRes.width*Loop.ISO_ZOOM, screenRes.height*Loop.ISO_ZOOM, -1000, 1000);
 					cam.goalRX=30;
 					cam.goalRY=0;
 					cam.goalY=100;

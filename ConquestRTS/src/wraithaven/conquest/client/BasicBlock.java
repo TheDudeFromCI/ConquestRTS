@@ -9,7 +9,7 @@ public class BasicBlock implements BlockType{
 	private VoxelWorld world;
 	private boolean block_dd, block_d0, block_du, block_0d, block_0u, block_ud, block_u0, block_uu;
 	private final CubeTextures textures;
-	public static final float shadowIntensity = 0.25f;
+	public static final float shadowIntensity = 0.65f;
 	public BasicBlock(CubeTextures textures, VoxelWorld world){
 		this.textures=textures;
 		this.world=world;
