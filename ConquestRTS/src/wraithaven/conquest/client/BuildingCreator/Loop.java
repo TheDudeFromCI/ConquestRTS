@@ -19,7 +19,7 @@ public class Loop implements LoopObjective{
 	private GuiHandler guiHandler;
 	private final Dimension screenRes;
 	public void preLoop(){
-		camera=new Camera(70, aspect=(screenRes.width/(float)screenRes.height), 0.2f, 1000, false);
+		camera=new Camera(70, aspect=(screenRes.width/(float)screenRes.height), 0.15f, 1000, false);
 		BlockTextures.genTextures();
 		creatorWorld=new BuildCreatorWorld();
 		world=new VoxelWorld(creatorWorld, new VoxelWorldBounds(0, 0, 0, BuildingCreator.WORLD_BOUNDS_SIZE-1, BuildingCreator.WORLD_BOUNDS_SIZE-1, BuildingCreator.WORLD_BOUNDS_SIZE-1));
@@ -55,7 +55,7 @@ public class Loop implements LoopObjective{
 		if(!inputController.iso){
 			guiHandler.render();
 			if(inputController.iso)MatrixUtils.setupOrtho(screenRes.width*0.06f, screenRes.height*0.06f, -1000, 1000);
-			else MatrixUtils.setupPerspective(70, screenRes.width/(float)screenRes.height, 0.2f, 1000);
+			else MatrixUtils.setupPerspective(70, screenRes.width/(float)screenRes.height, 0.15f, 1000);
 		}
 		if(BuildingCreator.DEBUG){
 			GL11.glBegin(GL11.GL_LINES);
