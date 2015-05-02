@@ -49,6 +49,7 @@ public class TitleScreen implements GameRenderer{
 		toolboxButton=new CircleButton(gui, game.getFolder().getImage("Toolbox Button.png"), game.getFolder().getImage("Toolbox Button Down.png"), new Runnable(){
 			public void run(){
 				gui.dispose();
+				ClientLauncher.game.getScreen().dispose();
 				BuildingCreator.launch();
 			}
 		});

@@ -8,7 +8,7 @@ import wraithaven.conquest.client.GameWorld.BlockTextures;
 
 public class GuiHandler{
 	private GuiComponents components;
-	private static final float CURSOR_SIZE = 0.02f;
+	private static final float CURSOR_SIZE = 0.05f;
 	public GuiHandler(Dimension screenSize){
 		components=new GuiComponents(screenSize);
 		components.scaleX=screenSize.width/(float)screenSize.height;

@@ -7,6 +7,8 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import wraith.library.LWJGL.Camera;
+import wraith.library.LWJGL.CameraTarget;
+import wraith.library.LWJGL.CameraTargetCallback;
 import wraith.library.LWJGL.MatrixUtils;
 import wraith.library.LWJGL.Voxel.VoxelBlock;
 import wraith.library.LWJGL.Voxel.VoxelWorld;
@@ -24,6 +26,7 @@ public class InputController{
 	public float mouseSensitivity = 0.1f;
 	public float moveSpeed = 10.8f;
 	private VoxelBlock block;
+	private CameraTargetCallback callback;
 	private final Dimension screenRes;
 	private final Sphere cameraSphere = new Sphere();
 	private final BoundingBox boundingBox = new BoundingBox();
@@ -31,10 +34,12 @@ public class InputController{
 	private final long window;
 	private final IntBuffer screenWidth = BufferUtils.createIntBuffer(1);
 	private final IntBuffer screenHeight = BufferUtils.createIntBuffer(1);
+	private final CameraTarget cameraTarget;
 	public InputController(Camera cam, long window, Dimension screenRes){
 		this.cam=cam;
 		this.screenRes=screenRes;
 		this.window=window;
+		cameraTarget=new CameraTarget(cam);
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 		glfwGetWindowSize(window, screenWidth, screenHeight);
 		screenWidth.put(0, screenWidth.get(0)/2);
@@ -72,14 +77,14 @@ public class InputController{
 				if(iso){
 					MatrixUtils.setupPerspective(70, screenRes.width/(float)screenRes.height, 0.15f, 1000);
 					glfwSetCursorPos(window, screenWidth.get(0), screenHeight.get(0));
-					cam.goalY=5;
+					cam.goalY=cam.y=5;
 					glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 					moveSpeed=8;
 				}else{
 					MatrixUtils.setupOrtho(screenRes.width*Loop.ISO_ZOOM, screenRes.height*Loop.ISO_ZOOM, -1000, 1000);
-					cam.goalRX=30;
-					cam.goalRY=0;
-					cam.goalY=100;
+					cam.goalRX=cam.rx=30;
+					cam.goalRY=cam.ry=45;
+					cam.goalY=cam.y=100;
 					glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 					moveSpeed=30;
 				}
@@ -90,8 +95,26 @@ public class InputController{
 			if(action==GLFW.GLFW_PRESS)MatrixUtils.takeScreenShot(new File(ClientLauncher.screenShotFolder, System.currentTimeMillis()+".png"), BuildingCreator.WINDOW_INIT.width, BuildingCreator.WINDOW_INIT.height);
 		}
 		if(iso){
-			if(key==GLFW.GLFW_KEY_Q)if(action==GLFW.GLFW_PRESS)cam.goalRY-=22.5f;
-			if(key==GLFW.GLFW_KEY_E)if(action==GLFW.GLFW_PRESS)cam.goalRY+=22.5f;
+			if(key==GLFW.GLFW_KEY_Q&&action==GLFW.GLFW_PRESS){
+				callback=cameraTarget.getGoalTargetBlock(Loop.world, 500, false);
+				if(callback.block!=null){
+					double x1 = cam.goalX-(callback.block.x+0.5);
+					double y1 = cam.goalZ-(callback.block.z+0.5);
+					cam.goalX=(float)(x1*Math.cos(Math.toRadians(-22.5f))-y1*Math.sin(Math.toRadians(-22.5f))+callback.block.x+0.5);
+					cam.goalZ=(float)(x1*Math.sin(Math.toRadians(-22.5f))+y1*Math.cos(Math.toRadians(-22.5f))+callback.block.z+0.5);
+				}
+				cam.goalRY-=22.5f;
+			}
+			if(key==GLFW.GLFW_KEY_E&&action==GLFW.GLFW_PRESS){
+				callback=cameraTarget.getGoalTargetBlock(Loop.world, 500, false);
+				if(callback.block!=null){
+					double x1 = cam.goalX-(callback.block.x+0.5);
+					double y1 = cam.goalZ-(callback.block.z+0.5);
+					cam.goalX=(float)(x1*Math.cos(Math.toRadians(22.5f))-y1*Math.sin(Math.toRadians(22.5f))+callback.block.x+0.5);
+					cam.goalZ=(float)(x1*Math.sin(Math.toRadians(22.5f))+y1*Math.cos(Math.toRadians(22.5f))+callback.block.z+0.5);
+				}
+				cam.goalRY+=22.5f;
+			}
 		}
 	}
 	public void processMouse(double x, double y){
@@ -106,22 +129,22 @@ public class InputController{
 		currentCamX=cam.goalX;
 		currentCamY=cam.goalY;
 		currentCamZ=cam.goalZ;
-		if(w)currentCamX+=delta*(float)Math.sin(Math.toRadians(cam.ry));
-		if(a)currentCamX+=delta*(float)Math.sin(Math.toRadians(cam.ry-90));
-		if(s)currentCamX-=delta*(float)Math.sin(Math.toRadians(cam.ry));
-		if(d)currentCamX+=delta*(float)Math.sin(Math.toRadians(cam.ry+90));
-		if(canMoveTo(world, currentCamX, currentCamY, currentCamZ))cam.goalX=cam.x=currentCamX;
+		if(w)currentCamX+=delta*(float)Math.sin(Math.toRadians(cam.goalRY));
+		if(a)currentCamX+=delta*(float)Math.sin(Math.toRadians(cam.goalRY-90));
+		if(s)currentCamX-=delta*(float)Math.sin(Math.toRadians(cam.goalRY));
+		if(d)currentCamX+=delta*(float)Math.sin(Math.toRadians(cam.goalRY+90));
+		if(canMoveTo(world, currentCamX, currentCamY, currentCamZ))cam.goalX=currentCamX;
 		currentCamX=cam.goalX;
-		if(w)currentCamZ-=delta*(float)Math.cos(Math.toRadians(cam.ry));
-		if(a)currentCamZ-=delta*(float)Math.cos(Math.toRadians(cam.ry-90));
-		if(s)currentCamZ+=delta*(float)Math.cos(Math.toRadians(cam.ry));
-		if(d)currentCamZ-=delta*(float)Math.cos(Math.toRadians(cam.ry+90));
-		if(canMoveTo(world, currentCamX, currentCamY, currentCamZ))cam.goalZ=cam.z=currentCamZ;
+		if(w)currentCamZ-=delta*(float)Math.cos(Math.toRadians(cam.goalRY));
+		if(a)currentCamZ-=delta*(float)Math.cos(Math.toRadians(cam.goalRY-90));
+		if(s)currentCamZ+=delta*(float)Math.cos(Math.toRadians(cam.goalRY));
+		if(d)currentCamZ-=delta*(float)Math.cos(Math.toRadians(cam.goalRY+90));
+		if(canMoveTo(world, currentCamX, currentCamY, currentCamZ))cam.goalZ=currentCamZ;
 		currentCamZ=cam.goalZ;
 		if(!iso){
 			if(shift)currentCamY-=delta;
 			if(space)currentCamY+=delta;
-			if(canMoveTo(world, currentCamX, currentCamY, currentCamZ))cam.goalY=cam.y=currentCamY;
+			if(canMoveTo(world, currentCamX, currentCamY, currentCamZ))cam.goalY=currentCamY;
 		}
 	}
 	private boolean canMoveTo(VoxelWorld world, float sx, float sy, float sz){

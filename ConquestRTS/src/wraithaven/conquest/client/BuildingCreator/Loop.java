@@ -12,12 +12,12 @@ import wraithaven.conquest.client.GameWorld.BlockTextures;
 public class Loop implements LoopObjective{
 	private Camera camera;
 	@SuppressWarnings("unused")private float aspect;
-	private VoxelWorld world;
-	private BuildCreatorWorld creatorWorld;
-	private InputController inputController;
-	private UserBlockHandler userBlockHandler;
-	private GuiHandler guiHandler;
-	private final Dimension screenRes;
+	public static VoxelWorld world;
+	public static BuildCreatorWorld creatorWorld;
+	public static InputController inputController;
+	public static UserBlockHandler userBlockHandler;
+	public static GuiHandler guiHandler;
+	public static Dimension screenRes;
 	public static final float ISO_ZOOM = 0.12f;
 	public void preLoop(){
 		camera=new Camera(70, aspect=(screenRes.width/(float)screenRes.height), 0.15f, 1000, false);
@@ -39,17 +39,13 @@ public class Loop implements LoopObjective{
 		userBlockHandler.update(time);
 		world.setNeedsRebatch();
 	}
-	private void generateWorld(){
-		int chunkLimit = (BuildingCreator.WORLD_BOUNDS_SIZE-1)>>4;
-		int x, y, z;
-		for(x=0; x<=chunkLimit; x++)for(y=0; y<=chunkLimit; y++)for(z=0; z<=chunkLimit; z++)world.loadChunk(x, y, z);
-	}
 	private void setupCameraPosition(){
 		float center = (BuildingCreator.WORLD_BOUNDS_SIZE-1)/2f;
 		camera.goalX=camera.x=center;
 		camera.goalY=camera.y=5;
 		camera.goalZ=camera.z=center;
-		camera.cameraSpeed=3;
+		camera.cameraRotationSpeed=3.75f;
+		camera.cameraMoveSpeed=3.75f;
 	}
 	public void render(){
 		world.render();
@@ -72,7 +68,7 @@ public class Loop implements LoopObjective{
 			GL11.glEnd();
 		}
 	}
-	public Loop(Dimension screenRes){ this.screenRes=screenRes; }
+	public Loop(Dimension screenRes){ Loop.screenRes=screenRes; }
 	public void mouseMove(long window, double x, double y){ inputController.processMouse(x, y); }
 	public void mouse(long window, int button, int action){ userBlockHandler.mouseClick(button, action); }
 	public void key(long window, int key, int action){ inputController.onKey(window, key, action); }
@@ -82,5 +78,10 @@ public class Loop implements LoopObjective{
 		GL11.glCullFace(GL11.GL_BACK);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+	}
+	private static void generateWorld(){
+		int chunkLimit = (BuildingCreator.WORLD_BOUNDS_SIZE-1)>>4;
+		int x, y, z;
+		for(x=0; x<=chunkLimit; x++)for(y=0; y<=chunkLimit; y++)for(z=0; z<=chunkLimit; z++)world.loadChunk(x, y, z);
 	}
 }
