@@ -50,7 +50,7 @@ public class TitleScreen implements GameRenderer{
 			public void run(){
 				gui.dispose();
 				ClientLauncher.game.getScreen().dispose();
-				BuildingCreator.launch();
+				new BuildingCreator().launch();
 			}
 		});
 		exitGameButton=new CircleButton(gui, game.getFolder().getImage("Exit Game Button.png"), game.getFolder().getImage("Exit Game Button Down.png"), new Runnable(){

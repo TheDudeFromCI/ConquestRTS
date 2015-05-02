@@ -12,20 +12,25 @@ import wraithaven.conquest.client.GameWorld.BlockTextures;
 public class Loop implements LoopObjective{
 	private Camera camera;
 	@SuppressWarnings("unused")private float aspect;
-	public static VoxelWorld world;
-	public static BuildCreatorWorld creatorWorld;
-	public static InputController inputController;
-	public static UserBlockHandler userBlockHandler;
-	public static GuiHandler guiHandler;
-	public static Dimension screenRes;
+	private VoxelWorld world;
+	private BuildCreatorWorld creatorWorld;
+	private InputController inputController;
+	private UserBlockHandler userBlockHandler;
+	private GuiHandler guiHandler;
+	private Dimension screenRes;
+	private BuildingCreator buildingCreator;
 	public static final float ISO_ZOOM = 0.12f;
+	public Loop(Dimension screenRes, BuildingCreator buildingCreator){
+		this.screenRes=screenRes;
+		this.buildingCreator=buildingCreator;
+	}
 	public void preLoop(){
 		camera=new Camera(70, aspect=(screenRes.width/(float)screenRes.height), 0.15f, 1000, false);
 		BlockTextures.genTextures();
 		creatorWorld=new BuildCreatorWorld();
 		world=new VoxelWorld(creatorWorld, new VoxelWorldBounds(0, 0, 0, BuildingCreator.WORLD_BOUNDS_SIZE-1, BuildingCreator.WORLD_BOUNDS_SIZE-1, BuildingCreator.WORLD_BOUNDS_SIZE-1));
 		creatorWorld.setup(world, camera);
-		inputController=new InputController(camera, BuildingCreator.loop.getWindow(), screenRes);
+		inputController=new InputController(buildingCreator, world, camera, buildingCreator.getWindow(), screenRes);
 		userBlockHandler=new UserBlockHandler(world, camera, inputController);
 		guiHandler=new GuiHandler(screenRes);
 		generateWorld();
@@ -68,7 +73,11 @@ public class Loop implements LoopObjective{
 			GL11.glEnd();
 		}
 	}
-	public Loop(Dimension screenRes){ Loop.screenRes=screenRes; }
+	private void generateWorld(){
+		int chunkLimit = (BuildingCreator.WORLD_BOUNDS_SIZE-1)>>4;
+		int x, y, z;
+		for(x=0; x<=chunkLimit; x++)for(y=0; y<=chunkLimit; y++)for(z=0; z<=chunkLimit; z++)world.loadChunk(x, y, z);
+	}
 	public void mouseMove(long window, double x, double y){ inputController.processMouse(x, y); }
 	public void mouse(long window, int button, int action){ userBlockHandler.mouseClick(button, action); }
 	public void key(long window, int key, int action){ inputController.onKey(window, key, action); }
@@ -78,10 +87,5 @@ public class Loop implements LoopObjective{
 		GL11.glCullFace(GL11.GL_BACK);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-	}
-	private static void generateWorld(){
-		int chunkLimit = (BuildingCreator.WORLD_BOUNDS_SIZE-1)>>4;
-		int x, y, z;
-		for(x=0; x<=chunkLimit; x++)for(y=0; y<=chunkLimit; y++)for(z=0; z<=chunkLimit; z++)world.loadChunk(x, y, z);
 	}
 }

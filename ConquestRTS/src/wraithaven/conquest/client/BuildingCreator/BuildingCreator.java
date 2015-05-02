@@ -6,22 +6,24 @@ import wraith.library.LWJGL.MainLoop;
 import wraith.library.LWJGL.WindowInitalizer;
 
 public class BuildingCreator{
-	public static WindowInitalizer WINDOW_INIT;
-	public static MainLoop loop;
+	private WindowInitalizer init;
+	private MainLoop loop;
 	public static final int WORLD_BOUNDS_SIZE = 128;
 	public static final boolean DEBUG = false;
-	public static void launch(){
+	public void launch(){
 		loop=new MainLoop();
 		loop.create(createInitalizer());
 	}
-	private static WindowInitalizer createInitalizer(){
-		WINDOW_INIT=new WindowInitalizer();
+	private WindowInitalizer createInitalizer(){
+		WindowInitalizer init = new WindowInitalizer();
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-		WINDOW_INIT.height=dimension.height;
-		WINDOW_INIT.width=dimension.width;
-		WINDOW_INIT.windowName="Building Creator";
-		WINDOW_INIT.loopObjective=new Loop(dimension);
-		WINDOW_INIT.fullscreen=true;
-		return WINDOW_INIT;
+		init.height=dimension.height;
+		init.width=dimension.width;
+		init.windowName="Building Creator";
+		init.loopObjective=new Loop(dimension, this);
+		init.fullscreen=true;
+		return init;
 	}
+	long getWindow(){ return loop.getWindow(); }
+	WindowInitalizer getInit(){ return init; }
 }

@@ -27,6 +27,7 @@ public class InputController{
 	public float moveSpeed = 10.8f;
 	private VoxelBlock block;
 	private CameraTargetCallback callback;
+	private final VoxelWorld world;
 	private final Dimension screenRes;
 	private final Sphere cameraSphere = new Sphere();
 	private final BoundingBox boundingBox = new BoundingBox();
@@ -35,10 +36,13 @@ public class InputController{
 	private final IntBuffer screenWidth = BufferUtils.createIntBuffer(1);
 	private final IntBuffer screenHeight = BufferUtils.createIntBuffer(1);
 	private final CameraTarget cameraTarget;
-	public InputController(Camera cam, long window, Dimension screenRes){
+	private final BuildingCreator buildingCreator;
+	public InputController(BuildingCreator buildingCreator, VoxelWorld world, Camera cam, long window, Dimension screenRes){
 		this.cam=cam;
+		this.world=world;
 		this.screenRes=screenRes;
 		this.window=window;
+		this.buildingCreator=buildingCreator;
 		cameraTarget=new CameraTarget(cam);
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 		glfwGetWindowSize(window, screenWidth, screenHeight);
@@ -92,11 +96,11 @@ public class InputController{
 			}
 		}
 		if(key==GLFW.GLFW_KEY_F1){
-			if(action==GLFW.GLFW_PRESS)MatrixUtils.takeScreenShot(new File(ClientLauncher.screenShotFolder, System.currentTimeMillis()+".png"), BuildingCreator.WINDOW_INIT.width, BuildingCreator.WINDOW_INIT.height);
+			if(action==GLFW.GLFW_PRESS)MatrixUtils.takeScreenShot(new File(ClientLauncher.screenShotFolder, System.currentTimeMillis()+".png"), buildingCreator.getInit().width, buildingCreator.getInit().height);
 		}
 		if(iso){
 			if(key==GLFW.GLFW_KEY_Q&&action==GLFW.GLFW_PRESS){
-				callback=cameraTarget.getGoalTargetBlock(Loop.world, 500, false);
+				callback=cameraTarget.getGoalTargetBlock(world, 500, false);
 				if(callback.block!=null){
 					double x1 = cam.goalX-(callback.block.x+0.5);
 					double y1 = cam.goalZ-(callback.block.z+0.5);
@@ -106,7 +110,7 @@ public class InputController{
 				cam.goalRY-=22.5f;
 			}
 			if(key==GLFW.GLFW_KEY_E&&action==GLFW.GLFW_PRESS){
-				callback=cameraTarget.getGoalTargetBlock(Loop.world, 500, false);
+				callback=cameraTarget.getGoalTargetBlock(world, 500, false);
 				if(callback.block!=null){
 					double x1 = cam.goalX-(callback.block.x+0.5);
 					double y1 = cam.goalZ-(callback.block.z+0.5);
