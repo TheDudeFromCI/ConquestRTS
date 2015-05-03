@@ -1,7 +1,7 @@
 package wraithaven.conquest.server;
 
 import java.io.PrintWriter;
-import wraith.library.Multiplayer.ClientInstance;
+import wraithaven.conquest.ClientInstance;
 import wraithaven.conquest.KickMessagePacket;
 import wraithaven.conquest.Packet;
 

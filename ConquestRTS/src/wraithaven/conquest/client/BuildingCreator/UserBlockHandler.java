@@ -1,12 +1,12 @@
 package wraithaven.conquest.client.BuildingCreator;
 
-import wraith.library.LWJGL.Camera;
-import wraith.library.LWJGL.CameraTarget;
-import wraith.library.LWJGL.CameraTargetCallback;
-import wraith.library.LWJGL.Voxel.VoxelWorld;
-import wraith.library.MiscUtil.BoundingBox;
-import wraith.library.MiscUtil.Sphere;
 import static org.lwjgl.glfw.GLFW.*;
+import wraithaven.conquest.client.GameWorld.Voxel.CameraTarget;
+import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorld;
+import wraithaven.conquest.client.GameWorld.Voxel.Camera;
+import wraithaven.conquest.client.GameWorld.Sphere;
+import wraithaven.conquest.client.GameWorld.BoundingBox;
+import wraithaven.conquest.client.GameWorld.Voxel.CameraTargetCallback;
 
 public class UserBlockHandler{
 	private CameraTargetCallback callback;

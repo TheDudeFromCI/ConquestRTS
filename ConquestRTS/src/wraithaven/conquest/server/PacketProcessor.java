@@ -2,11 +2,11 @@ package wraithaven.conquest.server;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import wraithaven.conquest.ClientInstance;
+import wraithaven.conquest.ServerListener;
 import wraithaven.conquest.HandshakePacket;
 import wraithaven.conquest.Packet;
 import wraithaven.conquest.PacketType;
-import wraith.library.Multiplayer.ClientInstance;
-import wraith.library.Multiplayer.ServerListener;
 
 public class PacketProcessor implements ServerListener{
 	private ArrayList<ConnectedClient> pendingClients = new ArrayList();

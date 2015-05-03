@@ -8,8 +8,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URI;
-import wraith.library.MiscUtil.TypeListener;
-import wraith.library.WindowUtil.SplashScreenProtocol;
+import wraithaven.conquest.client.GameWorld.WindowUtil.TypeListener;
+import wraithaven.conquest.client.GameWorld.WindowUtil.SplashScreenProtocol;
 
 public class LogInSplash implements SplashScreenProtocol{
 	private Image icon;

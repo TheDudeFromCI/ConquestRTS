@@ -1,11 +1,9 @@
 package wraithaven.conquest.client.GameWorld;
 
-import wraith.library.LWJGL.CubeTextures;
-import wraith.library.LWJGL.Voxel.BlockType;
-import wraith.library.LWJGL.Voxel.VoxelChunk;
-import wraith.library.LWJGL.Voxel.VoxelWorld;
-import wraith.library.RandomGeneration.CosineInterpolation;
-import wraith.library.RandomGeneration.NoiseGenerator;
+import wraithaven.conquest.client.GameWorld.Voxel.CubeTextures;
+import wraithaven.conquest.client.GameWorld.Voxel.BlockType;
+import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorld;
+import wraithaven.conquest.client.GameWorld.Voxel.VoxelChunk;
 
 public class VoxelChunkQue{
 	private int x, y, z, h;

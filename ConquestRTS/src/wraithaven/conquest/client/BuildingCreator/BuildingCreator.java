@@ -2,8 +2,8 @@ package wraithaven.conquest.client.BuildingCreator;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import wraith.library.LWJGL.MainLoop;
-import wraith.library.LWJGL.WindowInitalizer;
+import wraithaven.conquest.client.GameWorld.Voxel.MainLoop;
+import wraithaven.conquest.client.GameWorld.Voxel.WindowInitalizer;
 
 public class BuildingCreator{
 	private WindowInitalizer init;

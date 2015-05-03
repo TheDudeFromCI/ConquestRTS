@@ -2,12 +2,12 @@ package wraithaven.conquest.client.GameWorld;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import wraith.library.LWJGL.Camera;
-import wraith.library.LWJGL.CameraTarget;
-import wraith.library.LWJGL.CameraTargetCallback;
-import wraith.library.LWJGL.Voxel.VoxelChunk;
-import wraith.library.LWJGL.Voxel.VoxelWorld;
-import wraith.library.LWJGL.Voxel.VoxelWorldListener;
+import wraithaven.conquest.client.GameWorld.Voxel.VoxelChunk;
+import wraithaven.conquest.client.GameWorld.Voxel.CameraTargetCallback;
+import wraithaven.conquest.client.GameWorld.Voxel.CameraTarget;
+import wraithaven.conquest.client.GameWorld.Voxel.Camera;
+import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorld;
+import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorldListener;
 
 public class CatcheChunkLoader implements VoxelWorldListener{
 	private int camX, camY, camZ, x, y, z, startX, startY, startZ, endX, endY, endZ;

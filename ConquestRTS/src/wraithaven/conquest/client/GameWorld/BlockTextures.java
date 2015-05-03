@@ -1,8 +1,8 @@
 package wraithaven.conquest.client.GameWorld;
 
 import java.io.File;
-import wraith.library.LWJGL.MipmapQuality;
-import wraith.library.LWJGL.Texture;
+import wraithaven.conquest.client.GameWorld.Voxel.MipmapQuality;
+import wraithaven.conquest.client.GameWorld.Voxel.Texture;
 
 public enum BlockTextures{
 	grass("Grass.png"),

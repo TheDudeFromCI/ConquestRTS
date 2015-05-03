@@ -1,9 +1,9 @@
 package wraithaven.conquest.client.GameWorld;
 
-import wraith.library.LWJGL.CubeTextures;
-import wraith.library.LWJGL.Texture;
-import wraith.library.LWJGL.Voxel.BlockType;
-import wraith.library.LWJGL.Voxel.VoxelWorld;
+import wraithaven.conquest.client.GameWorld.Voxel.Texture;
+import wraithaven.conquest.client.GameWorld.Voxel.CubeTextures;
+import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorld;
+import wraithaven.conquest.client.GameWorld.Voxel.BlockType;
 
 public class BasicBlock implements BlockType{
 	private VoxelWorld world;

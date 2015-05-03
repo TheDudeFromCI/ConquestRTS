@@ -1,6 +1,6 @@
 package wraithaven.conquest.server;
 
-import wraith.library.Multiplayer.Server;
+import wraithaven.conquest.Server;
 
 public class ServerLauncher{
 	public static Server server;

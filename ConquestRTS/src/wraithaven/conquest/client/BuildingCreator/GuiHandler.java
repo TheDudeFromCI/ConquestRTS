@@ -2,20 +2,20 @@ package wraithaven.conquest.client.BuildingCreator;
 
 import java.awt.Dimension;
 import java.io.File;
-import wraith.library.LWJGL.GuiComponents;
-import wraith.library.LWJGL.GuiImage;
+import wraithaven.conquest.client.GameWorld.GLGuiImage;
+import wraithaven.conquest.client.GameWorld.GLGuiComponents;
 import wraithaven.conquest.client.GameWorld.BlockTextures;
 
 public class GuiHandler{
-	private GuiComponents components;
+	private GLGuiComponents components;
 	private static final float CURSOR_SIZE = 0.03f;
 	public GuiHandler(Dimension screenSize){
-		components=new GuiComponents(screenSize);
+		components=new GLGuiComponents(screenSize);
 		components.addComponent(createCursor(screenSize));
 	}
 	public void render(){ components.render(); }
-	private static GuiImage createCursor(Dimension screenSize){
-		GuiImage i = new GuiImage(new File(BlockTextures.getFolder(), "Cursor.png"));
+	private static GLGuiImage createCursor(Dimension screenSize){
+		GLGuiImage i = new GLGuiImage(new File(BlockTextures.getFolder(), "Cursor.png"));
 		i.x=0.5f-CURSOR_SIZE/2f;
 		i.y=0.5f-(CURSOR_SIZE*screenSize.width/screenSize.height)/2f;
 		i.w=CURSOR_SIZE;

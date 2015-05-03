@@ -1,7 +1,7 @@
 package wraithaven.conquest.client.BuildingCreator.BlockPalette;
 
 import org.lwjgl.opengl.GL11;
-import wraith.library.LWJGL.CubeTextures;
+import wraithaven.conquest.client.GameWorld.Voxel.CubeTextures;
 
 public class FloatingBlock{
 	float shiftRX, shiftRY;

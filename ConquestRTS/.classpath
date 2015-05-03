@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry exported="true" kind="lib" path="/WraithEngine/bin" sourcepath="/WraithEngine/src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="C:/Users/Phealoon/Documents/Eclipse Code/LWJGL/jar/lwjgl.jar" sourcepath="C:/Users/Phealoon/Documents/Eclipse Code/LWJGL/src.zip">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:file:/C:/Users/Phealoon/Documents/Eclipse%20Code/LWJGL/doc/javadoc.zip!/"/>

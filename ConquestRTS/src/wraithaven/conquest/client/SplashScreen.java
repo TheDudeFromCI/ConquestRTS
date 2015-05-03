@@ -11,9 +11,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import wraith.library.MiscUtil.FadeListener;
-import wraith.library.MiscUtil.FadeTimer;
-import wraith.library.WindowUtil.ImageWindow;
+import wraithaven.conquest.client.GameWorld.FadeListener;
+import wraithaven.conquest.client.GameWorld.FadeTimer;
+import wraithaven.conquest.client.GameWorld.WindowUtil.ImageWindow;
 
 public class SplashScreen extends ImageWindow{
 	private SplashScreenListener listener;

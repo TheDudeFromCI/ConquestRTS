@@ -1,11 +1,9 @@
-package wraithaven.conquest.client;
+package wraithaven.conquest.client.GameWorld.WindowUtil;
 
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import wraith.library.WindowUtil.GUI.GuiButton;
-import wraith.library.WindowUtil.GUI.GuiContainer;
 
 public class CircleButton extends GuiButton{
 	private BufferedImage buf2;

@@ -2,7 +2,7 @@ package wraithaven.conquest.server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import wraith.library.Multiplayer.ClientInstance;
+import wraithaven.conquest.ClientInstance;
 import wraithaven.conquest.Pong;
 
 public class ChannelManager{

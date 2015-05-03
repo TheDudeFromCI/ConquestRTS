@@ -1,10 +1,10 @@
 package wraithaven.conquest.client.BuildingCreator;
 
-import wraith.library.LWJGL.Camera;
-import wraith.library.LWJGL.CubeTextures;
-import wraith.library.LWJGL.Voxel.VoxelChunk;
-import wraith.library.LWJGL.Voxel.VoxelWorld;
-import wraith.library.LWJGL.Voxel.VoxelWorldListener;
+import wraithaven.conquest.client.GameWorld.Voxel.VoxelChunk;
+import wraithaven.conquest.client.GameWorld.Voxel.CubeTextures;
+import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorld;
+import wraithaven.conquest.client.GameWorld.Voxel.Camera;
+import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorldListener;
 import wraithaven.conquest.client.GameWorld.BasicBlock;
 import wraithaven.conquest.client.GameWorld.BlockTextures;
 

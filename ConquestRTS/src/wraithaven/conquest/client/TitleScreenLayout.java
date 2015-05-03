@@ -1,8 +1,8 @@
 package wraithaven.conquest.client;
 
 import java.util.ArrayList;
-import wraith.library.WindowUtil.GUI.GuiComponent;
-import wraith.library.WindowUtil.GUI.GuiLayout;
+import wraithaven.conquest.client.GameWorld.WindowUtil.GuiComponent;
+import wraithaven.conquest.client.GameWorld.WindowUtil.GuiLayout;
 
 public class TitleScreenLayout implements GuiLayout{
 	private int tempX, tempY, tempWidth, tempHeight;

@@ -2,9 +2,9 @@ package wraithaven.conquest.client;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import wraith.library.Multiplayer.Client;
-import wraith.library.Multiplayer.ClientListener;
-import wraith.library.WindowUtil.GUI.ScrollPaneEntry;
+import wraithaven.conquest.client.GameWorld.WindowUtil.ScrollPaneEntry;
+import wraithaven.conquest.ClientListener;
+import wraithaven.conquest.Client;
 import wraithaven.conquest.Pong;
 import wraithaven.conquest.PacketType;
 

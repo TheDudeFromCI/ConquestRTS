@@ -1,13 +1,13 @@
 package wraithaven.conquest.client;
 
 import java.awt.Graphics2D;
-import wraith.library.WindowUtil.GUI.GuiButton;
-import wraith.library.WindowUtil.GUI.GuiFrame;
-import wraith.library.WindowUtil.GUI.GuiImage;
-import wraith.library.WindowUtil.GUI.GuiScrollPanel;
-import wraith.library.WindowUtil.GameWindow.Game;
-import wraith.library.WindowUtil.GameWindow.GameRenderer;
-import wraith.library.WindowUtil.GameWindow.RepeatingTask;
+import wraithaven.conquest.client.GameWorld.WindowUtil.GuiImage;
+import wraithaven.conquest.client.GameWorld.WindowUtil.RepeatingTask;
+import wraithaven.conquest.client.GameWorld.WindowUtil.Game;
+import wraithaven.conquest.client.GameWorld.WindowUtil.GuiButton;
+import wraithaven.conquest.client.GameWorld.WindowUtil.GuiScrollPanel;
+import wraithaven.conquest.client.GameWorld.WindowUtil.GuiFrame;
+import wraithaven.conquest.client.GameWorld.WindowUtil.GameRenderer;
 
 public class ServerList implements GameRenderer{
 	private GuiFrame gui;

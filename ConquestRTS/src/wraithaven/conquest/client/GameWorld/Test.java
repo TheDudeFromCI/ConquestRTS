@@ -3,12 +3,12 @@ package wraithaven.conquest.client.GameWorld;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import org.lwjgl.opengl.GL11;
-import wraith.library.LWJGL.Camera;
-import wraith.library.LWJGL.LoopObjective;
-import wraith.library.LWJGL.MainLoop;
-import wraith.library.LWJGL.WindowInitalizer;
-import wraith.library.LWJGL.Voxel.VoxelWorld;
-import wraith.library.LWJGL.Voxel.VoxelWorldBounds;
+import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorldBounds;
+import wraithaven.conquest.client.GameWorld.Voxel.Camera;
+import wraithaven.conquest.client.GameWorld.Voxel.LoopObjective;
+import wraithaven.conquest.client.GameWorld.Voxel.WindowInitalizer;
+import wraithaven.conquest.client.GameWorld.Voxel.MainLoop;
+import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorld;
 
 public class Test{
 	public static VoxelWorld voxelWorld;
@@ -70,7 +70,7 @@ public class Test{
 			}
 			public void update(double delta, double time){
 				inputHandler.processWalk(delta);
-				cam.update(delta, time);
+				cam.update(delta);
 				chunkLoader.update(Math.max((int)(CHUNK_UPDATES_PER_SECOND*delta), 1), time);
 				voxelWorld.setNeedsRebatch();
 			}

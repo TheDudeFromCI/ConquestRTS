@@ -1,7 +1,7 @@
 package wraithaven.conquest.client;
 
 import java.io.File;
-import wraith.library.WindowUtil.GameWindow.Game;
+import wraithaven.conquest.client.GameWorld.WindowUtil.Game;
 
 public class ClientLauncher{
 	public static Game game;

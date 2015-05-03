@@ -4,11 +4,11 @@ import java.awt.Dimension;
 import java.nio.DoubleBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-import wraith.library.LWJGL.Camera;
-import wraith.library.LWJGL.LoopObjective;
-import wraith.library.LWJGL.MatrixUtils;
-import wraith.library.LWJGL.Voxel.VoxelWorld;
-import wraith.library.LWJGL.Voxel.VoxelWorldBounds;
+import wraithaven.conquest.client.GameWorld.Voxel.MatrixUtils;
+import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorldBounds;
+import wraithaven.conquest.client.GameWorld.Voxel.Camera;
+import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorld;
+import wraithaven.conquest.client.GameWorld.Voxel.LoopObjective;
 import wraithaven.conquest.client.BuildingCreator.BlockPalette.PalleteRenderer;
 import wraithaven.conquest.client.GameWorld.BlockTextures;
 import static org.lwjgl.glfw.GLFW.*;
@@ -48,7 +48,7 @@ public class Loop implements LoopObjective{
 		else{
 			inputController.processWalk(world, delta);
 			GL11.glPushMatrix();
-			camera.update(delta, time);
+			camera.update(delta);
 			userBlockHandler.update(time);
 			world.setNeedsRebatch();
 		}
