@@ -1,5 +1,6 @@
 package wraithaven.conquest.client.GameWorld;
 
+import wraith.library.LWJGL.CubeTextures;
 import wraith.library.LWJGL.Voxel.BlockType;
 import wraith.library.LWJGL.Voxel.VoxelChunk;
 import wraith.library.LWJGL.Voxel.VoxelWorld;
@@ -57,6 +58,19 @@ public class VoxelChunkQue{
 	}
 	public static void setupTextures(VoxelWorld world){
 		noise.setFunction(new CosineInterpolation());
-		type=new BasicBlock(BlockTextures.grass.getTextures(), world);
+		CubeTextures textures = new CubeTextures();
+		textures.xUp=BlockTextures.sideDirt.getTexture();
+		textures.xUpRotation=2;
+		textures.xDown=BlockTextures.sideDirt.getTexture();
+		textures.xDownRotation=0;
+		textures.yUp=BlockTextures.grass.getTexture();
+		textures.yUpRotation=0;
+		textures.yDown=BlockTextures.dirt.getTexture();
+		textures.yDownRotation=0;
+		textures.zUp=BlockTextures.sideDirt.getTexture();
+		textures.zUpRotation=3;
+		textures.zDown=BlockTextures.sideDirt.getTexture();
+		textures.zDownRotation=0;
+		type=new BasicBlock(textures, world);
 	}
 }

@@ -48,9 +48,9 @@ public class UserBlockHandler{
 		boundingBox.x2=x+1;
 		boundingBox.y2=y+1;
 		boundingBox.z2=z+1;
-		cameraSphere.x=camera.x;
-		cameraSphere.y=camera.y;
-		cameraSphere.z=camera.z;
+		cameraSphere.x=camera.goalX;
+		cameraSphere.y=camera.goalY;
+		cameraSphere.z=camera.goalZ;
 		return intersectsWith(boundingBox, cameraSphere);
 	}
 	private void placeBlock(){

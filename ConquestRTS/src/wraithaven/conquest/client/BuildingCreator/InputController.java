@@ -27,6 +27,7 @@ public class InputController{
 	public float moveSpeed = 10.8f;
 	private VoxelBlock block;
 	private CameraTargetCallback callback;
+	private final Loop loop;
 	private final VoxelWorld world;
 	private final Dimension screenRes;
 	private final Sphere cameraSphere = new Sphere();
@@ -37,20 +38,26 @@ public class InputController{
 	private final IntBuffer screenHeight = BufferUtils.createIntBuffer(1);
 	private final CameraTarget cameraTarget;
 	private final BuildingCreator buildingCreator;
-	public InputController(BuildingCreator buildingCreator, VoxelWorld world, Camera cam, long window, Dimension screenRes){
+	public InputController(BuildingCreator buildingCreator, VoxelWorld world, Camera cam, long window, Dimension screenRes, Loop loop){
 		this.cam=cam;
 		this.world=world;
 		this.screenRes=screenRes;
 		this.window=window;
 		this.buildingCreator=buildingCreator;
+		this.loop=loop;
 		cameraTarget=new CameraTarget(cam);
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 		glfwGetWindowSize(window, screenWidth, screenHeight);
 		screenWidth.put(0, screenWidth.get(0)/2);
 		screenHeight.put(0, screenHeight.get(0)/2);
-		cameraSphere.r=0.3f;
+		cameraSphere.r=0.45f;
 	}
 	public void onKey(long window, int key, int action){
+		if(key==GLFW.GLFW_KEY_F12&&action==GLFW.GLFW_RELEASE)GLFW.glfwSetWindowShouldClose(window, GL11.GL_TRUE);
+		if(loop.hasPalette()){
+			if(key==GLFW.GLFW_KEY_F5&&action==GLFW.GLFW_PRESS)loop.disposePalette();
+			return;
+		}
 		if(key==GLFW.GLFW_KEY_F12&&action==GLFW.GLFW_RELEASE)GLFW.glfwSetWindowShouldClose(window, GL11.GL_TRUE);
 		if(key==GLFW.GLFW_KEY_W){
 			if(action==GLFW.GLFW_PRESS)w=true;
@@ -120,6 +127,7 @@ public class InputController{
 				cam.goalRY+=22.5f;
 			}
 		}
+		if(key==GLFW.GLFW_KEY_F5&&action==GLFW.GLFW_PRESS)loop.setPalette();
 	}
 	public void processMouse(double x, double y){
 		if(!iso){

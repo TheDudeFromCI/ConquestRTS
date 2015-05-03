@@ -1,6 +1,7 @@
 package wraithaven.conquest.client.BuildingCreator;
 
 import wraith.library.LWJGL.Camera;
+import wraith.library.LWJGL.CubeTextures;
 import wraith.library.LWJGL.Voxel.VoxelChunk;
 import wraith.library.LWJGL.Voxel.VoxelWorld;
 import wraith.library.LWJGL.Voxel.VoxelWorldListener;
@@ -14,7 +15,20 @@ public class BuildCreatorWorld implements VoxelWorldListener{
 	public void setup(VoxelWorld world, Camera camera){
 		this.camera=camera;
 		this.world=world;
-		block=new BasicBlock(BlockTextures.grass.getTextures(), world);
+		CubeTextures textures = new CubeTextures();
+		textures.xUp=BlockTextures.sideDirt.getTexture();
+		textures.xUpRotation=0;
+		textures.xDown=BlockTextures.sideDirt.getTexture();
+		textures.xDownRotation=1;
+		textures.yUp=BlockTextures.grass.getTexture();
+		textures.yUpRotation=0;
+		textures.yDown=BlockTextures.dirt.getTexture();
+		textures.yDownRotation=0;
+		textures.zUp=BlockTextures.sideDirt.getTexture();
+		textures.zUpRotation=3;
+		textures.zDown=BlockTextures.sideDirt.getTexture();
+		textures.zDownRotation=2;
+		block=new BasicBlock(textures, world);
 	}
 	public void loadChunk(VoxelChunk chunk){
 		if(chunk.chunkY==0){

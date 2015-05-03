@@ -10,7 +10,8 @@ public class ClientLauncher{
 	public static void main(String[] args){
 		String dir = System.getProperty("user.dir");
 		screenShotFolder=dir+File.separatorChar+"Screenshots";
-		game=new Game("Wraithaven's Conquest", new File(assetFolder=(dir+File.separatorChar+"Assets")));
+		assetFolder=dir+File.separatorChar+"Assets";
+		game=new Game("Wraithaven's Conquest", new File(assetFolder));
 		game.addGameStartListener(new Runnable(){
 			public void run(){
 				game.getScreen().setRenderSize(4, 3, true);

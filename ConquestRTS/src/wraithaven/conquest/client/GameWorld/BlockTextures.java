@@ -1,43 +1,20 @@
 package wraithaven.conquest.client.GameWorld;
 
 import java.io.File;
-import wraith.library.LWJGL.CubeTextures;
 import wraith.library.LWJGL.MipmapQuality;
 import wraith.library.LWJGL.Texture;
 
 public enum BlockTextures{
-	grass(new int[]{1, 1, 0, 0, 1, 1}, new int[]{2, 0, 0, 0, 3, 0});
-	private final int[] indices;
-	private final int[] rotations;
-	private final CubeTextures texture;
-	private static final String[] textureList = {
-		"Grass.png",
-		"Dirt.png"
-	};
-	private static Texture[] textures = new Texture[textureList.length];
-	private BlockTextures(int[] indices, int[] rotations){
-		this.indices=indices;
-		this.rotations=rotations;
-		texture=new CubeTextures();
-	}
-	public CubeTextures getTextures(){ return texture; }
+	grass("Grass.png"),
+	sideDirt("Side Dirt.png"),
+	dirt("Dirt.png");
+	private Texture texture;
+	private final String textureFile;
+	private BlockTextures(String textureFile){ this.textureFile=textureFile; }
+	public Texture getTexture(){ return texture; }
 	public static void genTextures(){
 		String folder = getFolder();
-		for(int i = 0; i<textureList.length; i++)textures[i]=new Texture(new File(folder, textureList[i]), 4, MipmapQuality.HIGH);
-		for(BlockTextures t : values()){
-			t.texture.xUp=textures[t.indices[0]];
-			t.texture.xDown=textures[t.indices[1]];
-			t.texture.yUp=textures[t.indices[2]];
-			t.texture.yDown=textures[t.indices[3]];
-			t.texture.zUp=textures[t.indices[4]];
-			t.texture.zDown=textures[t.indices[5]];
-			t.texture.xUpRotation=t.rotations[0];
-			t.texture.xDownRotation=t.rotations[1];
-			t.texture.yUpRotation=t.rotations[2];
-			t.texture.yDownRotation=t.rotations[3];
-			t.texture.zUpRotation=t.rotations[4];
-			t.texture.zDownRotation=t.rotations[5];
-		}
+		for(BlockTextures t : values())t.texture=new Texture(new File(folder, t.textureFile), 4, MipmapQuality.HIGH);
 	}
 	public static String getFolder(){
 		File file = new File(System.getProperty("user.dir")+File.separatorChar+"Assets");

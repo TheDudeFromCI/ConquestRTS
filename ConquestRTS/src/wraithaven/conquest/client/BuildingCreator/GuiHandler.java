@@ -8,19 +8,18 @@ import wraithaven.conquest.client.GameWorld.BlockTextures;
 
 public class GuiHandler{
 	private GuiComponents components;
-	private static final float CURSOR_SIZE = 0.05f;
+	private static final float CURSOR_SIZE = 0.03f;
 	public GuiHandler(Dimension screenSize){
 		components=new GuiComponents(screenSize);
-		components.scaleX=screenSize.width/(float)screenSize.height;
-		components.addComponent(createCursor());
+		components.addComponent(createCursor(screenSize));
 	}
 	public void render(){ components.render(); }
-	private static GuiImage createCursor(){
+	private static GuiImage createCursor(Dimension screenSize){
 		GuiImage i = new GuiImage(new File(BlockTextures.getFolder(), "Cursor.png"));
 		i.x=0.5f-CURSOR_SIZE/2f;
-		i.y=0.5f-CURSOR_SIZE/2f;
+		i.y=0.5f-(CURSOR_SIZE*screenSize.width/screenSize.height)/2f;
 		i.w=CURSOR_SIZE;
-		i.h=CURSOR_SIZE;
+		i.h=CURSOR_SIZE*screenSize.width/screenSize.height;
 		return i;
 	}
 }
