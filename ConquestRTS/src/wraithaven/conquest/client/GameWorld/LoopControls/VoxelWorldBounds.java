@@ -1,4 +1,4 @@
-package wraithaven.conquest.client.GameWorld.Voxel;
+package wraithaven.conquest.client.GameWorld.LoopControls;
 
 public class VoxelWorldBounds{
 	public final int startX, startY, startZ;

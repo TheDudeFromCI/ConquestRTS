@@ -2,6 +2,8 @@ package wraithaven.conquest.client.GameWorld.Voxel;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import wraithaven.conquest.client.GameWorld.LoopControls.VoxelWorldBounds;
+import wraithaven.conquest.client.GameWorld.LoopControls.VoxelWorldListener;
 import static org.lwjgl.opengl.GL11.*;
 
 public class VoxelWorld{

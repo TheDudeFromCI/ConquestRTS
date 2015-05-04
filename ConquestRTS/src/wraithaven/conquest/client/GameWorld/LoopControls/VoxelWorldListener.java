@@ -1,4 +1,6 @@
-package wraithaven.conquest.client.GameWorld.Voxel;
+package wraithaven.conquest.client.GameWorld.LoopControls;
+
+import wraithaven.conquest.client.GameWorld.Voxel.VoxelChunk;
 
 public interface VoxelWorldListener{
 	public boolean isChunkVisible(VoxelChunk chunk);

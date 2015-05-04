@@ -1,4 +1,4 @@
-package wraithaven.conquest.client.GameWorld.Voxel;
+package wraithaven.conquest.client.GameWorld.LoopControls;
 
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;

@@ -1,6 +1,7 @@
 package wraithaven.conquest.client.GameWorld.Voxel;
 
 import java.util.ArrayList;
+import wraithaven.conquest.client.GameWorld.LoopControls.VoxelWorldBounds;
 
 public class FiniteWorld implements ChunkStorage{
 	private final VoxelWorldBounds bounds;

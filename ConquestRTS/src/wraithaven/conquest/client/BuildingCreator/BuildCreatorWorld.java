@@ -1,10 +1,10 @@
 package wraithaven.conquest.client.BuildingCreator;
 
+import wraithaven.conquest.client.GameWorld.LoopControls.VoxelWorldListener;
 import wraithaven.conquest.client.GameWorld.Voxel.VoxelChunk;
 import wraithaven.conquest.client.GameWorld.Voxel.CubeTextures;
 import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorld;
 import wraithaven.conquest.client.GameWorld.Voxel.Camera;
-import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorldListener;
 import wraithaven.conquest.client.GameWorld.BasicBlock;
 import wraithaven.conquest.client.GameWorld.BlockTextures;
 

@@ -3,12 +3,12 @@ package wraithaven.conquest.client.GameWorld;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import org.lwjgl.opengl.GL11;
-import wraithaven.conquest.client.GameWorld.Voxel.MatrixUtils;
-import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorldBounds;
+import wraithaven.conquest.client.GameWorld.LoopControls.VoxelWorldBounds;
+import wraithaven.conquest.client.GameWorld.LoopControls.WindowInitalizer;
+import wraithaven.conquest.client.GameWorld.LoopControls.MatrixUtils;
+import wraithaven.conquest.client.GameWorld.LoopControls.MainLoop;
+import wraithaven.conquest.client.GameWorld.LoopControls.LoopObjective;
 import wraithaven.conquest.client.GameWorld.Voxel.Camera;
-import wraithaven.conquest.client.GameWorld.Voxel.LoopObjective;
-import wraithaven.conquest.client.GameWorld.Voxel.WindowInitalizer;
-import wraithaven.conquest.client.GameWorld.Voxel.MainLoop;
 import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorld;
 
 public class RealWorld{

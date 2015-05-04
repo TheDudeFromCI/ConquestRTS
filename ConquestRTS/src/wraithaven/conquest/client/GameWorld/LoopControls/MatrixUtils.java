@@ -1,4 +1,4 @@
-package wraithaven.conquest.client.GameWorld.Voxel;
+package wraithaven.conquest.client.GameWorld.LoopControls;
 
 import java.awt.image.BufferedImage;
 import java.io.File;

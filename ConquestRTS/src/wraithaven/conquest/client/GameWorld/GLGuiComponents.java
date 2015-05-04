@@ -2,7 +2,7 @@ package wraithaven.conquest.client.GameWorld;
 
 import java.awt.Dimension;
 import java.util.ArrayList;
-import wraithaven.conquest.client.GameWorld.Voxel.MatrixUtils;
+import wraithaven.conquest.client.GameWorld.LoopControls.MatrixUtils;
 import static org.lwjgl.opengl.GL11.*;
 
 public class GLGuiComponents{

@@ -1,4 +1,5 @@
-package wraithaven.conquest.client.GameWorld.Voxel;
+package wraithaven.conquest.client.GameWorld.LoopControls;
+
 
 public class WindowInitalizer{
 	public int width, height;

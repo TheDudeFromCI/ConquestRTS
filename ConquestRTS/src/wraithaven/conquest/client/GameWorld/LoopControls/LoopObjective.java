@@ -1,4 +1,4 @@
-package wraithaven.conquest.client.GameWorld.Voxel;
+package wraithaven.conquest.client.GameWorld.LoopControls;
 
 public interface LoopObjective{
 	public void preLoop();
