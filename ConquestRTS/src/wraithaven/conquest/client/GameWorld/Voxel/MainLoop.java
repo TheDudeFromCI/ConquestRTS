@@ -13,6 +13,7 @@ public class MainLoop{
 	private GLFWKeyCallback keyCallback;
 	private GLFWMouseButtonCallback mouseButtonCallback;
 	private GLFWCursorPosCallback cursorPosCallback;
+	private GLFWScrollCallback scrollCallback;
 	private long window;
 	private WindowInitalizer windowInitalizer;
 	private WindowInitalizer recreateInitalizer;
@@ -34,6 +35,7 @@ public class MainLoop{
 			keyCallback.release();
 			mouseButtonCallback.release();
 			cursorPosCallback.release();
+			scrollCallback.release();
 		}catch(Exception exception){
 			exception.printStackTrace();
 		}finally{
@@ -58,6 +60,9 @@ public class MainLoop{
 		});
 		glfwSetCursorPosCallback(window, cursorPosCallback=new GLFWCursorPosCallback(){
 			public void invoke(long window, double xpos, double ypos){ windowInitalizer.loopObjective.mouseMove(window, xpos, ypos); }
+		});
+		glfwSetScrollCallback(window, scrollCallback=new GLFWScrollCallback(){
+			public void invoke(long window, double xoffset, double yoffset){ windowInitalizer.loopObjective.mouseWheel(window, xoffset, yoffset); }
 		});
 		ByteBuffer vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 		if(!windowInitalizer.fullscreen)glfwSetWindowPos(window, (GLFWvidmode.width(vidmode)-windowInitalizer.width)/2, (GLFWvidmode.height(vidmode)-windowInitalizer.height)/2);
@@ -85,6 +90,31 @@ public class MainLoop{
 			glPopMatrix();
 			glfwSwapBuffers(window);
 			glfwPollEvents();
+			sync(60);
+		}
+	}
+	private long variableYieldTime, lastTime;
+	private void sync(int fps){
+		if(fps<=0)return;
+		long sleepTime = 1000000000/fps;
+		long yieldTime = Math.min(sleepTime, variableYieldTime+sleepTime%(1000*1000));
+		long overSleep = 0;
+		try{
+			long t;
+			while(true){
+				t=System.nanoTime()-lastTime;
+				if(t<sleepTime-yieldTime)Thread.sleep(1);
+				else if(t<sleepTime)Thread.yield();
+				else{
+					overSleep=t-sleepTime;
+					break;
+				}
+			}
+		}catch(InterruptedException e){ e.printStackTrace();
+		}finally{
+			lastTime=System.nanoTime()-Math.min(overSleep, sleepTime);
+			if(overSleep>variableYieldTime)variableYieldTime=Math.min(variableYieldTime+200*1000, sleepTime);
+			else if(overSleep<variableYieldTime-200*1000)variableYieldTime=Math.max(variableYieldTime-2*1000, 0);
 		}
 	}
 	public void dispose(){ glfwSetWindowShouldClose(window, GL_TRUE); }

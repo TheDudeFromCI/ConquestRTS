@@ -7,7 +7,7 @@ import org.lwjgl.BufferUtils;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 
-public class QuadBatch{
+class QuadBatch{
 	private int i;
 	private int elementCount;
 	private FloatBuffer vertexBuffer;
@@ -18,18 +18,18 @@ public class QuadBatch{
 	private final int colorBufferId;
 	private final int textureCoordBufferId;
 	private final int indexBufferId;
-	final Texture texture;
+	private final Texture texture;
 	private final ArrayList<Quad> quads = new ArrayList();
 	private static final long ZERO = 0;
 	private static final int FLOAT_SIZE = 4;
-	public QuadBatch(Texture texture){
+	QuadBatch(Texture texture){
 		this.texture=texture;
 		vertexBufferId=glGenBuffers();
 		colorBufferId=glGenBuffers();
 		textureCoordBufferId=glGenBuffers();
 		indexBufferId=glGenBuffers();
 	}
-	public void removeQuad(Quad q){
+	void removeQuad(Quad q){
 		for(i=0; i<quads.size(); i++){
 			if(quads.get(i)==q){
 				quads.remove(i);
@@ -99,46 +99,50 @@ public class QuadBatch{
 		colorBuffer.flip();
 		textureCoordBuffer.flip();
 		indexBuffer.flip();
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
+		glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, colorBufferId);
+		glBufferData(GL_ARRAY_BUFFER, colorBuffer, GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, textureCoordBufferId);
+		glBufferData(GL_ARRAY_BUFFER, textureCoordBuffer, GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL_DYNAMIC_DRAW);
 	}
 	private void addEdge(Quad q, int edge){
 		if(edge==0){
-			vertexBuffer.put(q.loc[0]).put(q.loc[1]).put(q.loc[2]);
-			colorBuffer.put(q.colors[0]).put(q.colors[1]).put(q.colors[2]);
-			textureCoordBuffer.put(q.texturePoints[0]).put(q.texturePoints[1]);
+			vertexBuffer.put(q.data.get(23)).put(q.data.get(24)).put(q.data.get(25));
+			colorBuffer.put(q.data.get(0)).put(q.data.get(1)).put(q.data.get(2));
+			textureCoordBuffer.put(q.data.get(15)).put(q.data.get(16));
 		}
 		if(edge==1){
-			vertexBuffer.put(q.loc[3]).put(q.loc[4]).put(q.loc[5]);
-			colorBuffer.put(q.colors[3]).put(q.colors[4]).put(q.colors[5]);
-			textureCoordBuffer.put(q.texturePoints[2]).put(q.texturePoints[3]);
+			vertexBuffer.put(q.data.get(26)).put(q.data.get(27)).put(q.data.get(28));
+			colorBuffer.put(q.data.get(3)).put(q.data.get(4)).put(q.data.get(5));
+			textureCoordBuffer.put(q.data.get(17)).put(q.data.get(18));
 		}
 		if(edge==2){
-			vertexBuffer.put(q.loc[6]).put(q.loc[7]).put(q.loc[8]);
-			colorBuffer.put(q.colors[6]).put(q.colors[7]).put(q.colors[8]);
-			textureCoordBuffer.put(q.texturePoints[4]).put(q.texturePoints[5]);
+			vertexBuffer.put(q.data.get(29)).put(q.data.get(30)).put(q.data.get(31));
+			colorBuffer.put(q.data.get(6)).put(q.data.get(7)).put(q.data.get(8));
+			textureCoordBuffer.put(q.data.get(19)).put(q.data.get(20));
 		}
 		if(edge==3){
-			vertexBuffer.put(q.loc[9]).put(q.loc[10]).put(q.loc[11]);
-			colorBuffer.put(q.colors[9]).put(q.colors[10]).put(q.colors[11]);
-			textureCoordBuffer.put(q.texturePoints[6]).put(q.texturePoints[7]);
+			vertexBuffer.put(q.data.get(32)).put(q.data.get(33)).put(q.data.get(34));
+			colorBuffer.put(q.data.get(9)).put(q.data.get(10)).put(q.data.get(11));
+			textureCoordBuffer.put(q.data.get(21)).put(q.data.get(22));
 		}
 		if(edge==4){
-			vertexBuffer.put(q.loc[12]).put(q.loc[13]).put(q.loc[14]);
-			colorBuffer.put(q.colors[12]).put(q.colors[13]).put(q.colors[14]);
+			vertexBuffer.put(q.data.get(35)).put(q.data.get(36)).put(q.data.get(37));
+			colorBuffer.put(q.data.get(12)).put(q.data.get(13)).put(q.data.get(14));
 			textureCoordBuffer.put(0.5f).put(0.5f);
 		}
 	}
-	public void renderPart(){
+	void renderPart(){
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
-		glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_DYNAMIC_DRAW);
 		glVertexPointer(3, GL_FLOAT, FLOAT_SIZE*3, ZERO);
 		glBindBuffer(GL_ARRAY_BUFFER, colorBufferId);
-		glBufferData(GL_ARRAY_BUFFER, colorBuffer, GL_DYNAMIC_DRAW);
 		glColorPointer(3, GL_FLOAT, FLOAT_SIZE*3, ZERO);
 		glBindBuffer(GL_ARRAY_BUFFER, textureCoordBufferId);
-		glBufferData(GL_ARRAY_BUFFER, textureCoordBuffer, GL_DYNAMIC_DRAW);
 		glTexCoordPointer(2, GL_FLOAT, FLOAT_SIZE*2, ZERO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL_DYNAMIC_DRAW);
 		glDrawElements(GL_TRIANGLES, indexBuffer.limit(), GL_UNSIGNED_SHORT, ZERO);
 	}
 	public void cleanUp(){
@@ -147,7 +151,7 @@ public class QuadBatch{
 		glDeleteBuffers(textureCoordBufferId);
 		glDeleteBuffers(indexBufferId);
 	}
-	public void addQuad(Quad q){ if(!quads.contains(q))quads.add(q); }
+	void addQuad(Quad q){ if(!quads.contains(q))quads.add(q); }
 	public Texture getTexture(){ return texture; }
 	public int getSize(){ return quads.size(); }
 	private void addIndex(int offset){ indexBuffer.put((short)(elementCount+offset)); }

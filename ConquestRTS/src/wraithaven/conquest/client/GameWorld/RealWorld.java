@@ -3,6 +3,7 @@ package wraithaven.conquest.client.GameWorld;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import org.lwjgl.opengl.GL11;
+import wraithaven.conquest.client.GameWorld.Voxel.MatrixUtils;
 import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorldBounds;
 import wraithaven.conquest.client.GameWorld.Voxel.Camera;
 import wraithaven.conquest.client.GameWorld.Voxel.LoopObjective;
@@ -10,9 +11,10 @@ import wraithaven.conquest.client.GameWorld.Voxel.WindowInitalizer;
 import wraithaven.conquest.client.GameWorld.Voxel.MainLoop;
 import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorld;
 
-public class Test{
+public class RealWorld{
 	public static VoxelWorld voxelWorld;
 	public static final boolean DEBUG = false;
+	private static float ZOOM_LEVEL = 0.03f;
 	public static void main(String[] args){
 		final MainLoop loop = new MainLoop();
 		WindowInitalizer init = new WindowInitalizer();
@@ -27,13 +29,13 @@ public class Test{
 			CatcheChunkLoader chunkLoader;
 			long lastPrint, time;
 			int frames;
-			private static final int CHUNK_UPDATES_PER_SECOND = 64;
+			private static final int CHUNK_UPDATES_PER_SECOND = 4096;
 			public void preLoop(){
 				GL11.glEnable(GL11.GL_TEXTURE_2D);
 				GL11.glEnable(GL11.GL_CULL_FACE);
 				GL11.glCullFace(GL11.GL_BACK);
 				BlockTextures.genTextures();
-				cam=new Camera(screenRes.width*0.12f, screenRes.height*0.12f, -1000, 1000, true);
+				cam=new Camera(screenRes.width*ZOOM_LEVEL, screenRes.height*ZOOM_LEVEL, -1000, 1000, true);
 				cam.goalY=cam.y=100;
 				cam.goalRX=cam.rx=30;
 				cam.goalRX=cam.ry=45;
@@ -73,6 +75,10 @@ public class Test{
 				cam.update(delta);
 				chunkLoader.update(Math.max((int)(CHUNK_UPDATES_PER_SECOND*delta), 1), time);
 				voxelWorld.setNeedsRebatch();
+			}
+			public void mouseWheel(long window, double xPos, double yPos){
+				ZOOM_LEVEL=(float)Math.max(ZOOM_LEVEL-yPos*0.001, 0.01);
+				MatrixUtils.setupOrtho(screenRes.width*ZOOM_LEVEL, screenRes.height*ZOOM_LEVEL, -1000, 1000);
 			}
 			public void key(long window, int key, int action){ inputHandler.onKey(window, key, action); }
 			public void mouse(long window, int button, int action){}

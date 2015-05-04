@@ -19,11 +19,11 @@ public class CatcheChunkLoader implements VoxelWorldListener{
 	private CameraTargetCallback callback;
 	private double lastCameraPing;
 	private final ArrayList<VoxelChunkQue> que = new ArrayList();
-	public static final int CATCHE_RANGE = 10;
+	private static final int CATCHE_RANGE = 10;
 	private static final int CATCHE_RANGE_SQUARED = CATCHE_RANGE*CATCHE_RANGE;
-	public static final int WORLD_HEIGHT = 15;
-	public static final int CHUNK_HEIGHT = WORLD_HEIGHT>>4;
-	public static final double CAMERA_PING_SPEED = 0.333f;
+	static final int WORLD_HEIGHT = 15;
+	static final int CHUNK_HEIGHT = WORLD_HEIGHT>>4;
+	private static final double CAMERA_PING_SPEED = 0.333f;
 	public void setup(VoxelWorld world, Camera cam){
 		this.world=world;
 		this.cam=cam;

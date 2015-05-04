@@ -1,5 +1,6 @@
 package wraithaven.conquest.client.GameWorld;
 
+import java.nio.FloatBuffer;
 import wraithaven.conquest.client.GameWorld.Voxel.Texture;
 import wraithaven.conquest.client.GameWorld.Voxel.CubeTextures;
 import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorld;
@@ -9,7 +10,7 @@ public class BasicBlock implements BlockType{
 	private VoxelWorld world;
 	private boolean block_dd, block_d0, block_du, block_0d, block_0u, block_ud, block_u0, block_uu;
 	private final CubeTextures textures;
-	public static final float shadowIntensity = 0.65f;
+	private static final float shadowIntensity = 0.65f;
 	public BasicBlock(CubeTextures textures, VoxelWorld world){
 		this.textures=textures;
 		this.world=world;
@@ -32,7 +33,7 @@ public class BasicBlock implements BlockType{
 		if(side==5)return textures.zDownRotation;
 		return 0;
 	}
-	public boolean setupShadows(float[] colors, int side, int x, int y, int z){
+	public boolean setupShadows(FloatBuffer data, int side, int x, int y, int z){
 		if(side==0){
 			block_dd=world.getBlock(x+1, y-1, z-1, false)!=null;
 			block_d0=world.getBlock(x+1, y-1, z, false)!=null;
@@ -42,14 +43,42 @@ public class BasicBlock implements BlockType{
 			block_ud=world.getBlock(x+1, y+1, z-1, false)!=null;
 			block_u0=world.getBlock(x+1, y+1, z, false)!=null;
 			block_uu=world.getBlock(x+1, y+1, z+1, false)!=null;
-			if(block_uu||block_0u||block_u0)colors[0]=colors[1]=colors[2]=shadowIntensity;
-			else colors[0]=colors[1]=colors[2]=1f;
-			if(block_du||block_d0||block_0u)colors[3]=colors[4]=colors[5]=shadowIntensity;
-			else colors[3]=colors[4]=colors[5]=1f;
-			if(block_dd||block_0d||block_d0)colors[6]=colors[7]=colors[8]=shadowIntensity;
-			else colors[6]=colors[7]=colors[8]=1f;
-			if(block_ud||block_0d||block_u0)colors[9]=colors[10]=colors[11]=shadowIntensity;
-			else colors[9]=colors[10]=colors[11]=1f;
+			if(block_uu||block_0u||block_u0){
+				data.put(0, shadowIntensity);
+				data.put(1, shadowIntensity);
+				data.put(2, shadowIntensity);
+			}else{
+				data.put(0, 1);
+				data.put(1, 1);
+				data.put(2, 1);
+			}
+			if(block_du||block_d0||block_0u){
+				data.put(3, shadowIntensity);
+				data.put(4, shadowIntensity);
+				data.put(5, shadowIntensity);
+			}else{
+				data.put(3, 1);
+				data.put(4, 1);
+				data.put(5, 1);
+			}
+			if(block_dd||block_0d||block_d0){
+				data.put(6, shadowIntensity);
+				data.put(7, shadowIntensity);
+				data.put(8, shadowIntensity);
+			}else{
+				data.put(6, 1);
+				data.put(7, 1);
+				data.put(8, 1);
+			}
+			if(block_ud||block_0d||block_u0){
+				data.put(9, shadowIntensity);
+				data.put(10, shadowIntensity);
+				data.put(11, shadowIntensity);
+			}else{
+				data.put(9, 1);
+				data.put(10, 1);
+				data.put(11, 1);
+			}
 		}
 		if(side==1){
 			block_dd=world.getBlock(x-1, y-1, z-1, false)!=null;
@@ -60,14 +89,42 @@ public class BasicBlock implements BlockType{
 			block_ud=world.getBlock(x-1, y+1, z-1, false)!=null;
 			block_u0=world.getBlock(x-1, y+1, z, false)!=null;
 			block_uu=world.getBlock(x-1, y+1, z+1, false)!=null;
-			if(block_dd||block_0d||block_d0)colors[0]=colors[1]=colors[2]=shadowIntensity;
-			else colors[0]=colors[1]=colors[2]=1f;
-			if(block_du||block_d0||block_0u)colors[3]=colors[4]=colors[5]=shadowIntensity;
-			else colors[3]=colors[4]=colors[5]=1f;
-			if(block_uu||block_0u||block_u0)colors[6]=colors[7]=colors[8]=shadowIntensity;
-			else colors[6]=colors[7]=colors[8]=1f;
-			if(block_ud||block_0d||block_u0)colors[9]=colors[10]=colors[11]=shadowIntensity;
-			else colors[9]=colors[10]=colors[11]=1f;
+			if(block_dd||block_0d||block_d0){
+				data.put(0, shadowIntensity);
+				data.put(1, shadowIntensity);
+				data.put(2, shadowIntensity);
+			}else{
+				data.put(0, 1);
+				data.put(1, 1);
+				data.put(2, 1);
+			}
+			if(block_du||block_d0||block_0u){
+				data.put(3, shadowIntensity);
+				data.put(4, shadowIntensity);
+				data.put(5, shadowIntensity);
+			}else{
+				data.put(3, 1);
+				data.put(4, 1);
+				data.put(5, 1);
+			}
+			if(block_uu||block_0u||block_u0){
+				data.put(6, shadowIntensity);
+				data.put(7, shadowIntensity);
+				data.put(8, shadowIntensity);
+			}else{
+				data.put(6, 1);
+				data.put(7, 1);
+				data.put(8, 1);
+			}
+			if(block_ud||block_0d||block_u0){
+				data.put(9, shadowIntensity);
+				data.put(10, shadowIntensity);
+				data.put(11, shadowIntensity);
+			}else{
+				data.put(9, 1);
+				data.put(10, 1);
+				data.put(11, 1);
+			}
 		}
 		if(side==2){
 			block_dd=world.getBlock(x-1, y+1, z-1, false)!=null;
@@ -78,14 +135,42 @@ public class BasicBlock implements BlockType{
 			block_ud=world.getBlock(x+1, y+1, z-1, false)!=null;
 			block_u0=world.getBlock(x+1, y+1, z, false)!=null;
 			block_uu=world.getBlock(x+1, y+1, z+1, false)!=null;
-			if(block_dd||block_0d||block_d0)colors[0]=colors[1]=colors[2]=shadowIntensity;
-			else colors[0]=colors[1]=colors[2]=1f;
-			if(block_du||block_d0||block_0u)colors[3]=colors[4]=colors[5]=shadowIntensity;
-			else colors[3]=colors[4]=colors[5]=1f;
-			if(block_uu||block_0u||block_u0)colors[6]=colors[7]=colors[8]=shadowIntensity;
-			else colors[6]=colors[7]=colors[8]=1f;
-			if(block_ud||block_0d||block_u0)colors[9]=colors[10]=colors[11]=shadowIntensity;
-			else colors[9]=colors[10]=colors[11]=1f;
+			if(block_dd||block_0d||block_d0){
+				data.put(0, shadowIntensity);
+				data.put(1, shadowIntensity);
+				data.put(2, shadowIntensity);
+			}else{
+				data.put(0, 1);
+				data.put(1, 1);
+				data.put(2, 1);
+			}
+			if(block_du||block_d0||block_0u){
+				data.put(3, shadowIntensity);
+				data.put(4, shadowIntensity);
+				data.put(5, shadowIntensity);
+			}else{
+				data.put(3, 1);
+				data.put(4, 1);
+				data.put(5, 1);
+			}
+			if(block_uu||block_0u||block_u0){
+				data.put(6, shadowIntensity);
+				data.put(7, shadowIntensity);
+				data.put(8, shadowIntensity);
+			}else{
+				data.put(6, 1);
+				data.put(7, 1);
+				data.put(8, 1);
+			}
+			if(block_ud||block_0d||block_u0){
+				data.put(9, shadowIntensity);
+				data.put(10, shadowIntensity);
+				data.put(11, shadowIntensity);
+			}else{
+				data.put(9, 1);
+				data.put(10, 1);
+				data.put(11, 1);
+			}
 		}
 		if(side==3){
 			block_dd=world.getBlock(x-1, y-1, z-1, false)!=null;
@@ -96,14 +181,42 @@ public class BasicBlock implements BlockType{
 			block_ud=world.getBlock(x+1, y-1, z-1, false)!=null;
 			block_u0=world.getBlock(x+1, y-1, z, false)!=null;
 			block_uu=world.getBlock(x+1, y-1, z+1, false)!=null;
-			if(block_uu||block_u0||block_0u)colors[0]=colors[1]=colors[2]=shadowIntensity;
-			else colors[0]=colors[1]=colors[2]=1f;
-			if(block_du||block_0u||block_d0)colors[3]=colors[4]=colors[5]=shadowIntensity;
-			else colors[3]=colors[4]=colors[5]=1f;
-			if(block_dd||block_0d||block_d0)colors[6]=colors[7]=colors[8]=shadowIntensity;
-			else colors[6]=colors[7]=colors[8]=1f;
-			if(block_ud||block_0d||block_u0)colors[9]=colors[10]=colors[11]=shadowIntensity;
-			else colors[9]=colors[10]=colors[11]=1f;
+			if(block_uu||block_u0||block_0u){
+				data.put(0, shadowIntensity);
+				data.put(1, shadowIntensity);
+				data.put(2, shadowIntensity);
+			}else{
+				data.put(0, 1);
+				data.put(1, 1);
+				data.put(2, 1);
+			}
+			if(block_du||block_0u||block_d0){
+				data.put(3, shadowIntensity);
+				data.put(4, shadowIntensity);
+				data.put(5, shadowIntensity);
+			}else{
+				data.put(3, 1);
+				data.put(4, 1);
+				data.put(5, 1);
+			}
+			if(block_dd||block_0d||block_d0){
+				data.put(6, shadowIntensity);
+				data.put(7, shadowIntensity);
+				data.put(8, shadowIntensity);
+			}else{
+				data.put(6, 1);
+				data.put(7, 1);
+				data.put(8, 1);
+			}
+			if(block_ud||block_0d||block_u0){
+				data.put(9, shadowIntensity);
+				data.put(10, shadowIntensity);
+				data.put(11, shadowIntensity);
+			}else{
+				data.put(9, 1);
+				data.put(10, 1);
+				data.put(11, 1);
+			}
 		}
 		if(side==4){
 			block_dd=world.getBlock(x-1, y-1, z+1, false)!=null;
@@ -114,14 +227,42 @@ public class BasicBlock implements BlockType{
 			block_ud=world.getBlock(x+1, y-1, z+1, false)!=null;
 			block_u0=world.getBlock(x+1, y, z+1, false)!=null;
 			block_uu=world.getBlock(x+1, y+1, z+1, false)!=null;
-			if(block_dd||block_0d||block_d0)colors[6]=colors[7]=colors[8]=shadowIntensity;
-			else colors[6]=colors[7]=colors[8]=1f;
-			if(block_du||block_d0||block_0u)colors[3]=colors[4]=colors[5]=shadowIntensity;
-			else colors[3]=colors[4]=colors[5]=1f;
-			if(block_uu||block_0u||block_u0)colors[0]=colors[1]=colors[2]=shadowIntensity;
-			else colors[0]=colors[1]=colors[2]=1f;
-			if(block_ud||block_0d||block_u0)colors[9]=colors[10]=colors[11]=shadowIntensity;
-			else colors[9]=colors[10]=colors[11]=1f;
+			if(block_uu||block_0u||block_u0){
+				data.put(0, shadowIntensity);
+				data.put(1, shadowIntensity);
+				data.put(2, shadowIntensity);
+			}else{
+				data.put(0, 1);
+				data.put(1, 1);
+				data.put(2, 1);
+			}
+			if(block_du||block_d0||block_0u){
+				data.put(3, shadowIntensity);
+				data.put(4, shadowIntensity);
+				data.put(5, shadowIntensity);
+			}else{
+				data.put(3, 1);
+				data.put(4, 1);
+				data.put(5, 1);
+			}
+			if(block_dd||block_0d||block_d0){
+				data.put(6, shadowIntensity);
+				data.put(7, shadowIntensity);
+				data.put(8, shadowIntensity);
+			}else{
+				data.put(6, 1);
+				data.put(7, 1);
+				data.put(8, 1);
+			}
+			if(block_ud||block_0d||block_u0){
+				data.put(9, shadowIntensity);
+				data.put(10, shadowIntensity);
+				data.put(11, shadowIntensity);
+			}else{
+				data.put(9, 1);
+				data.put(10, 1);
+				data.put(11, 1);
+			}
 		}
 		if(side==5){
 			block_dd=world.getBlock(x-1, y-1, z-1, false)!=null;
@@ -132,18 +273,53 @@ public class BasicBlock implements BlockType{
 			block_ud=world.getBlock(x+1, y-1, z-1, false)!=null;
 			block_u0=world.getBlock(x+1, y, z-1, false)!=null;
 			block_uu=world.getBlock(x+1, y+1, z-1, false)!=null;
-			if(block_dd||block_0d||block_d0)colors[0]=colors[1]=colors[2]=shadowIntensity;
-			else colors[0]=colors[1]=colors[2]=1f;
-			if(block_du||block_d0||block_0u)colors[3]=colors[4]=colors[5]=shadowIntensity;
-			else colors[3]=colors[4]=colors[5]=1f;
-			if(block_uu||block_0u||block_u0)colors[6]=colors[7]=colors[8]=shadowIntensity;
-			else colors[6]=colors[7]=colors[8]=1f;
-			if(block_ud||block_0d||block_u0)colors[9]=colors[10]=colors[11]=shadowIntensity;
-			else colors[9]=colors[10]=colors[11]=1f;
+			if(block_dd||block_0d||block_d0){
+				data.put(0, shadowIntensity);
+				data.put(1, shadowIntensity);
+				data.put(2, shadowIntensity);
+			}else{
+				data.put(0, 1);
+				data.put(1, 1);
+				data.put(2, 1);
+			}
+			if(block_du||block_d0||block_0u){
+				data.put(3, shadowIntensity);
+				data.put(4, shadowIntensity);
+				data.put(5, shadowIntensity);
+			}else{
+				data.put(3, 1);
+				data.put(4, 1);
+				data.put(5, 1);
+			}
+			if(block_uu||block_0u||block_u0){
+				data.put(6, shadowIntensity);
+				data.put(7, shadowIntensity);
+				data.put(8, shadowIntensity);
+			}else{
+				data.put(6, 1);
+				data.put(7, 1);
+				data.put(8, 1);
+			}
+			if(block_ud||block_0d||block_u0){
+				data.put(9, shadowIntensity);
+				data.put(10, shadowIntensity);
+				data.put(11, shadowIntensity);
+			}else{
+				data.put(9, 1);
+				data.put(10, 1);
+				data.put(11, 1);
+			}
 		}
-		if((block_d0&&block_0d)||(block_u0&&block_0u))colors[12]=colors[13]=colors[14]=shadowIntensity;
-		else if(flat())return false;
-		else colors[12]=colors[13]=colors[14]=1f;
+		if((block_d0&&block_0d)||(block_u0&&block_0u)){
+			data.put(12, shadowIntensity);
+			data.put(13, shadowIntensity);
+			data.put(14, shadowIntensity);
+		}else if(flat())return false;
+		else{
+			data.put(12, 1);
+			data.put(13, 1);
+			data.put(14, 1);
+		}
 		return true;
 	}
 	private boolean flat(){

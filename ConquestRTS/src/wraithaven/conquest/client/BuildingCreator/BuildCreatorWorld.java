@@ -33,7 +33,7 @@ public class BuildCreatorWorld implements VoxelWorldListener{
 	public void loadChunk(VoxelChunk chunk){
 		if(chunk.chunkY==0){
 			int x, z;
-			for(x=chunk.startX; x<=chunk.endX; x++)for(z=chunk.startZ; z<=chunk.endZ; z++)chunk.createBlock(x, 0, z, block).getQuad(2).setRotation((int)(Math.random()*4));
+			for(x=chunk.startX; x<=chunk.endX; x++)for(z=chunk.startZ; z<=chunk.endZ; z++)chunk.createBlock(x, 0, z, block);
 			chunk.optimize();
 			optimizeNearbyChunks(chunk.chunkX, chunk.chunkY, chunk.chunkZ);
 		}

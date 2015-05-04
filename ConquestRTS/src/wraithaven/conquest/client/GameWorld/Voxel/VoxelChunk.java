@@ -11,7 +11,7 @@ public class VoxelChunk{
 	public final int startX, startY, startZ, endX, endY, endZ;
 	final ArrayList<QuadBatch> batches = new ArrayList(1);
 	public final VoxelWorld world;
-	public VoxelChunk(VoxelWorld world, int chunkX, int chunkY, int chunkZ){
+	VoxelChunk(VoxelWorld world, int chunkX, int chunkY, int chunkZ){
 		this.world=world;
 		this.chunkX=chunkX;
 		this.chunkY=chunkY;
@@ -75,13 +75,19 @@ public class VoxelChunk{
 		open=block.chunk.isNeighborOpen(block, side);
 		if(open!=block.isSideShown(side)){
 			block.chunk.setNeedsRebatch();
-			block.showSide(side, open);
-			if(open)block.chunk.getBatch(block.type.getTexture(side)).addQuad(block.getQuad(side));
-			else block.chunk.getBatch(block.type.getTexture(side)).removeQuad(block.getQuad(side));
+			if(open){
+				block.showSide(side, open);
+				block.chunk.getBatch(block.type.getTexture(side)).addQuad(block.getQuad(side));
+			}else{
+				block.chunk.getBatch(block.type.getTexture(side)).removeQuad(block.getQuad(side));
+				block.showSide(side, open);
+			}
 		}
 		if(updateShadows){
-			block.quads[side].centerPoint=block.type.setupShadows(block.quads[side].colors, side, block.x, block.y, block.z);
-			block.chunk.setNeedsRebatch();
+			if(block.quads[side]!=null){
+				block.quads[side].centerPoint=block.type.setupShadows(block.quads[side].data, side, block.x, block.y, block.z);
+				block.chunk.setNeedsRebatch();
+			}
 		}
 	}
 	private void setNeedsRebatch(){
@@ -149,10 +155,11 @@ public class VoxelChunk{
 		for(int i = 0; i<batches.size(); i++)batches.get(i).recompileBuffer();
 		needsBatchUpdate=false;
 	}
+	public void dispose(){ for(int i = 0; i<batches.size(); i++)batches.get(i).cleanUp(); }
 	void addHidden(){ hidden++; }
 	void removeHidden(){ hidden--; }
-	public VoxelBlock getBlock(int x, int y, int z){ return blocks[x&15][y&15][z&15]; }
-	public VoxelBlock getSubBlock(int x, int y, int z){ return blocks[x][y][z]; }
+	VoxelBlock getBlock(int x, int y, int z){ return blocks[x&15][y&15][z&15]; }
+	VoxelBlock getSubBlock(int x, int y, int z){ return blocks[x][y][z]; }
 	public boolean isHidden(){ return hidden==4096; }
 	private void removeBlockQuads(VoxelBlock block){ for(int i = 0; i<6; i++)getBatch(block.type.getTexture(i)).removeQuad(block.getQuad(i)); }
 }

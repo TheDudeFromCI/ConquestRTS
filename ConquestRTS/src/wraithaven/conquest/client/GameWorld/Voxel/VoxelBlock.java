@@ -2,18 +2,18 @@ package wraithaven.conquest.client.GameWorld.Voxel;
 
 public class VoxelBlock{
 	public final int x, y, z;
-	boolean xUp, xDown, yUp, yDown, zUp, zDown;
+	private boolean xUp, xDown, yUp, yDown, zUp, zDown;
 	private boolean hidden;
 	final Quad[] quads = new Quad[6];
 	public final VoxelChunk chunk;
 	public final BlockType type;
-	public VoxelBlock(VoxelChunk chunk, int x, int y, int z, BlockType type){
+	private static final float[] WHITE_COLORS = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+	VoxelBlock(VoxelChunk chunk, int x, int y, int z, BlockType type){
 		this.x=x;
 		this.y=y;
 		this.z=z;
 		this.chunk=chunk;
 		this.type=type;
-		for(int i = 0; i<6; i++)quads[i]=Cube.generateQuad(i, x, y, z, type.getRotation(i), new float[15]);
 	}
 	private void setHidden(boolean hidden){
 		if(this.hidden==hidden)return;
@@ -21,7 +21,7 @@ public class VoxelBlock{
 		if(hidden)chunk.addHidden();
 		else chunk.removeHidden();
 	}
-	public boolean isSideShown(int side){
+	boolean isSideShown(int side){
 		if(side==0)return xUp;
 		if(side==1)return xDown;
 		if(side==2)return yUp;
@@ -31,25 +31,49 @@ public class VoxelBlock{
 		return false;
 	}
 	void showSide(int side, boolean show){
-		if(side==0)xUp=show;
-		if(side==1)xDown=show;
-		if(side==2)yUp=show;
-		if(side==3)yDown=show;
-		if(side==4)zUp=show;
-		if(side==5)zDown=show;
+		if(side==0){
+			if(xUp!=show){
+				xUp=show;
+				updateSideVisibility(side, show);
+			}
+		}
+		if(side==1){
+			if(xDown!=show){
+				xDown=show;
+				updateSideVisibility(side, show);
+			}
+		}
+		if(side==2){
+			if(yUp!=show){
+				yUp=show;
+				updateSideVisibility(side, show);
+			}
+		}
+		if(side==3){
+			if(yDown!=show){
+				yDown=show;
+				updateSideVisibility(side, show);
+			}
+		}
+		if(side==4){
+			if(zUp!=show){
+				zUp=show;
+				updateSideVisibility(side, show);
+			}
+		}
+		if(side==5){
+			if(zDown!=show){
+				zDown=show;
+				updateSideVisibility(side, show);
+			}
+		}
 		if(!xUp&&!xDown&&!yUp&&!yDown&&!zUp&&!zDown)setHidden(true);
 		else setHidden(false);
 	}
-	public VoxelBlock getNearbyBlock(int side, boolean load){
-		if(side==0)return getBlockByOffset(1, 0, 0, load);
-		if(side==1)return getBlockByOffset(-1, 0, 0, load);
-		if(side==2)return getBlockByOffset(0, 1, 0, load);
-		if(side==3)return getBlockByOffset(0, -1, 0, load);
-		if(side==4)return getBlockByOffset(0, 0, 1, load);
-		if(side==5)return getBlockByOffset(0, 0, -1, load);
-		return null;
+	private void updateSideVisibility(int side, boolean show){
+		if(show)quads[side]=Cube.generateQuad(side, x, y, z, type.getRotation(side), WHITE_COLORS);
+		else quads[side]=null;
 	}
 	public Quad getQuad(int side){ return quads[side]; }
-	public VoxelBlock getBlockByOffset(int x, int y, int z, boolean load){ return chunk.world.getBlock(this.x+x, this.y+y, this.z+z, load); }
 	public boolean isHidden(){ return hidden; }
 }

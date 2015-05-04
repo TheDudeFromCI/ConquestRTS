@@ -8,12 +8,14 @@ public class VoxelWorld{
 	private boolean needsRebatch;
 	private VoxelChunk chunk;
 	private final ArrayList<QuadBatch> tempQuads = new ArrayList();
-	private final ArrayList<VoxelChunk> chunks = new ArrayList();
 	private final VoxelWorldListener worldListener;
+	private final ChunkStorage chunkStorage;
 	final VoxelWorldBounds bounds;
 	public VoxelWorld(VoxelWorldListener worldListener, VoxelWorldBounds bounds){
 		this.worldListener=worldListener;
 		this.bounds=bounds;
+		if(bounds==null)chunkStorage=new InfiniteWorld();
+		else chunkStorage=new FiniteWorld(bounds);
 	}
 	public VoxelChunk loadChunk(int chunkX, int chunkY, int chunkZ){
 		if(bounds!=null){
@@ -21,7 +23,7 @@ public class VoxelWorld{
 			if(chunkX>bounds.chunkEndX||chunkY>bounds.chunkEndY||chunkZ>bounds.chunkEndZ)return null;
 		}
 		chunk=new VoxelChunk(this, chunkX, chunkY, chunkZ);
-		chunks.add(chunk);
+		chunkStorage.addChunk(chunk);
 		worldListener.loadChunk(chunk);
 		setNeedsRebatch();
 		return chunk;
@@ -29,20 +31,18 @@ public class VoxelWorld{
 	public void unloadChunk(int chunkX, int chunkY, int chunkZ){
 		VoxelChunk c = getChunk(chunkX, chunkY, chunkZ, false);
 		if(c==null)return;
-		chunks.remove(c);
+		chunkStorage.removeChunk(c);
 		worldListener.unloadChunk(c);
+		c.dispose();
 		setNeedsRebatch();
 	}
 	public void unloadChunk(VoxelChunk chunk){
-		chunks.remove(chunk);
+		chunkStorage.removeChunk(chunk);
 		worldListener.unloadChunk(chunk);
 	}
 	public VoxelChunk getChunk(int chunkX, int chunkY, int chunkZ, boolean load){
-		VoxelChunk c;
-		for(int i = 0; i<chunks.size(); i++){
-			c=chunks.get(i);
-			if(c.chunkX==chunkX&&c.chunkY==chunkY&&c.chunkZ==chunkZ)return c;
-		}
+		VoxelChunk chunk = chunkStorage.getChunk(chunkX, chunkY, chunkZ);
+		if(chunk!=null)return chunk;
 		return load?loadChunk(chunkX, chunkY, chunkZ):null;
 	}
 	public VoxelBlock getBlock(int x, int y, int z, boolean load){
@@ -53,8 +53,8 @@ public class VoxelWorld{
 	public void render(){
 		if(needsRebatch){
 			tempQuads.clear();
-			for(int i = 0; i<chunks.size(); i++){
-				chunk=chunks.get(i);
+			for(int i = 0; i<chunkStorage.getChunkCount(); i++){
+				chunk=chunkStorage.getChunk(i);
 				if(worldListener.isChunkVisible(chunk)){
 					if(chunk.needsBatchUpdate)chunk.updateBatches();
 					tempQuads.addAll(chunk.batches);
@@ -92,8 +92,8 @@ public class VoxelWorld{
 	public VoxelChunk getContainingChunk(int x, int y, int z){ return getChunk(x>>4, y>>4, z>>4, true); }
 	public VoxelChunk getContainingChunk(int x, int y, int z, boolean load){ return getChunk(x>>4, y>>4, z>>4, load); }
 	public VoxelChunk getChunk(int chunkX, int chunkY, int chunkZ){ return getChunk(chunkX, chunkY, chunkZ, true); }
-	public int getChunkCount(){ return chunks.size(); }
-	public void optimizeAll(){ for(int i = 0; i<chunks.size(); i++)chunks.get(i).optimize(); }
-	public VoxelChunk getChunk(int index){ return chunks.get(index); }
+	public int getChunkCount(){ return chunkStorage.getChunkCount(); }
+	public void optimizeAll(){ for(int i = 0; i<chunkStorage.getChunkCount(); i++)chunkStorage.getChunk(i).optimize(); }
+	public VoxelChunk getChunk(int index){ return chunkStorage.getChunk(index); }
 	public void setNeedsRebatch(){ needsRebatch=true; }
 }
