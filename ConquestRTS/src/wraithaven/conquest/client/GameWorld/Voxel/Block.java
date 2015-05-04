@@ -1,14 +1,14 @@
 package wraithaven.conquest.client.GameWorld.Voxel;
 
-public class VoxelBlock{
+public class Block{
 	public final int x, y, z;
 	private boolean xUp, xDown, yUp, yDown, zUp, zDown;
 	private boolean hidden;
 	final Quad[] quads = new Quad[6];
-	public final VoxelChunk chunk;
+	public final Chunk chunk;
 	public final BlockType type;
 	private static final float[] WHITE_COLORS = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-	VoxelBlock(VoxelChunk chunk, int x, int y, int z, BlockType type){
+	Block(Chunk chunk, int x, int y, int z, BlockType type){
 		this.x=x;
 		this.y=y;
 		this.z=z;

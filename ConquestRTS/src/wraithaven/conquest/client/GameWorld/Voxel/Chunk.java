@@ -2,16 +2,16 @@ package wraithaven.conquest.client.GameWorld.Voxel;
 
 import java.util.ArrayList;
 
-public class VoxelChunk{
+public class Chunk{
 	private boolean open;
 	boolean needsBatchUpdate;
 	private int hidden = 4096;
-	private final VoxelBlock[][][] blocks = new VoxelBlock[16][16][16];
+	private final Block[][][] blocks = new Block[16][16][16];
 	public final int chunkX, chunkY, chunkZ;
 	public final int startX, startY, startZ, endX, endY, endZ;
 	final ArrayList<QuadBatch> batches = new ArrayList(1);
 	public final VoxelWorld world;
-	VoxelChunk(VoxelWorld world, int chunkX, int chunkY, int chunkZ){
+	Chunk(VoxelWorld world, int chunkX, int chunkY, int chunkZ){
 		this.world=world;
 		this.chunkX=chunkX;
 		this.chunkY=chunkY;
@@ -23,11 +23,11 @@ public class VoxelChunk{
 		endY=startY+15;
 		endZ=startZ+15;
 	}
-	public VoxelBlock createBlock(int x, int y, int z, BlockType type){
+	public Block createBlock(int x, int y, int z, BlockType type){
 		int xPart = x&15;
 		int yPart = y&15;
 		int zPart = z&15;
-		blocks[xPart][yPart][zPart]=new VoxelBlock(this, x, y, z, type);
+		blocks[xPart][yPart][zPart]=new Block(this, x, y, z, type);
 		removeHidden();
 		return blocks[xPart][yPart][zPart];
 	}
@@ -61,7 +61,7 @@ public class VoxelChunk{
 			for(x=0; x<16; x++)for(y=0; y<16; y++)optimizeBlock(blocks[x][y][0], 5, true);
 		}
 	}
-	public void optimizeBlock(VoxelBlock block){
+	public void optimizeBlock(Block block){
 		if(block==null)return;
 		optimizeBlock(block, 0, true);
 		optimizeBlock(block, 1, true);
@@ -70,7 +70,7 @@ public class VoxelChunk{
 		optimizeBlock(block, 4, true);
 		optimizeBlock(block, 5, true);
 	}
-	public void optimizeBlock(VoxelBlock block, int side, boolean updateShadows){
+	public void optimizeBlock(Block block, int side, boolean updateShadows){
 		if(block==null)return;
 		open=block.chunk.isNeighborOpen(block, side);
 		if(open!=block.isSideShown(side)){
@@ -116,11 +116,11 @@ public class VoxelChunk{
 		removeBlockQuads(blocks[x][y][z]);
 		blocks[x][y][z]=null;
 	}
-	public VoxelBlock setBlock(int x, int y, int z, BlockType type){
+	public Block setBlock(int x, int y, int z, BlockType type){
 		setNeedsRebatch();
 		removeBlock(x&15, y&15, z&15);
 		if(type!=null){
-			VoxelBlock block = createBlock(x, y, z, type);
+			Block block = createBlock(x, y, z, type);
 			optimizeBlock(block);
 			optimizeAroundBlock(x, y, z);
 			return block;
@@ -128,7 +128,7 @@ public class VoxelChunk{
 		optimizeAroundBlock(x, y, z);
 		return null;
 	}
-	private boolean isNeighborOpen(VoxelBlock block, int side){
+	private boolean isNeighborOpen(Block block, int side){
 		if(side==0)return (world.bounds==null||block.x<world.bounds.endX)&&getQuickBlock(block.x+1, block.y, block.z)==null;
 		if(side==1)return (world.bounds==null||block.x>world.bounds.startX)&&getQuickBlock(block.x-1, block.y, block.z)==null;
 		if(side==2)return (world.bounds==null||block.y<world.bounds.endY)&&getQuickBlock(block.x, block.y+1, block.z)==null;
@@ -147,7 +147,7 @@ public class VoxelChunk{
 		batches.add(batch);
 		return batch;
 	}
-	private VoxelBlock getQuickBlock(int x, int y, int z){
+	private Block getQuickBlock(int x, int y, int z){
 		if(x<startX||y<startY||z<startZ||x>endX||y>endY||z>endZ)return world.getBlock(x, y, z, false);
 		return getBlock(x, y, z);
 	}
@@ -158,8 +158,8 @@ public class VoxelChunk{
 	public void dispose(){ for(int i = 0; i<batches.size(); i++)batches.get(i).cleanUp(); }
 	void addHidden(){ hidden++; }
 	void removeHidden(){ hidden--; }
-	VoxelBlock getBlock(int x, int y, int z){ return blocks[x&15][y&15][z&15]; }
-	VoxelBlock getSubBlock(int x, int y, int z){ return blocks[x][y][z]; }
+	Block getBlock(int x, int y, int z){ return blocks[x&15][y&15][z&15]; }
+	Block getSubBlock(int x, int y, int z){ return blocks[x][y][z]; }
 	public boolean isHidden(){ return hidden==4096; }
-	private void removeBlockQuads(VoxelBlock block){ for(int i = 0; i<6; i++)getBatch(block.type.getTexture(i)).removeQuad(block.getQuad(i)); }
+	private void removeBlockQuads(Block block){ for(int i = 0; i<6; i++)getBatch(block.type.getTexture(i)).removeQuad(block.getQuad(i)); }
 }

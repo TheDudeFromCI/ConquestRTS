@@ -13,7 +13,7 @@ import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorld;
 import wraithaven.conquest.client.GameWorld.Sphere;
 import wraithaven.conquest.client.GameWorld.BoundingBox;
 import wraithaven.conquest.client.GameWorld.Voxel.CameraTargetCallback;
-import wraithaven.conquest.client.GameWorld.Voxel.VoxelBlock;
+import wraithaven.conquest.client.GameWorld.Voxel.Block;
 import wraithaven.conquest.client.ClientLauncher;
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -25,7 +25,7 @@ public class InputController{
 	private float currentCamX, currentCamY, currentCamZ;
 	public float mouseSensitivity = 0.1f;
 	public float moveSpeed = 10.8f;
-	private VoxelBlock block;
+	private Block block;
 	private CameraTargetCallback callback;
 	private final Loop loop;
 	private final VoxelWorld world;

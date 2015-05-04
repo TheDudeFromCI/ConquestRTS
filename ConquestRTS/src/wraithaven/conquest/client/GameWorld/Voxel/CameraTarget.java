@@ -5,7 +5,7 @@ import wraithaven.conquest.client.GameWorld.Plotter;
 
 public class CameraTarget{
 	private int chunkX, chunkY, chunkZ;
-	private VoxelChunk lastChunk;
+	private Chunk lastChunk;
 	private final Camera cam;
 	private final Plotter plotter = new Plotter(0, 0, 0, 1, 1, 1);
 	private final Vec3i v = plotter.get();

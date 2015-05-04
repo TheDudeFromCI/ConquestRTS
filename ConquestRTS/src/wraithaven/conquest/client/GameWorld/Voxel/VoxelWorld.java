@@ -8,7 +8,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class VoxelWorld{
 	private boolean needsRebatch;
-	private VoxelChunk chunk;
+	private Chunk chunk;
 	private final ArrayList<QuadBatch> tempQuads = new ArrayList();
 	private final VoxelWorldListener worldListener;
 	private final ChunkStorage chunkStorage;
@@ -19,36 +19,36 @@ public class VoxelWorld{
 		if(bounds==null)chunkStorage=new InfiniteWorld();
 		else chunkStorage=new FiniteWorld(bounds);
 	}
-	public VoxelChunk loadChunk(int chunkX, int chunkY, int chunkZ){
+	public Chunk loadChunk(int chunkX, int chunkY, int chunkZ){
 		if(bounds!=null){
 			if(chunkX<bounds.chunkStartX||chunkY<bounds.chunkStartY||chunkZ<bounds.chunkStartZ)return null;
 			if(chunkX>bounds.chunkEndX||chunkY>bounds.chunkEndY||chunkZ>bounds.chunkEndZ)return null;
 		}
-		chunk=new VoxelChunk(this, chunkX, chunkY, chunkZ);
+		chunk=new Chunk(this, chunkX, chunkY, chunkZ);
 		chunkStorage.addChunk(chunk);
 		worldListener.loadChunk(chunk);
 		setNeedsRebatch();
 		return chunk;
 	}
 	public void unloadChunk(int chunkX, int chunkY, int chunkZ){
-		VoxelChunk c = getChunk(chunkX, chunkY, chunkZ, false);
+		Chunk c = getChunk(chunkX, chunkY, chunkZ, false);
 		if(c==null)return;
 		chunkStorage.removeChunk(c);
 		worldListener.unloadChunk(c);
 		c.dispose();
 		setNeedsRebatch();
 	}
-	public void unloadChunk(VoxelChunk chunk){
+	public void unloadChunk(Chunk chunk){
 		chunkStorage.removeChunk(chunk);
 		worldListener.unloadChunk(chunk);
 	}
-	public VoxelChunk getChunk(int chunkX, int chunkY, int chunkZ, boolean load){
-		VoxelChunk chunk = chunkStorage.getChunk(chunkX, chunkY, chunkZ);
+	public Chunk getChunk(int chunkX, int chunkY, int chunkZ, boolean load){
+		Chunk chunk = chunkStorage.getChunk(chunkX, chunkY, chunkZ);
 		if(chunk!=null)return chunk;
 		return load?loadChunk(chunkX, chunkY, chunkZ):null;
 	}
-	public VoxelBlock getBlock(int x, int y, int z, boolean load){
-		VoxelChunk c = getContainingChunk(x, y, z, load);
+	public Block getBlock(int x, int y, int z, boolean load){
+		Chunk c = getContainingChunk(x, y, z, load);
 		if(c==null)return null;
 		return c.getBlock(x, y, z);
 	}
@@ -83,19 +83,19 @@ public class VoxelWorld{
 		glDisableClientState(GL_COLOR_ARRAY);
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	}
-	public VoxelBlock getBlock(int x, int y, int z){
+	public Block getBlock(int x, int y, int z){
 		chunk=getContainingChunk(x, y, z);
 		return chunk==null?null:chunk.getBlock(x, y, z);
 	}
-	public VoxelBlock setBlock(int x, int y, int z, BlockType type){
+	public Block setBlock(int x, int y, int z, BlockType type){
 		chunk=getContainingChunk(x, y, z);
 		return chunk==null?null:chunk.setBlock(x, y, z, type);
 	}
-	public VoxelChunk getContainingChunk(int x, int y, int z){ return getChunk(x>>4, y>>4, z>>4, true); }
-	public VoxelChunk getContainingChunk(int x, int y, int z, boolean load){ return getChunk(x>>4, y>>4, z>>4, load); }
-	public VoxelChunk getChunk(int chunkX, int chunkY, int chunkZ){ return getChunk(chunkX, chunkY, chunkZ, true); }
+	public Chunk getContainingChunk(int x, int y, int z){ return getChunk(x>>4, y>>4, z>>4, true); }
+	public Chunk getContainingChunk(int x, int y, int z, boolean load){ return getChunk(x>>4, y>>4, z>>4, load); }
+	public Chunk getChunk(int chunkX, int chunkY, int chunkZ){ return getChunk(chunkX, chunkY, chunkZ, true); }
 	public int getChunkCount(){ return chunkStorage.getChunkCount(); }
 	public void optimizeAll(){ for(int i = 0; i<chunkStorage.getChunkCount(); i++)chunkStorage.getChunk(i).optimize(); }
-	public VoxelChunk getChunk(int index){ return chunkStorage.getChunk(index); }
+	public Chunk getChunk(int index){ return chunkStorage.getChunk(index); }
 	public void setNeedsRebatch(){ needsRebatch=true; }
 }

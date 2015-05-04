@@ -3,16 +3,16 @@ package wraithaven.conquest.client.GameWorld;
 import wraithaven.conquest.client.GameWorld.Voxel.CubeTextures;
 import wraithaven.conquest.client.GameWorld.Voxel.BlockType;
 import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorld;
-import wraithaven.conquest.client.GameWorld.Voxel.VoxelChunk;
+import wraithaven.conquest.client.GameWorld.Voxel.Chunk;
 
 class VoxelChunkQue{
 	private int x, y, z, h;
 	double tempDistance;
-	final VoxelChunk chunk;
+	final Chunk chunk;
 	private final VoxelWorld world;
 	private static BlockType type;
 	private static final NoiseGenerator noise = new NoiseGenerator((long)(Math.random()*Integer.MAX_VALUE), 200, 3);
-	VoxelChunkQue(VoxelWorld world, VoxelChunk chunk){
+	VoxelChunkQue(VoxelWorld world, Chunk chunk){
 		this.world=world;
 		this.chunk=chunk;
 		x=chunk.startX;
@@ -44,7 +44,7 @@ class VoxelChunkQue{
 		return false;
 	}
 	private void optimizeNearbyChunks(int chunkX, int chunkY, int chunkZ){
-		VoxelChunk chunk;
+		Chunk chunk;
 		chunk=world.getChunk(chunkX-1, chunkY, chunkZ, false);
 		if(chunk!=null)chunk.optimizeSide(0);
 		chunk=world.getChunk(chunkX+1, chunkY, chunkZ, false);

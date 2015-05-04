@@ -3,7 +3,7 @@ package wraithaven.conquest.client.GameWorld;
 import java.util.ArrayList;
 import java.util.Comparator;
 import wraithaven.conquest.client.GameWorld.LoopControls.VoxelWorldListener;
-import wraithaven.conquest.client.GameWorld.Voxel.VoxelChunk;
+import wraithaven.conquest.client.GameWorld.Voxel.Chunk;
 import wraithaven.conquest.client.GameWorld.Voxel.CameraTargetCallback;
 import wraithaven.conquest.client.GameWorld.Voxel.CameraTarget;
 import wraithaven.conquest.client.GameWorld.Voxel.Camera;
@@ -82,7 +82,7 @@ public class CatcheChunkLoader implements VoxelWorldListener{
 		}
 	}
 	private void unloadUneededChunks(){
-		VoxelChunk chunk;
+		Chunk chunk;
 		for(int i = 0; i<world.getChunkCount();){
 			chunk=world.getChunk(i);
 			if(getDistanceSquared(camX, camY, camZ, chunk.chunkX, chunk.chunkY, chunk.chunkZ)>CATCHE_RANGE_SQUARED)world.unloadChunk(chunk);
@@ -107,7 +107,7 @@ public class CatcheChunkLoader implements VoxelWorldListener{
 		}
 		return false;
 	}
-	public void unloadChunk(VoxelChunk chunk){
+	public void unloadChunk(Chunk chunk){
 		for(int i = 0; i<que.size(); i++){
 			if(que.get(i).chunk==chunk){
 				que.remove(i);
@@ -115,7 +115,7 @@ public class CatcheChunkLoader implements VoxelWorldListener{
 			}
 		}
 	}
-	public boolean isChunkVisible(VoxelChunk chunk){ return !chunk.isHidden()&&cam.frustum.cubeInFrustum(chunk.startX, chunk.startY, chunk.startZ, 16); }
-	public void loadChunk(VoxelChunk chunk){ que.add(new VoxelChunkQue(world, chunk)); }
+	public boolean isChunkVisible(Chunk chunk){ return !chunk.isHidden()&&cam.frustum.cubeInFrustum(chunk.startX, chunk.startY, chunk.startZ, 16); }
+	public void loadChunk(Chunk chunk){ que.add(new VoxelChunkQue(world, chunk)); }
 	private static double getDistanceSquared(int x1, int y1, int z1, int x2, int y2, int z2){ return Math.pow(x1-x2, 2)+Math.pow(y1-y2, 2)+Math.pow(z1-z2, 2); }
 }
