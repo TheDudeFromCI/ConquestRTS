@@ -51,20 +51,15 @@ public abstract class Cube{
 	public static final int Y_DOWN_SIDE = 3;
 	public static final int Z_UP_SIDE = 4;
 	public static final int Z_DOWN_SIDE = 5;
-	public static Quad generateQuad(int side, int x, int y, int z, int r, float[] colors){
+	public static Quad generateQuad(int side, float x, float y, float z, int r, float[] colors, boolean scale){
 		Quad q = null;
-		if(side==0)q=new Quad(clone(X_UP_QUAD), colors, r);
-		if(side==1)q=new Quad(clone(X_DOWN_QUAD), colors, r);
-		if(side==2)q=new Quad(clone(Y_UP_QUAD), colors, r);
-		if(side==3)q=new Quad(clone(Y_DOWN_QUAD), colors, r);
-		if(side==4)q=new Quad(clone(Z_UP_QUAD), colors, r);
-		if(side==5)q=new Quad(clone(Z_DOWN_QUAD), colors, r);
+		if(side==0)q=new Quad(X_UP_QUAD, colors, r, scale);
+		if(side==1)q=new Quad(X_DOWN_QUAD, colors, r, scale);
+		if(side==2)q=new Quad(Y_UP_QUAD, colors, r, scale);
+		if(side==3)q=new Quad(Y_DOWN_QUAD, colors, r, scale);
+		if(side==4)q=new Quad(Z_UP_QUAD, colors, r, scale);
+		if(side==5)q=new Quad(Z_DOWN_QUAD, colors, r, scale);
 		if(q!=null)q.shift(x, y, z);
 		return q;
-	}
-	private static float[] clone(float[] f){
-		float[] f2 = new float[f.length];
-		for(int i = 0; i<f2.length; i++)f2[i]=f[i];
-		return f2;
 	}
 }

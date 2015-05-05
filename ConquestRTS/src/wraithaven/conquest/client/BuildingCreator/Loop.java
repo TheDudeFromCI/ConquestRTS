@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.nio.DoubleBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import wraithaven.conquest.client.GameWorld.Voxel.Chunk;
 import wraithaven.conquest.client.GameWorld.LoopControls.VoxelWorldBounds;
 import wraithaven.conquest.client.GameWorld.LoopControls.MatrixUtils;
 import wraithaven.conquest.client.GameWorld.LoopControls.LoopObjective;
@@ -25,7 +26,7 @@ public class Loop implements LoopObjective{
 	private BuildingCreator buildingCreator;
 	private PalleteRenderer palleteRenderer;
 	private boolean removePalette, createPalette;
-	public static final float ISO_ZOOM = 0.12f;
+	public static float ISO_ZOOM = 0.12f;
 	public Loop(Dimension screenRes, BuildingCreator buildingCreator){
 		this.screenRes=screenRes;
 		this.buildingCreator=buildingCreator;
@@ -98,7 +99,7 @@ public class Loop implements LoopObjective{
 		}
 	}
 	private void generateWorld(){
-		int chunkLimit = (BuildingCreator.WORLD_BOUNDS_SIZE-1)>>4;
+		int chunkLimit = (BuildingCreator.WORLD_BOUNDS_SIZE-1)>>Chunk.CHUNK_BITS;
 		int x, y, z;
 		for(x=0; x<=chunkLimit; x++)for(y=0; y<=chunkLimit; y++)for(z=0; z<=chunkLimit; z++)world.loadChunk(x, y, z);
 	}
@@ -117,6 +118,12 @@ public class Loop implements LoopObjective{
 		}
 		else userBlockHandler.mouseClick(button, action);
 	}
+	public void mouseWheel(long window, double xPos, double yPos){
+		if(inputController.iso){
+			ISO_ZOOM=(float)Math.max(ISO_ZOOM-yPos*0.001, 0.01);
+			MatrixUtils.setupOrtho(screenRes.width*ISO_ZOOM, screenRes.height*ISO_ZOOM, -1000, 1000);
+		}
+	}
 	public void key(long window, int key, int action){ inputController.onKey(window, key, action); }
 	public void disposePalette(){ removePalette=true; }
 	public void setPalette(){ createPalette=true; }
@@ -127,9 +134,5 @@ public class Loop implements LoopObjective{
 		GL11.glCullFace(GL11.GL_BACK);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-	}
-	@Override public void mouseWheel(long window, double xPos, double yPos){
-		// TODO Auto-generated method stub
-		
 	}
 }

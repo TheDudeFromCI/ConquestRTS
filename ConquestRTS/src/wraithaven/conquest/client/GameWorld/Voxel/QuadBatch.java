@@ -132,7 +132,7 @@ class QuadBatch{
 		if(edge==4){
 			vertexBuffer.put(q.data.get(35)).put(q.data.get(36)).put(q.data.get(37));
 			colorBuffer.put(q.data.get(12)).put(q.data.get(13)).put(q.data.get(14));
-			textureCoordBuffer.put(0.5f).put(0.5f);
+			textureCoordBuffer.put(q.scale?4:0.5f).put(q.scale?4:0.5f);
 		}
 	}
 	void renderPart(){

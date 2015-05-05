@@ -44,11 +44,15 @@ public class BuildCreatorWorld implements VoxelWorldListener{
 		if(chunk!=null)chunk.optimizeSide(0);
 		chunk=world.getChunk(chunkX+1, chunkY, chunkZ, false);
 		if(chunk!=null)chunk.optimizeSide(1);
+		chunk=world.getChunk(chunkX, chunkY+1, chunkZ, false);
+		if(chunk!=null)chunk.optimizeSide(2);
+		chunk=world.getChunk(chunkX, chunkY-1, chunkZ, false);
+		if(chunk!=null)chunk.optimizeSide(3);
 		chunk=world.getChunk(chunkX, chunkY, chunkZ-1, false);
 		if(chunk!=null)chunk.optimizeSide(4);
 		chunk=world.getChunk(chunkX, chunkY, chunkZ+1, false);
 		if(chunk!=null)chunk.optimizeSide(5);
 	}
-	public boolean isChunkVisible(Chunk chunk){ return !chunk.isHidden()&&camera.frustum.cubeInFrustum(chunk.startX, chunk.startY, chunk.startZ, 16); }
+	public boolean isChunkVisible(Chunk chunk){ return !chunk.isHidden()&&camera.frustum.cubeInFrustum(chunk.startX, chunk.startY, chunk.startZ, Chunk.BLOCKS_PER_CHUNK); }
 	public void unloadChunk(Chunk chunk){}
 }

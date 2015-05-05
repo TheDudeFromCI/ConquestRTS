@@ -1,12 +1,10 @@
 package wraithaven.conquest.client.BuildingCreator.BlockPalette;
 
 import org.lwjgl.opengl.GL11;
-import wraithaven.conquest.client.GameWorld.Voxel.CubeTextures;
 
 public class FloatingBlock{
 	float shiftRX, shiftRY;
 	float x, y, z;
-	CubeTextures cubeTextures;
 	private float rx, ry, tempY;
 	private static final float BLOCK_BOB_SPEED = 0.6f;
 	private static final float BLOCK_BOB_DISTANCE = 8;

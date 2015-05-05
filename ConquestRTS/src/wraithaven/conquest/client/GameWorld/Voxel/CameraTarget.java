@@ -14,11 +14,11 @@ public class CameraTarget{
 		lastChunk=null;
 		plotter.plot(cam.getPosition(), cam.getDirection(), range);
 		while(plotter.next()){
-			chunkX=v.x>>4;
-			chunkY=v.y>>4;
-			chunkZ=v.z>>4;
+			chunkX=v.x>>Chunk.CHUNK_BITS;
+			chunkY=v.y>>Chunk.CHUNK_BITS;
+			chunkZ=v.z>>Chunk.CHUNK_BITS;
 			if(lastChunk==null||lastChunk.chunkX!=chunkX||lastChunk.chunkY!=chunkY||lastChunk.chunkZ!=chunkZ)lastChunk=world.getChunk(chunkX, chunkY, chunkZ, load);
-			if(lastChunk!=null&&(callback.block=lastChunk.getSubBlock(v.x&15, v.y&15, v.z&15))!=null){
+			if(lastChunk!=null&&(callback.block=lastChunk.getBlock(v.x, v.y, v.z))!=null){
 				callback.side=plotter.getSideHit();
 				return callback;
 			}
@@ -31,11 +31,11 @@ public class CameraTarget{
 		lastChunk=null;
 		plotter.plot(cam.getGoalPosition(), cam.getGoalDirection(), range);
 		while(plotter.next()){
-			chunkX=v.x>>4;
-			chunkY=v.y>>4;
-			chunkZ=v.z>>4;
+			chunkX=v.x>>Chunk.CHUNK_BITS;
+			chunkY=v.y>>Chunk.CHUNK_BITS;
+			chunkZ=v.z>>Chunk.CHUNK_BITS;
 			if(lastChunk==null||lastChunk.chunkX!=chunkX||lastChunk.chunkY!=chunkY||lastChunk.chunkZ!=chunkZ)lastChunk=world.getChunk(chunkX, chunkY, chunkZ, load);
-			if(lastChunk!=null&&(callback.block=lastChunk.getSubBlock(v.x&15, v.y&15, v.z&15))!=null){
+			if(lastChunk!=null&&(callback.block=lastChunk.getBlock(v.x, v.y, v.z))!=null){
 				callback.side=plotter.getSideHit();
 				return callback;
 			}

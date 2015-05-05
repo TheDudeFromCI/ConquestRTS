@@ -87,12 +87,16 @@ public class VoxelWorld{
 		chunk=getContainingChunk(x, y, z);
 		return chunk==null?null:chunk.getBlock(x, y, z);
 	}
+	public Block setBlock(int x, int y, int z, BlockType type, BlockShape shape, CubeTextures cubeTextures){
+		chunk=getContainingChunk(x, y, z);
+		return chunk==null?null:chunk.setBlock(x, y, z, type, shape, cubeTextures);
+	}
 	public Block setBlock(int x, int y, int z, BlockType type){
 		chunk=getContainingChunk(x, y, z);
 		return chunk==null?null:chunk.setBlock(x, y, z, type);
 	}
-	public Chunk getContainingChunk(int x, int y, int z){ return getChunk(x>>4, y>>4, z>>4, true); }
-	public Chunk getContainingChunk(int x, int y, int z, boolean load){ return getChunk(x>>4, y>>4, z>>4, load); }
+	public Chunk getContainingChunk(int x, int y, int z){ return getChunk(x>>Chunk.CHUNK_BITS, y>>Chunk.CHUNK_BITS, z>>Chunk.CHUNK_BITS, true); }
+	public Chunk getContainingChunk(int x, int y, int z, boolean load){ return getChunk(x>>Chunk.CHUNK_BITS, y>>Chunk.CHUNK_BITS, z>>Chunk.CHUNK_BITS, load); }
 	public Chunk getChunk(int chunkX, int chunkY, int chunkZ){ return getChunk(chunkX, chunkY, chunkZ, true); }
 	public int getChunkCount(){ return chunkStorage.getChunkCount(); }
 	public void optimizeAll(){ for(int i = 0; i<chunkStorage.getChunkCount(); i++)chunkStorage.getChunk(i).optimize(); }

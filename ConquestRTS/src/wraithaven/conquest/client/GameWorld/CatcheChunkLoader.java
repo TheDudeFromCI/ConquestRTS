@@ -22,7 +22,7 @@ public class CatcheChunkLoader implements VoxelWorldListener{
 	private static final int CATCHE_RANGE = 10;
 	private static final int CATCHE_RANGE_SQUARED = CATCHE_RANGE*CATCHE_RANGE;
 	static final int WORLD_HEIGHT = 15;
-	static final int CHUNK_HEIGHT = WORLD_HEIGHT>>4;
+	static final int CHUNK_HEIGHT = WORLD_HEIGHT>>Chunk.CHUNK_BITS;
 	private static final double CAMERA_PING_SPEED = 0.333f;
 	public void setup(VoxelWorld world, Camera cam){
 		this.world=world;
@@ -72,9 +72,9 @@ public class CatcheChunkLoader implements VoxelWorldListener{
 	private void getPosition(){
 		callback=cameraTarget.getTargetBlock(world, 500, false);
 		if(callback.block==null){
-			camX=(int)Math.floor(cam.x)>>4;
-			camY=(int)Math.floor(cam.y)>>4;
-			camZ=(int)Math.floor(cam.z)>>4;
+			camX=(int)Math.floor(cam.x)>>Chunk.CHUNK_BITS;
+			camY=(int)Math.floor(cam.y)>>Chunk.CHUNK_BITS;
+			camZ=(int)Math.floor(cam.z)>>Chunk.CHUNK_BITS;
 		}else{
 			camX=callback.block.chunk.chunkX;
 			camY=callback.block.chunk.chunkY;
@@ -115,7 +115,7 @@ public class CatcheChunkLoader implements VoxelWorldListener{
 			}
 		}
 	}
-	public boolean isChunkVisible(Chunk chunk){ return !chunk.isHidden()&&cam.frustum.cubeInFrustum(chunk.startX, chunk.startY, chunk.startZ, 16); }
+	public boolean isChunkVisible(Chunk chunk){ return !chunk.isHidden()&&cam.frustum.cubeInFrustum(chunk.startX, chunk.startY, chunk.startZ, Chunk.BLOCKS_PER_CHUNK); }
 	public void loadChunk(Chunk chunk){ que.add(new VoxelChunkQue(world, chunk)); }
 	private static double getDistanceSquared(int x1, int y1, int z1, int x2, int y2, int z2){ return Math.pow(x1-x2, 2)+Math.pow(y1-y2, 2)+Math.pow(z1-z2, 2); }
 }
