@@ -1,24 +1,23 @@
-package wraithaven.conquest.client.GameWorld.Voxel;
+package wraithaven.conquest.client.GameWorld.Voxel; 
 
 import java.nio.FloatBuffer;
 
 public class CustomBlock extends Block{
 	private boolean block_dd, block_d0, block_du, block_0d, block_0u, block_ud, block_u0, block_uu;
-	private boolean xUpBlock, xDownBlock, yUpBlock, yDownBlock, zUpBlock, zDownBlock;
-	private final BlockShape shape;
+	protected final BlockShape shape;
 	private final CubeTextures textures;
 	private final SubBlock[] subBlocks = new SubBlock[512];
 	private static final float shadowIntensity = 0.65f;
-	CustomBlock(Chunk chunk, int x, int y, int z, BlockType type, BlockShape shape, CubeTextures textures){
+	protected CustomBlock(Chunk chunk, int x, int y, int z, BlockType type, BlockShape shape, CubeTextures textures){
 		super(chunk, x, y, z, type);
 		this.shape=shape;
 		this.textures=textures;
 	}
-	void build(){
+	public void build(){
 		for(int i = 0; i<subBlocks.length; i++)if(shape.getBlock(i))subBlocks[i]=new SubBlock();
 		optimize();
 	}
-	void destroy(){
+	public void destroy(){
 		int i, j;
 		for(i=0; i<subBlocks.length; i++){
 			if(subBlocks[i]==null)continue;
@@ -38,7 +37,7 @@ public class CustomBlock extends Block{
 					if(subBlocks[index]==null)continue;
 					for(j=0; j<6; j++){
 						if(shape.hasNeighbor(x, y, z, j)==0){
-							subBlocks[index].quads[j]=Cube.generateQuad(j, this.x+(x/8f), this.y+(y/8f), this.z+(z/8f), type.getRotation(textures.getRotation(j)), WHITE_COLORS, false);
+							subBlocks[index].quads[j]=Cube.generateQuad(j, this.x+(x/8f), this.y+(y/8f), this.z+(z/8f), type.getRotation(textures.getRotation(j)), WHITE_COLORS, false, generateTexturePoints(x, y, z, j, textures.getRotation(j)));
 							subBlocks[index].quads[j].centerPoint=updateShadows(subBlocks[index].quads[j].data, x, y, z, j);
 							getBatch(textures.getTexture(j)).addQuad(subBlocks[index].quads[j]);
 						}
@@ -47,29 +46,21 @@ public class CustomBlock extends Block{
 			}
 		}
 	}
-	void optimizeSide(int side){
-		Block block;
-		xUpBlock=(block=getTouchingBlock(0))!=null&&block.isSideShown(1);
-		xDownBlock=(block=getTouchingBlock(1))!=null&&block.isSideShown(0);
-		xUpBlock=(block=getTouchingBlock(2))!=null&&block.isSideShown(3);
-		xUpBlock=(block=getTouchingBlock(3))!=null&&block.isSideShown(2);
-		xUpBlock=(block=getTouchingBlock(4))!=null&&block.isSideShown(5);
-		xUpBlock=(block=getTouchingBlock(5))!=null&&block.isSideShown(4);
-		boolean nextBlock = getTouchingBlock(side)!=null;
+	public void optimizeSide(int side){
 		if(side==0||side==1){
 			int y, z;
 			int x = side==0?7:0;
-			for(y=0; y<8; y++)for(z=0; z<8; z++)optimizeSubBlockSide(BlockShape.getIndex(x, y, z), side, nextBlock, x, y, z);
+			for(y=0; y<8; y++)for(z=0; z<8; z++)optimizeSubBlockSide(BlockShape.getIndex(x, y, z), side, getSubBlock(x==7?8:-1, y, z), x, y, z);
 		}
 		if(side==2||side==3){
 			int x, z;
 			int y = side==2?7:0;
-			for(x=0; x<8; x++)for(z=0; z<8; z++)optimizeSubBlockSide(BlockShape.getIndex(x, y, z), side, nextBlock, x, y, z);
+			for(x=0; x<8; x++)for(z=0; z<8; z++)optimizeSubBlockSide(BlockShape.getIndex(x, y, z), side, getSubBlock(x, y==7?8:-1, z), x, y, z);
 		}
 		if(side==4||side==5){
 			int x, y;
 			int z = side==4?7:0;
-			for(x=0; x<8; x++)for(y=0; y<8; y++)optimizeSubBlockSide(BlockShape.getIndex(x, y, z), side, nextBlock, x, y, z);
+			for(x=0; x<8; x++)for(y=0; y<8; y++)optimizeSubBlockSide(BlockShape.getIndex(x, y, z), side, getSubBlock(x, y, z==7?8:-1), x, y, z);
 		}
 	}
 	private void optimizeSubBlockSide(int index, int side, boolean nextBlock, int x, int y, int z){
@@ -79,19 +70,19 @@ public class CustomBlock extends Block{
 				getBatch(textures.getTexture(side)).removeQuad(subBlocks[index].quads[side]);
 				subBlocks[index].quads[side]=null;
 			}else{
-				subBlocks[index].quads[side]=Cube.generateQuad(side, this.x+(x/8f), this.y+(y/8f), this.z+(z/8f), type.getRotation(textures.getRotation(side)), WHITE_COLORS, false);
+				subBlocks[index].quads[side]=Cube.generateQuad(side, this.x+(x/8f), this.y+(y/8f), this.z+(z/8f), type.getRotation(textures.getRotation(side)), WHITE_COLORS, false, generateTexturePoints(x, y, z, side, textures.getRotation(side)));
 				subBlocks[index].quads[side].centerPoint=updateShadows(subBlocks[index].quads[side].data, x, y, z, side);
 				getBatch(textures.getTexture(side)).addQuad(subBlocks[index].quads[side]);
 			}
-		}
+		}else if(subBlocks[index].quads[side]!=null)subBlocks[index].quads[side].centerPoint=updateShadows(subBlocks[index].quads[side].data, x, y, z, side);
 	}
-	private boolean getSubBlock(int x, int y, int z){
-		if(x>7)return xUpBlock;
-		if(x<0)return xDownBlock;
-		if(y>7)return yUpBlock;
-		if(y<0)return yDownBlock;
-		if(z>7)return zUpBlock;
-		if(z<0)return zDownBlock;
+	protected boolean getSubBlock(int x, int y, int z){
+		if(x<0||x>7||y<0||y>7||z<0||z>7){
+			Block block = chunk.world.getBlock(this.x+(x>>3), this.y+(y>>3), this.z+(z>>3));
+			if(block==null)return false;
+			if(block instanceof CustomBlock)return ((CustomBlock)block).shape.getBlock(x&7, y&7, z&7);
+			return true;
+		}
 		return shape.getBlock(x, y, z);
 	}
 	private boolean updateShadows(FloatBuffer data, int x, int y, int z, int side){
@@ -407,5 +398,189 @@ public class CustomBlock extends Block{
 		}
 		return false;
 	}
-	private QuadBatch getBatch(Texture texture){ return chunk.getBatch(texture); }
+	protected QuadBatch getBatch(Texture texture){ return chunk.getBatch(texture, true, x, y, z); }
+	float[] f = new float[5];
+	private float[] generateTexturePoints(int x, int y, int z, int side, int r){
+		if(side==0){
+			if(r==0){
+				f[0]=(7-z)/8f;
+				f[1]=1/8f;
+				f[2]=(7-y)/8f;
+				f[3]=1/8f;
+				f[4]=0;
+			}
+			if(r==1){
+				f[0]=(7-y)/8f;
+				f[1]=1/8f;
+				f[2]=z/8f;
+				f[3]=1/8f;
+				f[4]=0;
+			}
+			if(r==2){
+				f[0]=z/8f;
+				f[1]=1/8f;
+				f[2]=y/8f;
+				f[3]=1/8f;
+				f[4]=1;
+			}
+			if(r==3){
+				f[0]=y/8f;
+				f[1]=1/8f;
+				f[2]=(7-z)/8f;
+				f[3]=1/8f;
+				f[4]=2;
+			}
+		}
+		if(side==1){
+			if(r==0){
+				f[0]=y/8f;
+				f[1]=1/8f;
+				f[2]=z/8f;
+				f[3]=1/8f;
+				f[4]=0;
+			}
+			if(r==1){
+				f[0]=z/8f;
+				f[1]=1/8f;
+				f[2]=(7-y)/8f;
+				f[3]=1/8f;
+				f[4]=0;
+			}
+			if(r==2){
+				f[0]=(7-y)/8f;
+				f[1]=1/8f;
+				f[2]=(7-z)/8f;
+				f[3]=1/8f;
+				f[4]=1;
+			}
+			if(r==3){
+				f[0]=(7-z)/8f;
+				f[1]=1/8f;
+				f[2]=y/8f;
+				f[3]=1/8f;
+				f[4]=2;
+			}
+		}
+		if(side==2){
+			if(r==0){
+				f[0]=x/8f;
+				f[1]=1/8f;
+				f[2]=z/8f;
+				f[3]=1/8f;
+				f[4]=0;
+			}
+			if(r==1){
+				f[0]=z/8f;
+				f[1]=1/8f;
+				f[2]=(7-x)/8f;
+				f[3]=1/8f;
+				f[4]=0;
+			}
+			if(r==2){
+				f[0]=(7-x)/8f;
+				f[1]=1/8f;
+				f[2]=(7-z)/8f;
+				f[3]=1/8f;
+				f[4]=1;
+			}
+			if(r==3){
+				f[0]=(7-z)/8f;
+				f[1]=1/8f;
+				f[2]=x/8f;
+				f[3]=1/8f;
+				f[4]=2;
+			}
+		}
+		if(side==3){
+			if(r==0){
+				f[0]=(7-z)/8f;
+				f[1]=1/8f;
+				f[2]=(7-x)/8f;
+				f[3]=1/8f;
+				f[4]=0;
+			}
+			if(r==1){
+				f[0]=(7-x)/8f;
+				f[1]=1/8f;
+				f[2]=z/8f;
+				f[3]=1/8f;
+				f[4]=0;
+			}
+			if(r==2){
+				f[0]=z/8f;
+				f[1]=1/8f;
+				f[2]=x/8f;
+				f[3]=1/8f;
+				f[4]=1;
+			}
+			if(r==3){
+				f[0]=x/8f;
+				f[1]=1/8f;
+				f[2]=(7-z)/8f;
+				f[3]=1/8f;
+				f[4]=2;
+			}
+		}
+		if(side==4){
+			if(r==0){
+				f[0]=(7-y)/8f;
+				f[1]=1/8f;
+				f[2]=(7-x)/8f;
+				f[3]=1/8f;
+				f[4]=0;
+			}
+			if(r==1){
+				f[0]=(7-x)/8f;
+				f[1]=1/8f;
+				f[2]=y/8f;
+				f[3]=1/8f;
+				f[4]=0;
+			}
+			if(r==2){
+				f[0]=y/8f;
+				f[1]=1/8f;
+				f[2]=x/8f;
+				f[3]=1/8f;
+				f[4]=1;
+			}
+			if(r==3){
+				f[0]=x/8f;
+				f[1]=1/8f;
+				f[2]=(7-y)/8f;
+				f[3]=1/8f;
+				f[4]=2;
+			}
+		}
+		if(side==5){
+			if(r==0){
+				f[0]=x/8f;
+				f[1]=1/8f;
+				f[2]=y/8f;
+				f[3]=1/8f;
+				f[4]=0;
+			}
+			if(r==1){
+				f[0]=y/8f;
+				f[1]=1/8f;
+				f[2]=(7-x)/8f;
+				f[3]=1/8f;
+				f[4]=0;
+			}
+			if(r==2){
+				f[0]=(7-x)/8f;
+				f[1]=1/8f;
+				f[2]=(7-y)/8f;
+				f[3]=1/8f;
+				f[4]=1;
+			}
+			if(r==3){
+				f[0]=(7-y)/8f;
+				f[1]=1/8f;
+				f[2]=x/8f;
+				f[3]=1/8f;
+				f[4]=2;
+			}
+		}
+		return f;
+	}
 }

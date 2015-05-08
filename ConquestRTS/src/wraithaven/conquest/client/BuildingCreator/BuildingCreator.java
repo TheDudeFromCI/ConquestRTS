@@ -9,13 +9,13 @@ public class BuildingCreator{
 	private WindowInitalizer init;
 	private MainLoop loop;
 	public static final int WORLD_BOUNDS_SIZE = 128;
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
 	public void launch(){
 		loop=new MainLoop();
 		loop.create(createInitalizer());
 	}
 	private WindowInitalizer createInitalizer(){
-		WindowInitalizer init = new WindowInitalizer();
+		init=new WindowInitalizer();
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		init.height=dimension.height;
 		init.width=dimension.width;

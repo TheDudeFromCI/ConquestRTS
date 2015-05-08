@@ -1,10 +1,10 @@
 package wraithaven.conquest.client.BuildingCreator;
 
 import static org.lwjgl.glfw.GLFW.*;
+import wraithaven.conquest.client.GameWorld.Voxel.BlockShapes.Cube;
 import wraithaven.conquest.client.GameWorld.BlockTextures;
 import wraithaven.conquest.client.GameWorld.Voxel.CubeTextures;
 import wraithaven.conquest.client.GameWorld.Voxel.BlockShape;
-import wraithaven.conquest.client.GameWorld.Voxel.BlockShapes.Pyramid;
 import wraithaven.conquest.client.GameWorld.Voxel.CameraTarget;
 import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorld;
 import wraithaven.conquest.client.GameWorld.Voxel.Camera;
@@ -21,16 +21,13 @@ public class UserBlockHandler{
 	private final Camera camera;
 	private final VoxelWorld world;
 	private final CameraTarget cameraTarget;
-	private final InputController controller;
 	private static final double CLICK_PING_RATE = 0.2;
-	public UserBlockHandler(VoxelWorld world, Camera camera, InputController controller){
+	public UserBlockHandler(VoxelWorld world, Camera camera){
 		cameraTarget=new CameraTarget(this.camera=camera);
 		this.world=world;
-		this.controller=controller;
-		cameraSphere.r=0.3f;
+		cameraSphere.r=0.1f;
 	}
 	public void mouseClick(int button, int action){
-		if(controller.iso)return;
 		if(button==GLFW_MOUSE_BUTTON_LEFT){
 			if(action==GLFW_PRESS){
 				holdingRightButton=true;
@@ -57,15 +54,15 @@ public class UserBlockHandler{
 		cameraSphere.z=camera.goalZ;
 		return intersectsWith(boundingBox, cameraSphere);
 	}
-	private BlockShape shape = new Pyramid();
+	private BlockShape shape = new Cube();
 	private CubeTextures cubeTextures = new CubeTextures();
 	{
-		cubeTextures.xUp=BlockTextures.grass.getTexture();
-		cubeTextures.xDown=BlockTextures.grass.getTexture();
-		cubeTextures.yUp=BlockTextures.grass.getTexture();
-		cubeTextures.yDown=BlockTextures.grass.getTexture();
-		cubeTextures.zUp=BlockTextures.grass.getTexture();
-		cubeTextures.zDown=BlockTextures.grass.getTexture();
+		cubeTextures.xUp=BlockTextures.sideDirt.getTexture();
+		cubeTextures.xDown=BlockTextures.sideDirt.getTexture();
+		cubeTextures.yUp=BlockTextures.sideDirt.getTexture();
+		cubeTextures.yDown=BlockTextures.sideDirt.getTexture();
+		cubeTextures.zUp=BlockTextures.sideDirt.getTexture();
+		cubeTextures.zDown=BlockTextures.sideDirt.getTexture();
 	}
 	private void placeBlock(){
 		callback=cameraTarget.getTargetBlock(world, 500, false);

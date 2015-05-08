@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import wraithaven.conquest.client.GameWorld.LoopControls.VoxelWorldBounds;
 import wraithaven.conquest.client.GameWorld.LoopControls.VoxelWorldListener;
-import static org.lwjgl.opengl.GL11.*;
 
 public class VoxelWorld{
 	private boolean needsRebatch;
@@ -67,21 +66,16 @@ public class VoxelWorld{
 			});
 			needsRebatch=false;
 		}
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glEnableClientState(GL_COLOR_ARRAY);
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		Texture bound = null;
-		for(QuadBatch batch : tempQuads){
+		QuadBatch batch;
+		for(int i = 0; i<tempQuads.size(); i++){
+			batch=tempQuads.get(i);
 			if(bound!=batch.getTexture()){
-				if(bound!=null)glEnd();
 				bound=batch.getTexture();
 				bound.bind();
 			}
 			batch.renderPart();
 		}
-		glDisableClientState(GL_VERTEX_ARRAY);
-		glDisableClientState(GL_COLOR_ARRAY);
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	}
 	public Block getBlock(int x, int y, int z){
 		chunk=getContainingChunk(x, y, z);

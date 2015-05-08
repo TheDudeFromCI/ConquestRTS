@@ -13,6 +13,7 @@ public class Texture{
 	private int textureId;
 	private static final int BYTES_PER_PIXEL = 4;
 	public Texture(File file, int mipmapLevel, MipmapQuality quality){ textureId=loadTexture(loadImage(file), mipmapLevel, quality); }
+	public Texture(BufferedImage buf, int mipmapLevel, MipmapQuality quality){ textureId=loadTexture(buf, mipmapLevel, quality); }
 	public void bind(){ GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId); }
 	public int getId(){ return textureId; }
 	public void dispose(){ GL11.glDeleteTextures(textureId); }

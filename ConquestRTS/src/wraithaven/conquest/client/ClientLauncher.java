@@ -5,7 +5,7 @@ import wraithaven.conquest.client.GameWorld.WindowUtil.Game;
 
 public class ClientLauncher{
 	static Game game;
-	private static String assetFolder;
+	public static String assetFolder;
 	public static String screenShotFolder;
 	public static void main(String[] args){
 		String dir = System.getProperty("user.dir");

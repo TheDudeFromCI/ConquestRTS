@@ -21,7 +21,7 @@ public class BuildCreatorWorld implements VoxelWorldListener{
 		textures.xDown=BlockTextures.sideDirt.getTexture();
 		textures.xDownRotation=1;
 		textures.yUp=BlockTextures.grass.getTexture();
-		textures.yUpRotation=0;
+		textures.yUpRotation=3;
 		textures.yDown=BlockTextures.dirt.getTexture();
 		textures.yDownRotation=0;
 		textures.zUp=BlockTextures.sideDirt.getTexture();

@@ -7,13 +7,18 @@ import wraithaven.conquest.client.GameWorld.GLGuiComponents;
 import wraithaven.conquest.client.GameWorld.BlockTextures;
 
 public class GuiHandler{
+	private IconManager iconManager;
 	private GLGuiComponents components;
 	private static final float CURSOR_SIZE = 0.03f;
 	public GuiHandler(Dimension screenSize){
 		components=new GLGuiComponents(screenSize);
 		components.addComponent(createCursor(screenSize));
+		iconManager=new IconManager();
 	}
-	public void render(){ components.render(); }
+	public void render(){
+		components.render();
+		iconManager.render();
+	}
 	private static GLGuiImage createCursor(Dimension screenSize){
 		GLGuiImage i = new GLGuiImage(new File(BlockTextures.getFolder(), "Cursor.png"));
 		i.x=0.5f-CURSOR_SIZE/2f;

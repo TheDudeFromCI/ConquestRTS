@@ -16,29 +16,29 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class Loop implements LoopObjective{
 	private Camera camera;
-	@SuppressWarnings("unused")private float aspect;
 	private VoxelWorld world;
 	private BuildCreatorWorld creatorWorld;
 	private InputController inputController;
 	private UserBlockHandler userBlockHandler;
 	private GuiHandler guiHandler;
-	private Dimension screenRes;
+	public static Dimension screenRes;
 	private BuildingCreator buildingCreator;
 	private PalleteRenderer palleteRenderer;
 	private boolean removePalette, createPalette;
 	public static float ISO_ZOOM = 0.12f;
+	public static final float CAMERA_NEAR_CLIP = 0.05f;
 	public Loop(Dimension screenRes, BuildingCreator buildingCreator){
-		this.screenRes=screenRes;
+		Loop.screenRes=screenRes;
 		this.buildingCreator=buildingCreator;
 	}
 	public void preLoop(){
-		camera=new Camera(70, aspect=(screenRes.width/(float)screenRes.height), 0.15f, 1000, false);
+		camera=new Camera(70, screenRes.width/(float)screenRes.height, CAMERA_NEAR_CLIP, 1000, false);
 		BlockTextures.genTextures();
 		creatorWorld=new BuildCreatorWorld();
 		world=new VoxelWorld(creatorWorld, new VoxelWorldBounds(0, 0, 0, BuildingCreator.WORLD_BOUNDS_SIZE-1, BuildingCreator.WORLD_BOUNDS_SIZE-1, BuildingCreator.WORLD_BOUNDS_SIZE-1));
 		creatorWorld.setup(world, camera);
-		inputController=new InputController(buildingCreator, world, camera, buildingCreator.getWindow(), screenRes, this);
-		userBlockHandler=new UserBlockHandler(world, camera, inputController);
+		inputController=new InputController(buildingCreator, camera, buildingCreator.getWindow(), this);
+		userBlockHandler=new UserBlockHandler(world, camera);
 		guiHandler=new GuiHandler(screenRes);
 		generateWorld();
 		setupCameraPosition();
@@ -79,14 +79,10 @@ public class Loop implements LoopObjective{
 				GL11.glEnd();
 			}
 			GL11.glPopMatrix();
-			if(!inputController.iso){
-				guiHandler.render();
-				if(inputController.iso)MatrixUtils.setupOrtho(screenRes.width*ISO_ZOOM, screenRes.height*ISO_ZOOM, -1000, 1000);
-				else MatrixUtils.setupPerspective(70, screenRes.width/(float)screenRes.height, 0.15f, 1000);
-			}
+			guiHandler.render();
+			MatrixUtils.setupPerspective(70, screenRes.width/(float)screenRes.height, CAMERA_NEAR_CLIP, 1000);
 		}
 		if(removePalette){
-			palleteRenderer.dispose();
 			palleteRenderer=null;
 			removePalette=false;
 			glfwSetCursorPos(buildingCreator.getWindow(), screenRes.width/2.0, screenRes.height/2.0);
@@ -118,21 +114,19 @@ public class Loop implements LoopObjective{
 		}
 		else userBlockHandler.mouseClick(button, action);
 	}
-	public void mouseWheel(long window, double xPos, double yPos){
-		if(inputController.iso){
-			ISO_ZOOM=(float)Math.max(ISO_ZOOM-yPos*0.001, 0.01);
-			MatrixUtils.setupOrtho(screenRes.width*ISO_ZOOM, screenRes.height*ISO_ZOOM, -1000, 1000);
-		}
-	}
 	public void key(long window, int key, int action){ inputController.onKey(window, key, action); }
 	public void disposePalette(){ removePalette=true; }
 	public void setPalette(){ createPalette=true; }
 	public boolean hasPalette(){ return palleteRenderer!=null; }
+	public void mouseWheel(long window, double xPos, double yPos){}
 	private static void setupOGL(){
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glCullFace(GL11.GL_BACK);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+		GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+		GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 	}
 }

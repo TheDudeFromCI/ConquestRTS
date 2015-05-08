@@ -88,9 +88,9 @@ public class Chunk{
 			block.chunk.setNeedsRebatch();
 			if(open){
 				block.showSide(side, open);
-				block.chunk.getBatch(block.type.getTexture(side)).addQuad(block.getQuad(side));
+				block.chunk.getBatch(block.type.getTexture(side), false, 0, 0, 0).addQuad(block.getQuad(side));
 			}else{
-				block.chunk.getBatch(block.type.getTexture(side)).removeQuad(block.getQuad(side));
+				block.chunk.getBatch(block.type.getTexture(side), false, 0, 0, 0).removeQuad(block.getQuad(side));
 				block.showSide(side, open);
 			}
 		}
@@ -162,13 +162,22 @@ public class Chunk{
 		if(side==5)return (world.bounds==null||block.z>world.bounds.startZ)&&getQuickBlock(block.x, block.y, block.z-1)==null;
 		return true;
 	}
-	QuadBatch getBatch(Texture texture){
+	QuadBatch getBatch(Texture texture, boolean small, int x, int y, int z){
+		x=x&HIGH_BLOCK_COUNT/4;
+		y=y&HIGH_BLOCK_COUNT/4;
+		z=z&HIGH_BLOCK_COUNT/4;
 		QuadBatch batch;
 		for(int i = 0; i<batches.size(); i++){
 			batch=batches.get(i);
-			if(batch.getTexture()==texture)return batch;
+			if(batch.getTexture()==texture&&batch.small==small){
+				if(small){
+					if(batch.x==x&&batch.y==y&&batch.z==z)return batch;
+					continue;
+				}
+				return batch;
+			}
 		}
-		batch=new QuadBatch(texture);
+		batch=new QuadBatch(texture, small, x, y, z);
 		batches.add(batch);
 		return batch;
 	}
@@ -185,7 +194,7 @@ public class Chunk{
 	void addHidden(){ hidden++; }
 	void removeHidden(){ hidden--; }
 	public boolean isHidden(){ return hidden==blocks.length; }
-	private void removeBlockQuads(Block block){ for(int i = 0; i<6; i++)getBatch(block.type.getTexture(i)).removeQuad(block.getQuad(i)); }
+	private void removeBlockQuads(Block block){ for(int i = 0; i<6; i++)getBatch(block.type.getTexture(i), false, 0, 0, 0).removeQuad(block.getQuad(i)); }
 	public void optimize(){ for(int i = 0; i<blocks.length; i++)optimizeBlock(blocks[i]); }
 	private static int getIndex(int x, int y, int z){ return (x&HIGH_BLOCK_COUNT)*X_OFFSET+(y&HIGH_BLOCK_COUNT)*Y_OFFSET+(z&HIGH_BLOCK_COUNT)*Z_OFFSET; }
 }
