@@ -41,39 +41,15 @@ public class Quad{
 		data.put(39, data.get(39)+z);
 	}
 	private static void feedTexturePositions(FloatBuffer data, float[] rotations, float[] texturePositions){
-		if(texturePositions[4]==1){
-			data.put(ROTATION_2[0]*texturePositions[1]+texturePositions[0]);
-			data.put(ROTATION_2[1]*texturePositions[3]+texturePositions[2]);
-			data.put(ROTATION_2[2]*texturePositions[1]+texturePositions[0]);
-			data.put(ROTATION_2[3]*texturePositions[3]+texturePositions[2]);
-			data.put(ROTATION_2[4]*texturePositions[1]+texturePositions[0]);
-			data.put(ROTATION_2[5]*texturePositions[3]+texturePositions[2]);
-			data.put(ROTATION_2[6]*texturePositions[1]+texturePositions[0]);
-			data.put(ROTATION_2[7]*texturePositions[3]+texturePositions[2]);
-			data.put(ROTATION_2[8]*texturePositions[1]+texturePositions[0]);
-			data.put(ROTATION_2[9]*texturePositions[3]+texturePositions[2]);
-		}else if(texturePositions[4]==2){
-			data.put(ROTATION_3[0]*texturePositions[1]+texturePositions[0]);
-			data.put(ROTATION_3[1]*texturePositions[3]+texturePositions[2]);
-			data.put(ROTATION_3[2]*texturePositions[1]+texturePositions[0]);
-			data.put(ROTATION_3[3]*texturePositions[3]+texturePositions[2]);
-			data.put(ROTATION_3[4]*texturePositions[1]+texturePositions[0]);
-			data.put(ROTATION_3[5]*texturePositions[3]+texturePositions[2]);
-			data.put(ROTATION_3[6]*texturePositions[1]+texturePositions[0]);
-			data.put(ROTATION_3[7]*texturePositions[3]+texturePositions[2]);
-			data.put(ROTATION_3[8]*texturePositions[1]+texturePositions[0]);
-			data.put(ROTATION_3[9]*texturePositions[3]+texturePositions[2]);
-		}else{
-			data.put(rotations[0]*texturePositions[1]+texturePositions[0]);
-			data.put(rotations[1]*texturePositions[3]+texturePositions[2]);
-			data.put(rotations[2]*texturePositions[1]+texturePositions[0]);
-			data.put(rotations[3]*texturePositions[3]+texturePositions[2]);
-			data.put(rotations[4]*texturePositions[1]+texturePositions[0]);
-			data.put(rotations[5]*texturePositions[3]+texturePositions[2]);
-			data.put(rotations[6]*texturePositions[1]+texturePositions[0]);
-			data.put(rotations[7]*texturePositions[3]+texturePositions[2]);
-			data.put(rotations[8]*texturePositions[1]+texturePositions[0]);
-			data.put(rotations[9]*texturePositions[3]+texturePositions[2]);
-		}
+		data.put(rotations[0]*texturePositions[1]+texturePositions[0]);
+		data.put(rotations[1]*texturePositions[3]+texturePositions[2]);
+		data.put(rotations[2]*texturePositions[1]+texturePositions[0]);
+		data.put(rotations[3]*texturePositions[3]+texturePositions[2]);
+		data.put(rotations[4]*texturePositions[1]+texturePositions[0]);
+		data.put(rotations[5]*texturePositions[3]+texturePositions[2]);
+		data.put(rotations[6]*texturePositions[1]+texturePositions[0]);
+		data.put(rotations[7]*texturePositions[3]+texturePositions[2]);
+		data.put(rotations[8]*texturePositions[1]+texturePositions[0]);
+		data.put(rotations[9]*texturePositions[3]+texturePositions[2]);
 	}
 }

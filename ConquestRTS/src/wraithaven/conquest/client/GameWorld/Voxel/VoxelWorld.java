@@ -57,7 +57,7 @@ public class VoxelWorld{
 			for(int i = 0; i<chunkStorage.getChunkCount(); i++){
 				chunk=chunkStorage.getChunk(i);
 				if(worldListener.isChunkVisible(chunk)){
-					if(chunk.needsBatchUpdate)chunk.updateBatches();
+					if(chunk.needsRebatch())chunk.updateBatches();
 					tempQuads.addAll(chunk.batches);
 				}
 			}

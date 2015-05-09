@@ -25,7 +25,7 @@ public class UserBlockHandler{
 	public UserBlockHandler(VoxelWorld world, Camera camera){
 		cameraTarget=new CameraTarget(this.camera=camera);
 		this.world=world;
-		cameraSphere.r=0.1f;
+		cameraSphere.r=InputController.CAMERA_RADIUS;
 	}
 	public void mouseClick(int button, int action){
 		if(button==GLFW_MOUSE_BUTTON_LEFT){

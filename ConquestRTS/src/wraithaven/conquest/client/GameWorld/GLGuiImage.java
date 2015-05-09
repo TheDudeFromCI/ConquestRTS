@@ -7,4 +7,5 @@ public class GLGuiImage{
 	Texture texture;
 	public float x, y, z, w, h;
 	public GLGuiImage(File file){ texture=new Texture(file, 0, null); }
+	public GLGuiImage(Texture texture){ this.texture=texture; }
 }

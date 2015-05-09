@@ -1,6 +1,8 @@
 package wraithaven.conquest.client.BuildingCreator.BlockPalette;
 
 import java.util.ArrayList;
+import wraithaven.conquest.client.BuildingCreator.Loop;
+import wraithaven.conquest.client.BuildingCreator.GuiHandler;
 import wraithaven.conquest.client.GameWorld.Voxel.Texture;
 import wraithaven.conquest.client.GameWorld.Voxel.BlockShape;
 import wraithaven.conquest.client.GameWorld.Voxel.CubeTextures;
@@ -8,33 +10,30 @@ import wraithaven.conquest.client.GameWorld.Voxel.QuadBatch;
 import static org.lwjgl.opengl.GL11.*;
 
 public class BlockIcon implements ChunklessBlockHolder{
-	private int itemSlot;
-	private float shiftRX, shiftRY;
-	private float x, y, z;
-	private float rx, ry, tempY;
+	public int itemSlot;
+	private float shiftRY;
 	private final ArrayList<QuadBatch> batches = new ArrayList();
 	private final ChunklessBlock block;
-	private static final float BLOCK_BOB_SPEED = 0.6f;
-	private static final float BLOCK_BOB_DISTANCE = 8;
-	private static final float BLOCK_HOVER_SPEED = 0.25f;
-	private static final float BLOCK_HOVER_DISTANCE = 0.1f;
+	private final float initalRandomSpin;
+	private static final float SPIN_SPEED = 30;
+	private static final float BLOCK_PITCH = 30;
+	public static float BLOCK_ZOOM = 40;
 	public BlockIcon(BlockShape shape, CubeTextures textures){
 		block=new ChunklessBlock(this, shape, textures);
 		block.build();
+		for(int i = 0; i<6; i++)block.optimizeSide(i);
 		for(int i = 0; i<batches.size(); i++)batches.get(i).recompileBuffer();
+		initalRandomSpin=(float)(Math.random()*10);
 	}
 	public void update(double time){
-		rx=(float)Math.cos(time*BLOCK_BOB_SPEED)*BLOCK_BOB_DISTANCE+30;
-		ry=(float)Math.sin(time*BLOCK_BOB_SPEED)*BLOCK_BOB_DISTANCE+45;
-		tempY=(float)Math.sin(time*BLOCK_HOVER_SPEED*0.9f)*BLOCK_HOVER_DISTANCE;
+		time+=initalRandomSpin;
+		shiftRY=(float)((time*SPIN_SPEED)%360);
 	}
 	public void render(){
-		x=getX(itemSlot);
-		y=getY(itemSlot);
 		glPushMatrix();
-		glTranslatef(x, y+tempY, z);
-		glRotatef(rx+shiftRX, 1, 0, 0);
-		glRotatef(ry+shiftRY, 0, 1, 0);
+		glTranslatef(getX(itemSlot), getY(itemSlot), 0);
+		glRotatef(shiftRY, 0, 1, 0);
+		glRotatef(BLOCK_PITCH, 1, 0, 0);
 		glTranslatef(-0.5f, -0.5f, -0.5f);
 		for(int i = 0; i<batches.size(); i++){
 			batches.get(i).getTexture().bind();
@@ -52,10 +51,6 @@ public class BlockIcon implements ChunklessBlockHolder{
 		batches.add(batch);
 		return batch;
 	}
-	private static float getX(int id){
-		return 0;
-	}
-	private static float getY(int id){
-		return 0;
-	}
+	private static float getX(int id){ return (id<10?1:-1)*(1-GuiHandler.HOTBAR_SLOT)*(BLOCK_ZOOM/2f); }
+	private static float getY(int id){ return (((0.5f-((GuiHandler.HOTBAR_SLOT*Loop.screenRes.width/Loop.screenRes.height)*10)/2f-GuiHandler.HOTBAR_SLOT/2f)+(GuiHandler.HOTBAR_SLOT*Loop.screenRes.width/Loop.screenRes.height)*(id%10))-0.5f+GuiHandler.HOTBAR_SLOT)*BLOCK_ZOOM; }
 }

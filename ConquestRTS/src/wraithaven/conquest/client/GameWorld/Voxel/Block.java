@@ -7,7 +7,7 @@ public class Block{
 	public final Chunk chunk;
 	public final BlockType type;
 	protected static final float[] WHITE_COLORS = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-	private static final float[] TEXTURE_POSITIONS = {0, 1, 0, 1, 0};
+	protected static final float[] TEXTURE_POSITIONS = {0, 1, 0, 1, 0};
 	Block(Chunk chunk, int x, int y, int z, BlockType type){
 		this.x=x;
 		this.y=y;
@@ -15,7 +15,7 @@ public class Block{
 		this.chunk=chunk;
 		this.type=type;
 	}
-	private void setHidden(boolean hidden){
+	protected void setHidden(boolean hidden){
 		if(this.hidden==hidden)return;
 		this.hidden=hidden;
 		if(hidden)chunk.addHidden();
@@ -43,5 +43,5 @@ public class Block{
 	public Quad getQuad(int side){ return quads[side]; }
 	public boolean isHidden(){ return hidden; }
 	boolean isSideShown(int side){ return quads[side]!=null; }
-	private boolean isFullyHidden(){ return quads[0]!=null&&quads[1]!=null&&quads[2]!=null&&quads[3]!=null&&quads[4]!=null&&quads[5]!=null; }
+	protected boolean isFullyHidden(){ return quads[0]!=null&&quads[1]!=null&&quads[2]!=null&&quads[3]!=null&&quads[4]!=null&&quads[5]!=null; }
 }

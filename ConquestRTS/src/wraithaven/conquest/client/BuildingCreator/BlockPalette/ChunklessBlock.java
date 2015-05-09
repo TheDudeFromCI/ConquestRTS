@@ -19,4 +19,5 @@ public class ChunklessBlock extends CustomBlock{
 	}
 	@Override public Block getTouchingBlock(int side){ return null; }
 	@Override protected QuadBatch getBatch(Texture texture){ return holder.getBatch(texture); }
+	@Override protected QuadBatch getLargeBatch(Texture texture){ return holder.getBatch(texture); }
 }

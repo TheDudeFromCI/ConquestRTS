@@ -30,6 +30,7 @@ public class InputController{
 	private final IntBuffer screenWidth = BufferUtils.createIntBuffer(1);
 	private final IntBuffer screenHeight = BufferUtils.createIntBuffer(1);
 	private final BuildingCreator buildingCreator;
+	public static final float CAMERA_RADIUS = 0.41f;
 	public InputController(BuildingCreator buildingCreator, Camera cam, long window, Loop loop){
 		this.cam=cam;
 		this.window=window;
@@ -39,7 +40,7 @@ public class InputController{
 		glfwGetWindowSize(window, screenWidth, screenHeight);
 		screenWidth.put(0, screenWidth.get(0)/2);
 		screenHeight.put(0, screenHeight.get(0)/2);
-		cameraSphere.r=0.1f;
+		cameraSphere.r=CAMERA_RADIUS;
 	}
 	public void onKey(long window, int key, int action){
 		if(key==GLFW.GLFW_KEY_F12&&action==GLFW.GLFW_RELEASE)GLFW.glfwSetWindowShouldClose(window, GL11.GL_TRUE);

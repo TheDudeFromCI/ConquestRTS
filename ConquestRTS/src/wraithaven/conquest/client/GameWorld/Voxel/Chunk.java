@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Chunk{
 	private boolean open;
-	boolean needsBatchUpdate;
+	private boolean needsBatchUpdate;
 	private final Block[] blocks = new Block[BLOCKS_PER_CHUNK*BLOCKS_PER_CHUNK*BLOCKS_PER_CHUNK];
 	private int hidden = blocks.length;
 	public final int chunkX, chunkY, chunkZ;
@@ -81,6 +81,12 @@ public class Chunk{
 		if(block==null)return;
 		if(block instanceof CustomBlock){
 			((CustomBlock)block).optimizeSide(side);
+			if(updateShadows){
+				if(block.quads[side]!=null){
+					block.quads[side].centerPoint=block.type.setupShadows(block.quads[side].data, side, block.x, block.y, block.z);
+					block.chunk.setNeedsRebatch();
+				}
+			}
 			return;
 		}
 		open=block.chunk.isNeighborOpen(block, side);
@@ -101,7 +107,7 @@ public class Chunk{
 			}
 		}
 	}
-	private void setNeedsRebatch(){
+	public void setNeedsRebatch(){
 		needsBatchUpdate=true;
 		world.setNeedsRebatch();
 	}
@@ -196,5 +202,6 @@ public class Chunk{
 	public boolean isHidden(){ return hidden==blocks.length; }
 	private void removeBlockQuads(Block block){ for(int i = 0; i<6; i++)getBatch(block.type.getTexture(i), false, 0, 0, 0).removeQuad(block.getQuad(i)); }
 	public void optimize(){ for(int i = 0; i<blocks.length; i++)optimizeBlock(blocks[i]); }
+	public boolean needsRebatch(){ return needsBatchUpdate; }
 	private static int getIndex(int x, int y, int z){ return (x&HIGH_BLOCK_COUNT)*X_OFFSET+(y&HIGH_BLOCK_COUNT)*Y_OFFSET+(z&HIGH_BLOCK_COUNT)*Z_OFFSET; }
 }

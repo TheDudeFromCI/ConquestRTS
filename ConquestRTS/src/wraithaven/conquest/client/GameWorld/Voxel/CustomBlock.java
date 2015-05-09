@@ -5,6 +5,7 @@ import java.nio.FloatBuffer;
 public class CustomBlock extends Block{
 	private boolean block_dd, block_d0, block_du, block_0d, block_0u, block_ud, block_u0, block_uu;
 	protected final BlockShape shape;
+	private final float[] texturePoints = new float[4];
 	private final CubeTextures textures;
 	private final SubBlock[] subBlocks = new SubBlock[512];
 	private static final float shadowIntensity = 0.65f;
@@ -27,6 +28,11 @@ public class CustomBlock extends Block{
 			}
 			subBlocks[i]=null;
 		}
+		for(j=0; j<6; j++){
+			if(quads[j]==null)continue;
+			getLargeBatch(textures.getTexture(j)).removeQuad(quads[j]);
+			quads[j]=null;
+		}
 	}
 	private void optimize(){
 		int x, y, z, index, j;
@@ -40,6 +46,7 @@ public class CustomBlock extends Block{
 							subBlocks[index].quads[j]=Cube.generateQuad(j, this.x+(x/8f), this.y+(y/8f), this.z+(z/8f), type.getRotation(textures.getRotation(j)), WHITE_COLORS, false, generateTexturePoints(x, y, z, j, textures.getRotation(j)));
 							subBlocks[index].quads[j].centerPoint=updateShadows(subBlocks[index].quads[j].data, x, y, z, j);
 							getBatch(textures.getTexture(j)).addQuad(subBlocks[index].quads[j]);
+							if(chunk!=null)chunk.setNeedsRebatch();
 						}
 					}
 				}
@@ -47,6 +54,24 @@ public class CustomBlock extends Block{
 		}
 	}
 	public void optimizeSide(int side){
+		if(shape.fullSide(side)){
+			boolean nearBlock = getTouchingBlock(side)!=null;
+			if(nearBlock!=(quads[side]==null)){
+				if(nearBlock){
+					getLargeBatch(textures.getTexture(side)).removeQuad(quads[side]);
+					quads[side]=null;
+					if(isFullyHidden())setHidden(true);
+					else setHidden(false);
+				}else{
+					quads[side]=Cube.generateQuad(side, x, y, z, textures.getRotation(side), WHITE_COLORS, true, TEXTURE_POSITIONS);
+					getLargeBatch(textures.getTexture(side)).addQuad(quads[side]);
+					if(isFullyHidden())setHidden(true);
+					else setHidden(false);
+				}
+				if(chunk!=null)chunk.setNeedsRebatch();
+			}
+			return;
+		}
 		if(side==0||side==1){
 			int y, z;
 			int x = side==0?7:0;
@@ -70,10 +95,11 @@ public class CustomBlock extends Block{
 				getBatch(textures.getTexture(side)).removeQuad(subBlocks[index].quads[side]);
 				subBlocks[index].quads[side]=null;
 			}else{
-				subBlocks[index].quads[side]=Cube.generateQuad(side, this.x+(x/8f), this.y+(y/8f), this.z+(z/8f), type.getRotation(textures.getRotation(side)), WHITE_COLORS, false, generateTexturePoints(x, y, z, side, textures.getRotation(side)));
+				subBlocks[index].quads[side]=Cube.generateQuad(side, this.x+(x/8f), this.y+(y/8f), this.z+(z/8f), textures.getRotation(side), WHITE_COLORS, false, generateTexturePoints(x, y, z, side, textures.getRotation(side)));
 				subBlocks[index].quads[side].centerPoint=updateShadows(subBlocks[index].quads[side].data, x, y, z, side);
 				getBatch(textures.getTexture(side)).addQuad(subBlocks[index].quads[side]);
 			}
+			if(chunk!=null)chunk.setNeedsRebatch();
 		}else if(subBlocks[index].quads[side]!=null)subBlocks[index].quads[side].centerPoint=updateShadows(subBlocks[index].quads[side].data, x, y, z, side);
 	}
 	protected boolean getSubBlock(int x, int y, int z){
@@ -398,189 +424,174 @@ public class CustomBlock extends Block{
 		}
 		return false;
 	}
-	protected QuadBatch getBatch(Texture texture){ return chunk.getBatch(texture, true, x, y, z); }
-	float[] f = new float[5];
 	private float[] generateTexturePoints(int x, int y, int z, int side, int r){
 		if(side==0){
 			if(r==0){
-				f[0]=(7-z)/8f;
-				f[1]=1/8f;
-				f[2]=(7-y)/8f;
-				f[3]=1/8f;
-				f[4]=0;
+				texturePoints[0]=(7-z)/8f;
+				texturePoints[1]=1/8f;
+				texturePoints[2]=(7-y)/8f;
+				texturePoints[3]=1/8f;
 			}
 			if(r==1){
-				f[0]=(7-y)/8f;
-				f[1]=1/8f;
-				f[2]=z/8f;
-				f[3]=1/8f;
-				f[4]=0;
+				texturePoints[0]=(7-y)/8f;
+				texturePoints[1]=1/8f;
+				texturePoints[2]=z/8f;
+				texturePoints[3]=1/8f;
 			}
 			if(r==2){
-				f[0]=z/8f;
-				f[1]=1/8f;
-				f[2]=y/8f;
-				f[3]=1/8f;
-				f[4]=1;
+				texturePoints[0]=z/8f;
+				texturePoints[1]=1/8f;
+				texturePoints[2]=y/8f;
+				texturePoints[3]=1/8f;
 			}
 			if(r==3){
-				f[0]=y/8f;
-				f[1]=1/8f;
-				f[2]=(7-z)/8f;
-				f[3]=1/8f;
-				f[4]=2;
+				texturePoints[0]=y/8f;
+				texturePoints[1]=1/8f;
+				texturePoints[2]=(7-z)/8f;
+				texturePoints[3]=1/8f;
 			}
 		}
 		if(side==1){
 			if(r==0){
-				f[0]=y/8f;
-				f[1]=1/8f;
-				f[2]=z/8f;
-				f[3]=1/8f;
-				f[4]=0;
+				texturePoints[0]=y/8f;
+				texturePoints[1]=1/8f;
+				texturePoints[2]=z/8f;
+				texturePoints[3]=1/8f;
 			}
 			if(r==1){
-				f[0]=z/8f;
-				f[1]=1/8f;
-				f[2]=(7-y)/8f;
-				f[3]=1/8f;
-				f[4]=0;
+				texturePoints[0]=z/8f;
+				texturePoints[1]=1/8f;
+				texturePoints[2]=(7-y)/8f;
+				texturePoints[3]=1/8f;
 			}
 			if(r==2){
-				f[0]=(7-y)/8f;
-				f[1]=1/8f;
-				f[2]=(7-z)/8f;
-				f[3]=1/8f;
-				f[4]=1;
+				texturePoints[0]=(7-y)/8f;
+				texturePoints[1]=1/8f;
+				texturePoints[2]=(7-z)/8f;
+				texturePoints[3]=1/8f;
 			}
 			if(r==3){
-				f[0]=(7-z)/8f;
-				f[1]=1/8f;
-				f[2]=y/8f;
-				f[3]=1/8f;
-				f[4]=2;
+				texturePoints[0]=(7-z)/8f;
+				texturePoints[1]=1/8f;
+				texturePoints[2]=y/8f;
+				texturePoints[3]=1/8f;
 			}
 		}
 		if(side==2){
 			if(r==0){
-				f[0]=x/8f;
-				f[1]=1/8f;
-				f[2]=z/8f;
-				f[3]=1/8f;
-				f[4]=0;
+				texturePoints[0]=x/8f;
+				texturePoints[1]=1/8f;
+				texturePoints[2]=z/8f;
+				texturePoints[3]=1/8f;
 			}
 			if(r==1){
-				f[0]=z/8f;
-				f[1]=1/8f;
-				f[2]=(7-x)/8f;
-				f[3]=1/8f;
-				f[4]=0;
+				texturePoints[0]=z/8f;
+				texturePoints[1]=1/8f;
+				texturePoints[2]=(7-x)/8f;
+				texturePoints[3]=1/8f;
 			}
 			if(r==2){
-				f[0]=(7-x)/8f;
-				f[1]=1/8f;
-				f[2]=(7-z)/8f;
-				f[3]=1/8f;
-				f[4]=1;
+				texturePoints[0]=(7-x)/8f;
+				texturePoints[1]=1/8f;
+				texturePoints[2]=(7-z)/8f;
+				texturePoints[3]=1/8f;
 			}
 			if(r==3){
-				f[0]=(7-z)/8f;
-				f[1]=1/8f;
-				f[2]=x/8f;
-				f[3]=1/8f;
-				f[4]=2;
+				texturePoints[0]=(7-z)/8f;
+				texturePoints[1]=1/8f;
+				texturePoints[2]=x/8f;
+				texturePoints[3]=1/8f;
 			}
 		}
 		if(side==3){
 			if(r==0){
-				f[0]=(7-z)/8f;
-				f[1]=1/8f;
-				f[2]=(7-x)/8f;
-				f[3]=1/8f;
-				f[4]=0;
+				texturePoints[0]=(7-z)/8f;
+				texturePoints[1]=1/8f;
+				texturePoints[2]=(7-x)/8f;
+				texturePoints[3]=1/8f;
 			}
 			if(r==1){
-				f[0]=(7-x)/8f;
-				f[1]=1/8f;
-				f[2]=z/8f;
-				f[3]=1/8f;
-				f[4]=0;
+				texturePoints[0]=(7-x)/8f;
+				texturePoints[1]=1/8f;
+				texturePoints[2]=z/8f;
+				texturePoints[3]=1/8f;
 			}
 			if(r==2){
-				f[0]=z/8f;
-				f[1]=1/8f;
-				f[2]=x/8f;
-				f[3]=1/8f;
-				f[4]=1;
+				texturePoints[0]=z/8f;
+				texturePoints[1]=1/8f;
+				texturePoints[2]=x/8f;
+				texturePoints[3]=1/8f;
 			}
 			if(r==3){
-				f[0]=x/8f;
-				f[1]=1/8f;
-				f[2]=(7-z)/8f;
-				f[3]=1/8f;
-				f[4]=2;
+				texturePoints[0]=x/8f;
+				texturePoints[1]=1/8f;
+				texturePoints[2]=(7-z)/8f;
+				texturePoints[3]=1/8f;
 			}
 		}
 		if(side==4){
 			if(r==0){
-				f[0]=(7-y)/8f;
-				f[1]=1/8f;
-				f[2]=(7-x)/8f;
-				f[3]=1/8f;
-				f[4]=0;
+				texturePoints[0]=(7-y)/8f;
+				texturePoints[1]=1/8f;
+				texturePoints[2]=(7-x)/8f;
+				texturePoints[3]=1/8f;
 			}
 			if(r==1){
-				f[0]=(7-x)/8f;
-				f[1]=1/8f;
-				f[2]=y/8f;
-				f[3]=1/8f;
-				f[4]=0;
+				texturePoints[0]=(7-x)/8f;
+				texturePoints[1]=1/8f;
+				texturePoints[2]=y/8f;
+				texturePoints[3]=1/8f;
 			}
 			if(r==2){
-				f[0]=y/8f;
-				f[1]=1/8f;
-				f[2]=x/8f;
-				f[3]=1/8f;
-				f[4]=1;
+				texturePoints[0]=y/8f;
+				texturePoints[1]=1/8f;
+				texturePoints[2]=x/8f;
+				texturePoints[3]=1/8f;
 			}
 			if(r==3){
-				f[0]=x/8f;
-				f[1]=1/8f;
-				f[2]=(7-y)/8f;
-				f[3]=1/8f;
-				f[4]=2;
+				texturePoints[0]=x/8f;
+				texturePoints[1]=1/8f;
+				texturePoints[2]=(7-y)/8f;
+				texturePoints[3]=1/8f;
 			}
 		}
 		if(side==5){
 			if(r==0){
-				f[0]=x/8f;
-				f[1]=1/8f;
-				f[2]=y/8f;
-				f[3]=1/8f;
-				f[4]=0;
+				texturePoints[0]=x/8f;
+				texturePoints[1]=1/8f;
+				texturePoints[2]=y/8f;
+				texturePoints[3]=1/8f;
 			}
 			if(r==1){
-				f[0]=y/8f;
-				f[1]=1/8f;
-				f[2]=(7-x)/8f;
-				f[3]=1/8f;
-				f[4]=0;
+				texturePoints[0]=y/8f;
+				texturePoints[1]=1/8f;
+				texturePoints[2]=(7-x)/8f;
+				texturePoints[3]=1/8f;
 			}
 			if(r==2){
-				f[0]=(7-x)/8f;
-				f[1]=1/8f;
-				f[2]=(7-y)/8f;
-				f[3]=1/8f;
-				f[4]=1;
+				texturePoints[0]=(7-x)/8f;
+				texturePoints[1]=1/8f;
+				texturePoints[2]=(7-y)/8f;
+				texturePoints[3]=1/8f;
 			}
 			if(r==3){
-				f[0]=(7-y)/8f;
-				f[1]=1/8f;
-				f[2]=x/8f;
-				f[3]=1/8f;
-				f[4]=2;
+				texturePoints[0]=(7-y)/8f;
+				texturePoints[1]=1/8f;
+				texturePoints[2]=x/8f;
+				texturePoints[3]=1/8f;
 			}
 		}
-		return f;
+		return texturePoints;
 	}
+	@Override protected boolean isFullyHidden(){
+		int i, j;
+		for(i=0; i<6; i++)if(quads[i]!=null)return false;
+		for(i=0; i<subBlocks.length; i++){
+			if(subBlocks[i]==null)continue;
+			for(j=0; j<6; j++)if(subBlocks[i].quads[j]!=null)return false;
+		}
+		return true;
+	}
+	protected QuadBatch getBatch(Texture texture){ return chunk.getBatch(texture, true, x, y, z); }
+	protected QuadBatch getLargeBatch(Texture texture){ return chunk.getBatch(texture, false, x, y, z); }
 }

@@ -9,7 +9,7 @@ public class BuildingCreator{
 	private WindowInitalizer init;
 	private MainLoop loop;
 	public static final int WORLD_BOUNDS_SIZE = 128;
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 	public void launch(){
 		loop=new MainLoop();
 		loop.create(createInitalizer());

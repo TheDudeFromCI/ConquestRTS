@@ -6,7 +6,6 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import wraithaven.conquest.client.GameWorld.Voxel.Chunk;
 import wraithaven.conquest.client.GameWorld.LoopControls.VoxelWorldBounds;
-import wraithaven.conquest.client.GameWorld.LoopControls.MatrixUtils;
 import wraithaven.conquest.client.GameWorld.LoopControls.LoopObjective;
 import wraithaven.conquest.client.GameWorld.Voxel.Camera;
 import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorld;
@@ -39,7 +38,7 @@ public class Loop implements LoopObjective{
 		creatorWorld.setup(world, camera);
 		inputController=new InputController(buildingCreator, camera, buildingCreator.getWindow(), this);
 		userBlockHandler=new UserBlockHandler(world, camera);
-		guiHandler=new GuiHandler(screenRes);
+		guiHandler=new GuiHandler();
 		generateWorld();
 		setupCameraPosition();
 		setupOGL();
@@ -52,6 +51,7 @@ public class Loop implements LoopObjective{
 			camera.update(delta);
 			userBlockHandler.update(time);
 			world.setNeedsRebatch();
+			guiHandler.update(time);
 		}
 	}
 	private void setupCameraPosition(){
@@ -80,7 +80,6 @@ public class Loop implements LoopObjective{
 			}
 			GL11.glPopMatrix();
 			guiHandler.render();
-			MatrixUtils.setupPerspective(70, screenRes.width/(float)screenRes.height, CAMERA_NEAR_CLIP, 1000);
 		}
 		if(removePalette){
 			palleteRenderer=null;
