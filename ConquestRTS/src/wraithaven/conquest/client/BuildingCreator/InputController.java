@@ -77,6 +77,18 @@ public class InputController{
 			if(action==GLFW.GLFW_PRESS)MatrixUtils.takeScreenShot(new File(ClientLauncher.screenShotFolder,  System.currentTimeMillis()+".png"), buildingCreator.getInit().width, buildingCreator. getInit().height);
 		}
 		if(key==GLFW.GLFW_KEY_F5&&action==GLFW.GLFW_PRESS)loop.setPalette();
+		if(key==GLFW.GLFW_KEY_E&&action==GLFW.GLFW_PRESS){
+			if(loop.getGuiHandler().getHotbarSelectorId()<10)loop.getGuiHandler().updateHotbarSelector((loop.getGuiHandler().getHotbarSelectorId()+1)%10);
+			else loop.getGuiHandler().updateHotbarSelector((loop.getGuiHandler().getHotbarSelectorId()%10+1)%10+10);
+		}
+		if(key==GLFW.GLFW_KEY_Q&&action==GLFW.GLFW_PRESS){
+			if(loop.getGuiHandler().getHotbarSelectorId()<10)loop.getGuiHandler().updateHotbarSelector((loop.getGuiHandler().getHotbarSelectorId()-1+10)%10);
+			else loop.getGuiHandler().updateHotbarSelector((loop.getGuiHandler().getHotbarSelectorId()%10-1+10)%10+10);
+		}
+		if(key==GLFW.GLFW_KEY_TAB&&action==GLFW.GLFW_PRESS){
+			if(loop.getGuiHandler().getHotbarSelectorId()<10)loop.getGuiHandler().updateHotbarSelector(10);
+			else loop.getGuiHandler().updateHotbarSelector(0);
+		}
 	}
 	public void processMouse(double x, double y){
 		cam.goalRY=cam.ry+=(x-screenWidth.get(0))*mouseSensitivity;

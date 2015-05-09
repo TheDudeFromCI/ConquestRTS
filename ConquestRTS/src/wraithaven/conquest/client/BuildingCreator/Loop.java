@@ -37,7 +37,7 @@ public class Loop implements LoopObjective{
 		world=new VoxelWorld(creatorWorld, new VoxelWorldBounds(0, 0, 0, BuildingCreator.WORLD_BOUNDS_SIZE-1, BuildingCreator.WORLD_BOUNDS_SIZE-1, BuildingCreator.WORLD_BOUNDS_SIZE-1));
 		creatorWorld.setup(world, camera);
 		inputController=new InputController(buildingCreator, camera, buildingCreator.getWindow(), this);
-		userBlockHandler=new UserBlockHandler(world, camera);
+		userBlockHandler=new UserBlockHandler(this, world, camera);
 		guiHandler=new GuiHandler();
 		generateWorld();
 		setupCameraPosition();
@@ -117,6 +117,7 @@ public class Loop implements LoopObjective{
 	public void disposePalette(){ removePalette=true; }
 	public void setPalette(){ createPalette=true; }
 	public boolean hasPalette(){ return palleteRenderer!=null; }
+	public GuiHandler getGuiHandler(){ return guiHandler; }
 	public void mouseWheel(long window, double xPos, double yPos){}
 	private static void setupOGL(){
 		GL11.glEnable(GL11.GL_TEXTURE_2D);

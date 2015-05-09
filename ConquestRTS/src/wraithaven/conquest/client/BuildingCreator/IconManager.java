@@ -1,13 +1,14 @@
 package wraithaven.conquest.client.BuildingCreator;
 
-import java.util.ArrayList;
+import wraithaven.conquest.client.GameWorld.Voxel.BlockShapes.Cube;
+import wraithaven.conquest.client.GameWorld.Voxel.BlockShape;
 import wraithaven.conquest.client.GameWorld.BlockTextures;
 import wraithaven.conquest.client.GameWorld.Voxel.CubeTextures;
 import wraithaven.conquest.client.GameWorld.Voxel.BlockShapes.Pyramid;
-import wraithaven.conquest.client.BuildingCreator.BlockPalette.BlockIcon;
 
 public class IconManager{
-	private final ArrayList<BlockIcon> icons = new ArrayList();
+	int selectedSlot;
+	private final BlockIcon[] icons = new BlockIcon[20];
 	{
 		CubeTextures textures = new CubeTextures();
 		textures.xUp=BlockTextures.sideDirt.getTexture();
@@ -23,31 +24,22 @@ public class IconManager{
 		textures.zDown=BlockTextures.sideDirt.getTexture();
 		textures.zDownRotation=2;
 		Pyramid p = new Pyramid();
-		addIcon(new BlockIcon(p, textures));
-		addIcon(new BlockIcon(p, textures));
-		addIcon(new BlockIcon(p, textures));
-		addIcon(new BlockIcon(p, textures));
-		addIcon(new BlockIcon(p, textures));
-		addIcon(new BlockIcon(p, textures));
-		addIcon(new BlockIcon(p, textures));
-		addIcon(new BlockIcon(p, textures));
-		addIcon(new BlockIcon(p, textures));
-		addIcon(new BlockIcon(p, textures));
-		addIcon(new BlockIcon(p, textures));
-		addIcon(new BlockIcon(p, textures));
-		addIcon(new BlockIcon(p, textures));
-		addIcon(new BlockIcon(p, textures));
-		addIcon(new BlockIcon(p, textures));
-		addIcon(new BlockIcon(p, textures));
-		addIcon(new BlockIcon(p, textures));
-		addIcon(new BlockIcon(p, textures));
-		addIcon(new BlockIcon(p, textures));
-		addIcon(new BlockIcon(p, textures));
+		addIcon(new BlockIcon(p, textures), 0);
+		addIcon(new BlockIcon(p, textures), 1);
+		addIcon(new BlockIcon(new Cube(), textures), 4);
 	}
-	public void addIcon(BlockIcon icon){
-		icon.itemSlot=icons.size();
-		icons.add(icon);
+	public void addIcon(BlockIcon icon, int slot){
+		icon.itemSlot=slot;
+		icons[slot]=icon;
 	}
-	public void render(){ for(int i = 0; i<icons.size(); i++)icons.get(i).render(); }
-	public void update(double time){ for(int i = 0; i<icons.size(); i++)icons.get(i).update(time); }
+	public BlockShape getSelectedShape(){
+		if(icons[selectedSlot]==null)return null;
+		return icons[selectedSlot].shape;
+	}
+	public CubeTextures getSelectedCubeTextures(){
+		if(icons[selectedSlot]==null)return null;
+		return icons[selectedSlot].textures;
+	}
+	public void render(){ for(int i = 0; i<icons.length; i++)if(icons[i]!=null)icons[i].render(); }
+	public void update(double time){ for(int i = 0; i<icons.length; i++)if(icons[i]!=null)icons[i].update(time); }
 }

@@ -43,7 +43,7 @@ public class CustomBlock extends Block{
 					if(subBlocks[index]==null)continue;
 					for(j=0; j<6; j++){
 						if(shape.hasNeighbor(x, y, z, j)==0){
-							subBlocks[index].quads[j]=Cube.generateQuad(j, this.x+(x/8f), this.y+(y/8f), this.z+(z/8f), type.getRotation(textures.getRotation(j)), WHITE_COLORS, false, generateTexturePoints(x, y, z, j, textures.getRotation(j)));
+							subBlocks[index].quads[j]=Cube.generateQuad(j, this.x+(x/8f), this.y+(y/8f), this.z+(z/8f), textures.getRotation(j), WHITE_COLORS, false, generateTexturePoints(x, y, z, j, textures.getRotation(j)));
 							subBlocks[index].quads[j].centerPoint=updateShadows(subBlocks[index].quads[j].data, x, y, z, j);
 							getBatch(textures.getTexture(j)).addQuad(subBlocks[index].quads[j]);
 							if(chunk!=null)chunk.setNeedsRebatch();
@@ -55,7 +55,7 @@ public class CustomBlock extends Block{
 	}
 	public void optimizeSide(int side){
 		if(shape.fullSide(side)){
-			boolean nearBlock = getTouchingBlock(side)!=null;
+			boolean nearBlock = isSideHidden(side);
 			if(nearBlock!=(quads[side]==null)){
 				if(nearBlock){
 					getLargeBatch(textures.getTexture(side)).removeQuad(quads[side]);
@@ -110,6 +110,12 @@ public class CustomBlock extends Block{
 			return true;
 		}
 		return shape.getBlock(x, y, z);
+	}
+	private boolean isSideHidden(int side){
+		Block block = getTouchingBlock(side);
+		if(block==null)return false;
+		if(block instanceof CustomBlock)return ((CustomBlock)block).shape.fullSide(oppositeSide(side));
+		return true;
 	}
 	private boolean updateShadows(FloatBuffer data, int x, int y, int z, int side){
 		if(side==0){
@@ -594,4 +600,13 @@ public class CustomBlock extends Block{
 	}
 	protected QuadBatch getBatch(Texture texture){ return chunk.getBatch(texture, true, x, y, z); }
 	protected QuadBatch getLargeBatch(Texture texture){ return chunk.getBatch(texture, false, x, y, z); }
+	private static int oppositeSide(int side){
+		if(side==0)return 1;
+		if(side==1)return 0;
+		if(side==2)return 3;
+		if(side==3)return 2;
+		if(side==4)return 5;
+		if(side==5)return 4;
+		return side;
+	}
 }

@@ -32,4 +32,5 @@ public class GLGuiComponents{
 	public void addComponent(GLGuiImage guiImage){ images.add(guiImage); }
 	public void removeComponent(GLGuiImage guiImage){ images.remove(guiImage); }
 	public void clearComponents(){ images.clear(); }
+	public GLGuiImage getComponent(int index){ return images.get(index); }
 }

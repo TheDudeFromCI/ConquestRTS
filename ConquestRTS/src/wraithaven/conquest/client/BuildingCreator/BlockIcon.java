@@ -1,8 +1,8 @@
-package wraithaven.conquest.client.BuildingCreator.BlockPalette;
+package wraithaven.conquest.client.BuildingCreator;
 
 import java.util.ArrayList;
-import wraithaven.conquest.client.BuildingCreator.Loop;
-import wraithaven.conquest.client.BuildingCreator.GuiHandler;
+import wraithaven.conquest.client.BuildingCreator.BlockPalette.ChunklessBlock;
+import wraithaven.conquest.client.BuildingCreator.BlockPalette.ChunklessBlockHolder;
 import wraithaven.conquest.client.GameWorld.Voxel.Texture;
 import wraithaven.conquest.client.GameWorld.Voxel.BlockShape;
 import wraithaven.conquest.client.GameWorld.Voxel.CubeTextures;
@@ -11,6 +11,8 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class BlockIcon implements ChunklessBlockHolder{
 	public int itemSlot;
+	final BlockShape shape;
+	final CubeTextures textures;
 	private float shiftRY;
 	private final ArrayList<QuadBatch> batches = new ArrayList();
 	private final ChunklessBlock block;
@@ -19,6 +21,8 @@ public class BlockIcon implements ChunklessBlockHolder{
 	private static final float BLOCK_PITCH = 30;
 	public static float BLOCK_ZOOM = 40;
 	public BlockIcon(BlockShape shape, CubeTextures textures){
+		this.shape=shape;
+		this.textures=textures;
 		block=new ChunklessBlock(this, shape, textures);
 		block.build();
 		for(int i = 0; i<6; i++)block.optimizeSide(i);
@@ -52,5 +56,5 @@ public class BlockIcon implements ChunklessBlockHolder{
 		return batch;
 	}
 	private static float getX(int id){ return (id<10?1:-1)*(1-GuiHandler.HOTBAR_SLOT)*(BLOCK_ZOOM/2f); }
-	private static float getY(int id){ return (((0.5f-((GuiHandler.HOTBAR_SLOT*Loop.screenRes.width/Loop.screenRes.height)*10)/2f-GuiHandler.HOTBAR_SLOT/2f)+(GuiHandler.HOTBAR_SLOT*Loop.screenRes.width/Loop.screenRes.height)*(id%10))-0.5f+GuiHandler.HOTBAR_SLOT)*BLOCK_ZOOM; }
+	private static float getY(int id){ return (((0.5f-((GuiHandler.HOTBAR_SLOT*Loop.screenRes.width/Loop.screenRes.height)*10)/2f-GuiHandler.HOTBAR_SLOT/2f)+(GuiHandler.HOTBAR_SLOT*Loop.screenRes.width/Loop.screenRes.height)*(9-id%10))-0.5f+GuiHandler.HOTBAR_SLOT)*BLOCK_ZOOM; }
 }

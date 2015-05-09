@@ -1,8 +1,6 @@
 package wraithaven.conquest.client.BuildingCreator;
 
 import static org.lwjgl.glfw.GLFW.*;
-import wraithaven.conquest.client.GameWorld.Voxel.BlockShapes.Cube;
-import wraithaven.conquest.client.GameWorld.BlockTextures;
 import wraithaven.conquest.client.GameWorld.Voxel.CubeTextures;
 import wraithaven.conquest.client.GameWorld.Voxel.BlockShape;
 import wraithaven.conquest.client.GameWorld.Voxel.CameraTarget;
@@ -16,15 +14,19 @@ public class UserBlockHandler{
 	private CameraTargetCallback callback;
 	private boolean holdingLeftButton, holdingRightButton;
 	private double lastButtonPing;
+	private BlockShape shape;
+	private CubeTextures cubeTextures;
 	private final BoundingBox boundingBox = new BoundingBox();
 	private final Sphere cameraSphere = new Sphere();
 	private final Camera camera;
 	private final VoxelWorld world;
 	private final CameraTarget cameraTarget;
+	private final Loop loop;
 	private static final double CLICK_PING_RATE = 0.2;
-	public UserBlockHandler(VoxelWorld world, Camera camera){
+	public UserBlockHandler(Loop loop, VoxelWorld world, Camera camera){
 		cameraTarget=new CameraTarget(this.camera=camera);
 		this.world=world;
+		this.loop=loop;
 		cameraSphere.r=InputController.CAMERA_RADIUS;
 	}
 	public void mouseClick(int button, int action){
@@ -54,17 +56,10 @@ public class UserBlockHandler{
 		cameraSphere.z=camera.goalZ;
 		return intersectsWith(boundingBox, cameraSphere);
 	}
-	private BlockShape shape = new Cube();
-	private CubeTextures cubeTextures = new CubeTextures();
-	{
-		cubeTextures.xUp=BlockTextures.sideDirt.getTexture();
-		cubeTextures.xDown=BlockTextures.sideDirt.getTexture();
-		cubeTextures.yUp=BlockTextures.sideDirt.getTexture();
-		cubeTextures.yDown=BlockTextures.sideDirt.getTexture();
-		cubeTextures.zUp=BlockTextures.sideDirt.getTexture();
-		cubeTextures.zDown=BlockTextures.sideDirt.getTexture();
-	}
 	private void placeBlock(){
+		shape=loop.getGuiHandler().getSelectedShape();
+		cubeTextures=loop.getGuiHandler().getSelectedCubeTextures();
+		if(shape==null)return;
 		callback=cameraTarget.getTargetBlock(world, 500, false);
 		if(callback.block!=null){
 			if(callback.side==0){
