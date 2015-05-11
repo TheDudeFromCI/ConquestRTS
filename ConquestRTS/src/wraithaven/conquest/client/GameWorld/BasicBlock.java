@@ -35,6 +35,42 @@ public class BasicBlock implements BlockType{
 	}
 	public boolean setupShadows(FloatBuffer data, int side, int x, int y, int z){
 		if(side==0){
+			if(world.getBlock(x+1, y, z, false)!=null){
+				for(int i = 0; i<15; i++)data.put(i, shadowIntensity);
+				return false;
+			}
+		}
+		if(side==1){
+			if(world.getBlock(x-1, y, z, false)!=null){
+				for(int i = 0; i<15; i++)data.put(i, shadowIntensity);
+				return false;
+			}
+		}
+		if(side==2){
+			if(world.getBlock(x, y+1, z, false)!=null){
+				for(int i = 0; i<15; i++)data.put(i, shadowIntensity);
+				return false;
+			}
+		}
+		if(side==3){
+			if(world.getBlock(x, y-1, z, false)!=null){
+				for(int i = 0; i<15; i++)data.put(i, shadowIntensity);
+				return false;
+			}
+		}
+		if(side==4){
+			if(world.getBlock(x, y, z+1, false)!=null){
+				for(int i = 0; i<15; i++)data.put(i, shadowIntensity);
+				return false;
+			}
+		}
+		if(side==5){
+			if(world.getBlock(x, y, z-1, false)!=null){
+				for(int i = 0; i<15; i++)data.put(i, shadowIntensity);
+				return false;
+			}
+		}
+		if(side==0){
 			block_dd=world.getBlock(x+1, y-1, z-1, false)!=null;
 			block_d0=world.getBlock(x+1, y-1, z, false)!=null;
 			block_du=world.getBlock(x+1, y-1, z+1, false)!=null;

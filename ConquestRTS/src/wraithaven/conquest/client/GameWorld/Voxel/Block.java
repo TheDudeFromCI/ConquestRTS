@@ -7,7 +7,7 @@ public class Block{
 	public final Chunk chunk;
 	public final BlockType type;
 	protected static final float[] WHITE_COLORS = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-	protected static final float[] TEXTURE_POSITIONS = {0, 1, 0, 1, 0};
+	protected static final float[] TEXTURE_POSITIONS = {0, 1, 0, 1};
 	Block(Chunk chunk, int x, int y, int z, BlockType type){
 		this.x=x;
 		this.y=y;
@@ -28,7 +28,7 @@ public class Block{
 		else setHidden(false);
 	}
 	private void updateSideVisibility(int side, boolean show){
-		if(show)quads[side]=Cube.generateQuad(side, x, y, z, type.getRotation(side), WHITE_COLORS, true, TEXTURE_POSITIONS);
+		if(show)quads[side]=Cube.generateQuad(side, x, y, z, type.getRotation(side), WHITE_COLORS, 1, TEXTURE_POSITIONS);
 		else quads[side]=null;
 	}
 	public Block getTouchingBlock(int side){

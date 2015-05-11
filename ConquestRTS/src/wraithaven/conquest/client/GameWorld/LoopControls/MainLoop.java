@@ -72,7 +72,6 @@ public class MainLoop{
 	}
 	private void loop(){
 		GLContext.createFromCurrent();
-		glEnable(GL_DEPTH_TEST);
 		glClearColor(windowInitalizer.clearRed, windowInitalizer.clearGreen, windowInitalizer.clearBlue, 0.0f);
 		double lastTime = 0;
 		double currentTime;

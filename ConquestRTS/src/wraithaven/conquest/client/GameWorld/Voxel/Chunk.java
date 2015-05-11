@@ -29,17 +29,17 @@ public class Chunk{
 		endY=startY+HIGH_BLOCK_COUNT;
 		endZ=startZ+HIGH_BLOCK_COUNT;
 	}
-	public Block createBlock(int x, int y, int z, BlockType type){
-		int index = getIndex(x, y, z);
-		blocks[index]=new Block(this, x, y, z, type);
-		removeHidden();
-		return blocks[index];
-	}
 	public Block createBlock(int x, int y, int z, BlockType type, BlockShape shape, CubeTextures textures){
 		int index = getIndex(x, y, z);
 		blocks[index]=new CustomBlock(this, x, y, z, type, shape, textures);
 		removeHidden();
 		((CustomBlock)blocks[index]).build();
+		return blocks[index];
+	}
+	public Block createBlock(int x, int y, int z, BlockType type){
+		int index = getIndex(x, y, z);
+		blocks[index]=new Block(this, x, y, z, type);
+		removeHidden();
 		return blocks[index];
 	}
 	public void optimizeSide(int side){
@@ -135,18 +135,6 @@ public class Chunk{
 		else removeBlockQuads(blocks[index]);
 		blocks[index]=null;
 	}
-	public Block setBlock(int x, int y, int z, BlockType type){
-		setNeedsRebatch();
-		removeBlock(x, y, z);
-		if(type!=null){
-			Block block = createBlock(x, y, z, type);
-			optimizeBlock(block);
-			optimizeAroundBlock(x, y, z);
-			return block;
-		}
-		optimizeAroundBlock(x, y, z);
-		return null;
-	}
 	public Block setBlock(int x, int y, int z, BlockType type, BlockShape shape, CubeTextures textures){
 		setNeedsRebatch();
 		removeBlock(x, y, z);
@@ -160,13 +148,19 @@ public class Chunk{
 		return null;
 	}
 	private boolean isNeighborOpen(Block block, int side){
-		if(side==0)return (world.bounds==null||block.x<world.bounds.endX)&&getQuickBlock(block.x+1, block.y, block.z)==null;
-		if(side==1)return (world.bounds==null||block.x>world.bounds.startX)&&getQuickBlock(block.x-1, block.y, block.z)==null;
-		if(side==2)return (world.bounds==null||block.y<world.bounds.endY)&&getQuickBlock(block.x, block.y+1, block.z)==null;
-		if(side==3)return (world.bounds==null||block.y>world.bounds.startY)&&getQuickBlock(block.x, block.y-1, block.z)==null;
-		if(side==4)return (world.bounds==null||block.z<world.bounds.endZ)&&getQuickBlock(block.x, block.y, block.z+1)==null;
-		if(side==5)return (world.bounds==null||block.z>world.bounds.startZ)&&getQuickBlock(block.x, block.y, block.z-1)==null;
+		if(side==0)return (world.bounds==null||block.x<world.bounds.endX)&&neighborFull(block.x+1, block.y, block.z, side);
+		if(side==1)return (world.bounds==null||block.x>world.bounds.startX)&&neighborFull(block.x-1, block.y, block.z, side);
+		if(side==2)return (world.bounds==null||block.y<world.bounds.endY)&&neighborFull(block.x, block.y+1, block.z, side);
+		if(side==3)return (world.bounds==null||block.y>world.bounds.startY)&&neighborFull(block.x, block.y-1, block.z, side);
+		if(side==4)return (world.bounds==null||block.z<world.bounds.endZ)&&neighborFull(block.x, block.y, block.z+1, side);
+		if(side==5)return (world.bounds==null||block.z>world.bounds.startZ)&&neighborFull(block.x, block.y, block.z-1, side);
 		return true;
+	}
+	private boolean neighborFull(int x, int y, int z, int side){
+		Block block = getQuickBlock(x, y, z);
+		if(block==null)return true;
+		if(block instanceof CustomBlock)return !((CustomBlock)block).shape.fullSide(CustomBlock.oppositeSide(side));
+		return false;
 	}
 	QuadBatch getBatch(Texture texture, boolean small, int x, int y, int z){
 		x=x&HIGH_BLOCK_COUNT/4;

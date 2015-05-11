@@ -7,7 +7,8 @@ import wraithaven.conquest.client.GameWorld.Voxel.Texture;
 public enum BlockTextures{
 	grass("Grass.png"),
 	sideDirt("Side Dirt.png"),
-	dirt("Dirt.png");
+	dirt("Dirt.png"),
+	lightPlank("Light Plank.png");
 	private Texture texture;
 	private final String textureFile;
 	private BlockTextures(String textureFile){ this.textureFile=textureFile; }

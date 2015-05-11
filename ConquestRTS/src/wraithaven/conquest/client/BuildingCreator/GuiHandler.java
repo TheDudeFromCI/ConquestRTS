@@ -28,22 +28,27 @@ public class GuiHandler{
 		updateHotbarSelector(0);
 	}
 	public void render(){
+		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		components.render();
-		MatrixUtils.setupOrtho(BlockIcon.BLOCK_ZOOM, BlockIcon.BLOCK_ZOOM, -1000, 1000);
-		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+		MatrixUtils.setupOrtho(BlockIcon.BLOCK_ZOOM*Loop.screenRes.width/Loop.screenRes.height, BlockIcon.BLOCK_ZOOM, -1000, 1000);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		iconManager.render();
-		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		components2.render();
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		MatrixUtils.setupPerspective(70, Loop.screenRes.width/(float)Loop.screenRes.height, Loop.CAMERA_NEAR_CLIP, 1000);
 	}
 	public void updateHotbarSelector(int id){
 		iconManager.selectedSlot=id;
 		setHotbarSelectorLocation(components2.getComponent(0), id);
 	}
+	public void addIcon(int id, BlockIcon icon){ iconManager.addIcon(icon, id); }
 	public BlockShape getSelectedShape(){ return iconManager.getSelectedShape(); }
 	public CubeTextures getSelectedCubeTextures(){ return iconManager.getSelectedCubeTextures(); }
-	public void update(double time){ iconManager.update(time); }
 	public int getHotbarSelectorId(){ return iconManager.selectedSlot; }
+	public void rebuildBlockIcon(int id){ iconManager.rebuildIcon(id); }
+	public IconManager getIconManager(){ return iconManager; }
 	private static GLGuiImage createCursor(){
 		GLGuiImage i = new GLGuiImage(new File(BlockTextures.getFolder(), "Cursor.png"));
 		i.x=0.5f-CURSOR_SIZE/2f;

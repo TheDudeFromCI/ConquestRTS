@@ -35,7 +35,7 @@ public class QuadBatch{
 		textureCoordBufferId=glGenBuffers();
 		indexBufferId=glGenBuffers();
 	}
-	void removeQuad(Quad q){
+	public void removeQuad(Quad q){
 		for(i=0; i<quads.size(); i++){
 			if(quads.get(i)==q){
 				quads.remove(i);
@@ -155,7 +155,7 @@ public class QuadBatch{
 		glDeleteBuffers(textureCoordBufferId);
 		glDeleteBuffers(indexBufferId);
 	}
-	void addQuad(Quad q){ if(!quads.contains(q))quads.add(q); }
+	public void addQuad(Quad q){ if(!quads.contains(q))quads.add(q); }
 	public Texture getTexture(){ return texture; }
 	public int getSize(){ return quads.size(); }
 	private void addIndex(int offset){ indexBuffer.put((short)(elementCount+offset)); }

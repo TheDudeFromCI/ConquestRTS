@@ -75,7 +75,6 @@ public class Cube extends BlockShape{
 		true, true, true, true, true, true, true, true,
 		true, true, true, true, true, true, true, true,
 		true, true, true, true, true, true, true, true,
-		
 	};
 	protected boolean[] getBlocks(){ return BLOCKS; }
 	public boolean fullSide(int side){ return true; }

@@ -22,6 +22,9 @@ public class BuildingCreator{
 		init.windowName="Building Creator";
 		init.loopObjective=new Loop(dimension, this);
 		init.fullscreen=true;
+		init.clearRed=219/255f;
+		init.clearGreen=246/255f;
+		init.clearBlue=251/255f;
 		return init;
 	}
 	long getWindow(){ return loop.getWindow(); }

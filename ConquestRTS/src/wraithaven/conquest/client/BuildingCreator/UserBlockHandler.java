@@ -1,6 +1,7 @@
 package wraithaven.conquest.client.BuildingCreator;
 
 import static org.lwjgl.glfw.GLFW.*;
+import wraithaven.conquest.client.GameWorld.Voxel.CustomBlock;
 import wraithaven.conquest.client.GameWorld.Voxel.CubeTextures;
 import wraithaven.conquest.client.GameWorld.Voxel.BlockShape;
 import wraithaven.conquest.client.GameWorld.Voxel.CameraTarget;
@@ -42,6 +43,24 @@ public class UserBlockHandler{
 				lastButtonPing=glfwGetTime();
 				placeBlock();
 			}else if(action==GLFW_RELEASE)holdingLeftButton=false;
+		}else if(button==GLFW_MOUSE_BUTTON_MIDDLE){
+			if(action==GLFW_PRESS){
+				callback=cameraTarget.getTargetBlock(world, 500, false);
+				if(callback.block!=null){
+					if(callback.block instanceof CustomBlock){
+						CustomBlock block = (CustomBlock)callback.block;
+						BlockIcon icon;
+						for(int i = 0; i<10; i++){
+							icon=loop.getGuiHandler().getIconManager().getIcon(i);
+							if(icon.shape==block.shape&&icon.textures==block.textures){
+								loop.getGuiHandler().updateHotbarSelector(i);
+								return;
+							}
+						}
+						loop.getGuiHandler().addIcon(loop.getGuiHandler().getHotbarSelectorId(), new BlockIcon(block.shape, block.textures));
+					}
+				}
+			}
 		}
 	}
 	private boolean collidesWithCamera(int x, int y, int z){
@@ -84,7 +103,7 @@ public class UserBlockHandler{
 	}
 	private void deleteBlock(){
 		callback=cameraTarget.getTargetBlock(world, 500, false);
-		if(callback.block!=null&&callback.block.y>0)callback.block.chunk.setBlock(callback.block.x, callback.block.y, callback.block.z, null);
+		if(callback.block!=null&&callback.block.y>0)callback.block.chunk.setBlock(callback.block.x, callback.block.y, callback.block.z, null, null, null);
 	}
 	public void update(double time){
 		if(time>lastButtonPing+CLICK_PING_RATE){

@@ -4,9 +4,9 @@ import java.nio.FloatBuffer;
 
 public class CustomBlock extends Block{
 	private boolean block_dd, block_d0, block_du, block_0d, block_0u, block_ud, block_u0, block_uu;
-	protected final BlockShape shape;
+	public final BlockShape shape;
 	private final float[] texturePoints = new float[4];
-	private final CubeTextures textures;
+	public final CubeTextures textures;
 	private final SubBlock[] subBlocks = new SubBlock[512];
 	private static final float shadowIntensity = 0.65f;
 	protected CustomBlock(Chunk chunk, int x, int y, int z, BlockType type, BlockShape shape, CubeTextures textures){
@@ -34,6 +34,11 @@ public class CustomBlock extends Block{
 			quads[j]=null;
 		}
 	}
+	public void rebuild(){
+		destroy();
+		build();
+		for(int i = 0; i<6; i++)oppositeSide(i);
+	}
 	private void optimize(){
 		int x, y, z, index, j;
 		for(x=0; x<8; x++){
@@ -43,7 +48,7 @@ public class CustomBlock extends Block{
 					if(subBlocks[index]==null)continue;
 					for(j=0; j<6; j++){
 						if(shape.hasNeighbor(x, y, z, j)==0){
-							subBlocks[index].quads[j]=Cube.generateQuad(j, this.x+(x/8f), this.y+(y/8f), this.z+(z/8f), textures.getRotation(j), WHITE_COLORS, false, generateTexturePoints(x, y, z, j, textures.getRotation(j)));
+							subBlocks[index].quads[j]=Cube.generateQuad(j, this.x+(x/8f), this.y+(y/8f), this.z+(z/8f), textures.getRotation(j), WHITE_COLORS, 1/8f, generateTexturePoints(x, y, z, j, textures.getRotation(j)));
 							subBlocks[index].quads[j].centerPoint=updateShadows(subBlocks[index].quads[j].data, x, y, z, j);
 							getBatch(textures.getTexture(j)).addQuad(subBlocks[index].quads[j]);
 							if(chunk!=null)chunk.setNeedsRebatch();
@@ -63,7 +68,7 @@ public class CustomBlock extends Block{
 					if(isFullyHidden())setHidden(true);
 					else setHidden(false);
 				}else{
-					quads[side]=Cube.generateQuad(side, x, y, z, textures.getRotation(side), WHITE_COLORS, true, TEXTURE_POSITIONS);
+					quads[side]=Cube.generateQuad(side, x, y, z, textures.getRotation(side), WHITE_COLORS, 1, TEXTURE_POSITIONS);
 					getLargeBatch(textures.getTexture(side)).addQuad(quads[side]);
 					if(isFullyHidden())setHidden(true);
 					else setHidden(false);
@@ -95,7 +100,7 @@ public class CustomBlock extends Block{
 				getBatch(textures.getTexture(side)).removeQuad(subBlocks[index].quads[side]);
 				subBlocks[index].quads[side]=null;
 			}else{
-				subBlocks[index].quads[side]=Cube.generateQuad(side, this.x+(x/8f), this.y+(y/8f), this.z+(z/8f), textures.getRotation(side), WHITE_COLORS, false, generateTexturePoints(x, y, z, side, textures.getRotation(side)));
+				subBlocks[index].quads[side]=Cube.generateQuad(side, this.x+(x/8f), this.y+(y/8f), this.z+(z/8f), textures.getRotation(side), WHITE_COLORS, 1/8f, generateTexturePoints(x, y, z, side, textures.getRotation(side)));
 				subBlocks[index].quads[side].centerPoint=updateShadows(subBlocks[index].quads[side].data, x, y, z, side);
 				getBatch(textures.getTexture(side)).addQuad(subBlocks[index].quads[side]);
 			}
@@ -600,7 +605,7 @@ public class CustomBlock extends Block{
 	}
 	protected QuadBatch getBatch(Texture texture){ return chunk.getBatch(texture, true, x, y, z); }
 	protected QuadBatch getLargeBatch(Texture texture){ return chunk.getBatch(texture, false, x, y, z); }
-	private static int oppositeSide(int side){
+	public static int oppositeSide(int side){
 		if(side==0)return 1;
 		if(side==1)return 0;
 		if(side==2)return 3;

@@ -116,6 +116,20 @@ public class InputController{
 		if(space)currentCamY+=delta;
 		if(canMoveTo(world, currentCamX, currentCamY, currentCamZ))cam.goalY=currentCamY;
 	}
+	public void mouseWheel(double yPos){
+		yPos=Math.round(yPos);
+		if(yPos>0){
+			for(int i = 0; i<yPos; i++){
+				if(loop.getGuiHandler().getHotbarSelectorId()<10)loop.getGuiHandler().updateHotbarSelector((loop.getGuiHandler().getHotbarSelectorId()-1+10)%10);
+				else loop.getGuiHandler().updateHotbarSelector((loop.getGuiHandler().getHotbarSelectorId()%10-1+10)%10+10);
+			}
+		}else{
+			for(int i = 0; i>yPos; i--){
+				if(loop.getGuiHandler().getHotbarSelectorId()<10)loop.getGuiHandler().updateHotbarSelector((loop.getGuiHandler().getHotbarSelectorId()+1)%10);
+				else loop.getGuiHandler().updateHotbarSelector((loop.getGuiHandler().getHotbarSelectorId()%10+1)%10+10);
+			}
+		}
+	}
 	private boolean canMoveTo(VoxelWorld world, float sx, float sy, float sz){
 		if(sx<0||sy<0||sz<0||sx>=BuildingCreator.WORLD_BOUNDS_SIZE||sz>=BuildingCreator.WORLD_BOUNDS_SIZE||sz>=BuildingCreator.WORLD_BOUNDS_SIZE)return false;
 		cameraSphere.x=sx;
