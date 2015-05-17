@@ -76,6 +76,7 @@ public class Shape2 extends BlockShape{
 		false, false, false, false, false, false, false, false,
 		false, false, false, false, false, false, false, false,
 	};
+	Shape2(){}
 	protected boolean[] getBlocks(){ return BLOCKS; }
-	public boolean fullSide(int side){ return false; }
+	protected boolean hasFullSide(int side){ return false; }
 }

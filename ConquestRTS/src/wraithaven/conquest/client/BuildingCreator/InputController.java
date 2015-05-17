@@ -15,7 +15,7 @@ import wraithaven.conquest.client.ClientLauncher;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class InputController{
-	private boolean w, a, s, d, shift, space;
+	private boolean w, a, s, d, shift, space, rotator;
 	private int x, y, z;
 	private int bcx1, bcy1, bcz1, bcx2, bcy2, bcz2;
 	private float currentCamX, currentCamY, currentCamZ;
@@ -44,6 +44,10 @@ public class InputController{
 	}
 	public void onKey(long window, int key, int action){
 		if(key==GLFW.GLFW_KEY_F12&&action==GLFW.GLFW_RELEASE)GLFW.glfwSetWindowShouldClose(window, GL11.GL_TRUE);
+		if(key==GLFW.GLFW_KEY_F1){
+			if(action==GLFW.GLFW_PRESS)MatrixUtils.takeScreenShot(new File(ClientLauncher.screenShotFolder,  System.currentTimeMillis()+".png"), buildingCreator.getInit().width, buildingCreator. getInit().height);
+			return;
+		}
 		if(loop.hasPalette()){
 			if(key==GLFW.GLFW_KEY_F5&&action==GLFW.GLFW_PRESS)loop.disposePalette();
 			return;
@@ -73,21 +77,30 @@ public class InputController{
 			if(action==GLFW.GLFW_PRESS)space=true;
 			else if(action==GLFW.GLFW_RELEASE)space=false;
 		}
-		if(key==GLFW.GLFW_KEY_F1){
-			if(action==GLFW.GLFW_PRESS)MatrixUtils.takeScreenShot(new File(ClientLauncher.screenShotFolder,  System.currentTimeMillis()+".png"), buildingCreator.getInit().width, buildingCreator. getInit().height);
-		}
 		if(key==GLFW.GLFW_KEY_F5&&action==GLFW.GLFW_PRESS)loop.setPalette();
-		if(key==GLFW.GLFW_KEY_E&&action==GLFW.GLFW_PRESS){
+		if(key==GLFW.GLFW_KEY_R&&action==GLFW.GLFW_PRESS){
 			if(loop.getGuiHandler().getHotbarSelectorId()<10)loop.getGuiHandler().updateHotbarSelector((loop.getGuiHandler().getHotbarSelectorId()+1)%10);
 			else loop.getGuiHandler().updateHotbarSelector((loop.getGuiHandler().getHotbarSelectorId()%10+1)%10+10);
 		}
-		if(key==GLFW.GLFW_KEY_Q&&action==GLFW.GLFW_PRESS){
+		if(key==GLFW.GLFW_KEY_F&&action==GLFW.GLFW_PRESS){
 			if(loop.getGuiHandler().getHotbarSelectorId()<10)loop.getGuiHandler().updateHotbarSelector((loop.getGuiHandler().getHotbarSelectorId()-1+10)%10);
 			else loop.getGuiHandler().updateHotbarSelector((loop.getGuiHandler().getHotbarSelectorId()%10-1+10)%10+10);
 		}
 		if(key==GLFW.GLFW_KEY_TAB&&action==GLFW.GLFW_PRESS){
 			if(loop.getGuiHandler().getHotbarSelectorId()<10)loop.getGuiHandler().updateHotbarSelector(10);
 			else loop.getGuiHandler().updateHotbarSelector(0);
+		}
+		if(key==GLFW.GLFW_KEY_Q){
+			if(action==GLFW.GLFW_PRESS){
+				loop.getGuiHandler().goalWheelRotation--;
+				rotator=true;
+			}else if(action==GLFW.GLFW_RELEASE)rotator=false;
+		}
+		if(key==GLFW.GLFW_KEY_E){
+			if(action==GLFW.GLFW_PRESS){
+				loop.getGuiHandler().goalWheelRotation++;
+				rotator=true;
+			}else if(action==GLFW.GLFW_RELEASE)rotator=false;
 		}
 	}
 	public void processMouse(double x, double y){
@@ -120,13 +133,19 @@ public class InputController{
 		yPos=Math.round(yPos);
 		if(yPos>0){
 			for(int i = 0; i<yPos; i++){
-				if(loop.getGuiHandler().getHotbarSelectorId()<10)loop.getGuiHandler().updateHotbarSelector((loop.getGuiHandler().getHotbarSelectorId()-1+10)%10);
-				else loop.getGuiHandler().updateHotbarSelector((loop.getGuiHandler().getHotbarSelectorId()%10-1+10)%10+10);
+				if(rotator)loop.getGuiHandler().goalWheelRotation--;
+				else{
+					if(loop.getGuiHandler().getHotbarSelectorId()<10)loop.getGuiHandler().updateHotbarSelector((loop.getGuiHandler().getHotbarSelectorId()-1+10)%10);
+					else loop.getGuiHandler().updateHotbarSelector((loop.getGuiHandler().getHotbarSelectorId()%10-1+10)%10+10);
+				}
 			}
 		}else{
 			for(int i = 0; i>yPos; i--){
-				if(loop.getGuiHandler().getHotbarSelectorId()<10)loop.getGuiHandler().updateHotbarSelector((loop.getGuiHandler().getHotbarSelectorId()+1)%10);
-				else loop.getGuiHandler().updateHotbarSelector((loop.getGuiHandler().getHotbarSelectorId()%10+1)%10+10);
+				if(rotator)loop.getGuiHandler().goalWheelRotation++;
+				else{
+					if(loop.getGuiHandler().getHotbarSelectorId()<10)loop.getGuiHandler().updateHotbarSelector((loop.getGuiHandler().getHotbarSelectorId()+1)%10);
+					else loop.getGuiHandler().updateHotbarSelector((loop.getGuiHandler().getHotbarSelectorId()%10+1)%10+10);
+				}
 			}
 		}
 	}

@@ -11,6 +11,7 @@ public class Camera{
 	public final Frustum frustum = new Frustum();
 	private final Vec3f direction = new Vec3f();
 	private final Vec3f position = new Vec3f();
+	public Camera(){}
 	public Camera(float fov, float aspect, float near, float far, boolean ortho){
 		if(ortho)MatrixUtils.setupOrtho(fov, aspect, near, far);
 		else MatrixUtils.setupPerspective(fov, aspect, near, far);

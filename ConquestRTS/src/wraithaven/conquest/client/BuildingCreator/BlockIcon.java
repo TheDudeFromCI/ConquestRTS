@@ -1,6 +1,7 @@
 package wraithaven.conquest.client.BuildingCreator;
 
 import java.util.ArrayList;
+import wraithaven.conquest.client.GameWorld.Voxel.BlockRotation;
 import wraithaven.conquest.client.BuildingCreator.BlockPalette.ChunklessBlock;
 import wraithaven.conquest.client.BuildingCreator.BlockPalette.ChunklessBlockHolder;
 import wraithaven.conquest.client.GameWorld.Voxel.Texture;
@@ -11,32 +12,37 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class BlockIcon implements ChunklessBlockHolder{
 	public int itemSlot;
-	final BlockShape shape;
-	final CubeTextures textures;
+	private float yaw;
+	public final BlockShape shape;
+	public final CubeTextures textures;
 	private final ArrayList<QuadBatch> batches = new ArrayList();
 	final ChunklessBlock block;
-	private static final float BLOCK_PITCH = 30;
-	private static final float BLOCK_YAW = 45;
+	public static final float BLOCK_PITCH = 30;
+	public static final float BLOCK_YAW = 45;
+	private static final float SPIN_SPEED = 10;
 	public static float BLOCK_ZOOM = 30;
-	public BlockIcon(BlockShape shape, CubeTextures textures){
+	public BlockIcon(BlockShape shape, CubeTextures textures, BlockRotation rotation){
 		this.shape=shape;
 		this.textures=textures;
-		block=new ChunklessBlock(this, shape, textures);
+		block=new ChunklessBlock(this, shape, textures, rotation);
 		block.build();
 		for(int i = 0; i<6; i++)block.optimizeSide(i);
 		for(int i = 0; i<batches.size(); i++)batches.get(i).recompileBuffer();
 	}
-	public void render(){
+	public void render(float x, float y, float z, float rx, float ry){
 		glPushMatrix();
-		glTranslatef(getX(itemSlot), getY(itemSlot), 0);
-		glRotatef(BLOCK_PITCH, 1, 0, 0);
-		glRotatef(BLOCK_YAW, 0, 1, 0);
+		glTranslatef(x, y, z);
+		glRotatef(BLOCK_PITCH+rx, 1, 0, 0);
+		glRotatef(BLOCK_YAW+yaw+ry, 0, 1, 0);
 		glTranslatef(-0.5f, -0.5f, -0.5f);
 		for(int i = 0; i<batches.size(); i++){
 			batches.get(i).getTexture().bind();
 			batches.get(i).renderPart();
 		}
 		glPopMatrix();
+	}
+	public void update(double time){
+		yaw=(float)((time*SPIN_SPEED)%360);
 	}
 	public QuadBatch getBatch(Texture texture){
 		QuadBatch batch;
@@ -48,6 +54,8 @@ public class BlockIcon implements ChunklessBlockHolder{
 		batches.add(batch);
 		return batch;
 	}
-	private static float getX(int id){ return (id<10?1:-1)*(1-GuiHandler.HOTBAR_SLOT)*(BLOCK_ZOOM*Loop.screenRes.width/Loop.screenRes.height/2f); }
-	private static float getY(int id){ return (((0.5f-((GuiHandler.HOTBAR_SLOT*Loop.screenRes.width/Loop.screenRes.height)*10)/2f-GuiHandler.HOTBAR_SLOT/2f)+(GuiHandler.HOTBAR_SLOT*Loop.screenRes.width/Loop.screenRes.height)*(9-id%10))-0.5f+GuiHandler.HOTBAR_SLOT)*BLOCK_ZOOM; }
+	public static float getY(int id){
+		return (float)((((Loop.screenRes.height-GuiHandler.HOTBAR_SLOT*10.0)/2+GuiHandler.HOTBAR_SLOT*(9-id%10))/Loop.screenRes.height-0.5f+(GuiHandler.HOTBAR_SLOT/2f/Loop.screenRes.height))*BLOCK_ZOOM);
+	}
+	public static float getX(int id){ return ((Loop.screenRes.width-GuiHandler.HOTBAR_SLOT)/Loop.screenRes.width-0.5f+(GuiHandler.HOTBAR_SLOT/2f/Loop.screenRes.width))*(BLOCK_ZOOM*Loop.screenRes.width/Loop.screenRes.height)*(id<10?1:-1); }
 }

@@ -81,9 +81,9 @@ public class VoxelWorld{
 		chunk=getContainingChunk(x, y, z);
 		return chunk==null?null:chunk.getBlock(x, y, z);
 	}
-	public Block setBlock(int x, int y, int z, BlockType type, BlockShape shape, CubeTextures cubeTextures){
+	public Block setBlock(int x, int y, int z, BlockType type, BlockShape shape, CubeTextures cubeTextures, BlockRotation rotation){
 		chunk=getContainingChunk(x, y, z);
-		return chunk==null?null:chunk.setBlock(x, y, z, type, shape, cubeTextures);
+		return chunk==null?null:chunk.setBlock(x, y, z, type, shape, cubeTextures, rotation);
 	}
 	public Chunk getContainingChunk(int x, int y, int z){ return getChunk(x>>Chunk.CHUNK_BITS, y>>Chunk.CHUNK_BITS, z>>Chunk.CHUNK_BITS, true); }
 	public Chunk getContainingChunk(int x, int y, int z, boolean load){ return getChunk(x>>Chunk.CHUNK_BITS, y>>Chunk.CHUNK_BITS, z>>Chunk.CHUNK_BITS, load); }

@@ -1,12 +1,15 @@
 package wraithaven.conquest.client.BuildingCreator;
 
+import java.io.File;
+import wraithaven.conquest.client.GameWorld.Voxel.MipmapQuality;
+import wraithaven.conquest.client.ClientLauncher;
+import wraithaven.conquest.client.GameWorld.Voxel.Texture;
 import wraithaven.conquest.client.GameWorld.LoopControls.VoxelWorldListener;
 import wraithaven.conquest.client.GameWorld.Voxel.Chunk;
 import wraithaven.conquest.client.GameWorld.Voxel.CubeTextures;
 import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorld;
 import wraithaven.conquest.client.GameWorld.Voxel.Camera;
 import wraithaven.conquest.client.GameWorld.BasicBlock;
-import wraithaven.conquest.client.GameWorld.BlockTextures;
 
 public class BuildCreatorWorld implements VoxelWorldListener{
 	private Camera camera;
@@ -16,18 +19,14 @@ public class BuildCreatorWorld implements VoxelWorldListener{
 		this.camera=camera;
 		this.world=world;
 		CubeTextures textures = new CubeTextures();
-		textures.xUp=BlockTextures.sideDirt.getTexture();
-		textures.xUpRotation=0;
-		textures.xDown=BlockTextures.sideDirt.getTexture();
-		textures.xDownRotation=1;
-		textures.yUp=BlockTextures.grass.getTexture();
-		textures.yUpRotation=3;
-		textures.yDown=BlockTextures.dirt.getTexture();
-		textures.yDownRotation=0;
-		textures.zUp=BlockTextures.sideDirt.getTexture();
-		textures.zUpRotation=3;
-		textures.zDown=BlockTextures.sideDirt.getTexture();
-		textures.zDownRotation=2;
+		//TODO Get this texture from a list of already loaded textures to avoid the grass texture from being loaded twice.
+		Texture grass = new Texture(new File(ClientLauncher.textureFolder, "Grass.png"), 4, MipmapQuality.HIGH);
+		textures.xUp=grass;
+		textures.xDown=grass;
+		textures.yUp=grass;
+		textures.yDown=grass;
+		textures.zUp=grass;
+		textures.zDown=grass;
 		block=new BasicBlock(textures, world);
 	}
 	public void loadChunk(Chunk chunk){

@@ -4,14 +4,15 @@ import java.nio.FloatBuffer;
 
 public class Quad{
 	int rotation;
-	float scale;
+	public final float scale;
 	boolean centerPoint;
+	public final int side;
 	public final FloatBuffer data;  //Colors (0-14), Texture Points (15-24), Vertices (25-39);
 	private static final float[] ROTATION_0 = {0, 0, 0, 1, 1, 1, 1, 0, 0.5f, 0.5f};
 	private static final float[] ROTATION_1 = {0, 1, 1, 1, 1, 0, 0, 0, 0.5f, 0.5f};
 	private static final float[] ROTATION_2 = {1, 1, 1, 0, 0, 0, 0, 1, 0.5f, 0.5f};
 	private static final float[] ROTATION_3 = {1, 0, 0, 0, 0, 1, 1, 1, 0.5f, 0.5f};
-	Quad(float[] points, float[] colors, int rotation, float scale, float[] texturePositions){
+	Quad(float[] points, float[] colors, int rotation, float scale, float[] texturePositions, int side){
 		data=FloatBuffer.allocate(40);
 		data.put(colors);
 		if(rotation==0)feedTexturePositions(data, ROTATION_0, texturePositions);
@@ -21,6 +22,7 @@ public class Quad{
 		for(int i = 25; i<=39; i++)data.put(i, points[i-25]*scale);
 		this.rotation=rotation;
 		this.scale=scale;
+		this.side=side;
 	}
 	public void shift(float x, float y, float z){
 		data.put(25, data.get(25)+x);

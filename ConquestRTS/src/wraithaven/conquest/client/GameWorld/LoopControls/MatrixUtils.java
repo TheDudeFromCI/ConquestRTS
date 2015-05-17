@@ -7,6 +7,7 @@ import java.nio.FloatBuffer;
 import javax.imageio.ImageIO;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import com.sun.javafx.geom.Vec3f;
 
 public class MatrixUtils{
 	private static final float[] IDENTITY_MATRIX = {
@@ -117,5 +118,29 @@ public class MatrixUtils{
 			}
 			ImageIO.write(image, "PNG", file);
 		}catch(Exception exception){ exception.printStackTrace(); }
+	}
+	public static void matrixLookAt(Vec3f eye, Vec3f center, Vec3f up, float[] result){
+		Vec3f f = new Vec3f(center);
+		f.sub(eye);
+		f.normalize();
+		Vec3f u = new Vec3f(up);
+		u.normalize();
+		Vec3f s = new Vec3f();
+		s.cross(f, u);
+		s.normalize();
+		u.cross(s, f);
+		for(int i = 0; i<16; i++)result[i]=1;
+		result[0]=s.x;
+		result[4]=s.y;
+		result[8]=s.z;
+		result[1]=u.x;
+		result[5]=u.y;
+		result[9]=u.z;
+		result[2]=-f.x;
+		result[6]=-f.y;
+		result[10]=-f.z;
+		result[3]=-eye.x;
+		result[7]=-eye.y;
+		result[11]=-eye.z;
 	}
 }

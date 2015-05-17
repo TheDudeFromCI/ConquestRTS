@@ -3,6 +3,7 @@ package wraithaven.conquest.client.GameWorld.Voxel;
 public class CubeTextures{
 	public Texture xUp, xDown, yUp, yDown, zUp, zDown;
 	public int xUpRotation, xDownRotation, yUpRotation, yDownRotation, zUpRotation, zDownRotation;
+	public float[] colors = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 	public Texture getTexture(int side){
 		if(side==0)return xUp;
 		if(side==1)return xDown;

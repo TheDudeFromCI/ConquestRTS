@@ -3,7 +3,7 @@ package wraithaven.conquest.client.GameWorld.Voxel;
 public class Block{
 	public final int x, y, z;
 	private boolean hidden;
-	final Quad[] quads = new Quad[6];
+	protected final Quad[] quads = new Quad[6];
 	public final Chunk chunk;
 	public final BlockType type;
 	protected static final float[] WHITE_COLORS = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};

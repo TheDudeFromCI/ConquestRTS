@@ -57,18 +57,19 @@ class VoxelChunkQue{
 	static void setupTextures(VoxelWorld world){
 		noise.setFunction(new CosineInterpolation());
 		CubeTextures textures = new CubeTextures();
-		textures.xUp=BlockTextures.sideDirt.getTexture();
-		textures.xUpRotation=0;
-		textures.xDown=BlockTextures.sideDirt.getTexture();
-		textures.xDownRotation=1;
-		textures.yUp=BlockTextures.grass.getTexture();
-		textures.yUpRotation=0;
-		textures.yDown=BlockTextures.dirt.getTexture();
-		textures.yDownRotation=0;
-		textures.zUp=BlockTextures.sideDirt.getTexture();
-		textures.zUpRotation=3;
-		textures.zDown=BlockTextures.sideDirt.getTexture();
-		textures.zDownRotation=2;
+		//TODO Redo this, or it'll error.
+//		textures.xUp=BlockTextures.sideDirt.getTexture();
+//		textures.xUpRotation=0;
+//		textures.xDown=BlockTextures.sideDirt.getTexture();
+//		textures.xDownRotation=1;
+//		textures.yUp=BlockTextures.grass.getTexture();
+//		textures.yUpRotation=0;
+//		textures.yDown=BlockTextures.dirt.getTexture();
+//		textures.yDownRotation=0;
+//		textures.zUp=BlockTextures.sideDirt.getTexture();
+//		textures.zUpRotation=3;
+//		textures.zDown=BlockTextures.sideDirt.getTexture();
+//		textures.zDownRotation=2;
 		type=new BasicBlock(textures, world);
 	}
 }

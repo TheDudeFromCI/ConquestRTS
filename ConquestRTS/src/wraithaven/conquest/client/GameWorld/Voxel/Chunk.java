@@ -29,9 +29,9 @@ public class Chunk{
 		endY=startY+HIGH_BLOCK_COUNT;
 		endZ=startZ+HIGH_BLOCK_COUNT;
 	}
-	public Block createBlock(int x, int y, int z, BlockType type, BlockShape shape, CubeTextures textures){
+	public Block createBlock(int x, int y, int z, BlockType type, BlockShape shape, CubeTextures textures, BlockRotation rotation){
 		int index = getIndex(x, y, z);
-		blocks[index]=new CustomBlock(this, x, y, z, type, shape, textures);
+		blocks[index]=new CustomBlock(this, x, y, z, type, shape, textures, rotation);
 		removeHidden();
 		((CustomBlock)blocks[index]).build();
 		return blocks[index];
@@ -84,6 +84,7 @@ public class Chunk{
 			if(updateShadows){
 				if(block.quads[side]!=null){
 					block.quads[side].centerPoint=block.type.setupShadows(block.quads[side].data, side, block.x, block.y, block.z);
+					((CustomBlock)block).calculateColors(block.quads[side].data, side);
 					block.chunk.setNeedsRebatch();
 				}
 			}
@@ -135,11 +136,11 @@ public class Chunk{
 		else removeBlockQuads(blocks[index]);
 		blocks[index]=null;
 	}
-	public Block setBlock(int x, int y, int z, BlockType type, BlockShape shape, CubeTextures textures){
+	public Block setBlock(int x, int y, int z, BlockType type, BlockShape shape, CubeTextures textures, BlockRotation rotation){
 		setNeedsRebatch();
 		removeBlock(x, y, z);
 		if(type!=null){
-			Block block = createBlock(x, y, z, type, shape, textures);
+			Block block = createBlock(x, y, z, type, shape, textures, rotation);
 			optimizeBlock(block);
 			optimizeAroundBlock(x, y, z);
 			return block;
@@ -159,13 +160,13 @@ public class Chunk{
 	private boolean neighborFull(int x, int y, int z, int side){
 		Block block = getQuickBlock(x, y, z);
 		if(block==null)return true;
-		if(block instanceof CustomBlock)return !((CustomBlock)block).shape.fullSide(CustomBlock.oppositeSide(side));
+		if(block instanceof CustomBlock)return !((CustomBlock)block).shape.fullSide(CustomBlock.oppositeSide(side), ((CustomBlock)block).rotation);
 		return false;
 	}
 	QuadBatch getBatch(Texture texture, boolean small, int x, int y, int z){
-		x=x&HIGH_BLOCK_COUNT/4;
-		y=y&HIGH_BLOCK_COUNT/4;
-		z=z&HIGH_BLOCK_COUNT/4;
+		x=(x&HIGH_BLOCK_COUNT)/4;
+		y=(y&HIGH_BLOCK_COUNT)/4;
+		z=(z&HIGH_BLOCK_COUNT)/4;
 		QuadBatch batch;
 		for(int i = 0; i<batches.size(); i++){
 			batch=batches.get(i);

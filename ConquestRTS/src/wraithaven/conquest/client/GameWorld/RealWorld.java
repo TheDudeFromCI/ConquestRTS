@@ -34,7 +34,6 @@ public class RealWorld{
 				GL11.glEnable(GL11.GL_TEXTURE_2D);
 				GL11.glEnable(GL11.GL_CULL_FACE);
 				GL11.glCullFace(GL11.GL_BACK);
-				BlockTextures.genTextures();
 				cam=new Camera(screenRes.width*ZOOM_LEVEL, screenRes.height*ZOOM_LEVEL, -1000, 1000, true);
 				cam.goalY=cam.y=100;
 				cam.goalRX=cam.rx=30;

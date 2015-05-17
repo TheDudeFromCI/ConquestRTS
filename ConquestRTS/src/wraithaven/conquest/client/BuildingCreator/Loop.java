@@ -13,7 +13,6 @@ import wraithaven.conquest.client.GameWorld.LoopControls.LoopObjective;
 import wraithaven.conquest.client.GameWorld.Voxel.Camera;
 import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorld;
 import wraithaven.conquest.client.BuildingCreator.BlockPalette.PalleteRenderer;
-import wraithaven.conquest.client.GameWorld.BlockTextures;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class Loop implements LoopObjective{
@@ -37,13 +36,12 @@ public class Loop implements LoopObjective{
 	}
 	public void preLoop(){
 		camera=new Camera(70, screenRes.width/(float)screenRes.height, CAMERA_NEAR_CLIP, 1000, false);
-		BlockTextures.genTextures();
 		creatorWorld=new BuildCreatorWorld();
 		world=new VoxelWorld(creatorWorld, new VoxelWorldBounds(0, 0, 0, BuildingCreator.WORLD_BOUNDS_SIZE-1, BuildingCreator.WORLD_BOUNDS_SIZE-1, BuildingCreator.WORLD_BOUNDS_SIZE-1));
 		creatorWorld.setup(world, camera);
 		inputController=new InputController(buildingCreator, camera, buildingCreator.getWindow(), this);
 		userBlockHandler=new UserBlockHandler(this, world, camera);
-		guiHandler=new GuiHandler();
+		guiHandler=new GuiHandler(this);
 		skybox=new Skybox(new Texture(new File(ClientLauncher.assetFolder, "Day Skybox.png"), 0, null));
 		selectedBlock=new SelectedBlock(camera, world);
 		generateWorld();
@@ -51,13 +49,14 @@ public class Loop implements LoopObjective{
 		setupOGL();
 	}
 	public void update(double delta, double time){
-		if(palleteRenderer!=null)palleteRenderer.update(delta, time);
+		if(palleteRenderer!=null)palleteRenderer.update(time);
 		else{
 			inputController.processWalk(world, delta);
 			GL11.glPushMatrix();
 			camera.update(delta);
 			userBlockHandler.update(time);
 			world.setNeedsRebatch();
+			guiHandler.update(delta);
 		}
 	}
 	private void setupCameraPosition(){
@@ -94,11 +93,13 @@ public class Loop implements LoopObjective{
 			removePalette=false;
 			glfwSetCursorPos(buildingCreator.getWindow(), screenRes.width/2.0, screenRes.height/2.0);
 			glfwSetInputMode(buildingCreator.getWindow(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+			GL11.glClearColor(219/255f, 246/255f, 251/255f, 0);
 		}
 		if(createPalette){
 			palleteRenderer=new PalleteRenderer();
 			createPalette=false;
 			glfwSetInputMode(buildingCreator.getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			GL11.glClearColor(0, 0, 0, 0);
 		}
 	}
 	private void generateWorld(){
@@ -117,7 +118,7 @@ public class Loop implements LoopObjective{
 			if(action==GLFW_PRESS){
 				glfwGetCursorPos(window, mouseBufferX, mouseBufferY);
 				palleteRenderer.onMouseDown(mouseBufferX.get(0), mouseBufferY.get(0));
-			}else if(action==GLFW_RELEASE)palleteRenderer.onMouseUp();
+			}else if(action==GLFW_RELEASE)palleteRenderer.onMouseUp(button);
 		}else userBlockHandler.mouseClick(button, action);
 	}
 	public void key(long window, int key, int action){ inputController.onKey(window, key, action); }
@@ -126,6 +127,7 @@ public class Loop implements LoopObjective{
 	public boolean hasPalette(){ return palleteRenderer!=null; }
 	public GuiHandler getGuiHandler(){ return guiHandler; }
 	public void mouseWheel(long window, double xPos, double yPos){ inputController.mouseWheel(yPos); }
+	public Camera getCamera(){ return camera; }
 	private static void setupOGL(){
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glEnable(GL11.GL_CULL_FACE);

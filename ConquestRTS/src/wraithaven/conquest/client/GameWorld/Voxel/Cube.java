@@ -53,12 +53,12 @@ public abstract class Cube{
 	public static final int Z_DOWN_SIDE = 5;
 	public static Quad generateQuad(int side, float x, float y, float z, int r, float[] colors, float scale, float[] texturePositions){
 		Quad q = null;
-		if(side==0)q=new Quad(X_UP_QUAD, colors, r, scale, texturePositions);
-		if(side==1)q=new Quad(X_DOWN_QUAD, colors, r, scale, texturePositions);
-		if(side==2)q=new Quad(Y_UP_QUAD, colors, r, scale, texturePositions);
-		if(side==3)q=new Quad(Y_DOWN_QUAD, colors, r, scale, texturePositions);
-		if(side==4)q=new Quad(Z_UP_QUAD, colors, r, scale, texturePositions);
-		if(side==5)q=new Quad(Z_DOWN_QUAD, colors, r, scale, texturePositions);
+		if(side==0)q=new Quad(X_UP_QUAD, colors, r, scale, texturePositions, side);
+		if(side==1)q=new Quad(X_DOWN_QUAD, colors, r, scale, texturePositions, side);
+		if(side==2)q=new Quad(Y_UP_QUAD, colors, r, scale, texturePositions, side);
+		if(side==3)q=new Quad(Y_DOWN_QUAD, colors, r, scale, texturePositions, side);
+		if(side==4)q=new Quad(Z_UP_QUAD, colors, r, scale, texturePositions, side);
+		if(side==5)q=new Quad(Z_DOWN_QUAD, colors, r, scale, texturePositions, side);
 		if(q!=null)q.shift(x, y, z);
 		return q;
 	}

@@ -2,7 +2,7 @@ package wraithaven.conquest.client.GameWorld.Voxel.BlockShapes;
 
 import wraithaven.conquest.client.GameWorld.Voxel.BlockShape;
 
-public class Pyramid extends BlockShape{
+public class Shape1 extends BlockShape{
 	private static final boolean[] BLOCKS = {
 		true, true, true, true, true, true, true, true,
 		true, true, true, true, true, true, true, true,
@@ -76,6 +76,7 @@ public class Pyramid extends BlockShape{
 		false, false, false, false, false, false, false, false,
 		false, false, false, false, false, false, false, false,
 	};
+	Shape1(){}
 	protected boolean[] getBlocks(){ return BLOCKS; }
-	public boolean fullSide(int side){ return side==3; }
+	protected boolean hasFullSide(int side){ return side==3; }
 }
