@@ -2,6 +2,7 @@ package wraithaven.conquest.client.GameWorld.LoopControls;
 
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
+import wraithaven.conquest.client.GameWorld.Voxel.Texture;
 import java.nio.ByteBuffer;
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -39,6 +40,7 @@ public class MainLoop{
 		}catch(Exception exception){
 			exception.printStackTrace();
 		}finally{
+			Texture.disposeAll();
 			glfwTerminate();
 			errorCallback.release();
 			System.exit(0);

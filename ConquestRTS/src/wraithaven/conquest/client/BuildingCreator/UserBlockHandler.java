@@ -6,8 +6,6 @@ import wraithaven.conquest.client.GameWorld.Voxel.CustomBlock;
 import wraithaven.conquest.client.GameWorld.Voxel.CubeTextures;
 import wraithaven.conquest.client.GameWorld.Voxel.BlockShape;
 import wraithaven.conquest.client.GameWorld.Voxel.CameraTarget;
-import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorld;
-import wraithaven.conquest.client.GameWorld.Voxel.Camera;
 import wraithaven.conquest.client.GameWorld.Sphere;
 import wraithaven.conquest.client.GameWorld.BoundingBox;
 import wraithaven.conquest.client.GameWorld.Voxel.CameraTargetCallback;
@@ -21,15 +19,10 @@ public class UserBlockHandler{
 	private BlockRotation blockRotation;
 	private final BoundingBox boundingBox = new BoundingBox();
 	private final Sphere cameraSphere = new Sphere();
-	private final Camera camera;
-	private final VoxelWorld world;
 	private final CameraTarget cameraTarget;
-	private final Loop loop;
 	private static final double CLICK_PING_RATE = 0.2;
-	public UserBlockHandler(Loop loop, VoxelWorld world, Camera camera){
-		cameraTarget=new CameraTarget(this.camera=camera);
-		this.world=world;
-		this.loop=loop;
+	public UserBlockHandler(){
+		cameraTarget=new CameraTarget(Loop.INSTANCE.getCamera());
 		cameraSphere.r=InputController.CAMERA_RADIUS;
 	}
 	public void mouseClick(int button, int action){
@@ -47,20 +40,31 @@ public class UserBlockHandler{
 			}else if(action==GLFW_RELEASE)holdingLeftButton=false;
 		}else if(button==GLFW_MOUSE_BUTTON_MIDDLE){
 			if(action==GLFW_PRESS){
-				callback=cameraTarget.getTargetBlock(world, 500, false);
+				callback=cameraTarget.getTargetBlock(Loop.INSTANCE.getVoxelWorld(), 500, false);
 				if(callback.block!=null){
 					if(callback.block instanceof CustomBlock){
 						CustomBlock block = (CustomBlock)callback.block;
 						BlockIcon icon;
 						for(int i = 0; i<10; i++){
-							icon=loop.getGuiHandler().getIconManager().getIcon(i);
+							icon=Loop.INSTANCE.getGuiHandler().getIconManager().getIcon(i);
+							if(icon==null)continue;
 							if(icon.shape==block.shape&&icon.textures==block.textures){
-								loop.getGuiHandler().updateHotbarSelector(i);
-								loop.getGuiHandler().goalWheelRotation=block.rotation.index;
+								Loop.INSTANCE.getGuiHandler().updateHotbarSelector(i);
+								Loop.INSTANCE.getGuiHandler().goalWheelRotation=block.rotation.index;
 								return;
 							}
 						}
-						loop.getGuiHandler().addIcon(loop.getGuiHandler().getHotbarSelectorId(), new BlockIcon(block.shape, block.textures, block.rotation));
+						for(int i = 0; i<10; i++){
+							icon=Loop.INSTANCE.getGuiHandler().getIconManager().getIcon(i);
+							if(icon==null){
+								Loop.INSTANCE.getGuiHandler().addIcon(i, new BlockIcon(block.shape, block.textures, block.rotation));
+								Loop.INSTANCE.getGuiHandler().updateHotbarSelector(i);
+								Loop.INSTANCE.getGuiHandler().goalWheelRotation=block.rotation.index;
+								return;
+							}
+						}
+						Loop.INSTANCE.getGuiHandler().addIcon(Loop.INSTANCE.getGuiHandler().getHotbarSelectorId(), Loop.INSTANCE.getInventory().getBlockIcon(block.shape, block.textures));
+						Loop.INSTANCE.getGuiHandler().goalWheelRotation=block.rotation.index;
 					}
 				}
 			}
@@ -73,41 +77,41 @@ public class UserBlockHandler{
 		boundingBox.x2=x+1;
 		boundingBox.y2=y+1;
 		boundingBox.z2=z+1;
-		cameraSphere.x=camera.goalX;
-		cameraSphere.y=camera.goalY;
-		cameraSphere.z=camera.goalZ;
+		cameraSphere.x=Loop.INSTANCE.getCamera().goalX;
+		cameraSphere.y=Loop.INSTANCE.getCamera().goalY;
+		cameraSphere.z=Loop.INSTANCE.getCamera().goalZ;
 		return intersectsWith(boundingBox, cameraSphere);
 	}
 	private void placeBlock(){
-		shape=loop.getGuiHandler().getSelectedShape();
-		cubeTextures=loop.getGuiHandler().getSelectedCubeTextures();
-		blockRotation=loop.getGuiHandler().getSelectedRotation();
+		shape=Loop.INSTANCE.getGuiHandler().getSelectedShape();
+		cubeTextures=Loop.INSTANCE.getGuiHandler().getSelectedCubeTextures();
+		blockRotation=Loop.INSTANCE.getGuiHandler().getSelectedRotation();
 		if(shape==null)return;
-		callback=cameraTarget.getTargetBlock(world, 500, false);
+		callback=cameraTarget.getTargetBlock(Loop.INSTANCE.getVoxelWorld(), 500, false);
 		if(callback.block!=null){
 			if(callback.side==0){
-				if(callback.block.chunk.world.getBlock(callback.block.x+1, callback.block.y, callback.block.z, false)==null&&!collidesWithCamera(callback.block.x+1, callback.block.y, callback.block.z))callback.block.chunk.world.setBlock(callback.block.x+1, callback.block.y, callback.block.z, callback.block.type, shape, cubeTextures, blockRotation);
+				if(callback.block.chunk.world.getBlock(callback.block.x+1, callback.block.y, callback.block.z, false)==null&&!collidesWithCamera(callback.block.x+1, callback.block.y, callback.block.z))callback.block.chunk.world.setBlock(callback.block.x+1, callback.block.y, callback.block.z, shape, cubeTextures, blockRotation);
 			}
 			if(callback.side==1){
-				if(callback.block.chunk.world.getBlock(callback.block.x-1, callback.block.y, callback.block.z, false)==null&&!collidesWithCamera(callback.block.x-1, callback.block.y, callback.block.z))callback.block.chunk.world.setBlock(callback.block.x-1, callback.block.y, callback.block.z, callback.block.type, shape, cubeTextures, blockRotation);
+				if(callback.block.chunk.world.getBlock(callback.block.x-1, callback.block.y, callback.block.z, false)==null&&!collidesWithCamera(callback.block.x-1, callback.block.y, callback.block.z))callback.block.chunk.world.setBlock(callback.block.x-1, callback.block.y, callback.block.z, shape, cubeTextures, blockRotation);
 			}
 			if(callback.side==2){
-				if(callback.block.chunk.world.getBlock(callback.block.x, callback.block.y+1, callback.block.z, false)==null&&!collidesWithCamera(callback.block.x, callback.block.y+1, callback.block.z))callback.block.chunk.world.setBlock(callback.block.x, callback.block.y+1, callback.block.z, callback.block.type, shape, cubeTextures, blockRotation);
+				if(callback.block.chunk.world.getBlock(callback.block.x, callback.block.y+1, callback.block.z, false)==null&&!collidesWithCamera(callback.block.x, callback.block.y+1, callback.block.z))callback.block.chunk.world.setBlock(callback.block.x, callback.block.y+1, callback.block.z, shape, cubeTextures, blockRotation);
 			}
 			if(callback.side==3){
-				if(callback.block.chunk.world.getBlock(callback.block.x, callback.block.y-1, callback.block.z, false)==null&&!collidesWithCamera(callback.block.x, callback.block.y-1, callback.block.z))callback.block.chunk.world.setBlock(callback.block.x, callback.block.y-1, callback.block.z, callback.block.type, shape, cubeTextures, blockRotation);
+				if(callback.block.chunk.world.getBlock(callback.block.x, callback.block.y-1, callback.block.z, false)==null&&!collidesWithCamera(callback.block.x, callback.block.y-1, callback.block.z))callback.block.chunk.world.setBlock(callback.block.x, callback.block.y-1, callback.block.z, shape, cubeTextures, blockRotation);
 			}
 			if(callback.side==4){
-				if(callback.block.chunk.world.getBlock(callback.block.x, callback.block.y, callback.block.z+1, false)==null&&!collidesWithCamera(callback.block.x, callback.block.y, callback.block.z+1))callback.block.chunk.world.setBlock(callback.block.x, callback.block.y, callback.block.z+1, callback.block.type, shape, cubeTextures, blockRotation);
+				if(callback.block.chunk.world.getBlock(callback.block.x, callback.block.y, callback.block.z+1, false)==null&&!collidesWithCamera(callback.block.x, callback.block.y, callback.block.z+1))callback.block.chunk.world.setBlock(callback.block.x, callback.block.y, callback.block.z+1, shape, cubeTextures, blockRotation);
 			}
 			if(callback.side==5){
-				if(callback.block.chunk.world.getBlock(callback.block.x, callback.block.y, callback.block.z-1, false)==null&&!collidesWithCamera(callback.block.x, callback.block.y, callback.block.z-1))callback.block.chunk.world.setBlock(callback.block.x, callback.block.y, callback.block.z-1, callback.block.type, shape, cubeTextures, blockRotation);
+				if(callback.block.chunk.world.getBlock(callback.block.x, callback.block.y, callback.block.z-1, false)==null&&!collidesWithCamera(callback.block.x, callback.block.y, callback.block.z-1))callback.block.chunk.world.setBlock(callback.block.x, callback.block.y, callback.block.z-1, shape, cubeTextures, blockRotation);
 			}
 		}
 	}
 	private void deleteBlock(){
-		callback=cameraTarget.getTargetBlock(world, 500, false);
-		if(callback.block!=null&&callback.block.y>0)callback.block.chunk.setBlock(callback.block.x, callback.block.y, callback.block.z, null, null, null, null);
+		callback=cameraTarget.getTargetBlock(Loop.INSTANCE.getVoxelWorld(), 500, false);
+		if(callback.block!=null&&callback.block.y>0)callback.block.chunk.setBlock(callback.block.x, callback.block.y, callback.block.z, null, null, null);
 	}
 	public void update(double time){
 		if(time>lastButtonPing+CLICK_PING_RATE){
@@ -118,6 +122,16 @@ public class UserBlockHandler{
 			if(holdingRightButton){
 				lastButtonPing=time;
 				deleteBlock();
+			}
+		}
+		{
+			if(Loop.INSTANCE.getGuiHandler().getHotbarSelectorId()==9){
+				shape=Loop.INSTANCE.getGuiHandler().getSelectedShape();
+				cubeTextures=Loop.INSTANCE.getGuiHandler().getSelectedCubeTextures();
+				int x = (int)(Math.random()*128);
+				int y = (int)(Math.random()*128);
+				int z = (int)(Math.random()*128);
+				if(Loop.INSTANCE.getVoxelWorld().getBlock(x, y, z, false)==null)Loop.INSTANCE.getVoxelWorld().setBlock(x, y, z, shape, cubeTextures, BlockRotation.getRotation((int)(Math.random()*24)));
 			}
 		}
 	}

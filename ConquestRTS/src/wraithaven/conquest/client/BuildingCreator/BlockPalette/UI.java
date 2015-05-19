@@ -1,11 +1,11 @@
 package wraithaven.conquest.client.BuildingCreator.BlockPalette;
 
-import java.io.File;
 import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import com.sun.javafx.geom.Vec3f;
+import wraithaven.conquest.client.BuildingCreator.BlockIcon;
 import wraithaven.conquest.client.GameWorld.Voxel.BlockRotation;
 import wraithaven.conquest.client.GameWorld.LoopControls.Vector4f;
 import wraithaven.conquest.client.GameWorld.LoopControls.Matrix4f;
@@ -19,20 +19,24 @@ import wraithaven.conquest.client.GameWorld.Voxel.Texture;
 public class UI{
 	private boolean mouseDown, mouseOnRed, mouseOnGreen, mouseOnBlue, mouseOnTemplate, mouseOnTextures;
 	private double xOffset, yOffset;
-	private HorizontalGemSlider redGem;
-	private HorizontalGemSlider greenGem;
-	private HorizontalGemSlider blueGem;
-	private HorizontalGemSlider textureGem;
-	private VerticalGemSlider templateGem;
 	private double mouseDownX, mouseDownY;
+	private final InventoryView inventoryView;
+	private final HorizontalGemSlider redGem;
+	private final HorizontalGemSlider greenGem;
+	private final HorizontalGemSlider blueGem;
+	private final HorizontalGemSlider textureGem;
+	private final VerticalGemSlider templateGem;
 	private final CubeTextures cubeTextures = new CubeTextures();
 	private final UiElement background;
+	private final UiElement saveButton;
 	private final FloatingBlock floatingBlock;
 	private final Shapes shapes;
 	private final Textures textures;
 	private static final float MOUSE_SENSITIVITY = 0.5f;
+	public static UI INSTANCE;
 	public UI(){
-		background=new UiElement(new Texture(new File(ClientLauncher.assetFolder, "Block Palette Background.png"), 0, null));
+		INSTANCE=this;
+		background=new UiElement(Texture.getTexture(ClientLauncher.assetFolder, "Block Palette Background.png"));
 		floatingBlock=new FloatingBlock();
 		shapes=new Shapes();
 		floatingBlock.z=-3;
@@ -60,6 +64,14 @@ public class UI{
 			templateGem=new VerticalGemSlider(149/1024f*(float)width, 122/768f*(float)height, 382/768f*(float)height, "Template Gem.png", 25, 47, background.x, background.y);
 			textureGem=new HorizontalGemSlider(701/768f*(float)height, 121/1024f*(float)width, 298/1024f*(float)width, 121/1024f*(float)width, "Textures Gem.png", 35, 19, background.x, background.y);
 			textures=new Textures((float)width, (float)height);
+			inventoryView=new InventoryView((float)width, (float)height, background.x, background.y);
+			{
+				saveButton=new UiElement(getSaveButtonTexture(false));
+				saveButton.w=97;
+				saveButton.h=71;
+				saveButton.x=370/1024f*(float)width+background.x;
+				saveButton.y=270/768f*(float)height+background.y;
+			}
 		}
 		cubeTextures.xUp=textures.getTexture();
 		cubeTextures.xDown=textures.getTexture();
@@ -71,6 +83,15 @@ public class UI{
 		floatingBlock.block.build();
 		for(int i = 0; i<6; i++)floatingBlock.block.optimizeSide(i);
 		floatingBlock.rebuildBatches();
+	}
+	private static Texture getSaveButtonTexture(boolean down){
+		if(down)return Texture.getTexture(ClientLauncher.assetFolder, "SaveGemDown.png");
+		return Texture.getTexture(ClientLauncher.assetFolder, "SaveGemUP.png");
+	}
+	public void dispose(){
+		INSTANCE=null;
+		floatingBlock.dispose();
+		shapes.dispose();
 	}
 	private void updateFloatingBlock(){
 		floatingBlock.destroy();
@@ -88,10 +109,12 @@ public class UI{
 		renderElement(blueGem.gem);
 		renderElement(templateGem.gem);
 		renderElement(textureGem.gem);
+		renderElement(saveButton);
 		textures.render();
 		MatrixUtils.setupOrtho(Shapes.BLOCK_ZOOM*Loop.screenRes.width/Loop.screenRes.height, Shapes.BLOCK_ZOOM, -1000, 1000);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		shapes.render();
+		inventoryView.render();
 		MatrixUtils.setupOrtho(BLOCK_ZOOM*Loop.screenRes.width/Loop.screenRes.height, BLOCK_ZOOM, -1000, 1000);
 		GL11.glTranslatef(-0.6f, 1, -3);
 		GL11.glRotatef(shiftPitch, 1, 0, 0);
@@ -135,7 +158,31 @@ public class UI{
 	}
 	private boolean mouseMove;
 	private double mouseX, mouseY;
+	private boolean saveDown;
+	private boolean saveButton(double x, double y, boolean press){
+		y=Loop.screenRes.height-y;
+		if(press){
+			if(saveDown&&x>=saveButton.x&&x<saveButton.x+saveButton.w&&y>=saveButton.y&&y<saveButton.y+saveButton.h){
+				Loop.INSTANCE.getInventory().addBlock(shapes.getCurrentShape(), cubeTextures.duplicate());
+			}
+			if(saveDown)saveButton.texture=getSaveButtonTexture(false);
+			saveDown=false;
+			return false;
+		}
+		if(x>=saveButton.x&&x<saveButton.x+saveButton.w&&y>=saveButton.y&&y<saveButton.y+saveButton.h){
+			saveButton.texture=getSaveButtonTexture(true);
+			saveDown=true;
+			return true;
+		}
+		if(saveDown)saveButton.texture=getSaveButtonTexture(false);
+		saveDown=false;
+		return false;
+	}
 	public void onMouseDown(double x, double y){
+		mouseX=x;
+		mouseY=y;
+		if(saveButton(x, y, false))return;
+		if(inventoryView.onClick(x, y))return;
 		if(textures.mouseClick(x, y))return;
 		if(shapes.checkMouseClick(x, y)){
 			updateFloatingBlock();
@@ -143,8 +190,6 @@ public class UI{
 		}
 		mouseMove=false;
 		mouseDown=true;
-		mouseX=x;
-		mouseY=y;
 		x-=background.x;
 		if(x>=templateGem.xPosition&&x<templateGem.xPosition+templateGem.width&&y>=templateGem.currentY&&y<templateGem.currentY+templateGem.height){
 			mouseOnTemplate=true;
@@ -171,6 +216,7 @@ public class UI{
 		}
 	}
 	public void onMouseUp(int button){
+		if(saveButton(mouseX, mouseY, true))return;
 		mouseDown=false;
 		mouseOnRed=false;
 		mouseOnGreen=false;
@@ -198,6 +244,11 @@ public class UI{
 			if(q.side==4)cubeTextures.zUpRotation=(cubeTextures.zUpRotation+1)%4;
 			if(q.side==5)cubeTextures.zDownRotation=(cubeTextures.zDownRotation+1)%4;
 		}
+		updateFloatingBlock();
+	}
+	public void load(BlockIcon icon){
+		shapes.select(icon.shape);
+		cubeTextures.set(icon.textures);
 		updateFloatingBlock();
 	}
 	private static final float BLOCK_ZOOM = 5;
@@ -256,7 +307,7 @@ public class UI{
 		vec.y=tempVector.y;
 		vec.z=tempVector.z;
 	}
-	static void renderElement(UiElement ele){
+	public static void renderElement(UiElement ele){
 		GL11.glPushMatrix();
 		ele.texture.bind();
 		GL11.glTranslatef(ele.x, ele.y, 0);

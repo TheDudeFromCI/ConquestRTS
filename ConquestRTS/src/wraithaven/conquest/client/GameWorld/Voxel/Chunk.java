@@ -29,16 +29,16 @@ public class Chunk{
 		endY=startY+HIGH_BLOCK_COUNT;
 		endZ=startZ+HIGH_BLOCK_COUNT;
 	}
-	public Block createBlock(int x, int y, int z, BlockType type, BlockShape shape, CubeTextures textures, BlockRotation rotation){
+	public Block createBlock(int x, int y, int z, BlockShape shape, CubeTextures textures, BlockRotation rotation){
 		int index = getIndex(x, y, z);
-		blocks[index]=new CustomBlock(this, x, y, z, type, shape, textures, rotation);
+		blocks[index]=new CustomBlock(this, x, y, z, shape, textures, rotation);
 		removeHidden();
 		((CustomBlock)blocks[index]).build();
 		return blocks[index];
 	}
-	public Block createBlock(int x, int y, int z, BlockType type){
+	public Block createBlock(int x, int y, int z){
 		int index = getIndex(x, y, z);
-		blocks[index]=new Block(this, x, y, z, type);
+		blocks[index]=new Block(this, x, y, z);
 		removeHidden();
 		return blocks[index];
 	}
@@ -83,7 +83,7 @@ public class Chunk{
 			((CustomBlock)block).optimizeSide(side);
 			if(updateShadows){
 				if(block.quads[side]!=null){
-					block.quads[side].centerPoint=block.type.setupShadows(block.quads[side].data, side, block.x, block.y, block.z);
+					block.quads[side].centerPoint=block.setupShadows(block.quads[side].data, side, block.x, block.y, block.z);
 					((CustomBlock)block).calculateColors(block.quads[side].data, side);
 					block.chunk.setNeedsRebatch();
 				}
@@ -95,15 +95,15 @@ public class Chunk{
 			block.chunk.setNeedsRebatch();
 			if(open){
 				block.showSide(side, open);
-				block.chunk.getBatch(block.type.getTexture(side), false, 0, 0, 0).addQuad(block.getQuad(side));
+				block.chunk.getBatch(Block.getTexture(side), false, 0, 0, 0).addQuad(block.getQuad(side));
 			}else{
-				block.chunk.getBatch(block.type.getTexture(side), false, 0, 0, 0).removeQuad(block.getQuad(side));
+				block.chunk.getBatch(Block.getTexture(side), false, 0, 0, 0).removeQuad(block.getQuad(side));
 				block.showSide(side, open);
 			}
 		}
 		if(updateShadows){
 			if(block.quads[side]!=null){
-				block.quads[side].centerPoint=block.type.setupShadows(block.quads[side].data, side, block.x, block.y, block.z);
+				block.quads[side].centerPoint=block.setupShadows(block.quads[side].data, side, block.x, block.y, block.z);
 				block.chunk.setNeedsRebatch();
 			}
 		}
@@ -136,11 +136,11 @@ public class Chunk{
 		else removeBlockQuads(blocks[index]);
 		blocks[index]=null;
 	}
-	public Block setBlock(int x, int y, int z, BlockType type, BlockShape shape, CubeTextures textures, BlockRotation rotation){
+	public Block setBlock(int x, int y, int z, BlockShape shape, CubeTextures textures, BlockRotation rotation){
 		setNeedsRebatch();
 		removeBlock(x, y, z);
-		if(type!=null){
-			Block block = createBlock(x, y, z, type, shape, textures, rotation);
+		if(shape!=null){
+			Block block = createBlock(x, y, z, shape, textures, rotation);
 			optimizeBlock(block);
 			optimizeAroundBlock(x, y, z);
 			return block;
@@ -190,12 +190,21 @@ public class Chunk{
 		for(int i = 0; i<batches.size(); i++)batches.get(i).recompileBuffer();
 		needsBatchUpdate=false;
 	}
+	public void clearEmptyBatches(){
+		for(int i = 0; i<batches.size();){
+			if(batches.get(i).getSize()==0){
+				batches.get(i).cleanUp();
+				batches.remove(i);
+			}
+			else i++;
+		}
+	}
 	public Block getBlock(int x, int y, int z){ return blocks[getIndex(x, y, z)]; }
 	public void dispose(){ for(int i = 0; i<batches.size(); i++)batches.get(i).cleanUp(); }
 	void addHidden(){ hidden++; }
 	void removeHidden(){ hidden--; }
 	public boolean isHidden(){ return hidden==blocks.length; }
-	private void removeBlockQuads(Block block){ for(int i = 0; i<6; i++)getBatch(block.type.getTexture(i), false, 0, 0, 0).removeQuad(block.getQuad(i)); }
+	private void removeBlockQuads(Block block){ for(int i = 0; i<6; i++)getBatch(Block.getTexture(i), false, 0, 0, 0).removeQuad(block.getQuad(i)); }
 	public void optimize(){ for(int i = 0; i<blocks.length; i++)optimizeBlock(blocks[i]); }
 	public boolean needsRebatch(){ return needsBatchUpdate; }
 	private static int getIndex(int x, int y, int z){ return (x&HIGH_BLOCK_COUNT)*X_OFFSET+(y&HIGH_BLOCK_COUNT)*Y_OFFSET+(z&HIGH_BLOCK_COUNT)*Z_OFFSET; }

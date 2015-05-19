@@ -32,5 +32,6 @@ public class FloatingBlock implements ChunklessBlockHolder{
 		for(int i = 0; i<batches.size(); i++)batches.get(i).cleanUp();
 		batches.clear();
 	}
+	public void dispose(){ for(int i = 0; i<batches.size(); i++)batches.get(i).cleanUp(); }
 	void rebuildBatches(){ for(int i = 0; i<batches.size(); i++)batches.get(i).recompileBuffer(); }
 }

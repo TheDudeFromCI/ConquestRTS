@@ -1,7 +1,7 @@
 package wraithaven.conquest.client.BuildingCreator.BlockPalette;
 
-import java.io.File;
 import java.util.ArrayList;
+import wraithaven.conquest.client.GameWorld.Voxel.MipmapQuality;
 import wraithaven.conquest.client.GameWorld.Voxel.BlockRotation;
 import wraithaven.conquest.client.BuildingCreator.Loop;
 import wraithaven.conquest.client.ClientLauncher;
@@ -23,7 +23,7 @@ public class Shapes{
 		for(int i = 0; i<ShapeType.values().length; i++)a(ShapeType.values()[i].shape);
 	}
 	private void generateCubeTextures(){
-		Texture whiteTexture = new Texture(new File(ClientLauncher.textureFolder, "Smooth.png"), 0, null);
+		Texture whiteTexture = Texture.getTexture(ClientLauncher.textureFolder, "Smooth.png", 4, MipmapQuality.HIGH);
 		baseTexture.xUp=whiteTexture;
 		baseTexture.xDown=whiteTexture;
 		baseTexture.yUp=whiteTexture;
@@ -82,6 +82,19 @@ public class Shapes{
 		}
 		return (float)(100/1024.0*width/Loop.screenRes.width+(Loop.screenRes.width-width)/2.0/Loop.screenRes.width);
 	}
+	public void select(BlockShape shape){
+		for(int i = 0; i<icons.size(); i++){
+			if(icons.get(i).shape==shape){
+				selectedBlock=i;
+				int ideal = (int)(1-Math.ceil(BLOCKS_SHOWN/2f));
+				if(ideal>icons.size()-BLOCKS_SHOWN)ideal=icons.size()-BLOCKS_SHOWN;
+				if(ideal<0)ideal=0;
+				scrollbarPosition=ideal;
+				return;
+			}
+		}
+	}
+	public void dispose(){ for(int i = 0; i<icons.size(); i++)icons.get(i).dispose(); }
 	private void a(BlockShape shape){ icons.add(new BlockIcon(shape, baseTexture, BlockRotation.ROTATION_0)); }
 	public BlockShape getCurrentShape(){ return icons.get(selectedBlock).shape; }
 	private static float x(){ return (screenXToWorldX(screenXPercent())); }

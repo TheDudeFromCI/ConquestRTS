@@ -1,10 +1,10 @@
 package wraithaven.conquest.client.BuildingCreator;
 
 import java.awt.Dimension;
-import java.io.File;
 import java.nio.DoubleBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import wraithaven.conquest.client.GameWorld.LoopControls.MatrixUtils;
 import wraithaven.conquest.client.GameWorld.Voxel.Texture;
 import wraithaven.conquest.client.ClientLauncher;
 import wraithaven.conquest.client.GameWorld.Voxel.Chunk;
@@ -24,26 +24,30 @@ public class Loop implements LoopObjective{
 	private GuiHandler guiHandler;
 	private Skybox skybox;
 	private SelectedBlock selectedBlock;
-	public static Dimension screenRes;
+	private Inventory inventory;
 	private BuildingCreator buildingCreator;
 	private PalleteRenderer palleteRenderer;
 	private boolean removePalette, createPalette;
+	public static Dimension screenRes;
 	public static float ISO_ZOOM = 0.12f;
 	public static final float CAMERA_NEAR_CLIP = 0.05f;
+	public static Loop INSTANCE;
 	public Loop(Dimension screenRes, BuildingCreator buildingCreator){
 		Loop.screenRes=screenRes;
 		this.buildingCreator=buildingCreator;
+		INSTANCE=this;
 	}
 	public void preLoop(){
 		camera=new Camera(70, screenRes.width/(float)screenRes.height, CAMERA_NEAR_CLIP, 1000, false);
 		creatorWorld=new BuildCreatorWorld();
 		world=new VoxelWorld(creatorWorld, new VoxelWorldBounds(0, 0, 0, BuildingCreator.WORLD_BOUNDS_SIZE-1, BuildingCreator.WORLD_BOUNDS_SIZE-1, BuildingCreator.WORLD_BOUNDS_SIZE-1));
-		creatorWorld.setup(world, camera);
-		inputController=new InputController(buildingCreator, camera, buildingCreator.getWindow(), this);
-		userBlockHandler=new UserBlockHandler(this, world, camera);
-		guiHandler=new GuiHandler(this);
-		skybox=new Skybox(new Texture(new File(ClientLauncher.assetFolder, "Day Skybox.png"), 0, null));
-		selectedBlock=new SelectedBlock(camera, world);
+		BuildCreatorWorld.setup();
+		inputController=new InputController();
+		userBlockHandler=new UserBlockHandler();
+		guiHandler=new GuiHandler();
+		skybox=new Skybox(Texture.getTexture(ClientLauncher.assetFolder, "Day Skybox.png"));
+		selectedBlock=new SelectedBlock();
+		inventory=new Inventory();
 		generateWorld();
 		setupCameraPosition();
 		setupOGL();
@@ -87,8 +91,11 @@ public class Loop implements LoopObjective{
 			}
 			GL11.glPopMatrix();
 			guiHandler.render();
+			inventory.render();
+			MatrixUtils.setupPerspective(70, Loop.screenRes.width/(float)Loop.screenRes.height, Loop.CAMERA_NEAR_CLIP, 1000);
 		}
 		if(removePalette){
+			palleteRenderer.dispose();
 			palleteRenderer=null;
 			removePalette=false;
 			glfwSetCursorPos(buildingCreator.getWindow(), screenRes.width/2.0, screenRes.height/2.0);
@@ -109,7 +116,14 @@ public class Loop implements LoopObjective{
 	}
 	public void mouseMove(long window, double x, double y){
 		if(hasPalette())palleteRenderer.onMouseMove(x, y);
+		else if(inventory.isShown())inventory.onMouseMove(x, y);
 		else inputController.processMouse(x, y);
+	}
+	public void dispose(){
+		world.clearAll();
+		guiHandler.cleanUp();
+		Texture.disposeAll();
+		INSTANCE=null;
 	}
 	private DoubleBuffer mouseBufferX = BufferUtils.createDoubleBuffer(1);
 	private DoubleBuffer mouseBufferY = BufferUtils.createDoubleBuffer(1);
@@ -119,15 +133,31 @@ public class Loop implements LoopObjective{
 				glfwGetCursorPos(window, mouseBufferX, mouseBufferY);
 				palleteRenderer.onMouseDown(mouseBufferX.get(0), mouseBufferY.get(0));
 			}else if(action==GLFW_RELEASE)palleteRenderer.onMouseUp(button);
+		}else if(inventory.isShown()){
+			if(action==GLFW_PRESS){
+				glfwGetCursorPos(window, mouseBufferX, mouseBufferY);
+				inventory.onMouseDown(mouseBufferX.get(0), mouseBufferY.get(0));
+			}else if(action==GLFW_RELEASE)inventory.onMouseUp();
 		}else userBlockHandler.mouseClick(button, action);
 	}
-	public void key(long window, int key, int action){ inputController.onKey(window, key, action); }
+	public void key(long window, int key, int action){
+		if(key==GLFW_KEY_C&&action==GLFW_PRESS&&!hasPalette()){
+			inventory.setShown(!inventory.isShown());
+			return;
+		}
+		if(inventory.isShown())return;
+		inputController.onKey(window, key, action);
+	}
 	public void disposePalette(){ removePalette=true; }
 	public void setPalette(){ createPalette=true; }
 	public boolean hasPalette(){ return palleteRenderer!=null; }
 	public GuiHandler getGuiHandler(){ return guiHandler; }
 	public void mouseWheel(long window, double xPos, double yPos){ inputController.mouseWheel(yPos); }
 	public Camera getCamera(){ return camera; }
+	public VoxelWorld getVoxelWorld(){ return world; }
+	public BuildingCreator getBuildingCreator(){ return buildingCreator; }
+	public Inventory getInventory(){ return inventory; }
+	public long getWindow(){ return buildingCreator.getWindow(); }
 	private static void setupOGL(){
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glEnable(GL11.GL_CULL_FACE);

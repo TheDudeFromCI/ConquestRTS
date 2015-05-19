@@ -23,7 +23,7 @@ public class Textures{
 		File[] texFile = textureFolder.listFiles();
 		textures=new UiElement[texFile.length];
 		for(int i = 0; i<texFile.length; i++){
-			textures[i]=new UiElement(new Texture(texFile[i], 4, MipmapQuality.HIGH));
+			textures[i]=new UiElement(Texture.getTexture(ClientLauncher.textureFolder, texFile[i].getName(), 4, MipmapQuality.HIGH));
 			textures[i].h=TEXTURE_SIZE/768*height;
 			textures[i].w=TEXTURE_SIZE/1024*width;
 		}

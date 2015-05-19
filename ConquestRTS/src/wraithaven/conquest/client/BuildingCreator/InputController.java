@@ -6,7 +6,6 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import wraithaven.conquest.client.GameWorld.LoopControls.MatrixUtils;
-import wraithaven.conquest.client.GameWorld.Voxel.Camera;
 import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorld;
 import wraithaven.conquest.client.GameWorld.Sphere;
 import wraithaven.conquest.client.GameWorld.BoundingBox;
@@ -22,22 +21,14 @@ public class InputController{
 	public float mouseSensitivity = 0.1f;
 	public float moveSpeed = 10.8f;
 	private Block block;
-	private final Loop loop;
 	private final Sphere cameraSphere = new Sphere();
 	private final BoundingBox boundingBox = new BoundingBox();
-	private final Camera cam;
-	private final long window;
 	private final IntBuffer screenWidth = BufferUtils.createIntBuffer(1);
 	private final IntBuffer screenHeight = BufferUtils.createIntBuffer(1);
-	private final BuildingCreator buildingCreator;
 	public static final float CAMERA_RADIUS = 0.41f;
-	public InputController(BuildingCreator buildingCreator, Camera cam, long window, Loop loop){
-		this.cam=cam;
-		this.window=window;
-		this.buildingCreator=buildingCreator;
-		this.loop=loop;
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-		glfwGetWindowSize(window, screenWidth, screenHeight);
+	public InputController(){
+		glfwSetInputMode(Loop.INSTANCE.getWindow(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+		glfwGetWindowSize(Loop.INSTANCE.getWindow(), screenWidth, screenHeight);
 		screenWidth.put(0, screenWidth.get(0)/2);
 		screenHeight.put(0, screenHeight.get(0)/2);
 		cameraSphere.r=CAMERA_RADIUS;
@@ -45,11 +36,11 @@ public class InputController{
 	public void onKey(long window, int key, int action){
 		if(key==GLFW.GLFW_KEY_F12&&action==GLFW.GLFW_RELEASE)GLFW.glfwSetWindowShouldClose(window, GL11.GL_TRUE);
 		if(key==GLFW.GLFW_KEY_F1){
-			if(action==GLFW.GLFW_PRESS)MatrixUtils.takeScreenShot(new File(ClientLauncher.screenShotFolder,  System.currentTimeMillis()+".png"), buildingCreator.getInit().width, buildingCreator. getInit().height);
+			if(action==GLFW.GLFW_PRESS)MatrixUtils.takeScreenShot(new File(ClientLauncher.screenShotFolder,  System.currentTimeMillis()+".png"), Loop.INSTANCE.getBuildingCreator().getInit().width, Loop.INSTANCE.getBuildingCreator().getInit().height);
 			return;
 		}
-		if(loop.hasPalette()){
-			if(key==GLFW.GLFW_KEY_F5&&action==GLFW.GLFW_PRESS)loop.disposePalette();
+		if(Loop.INSTANCE.hasPalette()){
+			if(key==GLFW.GLFW_KEY_F5&&action==GLFW.GLFW_PRESS)Loop.INSTANCE.disposePalette();
 			return;
 		}
 		if(key==GLFW.GLFW_KEY_F12&&action==GLFW.GLFW_RELEASE)GLFW.glfwSetWindowShouldClose(window, GL11.GL_TRUE);
@@ -77,74 +68,74 @@ public class InputController{
 			if(action==GLFW.GLFW_PRESS)space=true;
 			else if(action==GLFW.GLFW_RELEASE)space=false;
 		}
-		if(key==GLFW.GLFW_KEY_F5&&action==GLFW.GLFW_PRESS)loop.setPalette();
+		if(key==GLFW.GLFW_KEY_F5&&action==GLFW.GLFW_PRESS)Loop.INSTANCE.setPalette();
 		if(key==GLFW.GLFW_KEY_R&&action==GLFW.GLFW_PRESS){
-			if(loop.getGuiHandler().getHotbarSelectorId()<10)loop.getGuiHandler().updateHotbarSelector((loop.getGuiHandler().getHotbarSelectorId()+1)%10);
-			else loop.getGuiHandler().updateHotbarSelector((loop.getGuiHandler().getHotbarSelectorId()%10+1)%10+10);
+			if(Loop.INSTANCE.getGuiHandler().getHotbarSelectorId()<10)Loop.INSTANCE.getGuiHandler().updateHotbarSelector((Loop.INSTANCE.getGuiHandler().getHotbarSelectorId()+1)%10);
+			else Loop.INSTANCE.getGuiHandler().updateHotbarSelector((Loop.INSTANCE.getGuiHandler().getHotbarSelectorId()%10+1)%10+10);
 		}
 		if(key==GLFW.GLFW_KEY_F&&action==GLFW.GLFW_PRESS){
-			if(loop.getGuiHandler().getHotbarSelectorId()<10)loop.getGuiHandler().updateHotbarSelector((loop.getGuiHandler().getHotbarSelectorId()-1+10)%10);
-			else loop.getGuiHandler().updateHotbarSelector((loop.getGuiHandler().getHotbarSelectorId()%10-1+10)%10+10);
+			if(Loop.INSTANCE.getGuiHandler().getHotbarSelectorId()<10)Loop.INSTANCE.getGuiHandler().updateHotbarSelector((Loop.INSTANCE.getGuiHandler().getHotbarSelectorId()-1+10)%10);
+			else Loop.INSTANCE.getGuiHandler().updateHotbarSelector((Loop.INSTANCE.getGuiHandler().getHotbarSelectorId()%10-1+10)%10+10);
 		}
 		if(key==GLFW.GLFW_KEY_TAB&&action==GLFW.GLFW_PRESS){
-			if(loop.getGuiHandler().getHotbarSelectorId()<10)loop.getGuiHandler().updateHotbarSelector(10);
-			else loop.getGuiHandler().updateHotbarSelector(0);
+			if(Loop.INSTANCE.getGuiHandler().getHotbarSelectorId()<10)Loop.INSTANCE.getGuiHandler().updateHotbarSelector(10);
+			else Loop.INSTANCE.getGuiHandler().updateHotbarSelector(0);
 		}
 		if(key==GLFW.GLFW_KEY_Q){
 			if(action==GLFW.GLFW_PRESS){
-				loop.getGuiHandler().goalWheelRotation--;
+				Loop.INSTANCE.getGuiHandler().goalWheelRotation--;
 				rotator=true;
 			}else if(action==GLFW.GLFW_RELEASE)rotator=false;
 		}
 		if(key==GLFW.GLFW_KEY_E){
 			if(action==GLFW.GLFW_PRESS){
-				loop.getGuiHandler().goalWheelRotation++;
+				Loop.INSTANCE.getGuiHandler().goalWheelRotation++;
 				rotator=true;
 			}else if(action==GLFW.GLFW_RELEASE)rotator=false;
 		}
 	}
 	public void processMouse(double x, double y){
-		cam.goalRY=cam.ry+=(x-screenWidth.get(0))*mouseSensitivity;
-		cam.goalRX=cam.rx=(float)Math.max(Math.min(cam.rx+(y-screenHeight.get(0))*mouseSensitivity, 90), -90);
-		glfwSetCursorPos(window, screenWidth.get(0), screenHeight.get(0));
+		Loop.INSTANCE.getCamera().goalRY=Loop.INSTANCE.getCamera().ry+=(x-screenWidth.get(0))*mouseSensitivity;
+		Loop.INSTANCE.getCamera().goalRX=Loop.INSTANCE.getCamera().rx=(float)Math.max(Math.min(Loop.INSTANCE.getCamera().rx+(y-screenHeight.get(0))*mouseSensitivity, 90), -90);
+		glfwSetCursorPos(Loop.INSTANCE.getWindow(), screenWidth.get(0), screenHeight.get(0));
 	}
 	public void processWalk(VoxelWorld world, double delta){
 		delta*=moveSpeed;
-		currentCamX=cam.goalX;
-		currentCamY=cam.goalY;
-		currentCamZ=cam.goalZ;
-		if(w)currentCamX+=delta*(float)Math.sin(Math.toRadians(cam.goalRY));
-		if(a)currentCamX+=delta*(float)Math.sin(Math.toRadians(cam.goalRY-90));
-		if(s)currentCamX-=delta*(float)Math.sin(Math.toRadians(cam.goalRY));
-		if(d)currentCamX+=delta*(float)Math.sin(Math.toRadians(cam.goalRY+90));
-		if(canMoveTo(world, currentCamX, currentCamY, currentCamZ))cam.goalX=currentCamX;
-		currentCamX=cam.goalX;
-		if(w)currentCamZ-=delta*(float)Math.cos(Math.toRadians(cam.goalRY));
-		if(a)currentCamZ-=delta*(float)Math.cos(Math.toRadians(cam.goalRY-90));
-		if(s)currentCamZ+=delta*(float)Math.cos(Math.toRadians(cam.goalRY));
-		if(d)currentCamZ-=delta*(float)Math.cos(Math.toRadians(cam.goalRY+90));
-		if(canMoveTo(world, currentCamX, currentCamY, currentCamZ))cam.goalZ=currentCamZ;
-		currentCamZ=cam.goalZ;
+		currentCamX=Loop.INSTANCE.getCamera().goalX;
+		currentCamY=Loop.INSTANCE.getCamera().goalY;
+		currentCamZ=Loop.INSTANCE.getCamera().goalZ;
+		if(w)currentCamX+=delta*(float)Math.sin(Math.toRadians(Loop.INSTANCE.getCamera().goalRY));
+		if(a)currentCamX+=delta*(float)Math.sin(Math.toRadians(Loop.INSTANCE.getCamera().goalRY-90));
+		if(s)currentCamX-=delta*(float)Math.sin(Math.toRadians(Loop.INSTANCE.getCamera().goalRY));
+		if(d)currentCamX+=delta*(float)Math.sin(Math.toRadians(Loop.INSTANCE.getCamera().goalRY+90));
+		if(canMoveTo(world, currentCamX, currentCamY, currentCamZ))Loop.INSTANCE.getCamera().goalX=currentCamX;
+		currentCamX=Loop.INSTANCE.getCamera().goalX;
+		if(w)currentCamZ-=delta*(float)Math.cos(Math.toRadians(Loop.INSTANCE.getCamera().goalRY));
+		if(a)currentCamZ-=delta*(float)Math.cos(Math.toRadians(Loop.INSTANCE.getCamera().goalRY-90));
+		if(s)currentCamZ+=delta*(float)Math.cos(Math.toRadians(Loop.INSTANCE.getCamera().goalRY));
+		if(d)currentCamZ-=delta*(float)Math.cos(Math.toRadians(Loop.INSTANCE.getCamera().goalRY+90));
+		if(canMoveTo(world, currentCamX, currentCamY, currentCamZ))Loop.INSTANCE.getCamera().goalZ=currentCamZ;
+		currentCamZ=Loop.INSTANCE.getCamera().goalZ;
 		if(shift)currentCamY-=delta;
 		if(space)currentCamY+=delta;
-		if(canMoveTo(world, currentCamX, currentCamY, currentCamZ))cam.goalY=currentCamY;
+		if(canMoveTo(world, currentCamX, currentCamY, currentCamZ))Loop.INSTANCE.getCamera().goalY=currentCamY;
 	}
 	public void mouseWheel(double yPos){
 		yPos=Math.round(yPos);
 		if(yPos>0){
 			for(int i = 0; i<yPos; i++){
-				if(rotator)loop.getGuiHandler().goalWheelRotation--;
+				if(rotator)Loop.INSTANCE.getGuiHandler().goalWheelRotation--;
 				else{
-					if(loop.getGuiHandler().getHotbarSelectorId()<10)loop.getGuiHandler().updateHotbarSelector((loop.getGuiHandler().getHotbarSelectorId()-1+10)%10);
-					else loop.getGuiHandler().updateHotbarSelector((loop.getGuiHandler().getHotbarSelectorId()%10-1+10)%10+10);
+					if(Loop.INSTANCE.getGuiHandler().getHotbarSelectorId()<10)Loop.INSTANCE.getGuiHandler().updateHotbarSelector((Loop.INSTANCE.getGuiHandler().getHotbarSelectorId()-1+10)%10);
+					else Loop.INSTANCE.getGuiHandler().updateHotbarSelector((Loop.INSTANCE.getGuiHandler().getHotbarSelectorId()%10-1+10)%10+10);
 				}
 			}
 		}else{
 			for(int i = 0; i>yPos; i--){
-				if(rotator)loop.getGuiHandler().goalWheelRotation++;
+				if(rotator)Loop.INSTANCE.getGuiHandler().goalWheelRotation++;
 				else{
-					if(loop.getGuiHandler().getHotbarSelectorId()<10)loop.getGuiHandler().updateHotbarSelector((loop.getGuiHandler().getHotbarSelectorId()+1)%10);
-					else loop.getGuiHandler().updateHotbarSelector((loop.getGuiHandler().getHotbarSelectorId()%10+1)%10+10);
+					if(Loop.INSTANCE.getGuiHandler().getHotbarSelectorId()<10)Loop.INSTANCE.getGuiHandler().updateHotbarSelector((Loop.INSTANCE.getGuiHandler().getHotbarSelectorId()+1)%10);
+					else Loop.INSTANCE.getGuiHandler().updateHotbarSelector((Loop.INSTANCE.getGuiHandler().getHotbarSelectorId()%10+1)%10+10);
 				}
 			}
 		}

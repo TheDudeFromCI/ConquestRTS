@@ -3,6 +3,7 @@ package wraithaven.conquest.client.GameWorld.Voxel;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -11,13 +12,33 @@ import org.lwjgl.opengl.GL14;
 
 public class Texture{
 	private int textureId;
+	private final String file;
+	private final String folder;
 	private static final int BYTES_PER_PIXEL = 4;
-	public Texture(File file, int mipmapLevel, MipmapQuality quality){ textureId=loadTexture(loadImage(file), mipmapLevel, quality); }
-	public Texture(BufferedImage buf, int mipmapLevel, MipmapQuality quality){ textureId=loadTexture(buf, mipmapLevel, quality); }
+	private static final ArrayList<Texture> textures = new ArrayList();
+	private Texture(String folder, File file, int mipmapLevel, MipmapQuality quality){
+		textureId=loadTexture(loadImage(file), mipmapLevel, quality);
+		textures.add(this);
+		this.file=file.getName();
+		this.folder=folder;
+	}
+	public Texture(BufferedImage buf, int mipmapLevel, MipmapQuality quality){
+		textureId=loadTexture(buf, mipmapLevel, quality);
+		textures.add(this);
+		file="N/A";
+		folder="N/A";
+	}
+	public void updatePixels(BufferedImage image){
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
+		GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, image.getWidth(), image.getHeight(), GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, generatePixelBuffer(image));
+	}
+	public void dispose(){
+		GL11.glDeleteTextures(textureId);
+		textures.remove(this);
+	}
 	public void bind(){ GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId); }
 	public int getId(){ return textureId; }
-	public void dispose(){ GL11.glDeleteTextures(textureId); }
-	private static int loadTexture(BufferedImage image, int mipmapLevel, MipmapQuality quality){
+	private static ByteBuffer generatePixelBuffer(BufferedImage image){
 		int[] pixels = new int[image.getWidth()*image.getHeight()];
 		image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
 		ByteBuffer buffer = BufferUtils.createByteBuffer(image.getWidth()*image.getHeight()*BYTES_PER_PIXEL);
@@ -32,6 +53,9 @@ public class Texture{
 			}
 		}
 		buffer.flip();
+		return buffer;
+	}
+	private static int loadTexture(BufferedImage image, int mipmapLevel, MipmapQuality quality){
 		int textureID = GL11.glGenTextures();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
@@ -45,7 +69,7 @@ public class Texture{
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 		}
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, image.getWidth(), image.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, image.getWidth(), image.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, generatePixelBuffer(image));
 		return textureID;
 	}
 	private static BufferedImage loadImage(File file){
@@ -56,4 +80,14 @@ public class Texture{
 		}
 		return null;
 	}
+	public static void disposeAll(){
+		for(int i = 0; i<textures.size(); i++)textures.get(i).dispose();
+		textures.clear();
+	}
+	public static Texture getTexture(String folder, String file, int mipmapping, MipmapQuality quality){
+		for(int i = 0; i<textures.size(); i++)if(textures.get(i).file.equals(file)&&textures.get(i).folder.equals(folder))return textures.get(i);
+		return new Texture(folder, new File(folder, file), mipmapping, quality);
+	}
+	public static Texture getTexture(String folder, String file){ return getTexture(folder, file, 0, null); }
+	public static int getLoadedTextures(){ return textures.size(); }
 }

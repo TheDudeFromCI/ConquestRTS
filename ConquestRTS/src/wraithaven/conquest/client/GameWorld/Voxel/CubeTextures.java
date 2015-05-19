@@ -1,6 +1,6 @@
 package wraithaven.conquest.client.GameWorld.Voxel;
 
-public class CubeTextures{
+public class CubeTextures implements Cloneable{
 	public Texture xUp, xDown, yUp, yDown, zUp, zDown;
 	public int xUpRotation, xDownRotation, yUpRotation, yDownRotation, zUpRotation, zDownRotation;
 	public float[] colors = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
@@ -21,5 +21,28 @@ public class CubeTextures{
 		if(side==4)return zUpRotation;
 		if(side==5)return zDownRotation;
 		return 0;
+	}
+	public CubeTextures duplicate(){
+		try{ return (CubeTextures)clone();
+		}catch(Exception exception){
+			exception.printStackTrace();
+			System.exit(1);
+		}
+		return null;
+	}
+	public void set(CubeTextures textures){
+		xUp=textures.xUp;
+		xDown=textures.xDown;
+		yUp=textures.yUp;
+		yDown=textures.yDown;
+		zUp=textures.zUp;
+		zDown=textures.zDown;
+		for(int i = 0; i<colors.length; i++)colors[i]=textures.colors[i];
+		xUpRotation=textures.xUpRotation;
+		xDownRotation=textures.xDownRotation;
+		yUpRotation=textures.yUpRotation;
+		yDownRotation=textures.yDownRotation;
+		zUpRotation=textures.zUpRotation;
+		zDownRotation=textures.zDownRotation;
 	}
 }

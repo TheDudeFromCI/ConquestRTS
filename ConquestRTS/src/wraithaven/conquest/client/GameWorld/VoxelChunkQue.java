@@ -1,7 +1,6 @@
 package wraithaven.conquest.client.GameWorld;
 
 import wraithaven.conquest.client.GameWorld.Voxel.CubeTextures;
-import wraithaven.conquest.client.GameWorld.Voxel.BlockType;
 import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorld;
 import wraithaven.conquest.client.GameWorld.Voxel.Chunk;
 
@@ -10,7 +9,6 @@ class VoxelChunkQue{
 	double tempDistance;
 	final Chunk chunk;
 	private final VoxelWorld world;
-	private static BlockType type;
 	private static final NoiseGenerator noise = new NoiseGenerator((long)(Math.random()*Integer.MAX_VALUE), 200, 3);
 	VoxelChunkQue(VoxelWorld world, Chunk chunk){
 		this.world=world;
@@ -23,7 +21,7 @@ class VoxelChunkQue{
 		if(chunk.chunkY<0)return true;
 		if(chunk.chunkY>CatcheChunkLoader.CHUNK_HEIGHT)return true;
 		h=(int)Math.min(noise.noise(x, z)*CatcheChunkLoader.WORLD_HEIGHT, chunk.endY);
-		for(y=chunk.startY; y<=h; y++)chunk.createBlock(x, y, z, type);
+		for(y=chunk.startY; y<=h; y++)chunk.createBlock(x, y, z);
 		if(next()){
 			optimize();
 			return true;
@@ -70,6 +68,5 @@ class VoxelChunkQue{
 //		textures.zUpRotation=3;
 //		textures.zDown=BlockTextures.sideDirt.getTexture();
 //		textures.zDownRotation=2;
-		type=new BasicBlock(textures, world);
 	}
 }

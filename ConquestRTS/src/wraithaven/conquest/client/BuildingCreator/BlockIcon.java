@@ -41,9 +41,6 @@ public class BlockIcon implements ChunklessBlockHolder{
 		}
 		glPopMatrix();
 	}
-	public void update(double time){
-		yaw=(float)((time*SPIN_SPEED)%360);
-	}
 	public QuadBatch getBatch(Texture texture){
 		QuadBatch batch;
 		for(int i = 0; i<batches.size(); i++){
@@ -54,8 +51,9 @@ public class BlockIcon implements ChunklessBlockHolder{
 		batches.add(batch);
 		return batch;
 	}
-	public static float getY(int id){
-		return (float)((((Loop.screenRes.height-GuiHandler.HOTBAR_SLOT*10.0)/2+GuiHandler.HOTBAR_SLOT*(9-id%10))/Loop.screenRes.height-0.5f+(GuiHandler.HOTBAR_SLOT/2f/Loop.screenRes.height))*BLOCK_ZOOM);
-	}
+	public void dispose(){ for(int i = 0; i<batches.size(); i++)batches.get(i).cleanUp(); }
+	public void render(float x, float y){ render(x, y, 0, 0, 0); }
+	public void update(double time){ yaw=(float)((time*SPIN_SPEED)%360); }
+	public static float getY(int id){ return (float)((((Loop.screenRes.height-GuiHandler.HOTBAR_SLOT*10.0)/2+GuiHandler.HOTBAR_SLOT*(9-id%10))/Loop.screenRes.height-0.5f+(GuiHandler.HOTBAR_SLOT/2f/Loop.screenRes.height))*BLOCK_ZOOM); }
 	public static float getX(int id){ return ((Loop.screenRes.width-GuiHandler.HOTBAR_SLOT)/Loop.screenRes.width-0.5f+(GuiHandler.HOTBAR_SLOT/2f/Loop.screenRes.width))*(BLOCK_ZOOM*Loop.screenRes.width/Loop.screenRes.height)*(id<10?1:-1); }
 }

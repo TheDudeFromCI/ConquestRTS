@@ -11,7 +11,7 @@ import wraithaven.conquest.client.GameWorld.Voxel.CustomBlock;
 public class ChunklessBlock extends CustomBlock{
 	private final ChunklessBlockHolder holder;
 	public ChunklessBlock(ChunklessBlockHolder holder, BlockShape shape, CubeTextures textures, BlockRotation rotation){
-		super(null, 0, 0, 0, new FloatingBlockType(textures), shape, textures, rotation);
+		super(null, 0, 0, 0, shape, textures, rotation);
 		this.holder=holder;
 	}
 	@Override protected boolean getSubBlock(int x, int y, int z){

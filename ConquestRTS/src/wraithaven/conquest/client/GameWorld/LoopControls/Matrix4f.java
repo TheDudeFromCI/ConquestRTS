@@ -1,66 +1,18 @@
-/*
- * Copyright (c) 2002-2008 LWJGL Project
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * * Redistributions of source code must retain the above copyright
- *   notice, this list of conditions and the following disclaimer.
- *
- * * Redistributions in binary form must reproduce the above copyright
- *   notice, this list of conditions and the following disclaimer in the
- *   documentation and/or other materials provided with the distribution.
- *
- * * Neither the name of 'LWJGL' nor the names of
- *   its contributors may be used to endorse or promote products derived
- *   from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
 package wraithaven.conquest.client.GameWorld.LoopControls;
 
-import java.io.Serializable;
 import java.nio.FloatBuffer;
 
-/**
- * Holds a 4x4 float matrix.
- *
- * @author foo
- */
-public class Matrix4f extends Matrix implements Serializable {
-	private static final long serialVersionUID = 1L;
-
+public class Matrix4f extends Matrix{
 	public float m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33;
-
-	/**
-	 * Construct a new matrix, initialized to the identity.
-	 */
-	public Matrix4f() {
+	public Matrix4f(){
 		super();
 		setIdentity();
 	}
-
-	public Matrix4f(final Matrix4f src) {
+	public Matrix4f(final Matrix4f src){
 		super();
 		load(src);
 	}
-
-	/**
-	 * Returns a string representation of this matrix
-	 */
-	public String toString() {
+	public String toString(){
 		StringBuilder buf = new StringBuilder();
 		buf.append(m00).append(' ').append(m10).append(' ').append(m20).append(' ').append(m30).append('\n');
 		buf.append(m01).append(' ').append(m11).append(' ').append(m21).append(' ').append(m31).append('\n');
@@ -68,110 +20,65 @@ public class Matrix4f extends Matrix implements Serializable {
 		buf.append(m03).append(' ').append(m13).append(' ').append(m23).append(' ').append(m33).append('\n');
 		return buf.toString();
 	}
-
-	/**
-	 * Set this matrix to be the identity matrix.
-	 * @return this
-	 */
-	public Matrix setIdentity() {
-		return setIdentity(this);
-	}
-
-	/**
-	 * Set the given matrix to be the identity matrix.
-	 * @param m The matrix to set to the identity
-	 * @return m
-	 */
-	public static Matrix4f setIdentity(Matrix4f m) {
-		m.m00 = 1.0f;
-		m.m01 = 0.0f;
-		m.m02 = 0.0f;
-		m.m03 = 0.0f;
-		m.m10 = 0.0f;
-		m.m11 = 1.0f;
-		m.m12 = 0.0f;
-		m.m13 = 0.0f;
-		m.m20 = 0.0f;
-		m.m21 = 0.0f;
-		m.m22 = 1.0f;
-		m.m23 = 0.0f;
-		m.m30 = 0.0f;
-		m.m31 = 0.0f;
-		m.m32 = 0.0f;
-		m.m33 = 1.0f;
-
+	public Matrix setIdentity(){ return setIdentity(this); }
+	public static Matrix4f setIdentity(Matrix4f m){
+		m.m00=1.0f;
+		m.m01=0.0f;
+		m.m02=0.0f;
+		m.m03=0.0f;
+		m.m10=0.0f;
+		m.m11=1.0f;
+		m.m12=0.0f;
+		m.m13=0.0f;
+		m.m20=0.0f;
+		m.m21=0.0f;
+		m.m22=1.0f;
+		m.m23=0.0f;
+		m.m30=0.0f;
+		m.m31=0.0f;
+		m.m32=0.0f;
+		m.m33=1.0f;
 		return m;
 	}
-
-	/**
-	 * Set this matrix to 0.
-	 * @return this
-	 */
-	public Matrix setZero() {
-		return setZero(this);
-	}
-
-	/**
-	 * Set the given matrix to 0.
-	 * @param m The matrix to set to 0
-	 * @return m
-	 */
-	public static Matrix4f setZero(Matrix4f m) {
-		m.m00 = 0.0f;
-		m.m01 = 0.0f;
-		m.m02 = 0.0f;
-		m.m03 = 0.0f;
-		m.m10 = 0.0f;
-		m.m11 = 0.0f;
-		m.m12 = 0.0f;
-		m.m13 = 0.0f;
-		m.m20 = 0.0f;
-		m.m21 = 0.0f;
-		m.m22 = 0.0f;
-		m.m23 = 0.0f;
-		m.m30 = 0.0f;
-		m.m31 = 0.0f;
-		m.m32 = 0.0f;
-		m.m33 = 0.0f;
-
+	public Matrix setZero(){ return setZero(this); }
+	public static Matrix4f setZero(Matrix4f m){
+		m.m00=0.0f;
+		m.m01=0.0f;
+		m.m02=0.0f;
+		m.m03=0.0f;
+		m.m10=0.0f;
+		m.m11=0.0f;
+		m.m12=0.0f;
+		m.m13=0.0f;
+		m.m20=0.0f;
+		m.m21=0.0f;
+		m.m22=0.0f;
+		m.m23=0.0f;
+		m.m30=0.0f;
+		m.m31=0.0f;
+		m.m32=0.0f;
+		m.m33=0.0f;
 		return m;
 	}
-
-	/**
-	 * Load from another matrix4f
-	 * @param src The source matrix
-	 * @return this
-	 */
-	public Matrix4f load(Matrix4f src) {
-		return load(src, this);
-	}
-
-	/**
-	 * Copy the source matrix to the destination matrix
-	 * @param src The source matrix
-	 * @param dest The destination matrix, or null of a new one is to be created
-	 * @return The copied matrix
-	 */
-	public static Matrix4f load(Matrix4f src, Matrix4f dest) {
-		if (dest == null)
-			dest = new Matrix4f();
-		dest.m00 = src.m00;
-		dest.m01 = src.m01;
-		dest.m02 = src.m02;
-		dest.m03 = src.m03;
-		dest.m10 = src.m10;
-		dest.m11 = src.m11;
-		dest.m12 = src.m12;
-		dest.m13 = src.m13;
-		dest.m20 = src.m20;
-		dest.m21 = src.m21;
-		dest.m22 = src.m22;
-		dest.m23 = src.m23;
-		dest.m30 = src.m30;
-		dest.m31 = src.m31;
-		dest.m32 = src.m32;
-		dest.m33 = src.m33;
-
+	public Matrix4f load(Matrix4f src){ return load(src, this); }
+	public static Matrix4f load(Matrix4f src, Matrix4f dest){
+		if(dest==null)dest=new Matrix4f();
+		dest.m00=src.m00;
+		dest.m01=src.m01;
+		dest.m02=src.m02;
+		dest.m03=src.m03;
+		dest.m10=src.m10;
+		dest.m11=src.m11;
+		dest.m12=src.m12;
+		dest.m13=src.m13;
+		dest.m20=src.m20;
+		dest.m21=src.m21;
+		dest.m22=src.m22;
+		dest.m23=src.m23;
+		dest.m30=src.m30;
+		dest.m31=src.m31;
+		dest.m32=src.m32;
+		dest.m33=src.m33;
 		return dest;
 	}
 
@@ -200,45 +107,28 @@ public class Matrix4f extends Matrix implements Serializable {
 		m31 = buf.get();
 		m32 = buf.get();
 		m33 = buf.get();
-
 		return this;
 	}
-
-	/**
-	 * Load from a float buffer. The buffer stores the matrix in row major
-	 * (maths) order.
-	 *
-	 * @param buf A float buffer to read from
-	 * @return this
-	 */
-	public Matrix loadTranspose(FloatBuffer buf) {
-
-		m00 = buf.get();
-		m10 = buf.get();
-		m20 = buf.get();
-		m30 = buf.get();
-		m01 = buf.get();
-		m11 = buf.get();
-		m21 = buf.get();
-		m31 = buf.get();
-		m02 = buf.get();
-		m12 = buf.get();
-		m22 = buf.get();
-		m32 = buf.get();
-		m03 = buf.get();
-		m13 = buf.get();
-		m23 = buf.get();
-		m33 = buf.get();
-
+	public Matrix loadTranspose(FloatBuffer buf){
+		m00=buf.get();
+		m10=buf.get();
+		m20=buf.get();
+		m30=buf.get();
+		m01=buf.get();
+		m11=buf.get();
+		m21=buf.get();
+		m31=buf.get();
+		m02=buf.get();
+		m12=buf.get();
+		m22=buf.get();
+		m32=buf.get();
+		m03=buf.get();
+		m13=buf.get();
+		m23=buf.get();
+		m33=buf.get();
 		return this;
 	}
-
-	/**
-	 * Store this matrix in a float buffer. The matrix is stored in column
-	 * major (openGL) order.
-	 * @param buf The buffer to store this matrix in
-	 */
-	public Matrix store(FloatBuffer buf) {
+	public Matrix store(FloatBuffer buf){
 		buf.put(m00);
 		buf.put(m01);
 		buf.put(m02);

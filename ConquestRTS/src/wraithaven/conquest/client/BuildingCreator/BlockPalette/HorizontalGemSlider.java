@@ -1,6 +1,5 @@
 package wraithaven.conquest.client.BuildingCreator.BlockPalette;
 
-import java.io.File;
 import wraithaven.conquest.client.GameWorld.Voxel.Texture;
 import wraithaven.conquest.client.BuildingCreator.Loop;
 import wraithaven.conquest.client.ClientLauncher;
@@ -20,7 +19,7 @@ public class HorizontalGemSlider{
 		this.height=height;
 		offsetX=offX;
 		currentX=currentPos;
-		gem=new UiElement(new Texture(new File(ClientLauncher.assetFolder, color), 0, null));
+		gem=new UiElement(Texture.getTexture(ClientLauncher.assetFolder, color));
 		gem.y=this.yPosition;
 		gem.x=currentPos+offX;
 		gem.w=width;

@@ -6,12 +6,12 @@ public class CustomBlock extends Block{
 	private boolean block_dd, block_d0, block_du, block_0d, block_0u, block_ud, block_u0, block_uu;
 	public final BlockShape shape;
 	public final BlockRotation rotation;
-	private final float[] texturePoints = new float[4];
 	public final CubeTextures textures;
 	private final SubBlock[] subBlocks = new SubBlock[512];
+	private static final float[] texturePoints = new float[4];
 	private static final float shadowIntensity = 0.65f;
-	protected CustomBlock(Chunk chunk, int x, int y, int z, BlockType type, BlockShape shape, CubeTextures textures, BlockRotation rotation){
-		super(chunk, x, y, z, type);
+	protected CustomBlock(Chunk chunk, int x, int y, int z, BlockShape shape, CubeTextures textures, BlockRotation rotation){
+		super(chunk, x, y, z);
 		this.shape=shape;
 		this.textures=textures;
 		this.rotation=rotation;
@@ -55,7 +55,6 @@ public class CustomBlock extends Block{
 	public void rebuild(){
 		destroy();
 		build();
-		for(int i = 0; i<6; i++)oppositeSide(i);
 	}
 	private void optimize(){
 		int x, y, z, index, j;
@@ -97,41 +96,53 @@ public class CustomBlock extends Block{
 			return;
 		}
 		if(side==0||side==1){
-			int y, z;
+			int y, z, i;
 			int x = side==0?7:0;
+			boolean yUp = !shape.fullSide(2, rotation);
+			boolean yDown = !shape.fullSide(3, rotation);
+			boolean zUp = !shape.fullSide(4, rotation);
+			boolean zDown = !shape.fullSide(5, rotation);
 			for(y=0; y<8; y++){
 				for(z=0; z<8; z++){
-					optimizeSubBlockSide(BlockShape.getIndex(x, y, z), side, getSubBlock(x==7?8:-1, y, z), x, y, z);
-					optimizeSubBlockSide(BlockShape.getIndex(x, y, z), 2, getSubBlock(x, y+1, z), x, y, z);
-					optimizeSubBlockSide(BlockShape.getIndex(x, y, z), 3, getSubBlock(x, y-1, z), x, y, z);
-					optimizeSubBlockSide(BlockShape.getIndex(x, y, z), 4, getSubBlock(x, y, z+1), x, y, z);
-					optimizeSubBlockSide(BlockShape.getIndex(x, y, z), 5, getSubBlock(x, y, z-1), x, y, z);
+					optimizeSubBlockSide(i=BlockShape.getIndex(x, y, z), side, getSubBlock(x==7?8:-1, y, z), x, y, z);
+					if(yUp)optimizeSubBlockSide(i, 2, getSubBlock(x, y+1, z), x, y, z);
+					if(yDown)optimizeSubBlockSide(i, 3, getSubBlock(x, y-1, z), x, y, z);
+					if(zUp)optimizeSubBlockSide(i, 4, getSubBlock(x, y, z+1), x, y, z);
+					if(zDown)optimizeSubBlockSide(i, 5, getSubBlock(x, y, z-1), x, y, z);
 				}
 			}
 		}
 		if(side==2||side==3){
-			int x, z;
+			int x, z, i;
 			int y = side==2?7:0;
+			boolean xUp = !shape.fullSide(0, rotation);
+			boolean xDown = !shape.fullSide(1, rotation);
+			boolean zUp = !shape.fullSide(4, rotation);
+			boolean zDown = !shape.fullSide(5, rotation);
 			for(x=0; x<8; x++){
 				for(z=0; z<8; z++){
-					optimizeSubBlockSide(BlockShape.getIndex(x, y, z), side, getSubBlock(x, y==7?8:-1, z), x, y, z);
-					optimizeSubBlockSide(BlockShape.getIndex(x, y, z), 0, getSubBlock(x+1, y, z), x, y, z);
-					optimizeSubBlockSide(BlockShape.getIndex(x, y, z), 1, getSubBlock(x-1, y, z), x, y, z);
-					optimizeSubBlockSide(BlockShape.getIndex(x, y, z), 4, getSubBlock(x, y, z+1), x, y, z);
-					optimizeSubBlockSide(BlockShape.getIndex(x, y, z), 5, getSubBlock(x, y, z-1), x, y, z);
+					optimizeSubBlockSide(i=BlockShape.getIndex(x, y, z), side, getSubBlock(x, y==7?8:-1, z), x, y, z);
+					if(xUp)optimizeSubBlockSide(i, 0, getSubBlock(x+1, y, z), x, y, z);
+					if(xDown)optimizeSubBlockSide(i, 1, getSubBlock(x-1, y, z), x, y, z);
+					if(zUp)optimizeSubBlockSide(i, 4, getSubBlock(x, y, z+1), x, y, z);
+					if(zDown)optimizeSubBlockSide(i, 5, getSubBlock(x, y, z-1), x, y, z);
 				}
 			}
 		}
 		if(side==4||side==5){
-			int x, y;
+			int x, y, i;
 			int z = side==4?7:0;
+			boolean xUp = !shape.fullSide(0, rotation);
+			boolean xDown = !shape.fullSide(1, rotation);
+			boolean yUp = !shape.fullSide(2, rotation);
+			boolean yDown = !shape.fullSide(3, rotation);
 			for(x=0; x<8; x++){
 				for(y=0; y<8; y++){
-					optimizeSubBlockSide(BlockShape.getIndex(x, y, z), side, getSubBlock(x, y, z==7?8:-1), x, y, z);
-					optimizeSubBlockSide(BlockShape.getIndex(x, y, z), 0, getSubBlock(x+1, y, z), x, y, z);
-					optimizeSubBlockSide(BlockShape.getIndex(x, y, z), 1, getSubBlock(x-1, y, z), x, y, z);
-					optimizeSubBlockSide(BlockShape.getIndex(x, y, z), 2, getSubBlock(x, y+1, z), x, y, z);
-					optimizeSubBlockSide(BlockShape.getIndex(x, y, z), 3, getSubBlock(x, y-1, z), x, y, z);
+					optimizeSubBlockSide(i=BlockShape.getIndex(x, y, z), side, getSubBlock(x, y, z==7?8:-1), x, y, z);
+					if(xUp)optimizeSubBlockSide(i, 0, getSubBlock(x+1, y, z), x, y, z);
+					if(xDown)optimizeSubBlockSide(i, 1, getSubBlock(x-1, y, z), x, y, z);
+					if(yUp)optimizeSubBlockSide(i, 2, getSubBlock(x, y+1, z), x, y, z);
+					if(yDown)optimizeSubBlockSide(i, 3, getSubBlock(x, y-1, z), x, y, z);
 				}
 			}
 		}

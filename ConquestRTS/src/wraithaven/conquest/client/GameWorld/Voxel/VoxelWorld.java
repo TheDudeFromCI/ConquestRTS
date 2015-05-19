@@ -57,6 +57,7 @@ public class VoxelWorld{
 			for(int i = 0; i<chunkStorage.getChunkCount(); i++){
 				chunk=chunkStorage.getChunk(i);
 				if(worldListener.isChunkVisible(chunk)){
+					chunk.clearEmptyBatches();
 					if(chunk.needsRebatch())chunk.updateBatches();
 					tempQuads.addAll(chunk.batches);
 				}
@@ -68,6 +69,7 @@ public class VoxelWorld{
 		}
 		Texture bound = null;
 		QuadBatch batch;
+		trisRendered=0;
 		for(int i = 0; i<tempQuads.size(); i++){
 			batch=tempQuads.get(i);
 			if(bound!=batch.getTexture()){
@@ -77,13 +79,18 @@ public class VoxelWorld{
 			batch.renderPart();
 		}
 	}
+	public static int trisRendered;
 	public Block getBlock(int x, int y, int z){
 		chunk=getContainingChunk(x, y, z);
 		return chunk==null?null:chunk.getBlock(x, y, z);
 	}
-	public Block setBlock(int x, int y, int z, BlockType type, BlockShape shape, CubeTextures cubeTextures, BlockRotation rotation){
+	public Block setBlock(int x, int y, int z, BlockShape shape, CubeTextures cubeTextures, BlockRotation rotation){
 		chunk=getContainingChunk(x, y, z);
-		return chunk==null?null:chunk.setBlock(x, y, z, type, shape, cubeTextures, rotation);
+		return chunk==null?null:chunk.setBlock(x, y, z, shape, cubeTextures, rotation);
+	}
+	public void clearAll(){
+		if(chunkStorage instanceof FiniteWorld)for(int i = 0; i<chunkStorage.getChunkCount(); i++)unloadChunk(chunkStorage.getChunk(i));
+		else for(int i = 0; i<chunkStorage.getChunkCount();)unloadChunk(chunkStorage.getChunk(i));
 	}
 	public Chunk getContainingChunk(int x, int y, int z){ return getChunk(x>>Chunk.CHUNK_BITS, y>>Chunk.CHUNK_BITS, z>>Chunk.CHUNK_BITS, true); }
 	public Chunk getContainingChunk(int x, int y, int z, boolean load){ return getChunk(x>>Chunk.CHUNK_BITS, y>>Chunk.CHUNK_BITS, z>>Chunk.CHUNK_BITS, load); }

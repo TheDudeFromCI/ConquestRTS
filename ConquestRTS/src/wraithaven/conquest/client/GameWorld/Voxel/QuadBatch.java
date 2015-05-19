@@ -12,6 +12,7 @@ public class QuadBatch{
 	final int x, y, z;
 	private int i;
 	private int elementCount, indexCount;
+	public int triangleCount;
 	public FloatBuffer vertexBuffer;
 	private FloatBuffer colorBuffer;
 	private FloatBuffer textureCoordBuffer;
@@ -46,13 +47,16 @@ public class QuadBatch{
 	public void recompileBuffer(){
 		int points = 0;
 		int indices = 0;
+		triangleCount=0;
 		for(int i = 0; i<quads.size(); i++){
 			if(quads.get(i).centerPoint){
 				points+=5;
 				indices+=12;
+				triangleCount+=4;
 			}else{
 				points+=4;
 				indices+=6;
+				triangleCount+=2;
 			}
 		}
 		vertexBuffer=BufferUtils.createFloatBuffer(points*3);
@@ -148,6 +152,7 @@ public class QuadBatch{
 		glTexCoordPointer(2, GL_FLOAT, FLOAT_SIZE*2, ZERO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
 		glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, ZERO);
+		VoxelWorld.trisRendered+=triangleCount;
 	}
 	public void cleanUp(){
 		glDeleteBuffers(vertexBufferId);
