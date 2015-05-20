@@ -69,7 +69,6 @@ public class GuiHandler{
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		components2.render();
 		UI.renderElement(textEle);
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
 	}
 	private void renderRotationIcons(){
 		while(goalWheelRotation<0)goalWheelRotation+=24;

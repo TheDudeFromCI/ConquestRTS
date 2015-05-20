@@ -20,7 +20,7 @@ public class InventoryView{
 	}
 	public void render(){
 		int lastShown = Math.min(scrollPosition+TOTAL_SHOWN, icons.size());
-		for(int i = scrollPosition; i<lastShown; i++)icons.get(i).render(getX(i), getY(i));
+		for(int i = scrollPosition; i<lastShown; i++)icons.get(i).render(getX(i-scrollPosition), getY(i-scrollPosition));
 	}
 	public boolean onClick(double x, double y){
 		int lastShown = Math.min(scrollPosition+TOTAL_SHOWN, icons.size());
@@ -30,8 +30,8 @@ public class InventoryView{
 	private boolean checkIcon(int index, double x, double y){
 		x=screenXToWorldX((float)(x/Loop.screenRes.width));
 		y=screenYToWorldY((float)((Loop.screenRes.height-y)/Loop.screenRes.height));
-		float blockX = getX(index);
-		float blockY = getY(index);
+		float blockX = getX(index-scrollPosition);
+		float blockY = getY(index-scrollPosition);
 		float unitX = 0.7f;
 		float unitY = 0.7f;
 		if(x>blockX-unitX&&x<blockX+unitX&&y>blockY-unitY&&y<blockY+unitY){
@@ -51,6 +51,11 @@ public class InventoryView{
 		float maxY = 699f/768*height+y;
 		float spacing = (maxY-minY)/(ROWS_SHOWN-1);
 		return ((ROWS_SHOWN-1-index/COLS_SHOWN)*spacing+minY)/Loop.screenRes.height;
+	}
+	public void updateScrollPosition(float percent){
+		int totalRows = (int)Math.ceil(icons.size()/(float)COLS_SHOWN)-ROWS_SHOWN;
+		scrollPosition=(int)(percent*totalRows)*COLS_SHOWN;
+		if(scrollPosition<0)scrollPosition=0;
 	}
 	private float getX(int id){ return screenXToWorldX(getScreenPercentX(id)); }
 	private float getY(int id){ return screenYToWorldY(getScreenPercentY(id)); }

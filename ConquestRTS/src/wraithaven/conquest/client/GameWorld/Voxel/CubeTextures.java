@@ -23,12 +23,21 @@ public class CubeTextures implements Cloneable{
 		return 0;
 	}
 	public CubeTextures duplicate(){
-		try{ return (CubeTextures)clone();
-		}catch(Exception exception){
-			exception.printStackTrace();
-			System.exit(1);
-		}
-		return null;
+		CubeTextures c = new CubeTextures();
+		c.xUp=xUp;
+		c.xDown=xDown;
+		c.yUp=yUp;
+		c.yDown=yDown;
+		c.zUp=zUp;
+		c.zDown=zDown;
+		for(int i = 0; i<colors.length; i++)c.colors[i]=colors[i];
+		c.xUpRotation=xUpRotation;
+		c.xDownRotation=xDownRotation;
+		c.yUpRotation=yUpRotation;
+		c.yDownRotation=yDownRotation;
+		c.zUpRotation=zUpRotation;
+		c.zDownRotation=zDownRotation;
+		return c;
 	}
 	public void set(CubeTextures textures){
 		xUp=textures.xUp;

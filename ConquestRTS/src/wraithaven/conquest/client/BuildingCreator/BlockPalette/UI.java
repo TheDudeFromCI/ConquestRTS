@@ -17,7 +17,7 @@ import wraithaven.conquest.client.ClientLauncher;
 import wraithaven.conquest.client.GameWorld.Voxel.Texture;
 
 public class UI{
-	private boolean mouseDown, mouseOnRed, mouseOnGreen, mouseOnBlue, mouseOnTemplate, mouseOnTextures;
+	private boolean mouseDown, mouseOnRed, mouseOnGreen, mouseOnBlue, mouseOnTemplate, mouseOnTextures, mouseOnInventory;
 	private double xOffset, yOffset;
 	private double mouseDownX, mouseDownY;
 	private final InventoryView inventoryView;
@@ -26,6 +26,7 @@ public class UI{
 	private final HorizontalGemSlider blueGem;
 	private final HorizontalGemSlider textureGem;
 	private final VerticalGemSlider templateGem;
+	private final VerticalGemSlider inventoryGem;
 	private final CubeTextures cubeTextures = new CubeTextures();
 	private final UiElement background;
 	private final UiElement saveButton;
@@ -62,6 +63,7 @@ public class UI{
 			greenGem=new HorizontalGemSlider(640/768f*(float)height, 668/1024f*(float)width, 888/1024f*(float)width, 888/1024f*(float)width, "Green Gem.png", 25, 36, background.x, background.y);
 			blueGem=new HorizontalGemSlider(708/768f*(float)height, 668/1024f*(float)width, 888/1024f*(float)width, 888/1024f*(float)width, "Blue Gem.png", 25, 36, background.x, background.y);
 			templateGem=new VerticalGemSlider(149/1024f*(float)width, 122/768f*(float)height, 382/768f*(float)height, "Template Gem.png", 25, 47, background.x, background.y);
+			inventoryGem=new VerticalGemSlider(946/1024f*(float)width, 123/768f*(float)height, 383/768f*(float)height, "Template Gem.png", 25, 47, background.x, background.y);
 			textureGem=new HorizontalGemSlider(701/768f*(float)height, 121/1024f*(float)width, 298/1024f*(float)width, 121/1024f*(float)width, "Textures Gem.png", 35, 19, background.x, background.y);
 			textures=new Textures((float)width, (float)height);
 			inventoryView=new InventoryView((float)width, (float)height, background.x, background.y);
@@ -109,6 +111,7 @@ public class UI{
 		renderElement(blueGem.gem);
 		renderElement(templateGem.gem);
 		renderElement(textureGem.gem);
+		renderElement(inventoryGem.gem);
 		renderElement(saveButton);
 		textures.render();
 		MatrixUtils.setupOrtho(Shapes.BLOCK_ZOOM*Loop.screenRes.width/Loop.screenRes.height, Shapes.BLOCK_ZOOM, -1000, 1000);
@@ -141,6 +144,9 @@ public class UI{
 			else if(mouseOnTemplate){
 				templateGem.setSliderPosition(Loop.screenRes.height-(y+yOffset));
 				shapes.updateScrollbar(templateGem.sliderPercent);
+			}else if(mouseOnInventory){
+				inventoryGem.setSliderPosition(Loop.screenRes.height-(y+yOffset));
+				inventoryView.updateScrollPosition(inventoryGem.sliderPercent);
 			}else if(mouseOnTextures){
 				textureGem.setSliderPosition(x-xOffset);
 				textures.updateSliderPosition(textureGem.sliderPercent);
@@ -195,6 +201,10 @@ public class UI{
 			mouseOnTemplate=true;
 			yOffset=y-templateGem.currentY;
 		}
+		if(x>=inventoryGem.xPosition&&x<inventoryGem.xPosition+inventoryGem.width&&y>=inventoryGem.currentY&&y<inventoryGem.currentY+templateGem.height){
+			mouseOnInventory=true;
+			yOffset=y-inventoryGem.currentY;
+		}
 		y=Loop.screenRes.height-(y-background.y);
 		this.mouseDownX=x;
 		this.mouseDownY=y;
@@ -223,6 +233,7 @@ public class UI{
 		mouseOnBlue=false;
 		mouseOnTemplate=false;
 		mouseOnTextures=false;
+		mouseOnInventory=false;
 		if(!mouseMove)checkForRaytrace(mouseX, mouseY, button);		
 	}
 	private void retextureSide(Quad q, int button){

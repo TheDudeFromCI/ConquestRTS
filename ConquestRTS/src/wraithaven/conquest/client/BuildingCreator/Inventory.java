@@ -1,11 +1,12 @@
 package wraithaven.conquest.client.BuildingCreator;
 
 import java.util.ArrayList;
-import wraithaven.conquest.client.GameWorld.Voxel.MipmapQuality;
-import wraithaven.conquest.client.GameWorld.Voxel.BlockRotation;
-import wraithaven.conquest.client.GameWorld.Voxel.BlockShapes.ShapeType;
+import org.lwjgl.opengl.GL11;
+import wraithaven.conquest.client.BuildingCreator.BlockPalette.UI;
 import wraithaven.conquest.client.ClientLauncher;
 import wraithaven.conquest.client.GameWorld.Voxel.Texture;
+import wraithaven.conquest.client.BuildingCreator.BlockPalette.UiElement;
+import wraithaven.conquest.client.GameWorld.Voxel.BlockRotation;
 import wraithaven.conquest.client.GameWorld.Voxel.BlockShape;
 import wraithaven.conquest.client.GameWorld.LoopControls.MatrixUtils;
 import wraithaven.conquest.client.GameWorld.Voxel.CubeTextures;
@@ -13,52 +14,30 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class Inventory{
 	private int scrollPosition;
+	private final UiElement backdrop;
 	private final ArrayList<BlockIcon> blocks = new ArrayList();
 	private static final int ROWS_SHOWN = 10;
 	private static final int COLS_SHOWN = 10;
-	private static final int TOTAL_SHOWN = ROWS_SHOWN*COLS_SHOWN;
+	private static final int REAL_ROWS_SHOWN = 8;
+	private static final int REAL_COLS_SHOWN = 9;
+	private static final int TOTAL_SHOWN = REAL_ROWS_SHOWN*REAL_COLS_SHOWN;
 	private static final float BLOCK_SPACING = 2;
 	private static final float BLOCK_ZOOM = 30;
-	{
-		CubeTextures textures = new CubeTextures();
-		Texture dirt = Texture.getTexture(ClientLauncher.textureFolder, "Light Plank.png", 4, MipmapQuality.HIGH);
-		textures.xUp=dirt;
-		textures.xUpRotation=0;
-		textures.xDown=dirt;
-		textures.xDownRotation=1;
-		textures.yUp=dirt;
-		textures.yUpRotation=3;
-		textures.yDown=dirt;
-		textures.yDownRotation=0;
-		textures.zUp=dirt;
-		textures.zUpRotation=3;
-		textures.zDown=dirt;
-		textures.zDownRotation=2;
-		{
-			blocks.add(new BlockIcon(ShapeType.SHAPE_0.shape, textures, BlockRotation.ROTATION_0));
-			blocks.add(new BlockIcon(ShapeType.SHAPE_1.shape, textures, BlockRotation.ROTATION_0));
-			blocks.add(new BlockIcon(ShapeType.SHAPE_2.shape, textures, BlockRotation.ROTATION_0));
-			blocks.add(new BlockIcon(ShapeType.SHAPE_3.shape, textures, BlockRotation.ROTATION_0));
-			blocks.add(new BlockIcon(ShapeType.SHAPE_4.shape, textures, BlockRotation.ROTATION_0));
-			blocks.add(new BlockIcon(ShapeType.SHAPE_5.shape, textures, BlockRotation.ROTATION_0));
-			blocks.add(new BlockIcon(ShapeType.SHAPE_6.shape, textures, BlockRotation.ROTATION_0));
-			blocks.add(new BlockIcon(ShapeType.SHAPE_7.shape, textures, BlockRotation.ROTATION_0));
-			blocks.add(new BlockIcon(ShapeType.SHAPE_8.shape, textures, BlockRotation.ROTATION_0));
-			blocks.add(new BlockIcon(ShapeType.SHAPE_9.shape, textures, BlockRotation.ROTATION_0));
-			blocks.add(new BlockIcon(ShapeType.SHAPE_10.shape, textures, BlockRotation.ROTATION_0));
-			blocks.add(new BlockIcon(ShapeType.SHAPE_11.shape, textures, BlockRotation.ROTATION_0));
-			blocks.add(new BlockIcon(ShapeType.SHAPE_12.shape, textures, BlockRotation.ROTATION_0));
-			blocks.add(new BlockIcon(ShapeType.SHAPE_13.shape, textures, BlockRotation.ROTATION_0));
-			blocks.add(new BlockIcon(ShapeType.SHAPE_14.shape, textures, BlockRotation.ROTATION_0));
-			blocks.add(new BlockIcon(ShapeType.SHAPE_15.shape, textures, BlockRotation.ROTATION_0));
-			blocks.add(new BlockIcon(ShapeType.SHAPE_16.shape, textures, BlockRotation.ROTATION_0));
-			blocks.add(new BlockIcon(ShapeType.SHAPE_17.shape, textures, BlockRotation.ROTATION_0));
-			blocks.add(new BlockIcon(ShapeType.SHAPE_18.shape, textures, BlockRotation.ROTATION_0));
-			blocks.add(new BlockIcon(ShapeType.SHAPE_19.shape, textures, BlockRotation.ROTATION_0));
-		}
+	private static final float INVENTORY_SIZE = 550;
+	public Inventory(){
+		backdrop=new UiElement(Texture.getTexture(ClientLauncher.assetFolder, "Inventory Background.png"));
+		backdrop.w=INVENTORY_SIZE;
+		backdrop.h=INVENTORY_SIZE;
+		backdrop.x=Loop.screenRes.width/2f-backdrop.w/2f;
+		backdrop.y=Loop.screenRes.height/2f-backdrop.h/2f;
 	}
 	public void render(){
-		if(!shown)return;
+		if(!shown){
+			GL11.glEnable(GL11.GL_DEPTH_TEST);
+			return;
+		}
+		UI.renderElement(backdrop);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		MatrixUtils.setupOrtho(BLOCK_ZOOM*Loop.screenRes.width/Loop.screenRes.height, BLOCK_ZOOM, -100, 100);
 		int lastShown = Math.min(scrollPosition+TOTAL_SHOWN, blocks.size());
 		for(int i = scrollPosition; i<lastShown; i++)blocks.get(i).render(getX(i), getY(i));
@@ -166,8 +145,8 @@ public class Inventory{
 	public void addBlock(BlockShape shape, CubeTextures cubeTextures){ blocks.add(new BlockIcon(shape, cubeTextures, BlockRotation.ROTATION_0)); }
 	public boolean isShown(){ return shown; }
 	public ArrayList<BlockIcon> getBlocks(){ return blocks; }
-	private static float getX(int index){ return -(COLS_SHOWN-1)*BLOCK_SPACING/2f+(index%COLS_SHOWN)*BLOCK_SPACING; }
-	private static float getY(int index){ return -(-(ROWS_SHOWN-1)*BLOCK_SPACING/2f+(index/COLS_SHOWN)*BLOCK_SPACING); }
+	private static float getX(int index){ return -(COLS_SHOWN-1)*BLOCK_SPACING/2f+(index%REAL_COLS_SHOWN)*BLOCK_SPACING; }
+	private static float getY(int index){ return -(-(ROWS_SHOWN-1)*BLOCK_SPACING/2f+(index/REAL_COLS_SHOWN+1.5f)*BLOCK_SPACING); }
 	private static float getX(double mouseX){ return ((float)mouseX/Loop.screenRes.width-0.5f)*BLOCK_ZOOM*Loop.screenRes.width/Loop.screenRes.height; }
 	private static float getY(double mouseY){ return ((float)mouseY/Loop.screenRes.height-0.5f)*BLOCK_ZOOM; }
 }

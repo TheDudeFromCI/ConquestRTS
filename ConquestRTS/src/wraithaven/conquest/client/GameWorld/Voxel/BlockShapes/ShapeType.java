@@ -22,7 +22,13 @@ public enum ShapeType{
 	SHAPE_16(new Shape16()),
 	SHAPE_17(new Shape17()),
 	SHAPE_18(new Shape18()),
-	SHAPE_19(new Shape19());
+	SHAPE_19(new Shape19()),
+	SHAPE_20(new Shape20()),
+	SHAPE_21(new Shape21()),
+	SHAPE_22(new Shape22()),
+	SHAPE_23(new Shape23()),
+	SHAPE_24(new Shape24()),
+	SHAPE_25(new Shape25());
 	public final BlockShape shape;
 	private ShapeType(BlockShape shape){ this.shape=shape; }
 }
