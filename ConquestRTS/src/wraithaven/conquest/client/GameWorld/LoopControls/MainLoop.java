@@ -18,6 +18,7 @@ public class MainLoop{
 	private long window;
 	private WindowInitalizer windowInitalizer;
 	private WindowInitalizer recreateInitalizer;
+	public static boolean FPS_SYNC = true;
 	public void create(WindowInitalizer windowInitalizer){
 		runLoop(windowInitalizer);
 		while(recreateInitalizer!=null)runLoop(recreateInitalizer);
@@ -91,7 +92,7 @@ public class MainLoop{
 			glPopMatrix();
 			glfwSwapBuffers(window);
 			glfwPollEvents();
-			sync(60);
+			if(FPS_SYNC)sync(60);
 		}
 	}
 	private long variableYieldTime, lastTime;

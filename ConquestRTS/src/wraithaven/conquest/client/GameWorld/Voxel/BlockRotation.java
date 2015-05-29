@@ -14,16 +14,17 @@ public class BlockRotation{
 	private static final Vector3f Y_AXIS = new Vector3f(0, 1, 0);
 	private static final Vector3f Z_AXIS = new Vector3f(0, 0, 1);
 	private static final int[] TEMP_CORDS = new int[3];
-	public static final BlockRotation ROTATION_0 = new BlockRotation(new Vec3i(0, 0, 0), 0);
-	public static final BlockRotation ROTATION_1 = new BlockRotation(new Vec3i(0, 0, 1), 1);
-	public static final BlockRotation ROTATION_2 = new BlockRotation(new Vec3i(0, 0, 2), 2);
-	public static final BlockRotation ROTATION_3 = new BlockRotation(new Vec3i(0, 0, 3), 3);
-	public static final BlockRotation ROTATION_4 = new BlockRotation(new Vec3i(0, 1, 0), 4);
-	public static final BlockRotation ROTATION_5 = new BlockRotation(new Vec3i(0, 1, 1), 5);
-	public static final BlockRotation ROTATION_6 = new BlockRotation(new Vec3i(0, 1, 2), 6);
-	public static final BlockRotation ROTATION_7 = new BlockRotation(new Vec3i(0, 1, 3), 7);
-	public static final BlockRotation ROTATION_8 = new BlockRotation(new Vec3i(0, 2, 0), 8);
-	public static final BlockRotation ROTATION_9 = new BlockRotation(new Vec3i(0, 2, 1), 9);
+	private static final int[] tempRotations = new int[6];
+	public static final BlockRotation ROTATION_0  = new BlockRotation(new Vec3i(0, 0, 0),  0);
+	public static final BlockRotation ROTATION_1  = new BlockRotation(new Vec3i(0, 0, 1),  1);
+	public static final BlockRotation ROTATION_2  = new BlockRotation(new Vec3i(0, 0, 2),  2);
+	public static final BlockRotation ROTATION_3  = new BlockRotation(new Vec3i(0, 0, 3),  3);
+	public static final BlockRotation ROTATION_4  = new BlockRotation(new Vec3i(0, 1, 0),  4);
+	public static final BlockRotation ROTATION_5  = new BlockRotation(new Vec3i(0, 1, 1),  5);
+	public static final BlockRotation ROTATION_6  = new BlockRotation(new Vec3i(0, 1, 2),  6);
+	public static final BlockRotation ROTATION_7  = new BlockRotation(new Vec3i(0, 1, 3),  7);
+	public static final BlockRotation ROTATION_8  = new BlockRotation(new Vec3i(0, 2, 0),  8);
+	public static final BlockRotation ROTATION_9  = new BlockRotation(new Vec3i(0, 2, 1),  9);
 	public static final BlockRotation ROTATION_10 = new BlockRotation(new Vec3i(0, 2, 2), 10);
 	public static final BlockRotation ROTATION_11 = new BlockRotation(new Vec3i(0, 2, 3), 11);
 	public static final BlockRotation ROTATION_12 = new BlockRotation(new Vec3i(0, 3, 0), 12);
@@ -97,7 +98,6 @@ public class BlockRotation{
 		if(TEMP_CORDS[2]==8)return 5;
 		return -1;
 	}
-	private static int[] tempRotations = new int[6];
 	public void rotateTextures(CubeTextures textures, int[] rotations){
 		rotations[0]=textures.xUpRotation;
 		rotations[1]=textures.xDownRotation;
@@ -108,35 +108,33 @@ public class BlockRotation{
 		int i;
 		for(i=0; i<rx; i++){
 			storeTempRotations(rotations);
-			rotations[0]++;
+			rotations[0]+=3;
 			rotations[1]++;
 			rotations[2]=tempRotations[4];
-			rotations[3]=tempRotations[5];
-			rotations[4]=tempRotations[2];
-			rotations[5]=tempRotations[3];
+			rotations[3]=tempRotations[5]+2;
+			rotations[4]=tempRotations[3]+2;
+			rotations[5]=tempRotations[2];
 		}
 		for(i=0; i<ry; i++){
 			storeTempRotations(rotations);
-			rotations[0]=tempRotations[4];
-			rotations[1]=tempRotations[5];
+			rotations[0]=tempRotations[5]+1;
+			rotations[1]=tempRotations[4]+3;
 			rotations[2]++;
-			rotations[3]++;
-			rotations[4]=tempRotations[0];
-			rotations[5]=tempRotations[1];
+			rotations[3]+=3;
+			rotations[4]=tempRotations[0]+1;
+			rotations[5]=tempRotations[1]+3;
 		}
 		for(i=0; i<rz; i++){
 			storeTempRotations(rotations);
-			rotations[0]=tempRotations[3];
-			rotations[1]=tempRotations[2];
-			rotations[2]=tempRotations[0];
-			rotations[3]=tempRotations[1];
-			rotations[4]++;
+			rotations[0]=tempRotations[2]+2;
+			rotations[1]=tempRotations[3];
+			rotations[2]=tempRotations[1];
+			rotations[3]=tempRotations[0]+2;
+			rotations[4]+=3;
 			rotations[5]++;
 		}
 		simplifyRotations(rotations);
 	}
-	private static void simplifyRotations(int[] r){ for(int i = 0; i<6; i++)r[i]%=4; }
-	private static void storeTempRotations(int[] r){ for(int i = 0; i<6; i++)tempRotations[i]=r[i]; }
 	public static BlockRotation getRotation(int index){
 		if(index==0)return ROTATION_0;
 		if(index==1)return ROTATION_1;
@@ -164,4 +162,25 @@ public class BlockRotation{
 		if(index==23)return ROTATION_23;
 		return null;
 	}
+	public static BlockRotation findCustomRotation(int x, int y, int z){
+		BlockRotation custom = new BlockRotation(new Vec3i(x, y, z), -1);
+		int s0 = custom.rotateSide(0);
+		int s1 = custom.rotateSide(1);
+		int s2 = custom.rotateSide(2);
+		int s3 = custom.rotateSide(3);
+		int s4 = custom.rotateSide(4);
+		int s5 = custom.rotateSide(5);
+		for(int i = 0; i<24; i++){
+			custom=BlockRotation.getRotation(i);
+			if(custom.rotateSide(0)==s0
+				&&custom.rotateSide(1)==s1
+				&&custom.rotateSide(2)==s2
+				&&custom.rotateSide(3)==s3
+				&&custom.rotateSide(4)==s4
+				&&custom.rotateSide(5)==s5)return custom;
+		}
+		return null;
+	}
+	private static void simplifyRotations(int[] r){ for(int i = 0; i<6; i++)r[i]%=4; }
+	private static void storeTempRotations(int[] r){ for(int i = 0; i<6; i++)tempRotations[i]=r[i]; }
 }

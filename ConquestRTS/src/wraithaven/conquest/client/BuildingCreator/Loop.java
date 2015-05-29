@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.nio.DoubleBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import wraithaven.conquest.client.GameWorld.LoopControls.MainLoop;
 import wraithaven.conquest.client.LoadingScreenTask;
 import wraithaven.conquest.client.LoadingScreen;
 import wraithaven.conquest.client.GameWorld.LoopControls.VoxelWorldBounds;
@@ -53,6 +54,7 @@ public class Loop implements LoopObjective{
 		inventory=new Inventory();
 		setupCameraPosition();
 		setupOGL();
+		MainLoop.FPS_SYNC=false;
 		loadingScreen=new LoadingScreen(new LoadingScreenTask(){
 			int x, z, w;
 			int chunkLimit = (BuildingCreator.WORLD_BOUNDS_SIZE-1)>>Chunk.CHUNK_BITS;
@@ -90,6 +92,7 @@ public class Loop implements LoopObjective{
 				loadingScreen=null;
 				MatrixUtils.setupPerspective(70, Loop.screenRes.width/(float)Loop.screenRes.height, Loop.CAMERA_NEAR_CLIP, 1000);
 				GL11.glClearColor(219/255f, 246/255f, 251/255f, 0);
+				MainLoop.FPS_SYNC=true;
 			}
 		});
 	}
