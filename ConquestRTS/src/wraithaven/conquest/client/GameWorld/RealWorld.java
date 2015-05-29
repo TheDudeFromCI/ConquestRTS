@@ -36,14 +36,12 @@ public class RealWorld{
 				GL11.glCullFace(GL11.GL_BACK);
 				cam=new Camera(screenRes.width*ZOOM_LEVEL, screenRes.height*ZOOM_LEVEL, -1000, 1000, true);
 				cam.goalY=cam.y=100;
-				cam.goalRX=cam.rx=30;
-				cam.goalRX=cam.ry=45;
-				cam.cameraRotationSpeed=3.75f;
+				cam.rx=30;
+				cam.ry=45;
 				cam.cameraMoveSpeed=3.75f;
 				voxelWorld=new VoxelWorld(chunkLoader=new CatcheChunkLoader(), new VoxelWorldBounds(-10000, 0, -10000, 10000, 16, 10000));
 				chunkLoader.setup(voxelWorld, cam);
-				VoxelChunkQue.setupTextures(voxelWorld);
-				inputHandler=new InputHandler(cam, voxelWorld);
+				inputHandler=new InputHandler(cam);
 				inputHandler.moveSpeed=30;
 				lastPrint=System.currentTimeMillis();
 			}

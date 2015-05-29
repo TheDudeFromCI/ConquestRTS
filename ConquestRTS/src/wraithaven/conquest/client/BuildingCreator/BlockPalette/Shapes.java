@@ -84,7 +84,7 @@ public class Shapes{
 	}
 	public void select(BlockShape shape){
 		for(int i = 0; i<icons.size(); i++){
-			if(icons.get(i).shape==shape){
+			if(icons.get(i).block.block.shape==shape){
 				selectedBlock=i;
 				int ideal = (int)(1-Math.ceil(BLOCKS_SHOWN/2f));
 				if(ideal>icons.size()-BLOCKS_SHOWN)ideal=icons.size()-BLOCKS_SHOWN;
@@ -96,7 +96,7 @@ public class Shapes{
 	}
 	public void dispose(){ for(int i = 0; i<icons.size(); i++)icons.get(i).dispose(); }
 	private void a(BlockShape shape){ icons.add(new BlockIcon(shape, baseTexture, BlockRotation.ROTATION_0)); }
-	public BlockShape getCurrentShape(){ return icons.get(selectedBlock).shape; }
+	public BlockShape getCurrentShape(){ return icons.get(selectedBlock).block.block.shape; }
 	private static float x(){ return (screenXToWorldX(screenXPercent())); }
 	private static float y(int id){ return screenYToWorldY(screenYPercent(id)); }
 	private static float screenXToWorldX(float screenX){ return (screenX*2-1)*(Shapes.BLOCK_ZOOM*Loop.screenRes.width/Loop.screenRes.height/2f); }

@@ -5,7 +5,7 @@
 	<classpathentry kind="lib" path="C:/Users/Phealoon/Documents/Eclipse Code/LWJGL/jar/lwjgl.jar" sourcepath="C:/Users/Phealoon/Documents/Eclipse Code/LWJGL/src.zip">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:file:/C:/Users/Phealoon/Documents/Eclipse%20Code/LWJGL/doc/javadoc.zip!/"/>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="C:/Users/Phealoon/Documents/Eclipse Code/LWJGL/native/windows/x86"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="C:/Users/Phealoon/Documents/Eclipse Code/LWJGL/native/windows/x64"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="bin"/>

@@ -31,4 +31,8 @@ public enum ShapeType{
 	SHAPE_25(new Shape25());
 	public final BlockShape shape;
 	private ShapeType(BlockShape shape){ this.shape=shape; }
+	public static int indexOf(BlockShape shape){
+		for(int i = 0; i<values().length; i++)if(values()[i].shape==shape)return i;
+		return -1;
+	}
 }

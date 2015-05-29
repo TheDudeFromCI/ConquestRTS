@@ -4,11 +4,13 @@ import java.awt.Dimension;
 import java.nio.DoubleBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import wraithaven.conquest.client.LoadingScreenTask;
+import wraithaven.conquest.client.LoadingScreen;
+import wraithaven.conquest.client.GameWorld.LoopControls.VoxelWorldBounds;
 import wraithaven.conquest.client.GameWorld.LoopControls.MatrixUtils;
 import wraithaven.conquest.client.GameWorld.Voxel.Texture;
 import wraithaven.conquest.client.ClientLauncher;
 import wraithaven.conquest.client.GameWorld.Voxel.Chunk;
-import wraithaven.conquest.client.GameWorld.LoopControls.VoxelWorldBounds;
 import wraithaven.conquest.client.GameWorld.LoopControls.LoopObjective;
 import wraithaven.conquest.client.GameWorld.Voxel.Camera;
 import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorld;
@@ -37,6 +39,7 @@ public class Loop implements LoopObjective{
 		this.buildingCreator=buildingCreator;
 		INSTANCE=this;
 	}
+	private LoadingScreen loadingScreen;
 	public void preLoop(){
 		camera=new Camera(70, screenRes.width/(float)screenRes.height, CAMERA_NEAR_CLIP, 1000, false);
 		creatorWorld=new BuildCreatorWorld();
@@ -48,11 +51,53 @@ public class Loop implements LoopObjective{
 		skybox=new Skybox(Texture.getTexture(ClientLauncher.assetFolder, "Day Skybox.png"));
 		selectedBlock=new SelectedBlock();
 		inventory=new Inventory();
-		generateWorld();
 		setupCameraPosition();
 		setupOGL();
+		loadingScreen=new LoadingScreen(new LoadingScreenTask(){
+			int x, z, w;
+			int chunkLimit = (BuildingCreator.WORLD_BOUNDS_SIZE-1)>>Chunk.CHUNK_BITS;
+			float percent, loadingPercent, rebuildingPercent;
+			public int update(){
+				if(loadingPercent<1)load();
+				else rebuild();
+				percent=loadingPercent*0.05f+rebuildingPercent*0.95f;
+				return (int)(percent*100);
+			}
+			private void load(){
+				for(int i = 0; i<64; i++){
+					world.loadChunk(x, 0, z);
+					z++;
+					if(z>chunkLimit){
+						z=0;
+						x++;
+						if(x>chunkLimit){
+							loadingPercent=1;
+							return;
+						}
+					}
+				}
+				loadingPercent=(x*chunkLimit+z)/(float)(chunkLimit*chunkLimit);
+			}
+			private void rebuild(){
+				for(int i = 0; i<64; i++){
+					world.getChunk(w).rebuild();
+					w++;
+					rebuildingPercent=w/(float)world.getChunkCount();
+				}
+			}
+		}, new Runnable(){
+			public void run(){
+				loadingScreen=null;
+				MatrixUtils.setupPerspective(70, Loop.screenRes.width/(float)Loop.screenRes.height, Loop.CAMERA_NEAR_CLIP, 1000);
+				GL11.glClearColor(219/255f, 246/255f, 251/255f, 0);
+			}
+		});
 	}
 	public void update(double delta, double time){
+		if(loadingScreen!=null){
+			loadingScreen.update();
+			return;
+		}
 		if(palleteRenderer!=null)palleteRenderer.update(time);
 		else{
 			inputController.processWalk(world, delta);
@@ -68,10 +113,13 @@ public class Loop implements LoopObjective{
 		camera.goalX=camera.x=center;
 		camera.goalY=camera.y=5;
 		camera.goalZ=camera.z=center;
-		camera.cameraRotationSpeed=3.75f;
 		camera.cameraMoveSpeed=3.75f;
 	}
 	public void render(){
+		if(loadingScreen!=null){
+			loadingScreen.render();
+			return;
+		}
 		if(palleteRenderer!=null)palleteRenderer.render();
 		else{
 			skybox.render(camera);
@@ -108,11 +156,6 @@ public class Loop implements LoopObjective{
 			glfwSetInputMode(buildingCreator.getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 			GL11.glClearColor(0, 0, 0, 0);
 		}
-	}
-	private void generateWorld(){
-		int chunkLimit = (BuildingCreator.WORLD_BOUNDS_SIZE-1)>>Chunk.CHUNK_BITS;
-		int x, y, z;
-		for(x=0; x<=chunkLimit; x++)for(y=0; y<=chunkLimit; y++)for(z=0; z<=chunkLimit; z++)world.loadChunk(x, y, z);
 	}
 	public void mouseMove(long window, double x, double y){
 		if(hasPalette())palleteRenderer.onMouseMove(x, y);
@@ -158,6 +201,7 @@ public class Loop implements LoopObjective{
 	public BuildingCreator getBuildingCreator(){ return buildingCreator; }
 	public Inventory getInventory(){ return inventory; }
 	public long getWindow(){ return buildingCreator.getWindow(); }
+	public InputController getInputController(){ return inputController; }
 	private static void setupOGL(){
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glEnable(GL11.GL_CULL_FACE);

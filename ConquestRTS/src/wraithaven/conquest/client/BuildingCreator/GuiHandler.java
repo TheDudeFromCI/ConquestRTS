@@ -2,8 +2,6 @@ package wraithaven.conquest.client.BuildingCreator;
 
 import java.awt.Color;
 import org.lwjgl.opengl.GL11;
-import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorld;
-import wraithaven.conquest.client.BuildingCreator.BlockPalette.UI;
 import wraithaven.conquest.client.BuildingCreator.BlockPalette.UiElement;
 import wraithaven.conquest.client.GameWorld.WindowUtil.OnScreenText.TextBox;
 import wraithaven.conquest.client.GameWorld.Voxel.BlockRotation;
@@ -22,6 +20,7 @@ public class GuiHandler{
 	private GLGuiComponents components3;
 	public int goalWheelRotation;
 	private float realWheelRotation;
+	private final int displayListId;
 	private final BlockIcon[] rotations = new BlockIcon[24];
 	private static float CURSOR_SIZE = 50;
 	public static float HOTBAR_SLOT = 50;
@@ -48,10 +47,15 @@ public class GuiHandler{
 		textEle.y=Loop.screenRes.height-100;
 		textEle.w=100;
 		textEle.h=100;
+		displayListId=GL11.glGenLists(1);
+		GL11.glNewList(displayListId, GL11.GL_COMPILE);
+		drawWires();
+		GL11.glEndList();
 	}
 	private final TextBox textBox;
 	private UiElement textEle;
 	public void render(){
+		if(Loop.INSTANCE.getInputController().wireframeMode)return;
 		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		components.render();
@@ -68,7 +72,6 @@ public class GuiHandler{
 		iconManager.render();
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		components2.render();
-		UI.renderElement(textEle);
 	}
 	private void renderRotationIcons(){
 		while(goalWheelRotation<0)goalWheelRotation+=24;
@@ -99,7 +102,7 @@ public class GuiHandler{
 		GL11.glRotatef(Loop.INSTANCE.getCamera().rx, 1, 0, 0);
 		GL11.glRotatef(Loop.INSTANCE.getCamera().ry, 0, 1, 0);
 		rotations[goalWheelRotation].render(0, 0, 0, -BlockIcon.BLOCK_PITCH	, -BlockIcon.BLOCK_YAW);
-		drawWires();
+		GL11.glCallList(displayListId);
 		GL11.glPopMatrix();
 	}
 	public void updateHotbarSelector(int id){
@@ -117,28 +120,18 @@ public class GuiHandler{
 	}
 	public BlockRotation getSelectedRotation(){ return BlockRotation.getRotation(goalWheelRotation); }
 	private static float rotationSpeed = 10;
-	public void update(double delta){
-		realWheelRotation=(float)(((((((goalWheelRotation*15+7.5f)-realWheelRotation)%360)+540)%360)-180)*delta*rotationSpeed)+realWheelRotation;
-		textBox.setText((int)Math.round(1/delta)+" fps\nTris: "+VoxelWorld.trisRendered+"\nTextures: "+Texture.getLoadedTextures()+"\nMem: "+formatMemory(runtime.freeMemory())+"\n    /"+formatMemory(runtime.totalMemory())+"\n    (~"+(Math.round(runtime.freeMemory()/(float)runtime.totalMemory()*1000)/10.0)+"%)");
-	}
-	private Runtime runtime = Runtime.getRuntime();
-	public static String formatMemory(long bytes){
-	    if(bytes<1024)return bytes+" B";
-	    int exp = (int)(Math.log(bytes)/Math.log(1024));
-	    String pre ="KMGTPE".charAt(exp-1)+"";
-	    return String.format("%.1f %sB", bytes/Math.pow(1024, exp), pre);
-	}
+	public void update(double delta){ realWheelRotation=(float)(((((((goalWheelRotation*15+7.5f)-realWheelRotation)%360)+540)%360)-180)*delta*rotationSpeed)+realWheelRotation; }
 	public void cleanUp(){
 		iconManager.dispose();
 		components.clearComponents();
 		components2.clearComponents();
 		components3.clearComponents();
+		GL11.glDeleteLists(displayListId, 1);
 	}
 	public void addIcon(int id, BlockIcon icon){ iconManager.addIcon(icon, id); }
 	public BlockShape getSelectedShape(){ return iconManager.getSelectedShape(); }
 	public CubeTextures getSelectedCubeTextures(){ return iconManager.getSelectedCubeTextures(); }
 	public int getHotbarSelectorId(){ return iconManager.selectedSlot; }
-	public void rebuildBlockIcon(int id){ iconManager.rebuildIcon(id); }
 	public IconManager getIconManager(){ return iconManager; }
 	private static GLGuiImage createCursor(){
 		GLGuiImage i = new GLGuiImage(ClientLauncher.assetFolder, "Cursor.png");
@@ -187,7 +180,6 @@ public class GuiHandler{
 		GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glColor4f(0, 0, 0, OUTLINE_INTENSITY);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		GL11.glBegin(GL11.GL_QUADS);
 		float sx = -OUTLINE_BUFFER;
 		float sy = -OUTLINE_BUFFER;

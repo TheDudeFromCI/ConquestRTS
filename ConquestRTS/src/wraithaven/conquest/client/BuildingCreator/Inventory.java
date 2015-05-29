@@ -102,7 +102,7 @@ public class Inventory{
 	}
 	public BlockIcon getBlockIcon(BlockShape shape, CubeTextures textures){
 		for(int i = 0; i<blocks.size(); i++){
-			if(blocks.get(i).shape==shape&&blocks.get(i).textures==textures)return blocks.get(i);
+			if(blocks.get(i).block.block.shape==shape&&blocks.get(i).block.block.originalCubeTextures==textures)return blocks.get(i);
 		}
 		return null;
 	}

@@ -18,29 +18,15 @@ public class CameraTarget{
 			chunkY=v.y>>Chunk.CHUNK_BITS;
 			chunkZ=v.z>>Chunk.CHUNK_BITS;
 			if(lastChunk==null||lastChunk.chunkX!=chunkX||lastChunk.chunkY!=chunkY||lastChunk.chunkZ!=chunkZ)lastChunk=world.getChunk(chunkX, chunkY, chunkZ, load);
-			if(lastChunk!=null&&(callback.block=lastChunk.getBlock(v.x, v.y, v.z))!=null){
+			if(lastChunk!=null&&(callback.block=lastChunk.getBlock(v.x, v.y, v.z))!=-1){
+				callback.x=v.x;
+				callback.y=v.y;
+				callback.z=v.z;
 				callback.side=plotter.getSideHit();
 				return callback;
 			}
 		}
-		callback.block=null;
-		callback.side=-1;
-		return callback;
-	}
-	public CameraTargetCallback getGoalTargetBlock(VoxelWorld world, int range, boolean load){
-		lastChunk=null;
-		plotter.plot(cam.getGoalPosition(), cam.getGoalDirection(), range);
-		while(plotter.next()){
-			chunkX=v.x>>Chunk.CHUNK_BITS;
-			chunkY=v.y>>Chunk.CHUNK_BITS;
-			chunkZ=v.z>>Chunk.CHUNK_BITS;
-			if(lastChunk==null||lastChunk.chunkX!=chunkX||lastChunk.chunkY!=chunkY||lastChunk.chunkZ!=chunkZ)lastChunk=world.getChunk(chunkX, chunkY, chunkZ, load);
-			if(lastChunk!=null&&(callback.block=lastChunk.getBlock(v.x, v.y, v.z))!=null){
-				callback.side=plotter.getSideHit();
-				return callback;
-			}
-		}
-		callback.block=null;
+		callback.block=-1;
 		callback.side=-1;
 		return callback;
 	}

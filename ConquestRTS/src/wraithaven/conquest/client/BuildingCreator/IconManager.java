@@ -13,11 +13,11 @@ public class IconManager{
 	}
 	public BlockShape getSelectedShape(){
 		if(icons[selectedSlot]==null)return null;
-		return icons[selectedSlot].shape;
+		return icons[selectedSlot].block.block.shape;
 	}
 	public CubeTextures getSelectedCubeTextures(){
 		if(icons[selectedSlot]==null)return null;
-		return icons[selectedSlot].textures;
+		return icons[selectedSlot].block.block.originalCubeTextures;
 	}
 	public void render(){
 		for(int i = 0; i<icons.length; i++){
@@ -31,6 +31,5 @@ public class IconManager{
 			icons[i].dispose();
 		}
 	}
-	public void rebuildIcon(int id){ if(icons[id]!=null)icons[id].block.rebuild(); }
 	public BlockIcon getIcon(int id){ return icons[id]; }
 }

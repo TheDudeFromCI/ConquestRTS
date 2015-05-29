@@ -13,20 +13,14 @@ import static org.lwjgl.opengl.GL11.*;
 public class BlockIcon implements ChunklessBlockHolder{
 	public int itemSlot;
 	private float yaw;
-	public final BlockShape shape;
-	public final CubeTextures textures;
 	private final ArrayList<QuadBatch> batches = new ArrayList();
-	final ChunklessBlock block;
+	public final ChunklessBlock block;
 	public static final float BLOCK_PITCH = 30;
 	public static final float BLOCK_YAW = 45;
 	private static final float SPIN_SPEED = 10;
 	public static float BLOCK_ZOOM = 30;
 	public BlockIcon(BlockShape shape, CubeTextures textures, BlockRotation rotation){
-		this.shape=shape;
-		this.textures=textures;
 		block=new ChunklessBlock(this, shape, textures, rotation);
-		block.build();
-		for(int i = 0; i<6; i++)block.optimizeSide(i);
 		for(int i = 0; i<batches.size(); i++)batches.get(i).recompileBuffer();
 	}
 	public void render(float x, float y, float z, float rx, float ry){
@@ -47,7 +41,7 @@ public class BlockIcon implements ChunklessBlockHolder{
 			batch=batches.get(i);
 			if(batch.getTexture()==texture)return batch;
 		}
-		batch=new QuadBatch(texture, true, 0, 0, 0);
+		batch=new QuadBatch(texture, 0, 0, 0);
 		batches.add(batch);
 		return batch;
 	}

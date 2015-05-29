@@ -1,5 +1,7 @@
 package wraithaven.conquest.client.GameWorld.Voxel;
 
+import wraithaven.conquest.client.ClientLauncher;
+
 public class CubeTextures implements Cloneable{
 	public Texture xUp, xDown, yUp, yDown, zUp, zDown;
 	public int xUpRotation, xDownRotation, yUpRotation, yDownRotation, zUpRotation, zDownRotation;
@@ -53,5 +55,93 @@ public class CubeTextures implements Cloneable{
 		yDownRotation=textures.yDownRotation;
 		zUpRotation=textures.zUpRotation;
 		zDownRotation=textures.zDownRotation;
+	}
+	public void setColor(int side, float r, float g, float b){
+		colors[side*3]=r;
+		colors[side*3+1]=g;
+		colors[side*3+2]=b;
+	}
+	public void setTexture(int side, Texture texture, int rotation){
+		if(side==0){
+			xUp=texture;
+			xUpRotation=rotation;
+		}
+		if(side==1){
+			xDown=texture;
+			xDownRotation=rotation;
+		}
+		if(side==2){
+			yUp=texture;
+			yUpRotation=rotation;
+		}
+		if(side==3){
+			yDown=texture;
+			yDownRotation=rotation;
+		}
+		if(side==4){
+			zUp=texture;
+			zUpRotation=rotation;
+		}
+		if(side==5){
+			zDown=texture;
+			zDownRotation=rotation;
+		}
+	}
+	public boolean transparent(){ return xUp.transparent||xDown.transparent||yUp.transparent||yDown.transparent||zUp.transparent||zDown.transparent; }
+	public static String encrypt(CubeTextures t){
+		StringBuilder s = new StringBuilder();
+		s.append(t.colors[0]);
+		s.append('C');
+		s.append(t.colors[1]);
+		s.append('C');
+		s.append(t.colors[2]);
+		s.append('D');
+		s.append(t.xUp.file);
+		s.append('C');
+		s.append(t.xDown.file);
+		s.append('C');
+		s.append(t.yUp.file);
+		s.append('C');
+		s.append(t.yDown.file);
+		s.append('C');
+		s.append(t.zUp.file);
+		s.append('C');
+		s.append(t.zDown.file);
+		s.append('D');
+		s.append(t.xUpRotation);
+		s.append('C');
+		s.append(t.xDownRotation);
+		s.append('C');
+		s.append(t.yUpRotation);
+		s.append('C');
+		s.append(t.yDownRotation);
+		s.append('C');
+		s.append(t.zUpRotation);
+		s.append('C');
+		s.append(t.zDownRotation);
+		return s.toString();
+	}
+	public static CubeTextures decrypt(String s){
+		CubeTextures t = new CubeTextures();
+		String[] parts = s.split("D");
+		String[] colorParts = parts[0].split("C");
+		String[] textureParts = parts[1].split("C");
+		String[] rotationParts = parts[2].split("C");
+		t.colors[0]=Float.valueOf(colorParts[0]);
+		t.colors[1]=Float.valueOf(colorParts[1]);
+		t.colors[2]=Float.valueOf(colorParts[2]);
+		t.xUp=Texture.getTexture(ClientLauncher.textureFolder, textureParts[0], 4, MipmapQuality.HIGH);
+		t.xDown=Texture.getTexture(ClientLauncher.textureFolder, textureParts[1], 4, MipmapQuality.HIGH);
+		t.yUp=Texture.getTexture(ClientLauncher.textureFolder, textureParts[2], 4, MipmapQuality.HIGH);
+		t.yDown=Texture.getTexture(ClientLauncher.textureFolder, textureParts[3], 4, MipmapQuality.HIGH);
+		t.zUp=Texture.getTexture(ClientLauncher.textureFolder, textureParts[4], 4, MipmapQuality.HIGH);
+		t.zDown=Texture.getTexture(ClientLauncher.textureFolder, textureParts[5], 4, MipmapQuality.HIGH);
+		t.xUpRotation=Integer.valueOf(rotationParts[0]);
+		t.xDownRotation=Integer.valueOf(rotationParts[1]);
+		t.yUpRotation=Integer.valueOf(rotationParts[2]);
+		t.yDownRotation=Integer.valueOf(rotationParts[3]);
+		t.zUpRotation=Integer.valueOf(rotationParts[4]);
+		t.zDownRotation=Integer.valueOf(rotationParts[5]);
+		return t;
 	}
 }

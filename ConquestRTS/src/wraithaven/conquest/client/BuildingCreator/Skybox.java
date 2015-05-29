@@ -1,25 +1,22 @@
 package wraithaven.conquest.client.BuildingCreator;
 
 import org.lwjgl.opengl.GL11;
+import wraithaven.conquest.client.GameWorld.Voxel.Quad;
 import wraithaven.conquest.client.GameWorld.Voxel.Camera;
 import wraithaven.conquest.client.GameWorld.Voxel.QuadBatch;
-import wraithaven.conquest.client.GameWorld.Voxel.Cube;
 import wraithaven.conquest.client.GameWorld.Voxel.Texture;
 
 public class Skybox{
 	private final QuadBatch batch;
-	private static final float[] WHITE_COLORS = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+	private static final float[] WHITE_COLORS = {1, 1, 1};
 	public Skybox(Texture texture){
-		batch=new QuadBatch(texture, false, 0, 0, 0);
-		batch.addQuad(Cube.generateQuad(2, -1, 0, -1, 0, WHITE_COLORS, 2, new float[]{0.25f, 0.5f, 0.25f, 0.5f}));
-		batch.addQuad(Cube.generateQuad(0, 0, 1, -1, 1, WHITE_COLORS, 1, new float[]{0.75f, 0.25f, 0.25f, 0.25f}));
-		batch.addQuad(Cube.generateQuad(0, 0, 1, 0, 1, WHITE_COLORS, 1, new float[]{0.75f, 0.25f, 0.5f, 0.25f}));
-		batch.addQuad(Cube.generateQuad(1, -1, 1, -1, 0, WHITE_COLORS, 1, new float[]{0, 0.25f, 0.25f, 0.25f}));
-		batch.addQuad(Cube.generateQuad(1, -1, 1, 0, 0, WHITE_COLORS, 1, new float[]{0, 0.25f, 0.5f, 0.25f}));
-		batch.addQuad(Cube.generateQuad(4, -1, 1, 0, 3, WHITE_COLORS, 1, new float[]{0.25f, 0.25f, 0.75f, 0.25f}));
-		batch.addQuad(Cube.generateQuad(4, 0, 1, 0, 3, WHITE_COLORS, 1, new float[]{0.5f, 0.25f, 0.75f, 0.25f}));
-		batch.addQuad(Cube.generateQuad(5, -1, 1, -1, 0, WHITE_COLORS, 1, new float[]{0.25f, 0.25f, 0, 0.25f}));
-		batch.addQuad(Cube.generateQuad(5, 0, 1, -1, 0, WHITE_COLORS, 1, new float[]{0.5f, 0.25f, 0, 0.25f}));
+		batch=new QuadBatch(texture, 0, 0, 0);
+		batch.addQuad(new Quad(new float[12], WHITE_COLORS, new float[8], 0));
+		batch.addQuad(new Quad(new float[12], WHITE_COLORS, new float[8], 1));
+		batch.addQuad(new Quad(new float[12], WHITE_COLORS, new float[8], 2));
+		batch.addQuad(new Quad(new float[12], WHITE_COLORS, new float[8], 3));
+		batch.addQuad(new Quad(new float[12], WHITE_COLORS, new float[8], 4));
+		batch.addQuad(new Quad(new float[12], WHITE_COLORS, new float[8], 5));
 		batch.recompileBuffer();
 	}
 	public void render(Camera camera){

@@ -82,8 +82,6 @@ public class UI{
 		cubeTextures.zUp=textures.getTexture();
 		cubeTextures.zDown=textures.getTexture();
 		floatingBlock.block=new ChunklessBlock(floatingBlock, shapes.getCurrentShape(), cubeTextures, BlockRotation.ROTATION_0);
-		floatingBlock.block.build();
-		for(int i = 0; i<6; i++)floatingBlock.block.optimizeSide(i);
 		floatingBlock.rebuildBatches();
 	}
 	private static Texture getSaveButtonTexture(boolean down){
@@ -98,8 +96,6 @@ public class UI{
 	private void updateFloatingBlock(){
 		floatingBlock.destroy();
 		floatingBlock.block=new ChunklessBlock(floatingBlock, shapes.getCurrentShape(), cubeTextures, BlockRotation.ROTATION_0);
-		floatingBlock.block.build();
-		for(int i = 0; i<6; i++)floatingBlock.block.optimizeSide(i);
 		floatingBlock.rebuildBatches();
 	}
 	public void render(){
@@ -119,6 +115,7 @@ public class UI{
 		shapes.render();
 		inventoryView.render();
 		MatrixUtils.setupOrtho(BLOCK_ZOOM*Loop.screenRes.width/Loop.screenRes.height, BLOCK_ZOOM, -1000, 1000);
+		GL11.glPushMatrix();
 		GL11.glTranslatef(-0.6f, 1, -3);
 		GL11.glRotatef(shiftPitch, 1, 0, 0);
 		GL11.glRotatef(shiftYaw, 0, 1, 0);
@@ -129,6 +126,29 @@ public class UI{
 			modelViewMatrix.load(modelView);
 		}
 		floatingBlock.render();
+		GL11.glPopMatrix();
+		{
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+			MatrixUtils.setupOrtho(30*Loop.screenRes.width/Loop.screenRes.height, 30, -100, 100);
+			GL11.glPushMatrix();
+			GL11.glTranslatef(-3.6f, 13.5f, -18);
+			GL11.glRotatef(shiftPitch, 1, 0, 0);
+			GL11.glRotatef(shiftYaw, 0, 1, 0);
+			GL11.glColor3f(1, 1, 1);
+			GL11.glBegin(GL11.GL_LINES);
+			GL11.glColor3f(1, 0, 0);
+			GL11.glVertex3f(0, 0, 0);
+			GL11.glVertex3f(1, 0, 0);
+			GL11.glColor3f(0, 1, 0);
+			GL11.glVertex3f(0, 0, 0);
+			GL11.glVertex3f(0, 1, 0);
+			GL11.glColor3f(0, 0, 1);
+			GL11.glVertex3f(0, 0, 0);
+			GL11.glVertex3f(0, 0, 1);
+			GL11.glEnd();
+			GL11.glColor3f(1, 1, 1);
+			GL11.glPopMatrix();
+		}
 	}
 	private final FloatBuffer modelView = BufferUtils.createFloatBuffer(16);
 	private final Matrix4f modelViewMatrix = new Matrix4f();
@@ -258,8 +278,8 @@ public class UI{
 		updateFloatingBlock();
 	}
 	public void load(BlockIcon icon){
-		shapes.select(icon.shape);
-		cubeTextures.set(icon.textures);
+		shapes.select(icon.block.block.shape);
+		cubeTextures.set(icon.block.block.originalCubeTextures);
 		updateFloatingBlock();
 	}
 	private static final float BLOCK_ZOOM = 5;
@@ -288,13 +308,13 @@ public class UI{
 				tempQuad=floatingBlock.batches.get(i).getQuad(j);
 				for(k=0; k<2; k++){
 					if(k==0){
-						v1.set(tempQuad.data.get(25), tempQuad.data.get(26), tempQuad.data.get(27));
-						v2.set(tempQuad.data.get(28), tempQuad.data.get(29), tempQuad.data.get(30));
-						v3.set(tempQuad.data.get(31), tempQuad.data.get(32), tempQuad.data.get(33));
+						v1.set(tempQuad.data.get(11), tempQuad.data.get(12), tempQuad.data.get(13));
+						v2.set(tempQuad.data.get(14), tempQuad.data.get(15), tempQuad.data.get(16));
+						v3.set(tempQuad.data.get(17), tempQuad.data.get(18), tempQuad.data.get(19));
 					}else{
-						v1.set(tempQuad.data.get(25), tempQuad.data.get(26), tempQuad.data.get(27));
-						v2.set(tempQuad.data.get(31), tempQuad.data.get(32), tempQuad.data.get(33));
-						v3.set(tempQuad.data.get(34), tempQuad.data.get(35), tempQuad.data.get(36));
+						v1.set(tempQuad.data.get(11), tempQuad.data.get(12), tempQuad.data.get(13));
+						v2.set(tempQuad.data.get(17), tempQuad.data.get(18), tempQuad.data.get(19));
+						v3.set(tempQuad.data.get(20), tempQuad.data.get(21), tempQuad.data.get(22));
 					}
 					morph(v1);
 					morph(v2);

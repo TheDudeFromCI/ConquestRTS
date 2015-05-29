@@ -21,4 +21,5 @@ public class VoxelWorldBounds{
 		chunkEndY=endY>>Chunk.CHUNK_BITS;
 		chunkEndZ=endZ>>Chunk.CHUNK_BITS;
 	}
+	public boolean isWithinBounds(int chunkX, int chunkY, int chunkZ){ return chunkX>=chunkStartX&&chunkX<=chunkEndX&&chunkY>=chunkStartY&&chunkY<=chunkEndY&&chunkZ>=chunkStartZ&&chunkZ<=chunkEndZ; }
 }

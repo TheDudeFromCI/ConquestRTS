@@ -22,12 +22,11 @@ public class FloatingBlock implements ChunklessBlockHolder{
 			batch=batches.get(i);
 			if(batch.getTexture()==texture)return batch;
 		}
-		batch=new QuadBatch(texture, true, 0, 0, 0);
+		batch=new QuadBatch(texture, 0, 0, 0);
 		batches.add(batch);
 		return batch;
 	}
 	void destroy(){
-		block.destroy();
 		block=null;
 		for(int i = 0; i<batches.size(); i++)batches.get(i).cleanUp();
 		batches.clear();

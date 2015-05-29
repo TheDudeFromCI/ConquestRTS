@@ -78,5 +78,4 @@ public class Shape17 extends BlockShape{
 	};
 	Shape17(){}
 	protected boolean[] getBlocks(){ return BLOCKS; }
-	protected boolean hasFullSide(int side){ return false; }
 }

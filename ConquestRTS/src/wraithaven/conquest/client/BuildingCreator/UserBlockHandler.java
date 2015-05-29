@@ -1,8 +1,8 @@
 package wraithaven.conquest.client.BuildingCreator;
 
 import static org.lwjgl.glfw.GLFW.*;
+import wraithaven.conquest.client.GameWorld.Voxel.Block;
 import wraithaven.conquest.client.GameWorld.Voxel.BlockRotation;
-import wraithaven.conquest.client.GameWorld.Voxel.CustomBlock;
 import wraithaven.conquest.client.GameWorld.Voxel.CubeTextures;
 import wraithaven.conquest.client.GameWorld.Voxel.BlockShape;
 import wraithaven.conquest.client.GameWorld.Voxel.CameraTarget;
@@ -41,31 +41,29 @@ public class UserBlockHandler{
 		}else if(button==GLFW_MOUSE_BUTTON_MIDDLE){
 			if(action==GLFW_PRESS){
 				callback=cameraTarget.getTargetBlock(Loop.INSTANCE.getVoxelWorld(), 500, false);
-				if(callback.block!=null){
-					if(callback.block instanceof CustomBlock){
-						CustomBlock block = (CustomBlock)callback.block;
-						BlockIcon icon;
-						for(int i = 0; i<10; i++){
-							icon=Loop.INSTANCE.getGuiHandler().getIconManager().getIcon(i);
-							if(icon==null)continue;
-							if(icon.shape==block.shape&&icon.textures==block.textures){
-								Loop.INSTANCE.getGuiHandler().updateHotbarSelector(i);
-								Loop.INSTANCE.getGuiHandler().goalWheelRotation=block.rotation.index;
-								return;
-							}
+				if(callback.block!=-1){
+					Block block = Loop.INSTANCE.getVoxelWorld().getBlock(callback.block);
+					BlockIcon icon;
+					for(int i = 0; i<10; i++){
+						icon=Loop.INSTANCE.getGuiHandler().getIconManager().getIcon(i);
+						if(icon==null)continue;
+						if(icon.block.block.shape==block.shape&&icon.block.block.originalCubeTextures==block.originalCubeTextures){
+							Loop.INSTANCE.getGuiHandler().updateHotbarSelector(i);
+							Loop.INSTANCE.getGuiHandler().goalWheelRotation=block.rotation.index;
+							return;
 						}
-						for(int i = 0; i<10; i++){
-							icon=Loop.INSTANCE.getGuiHandler().getIconManager().getIcon(i);
-							if(icon==null){
-								Loop.INSTANCE.getGuiHandler().addIcon(i, new BlockIcon(block.shape, block.textures, block.rotation));
-								Loop.INSTANCE.getGuiHandler().updateHotbarSelector(i);
-								Loop.INSTANCE.getGuiHandler().goalWheelRotation=block.rotation.index;
-								return;
-							}
-						}
-						Loop.INSTANCE.getGuiHandler().addIcon(Loop.INSTANCE.getGuiHandler().getHotbarSelectorId(), Loop.INSTANCE.getInventory().getBlockIcon(block.shape, block.textures));
-						Loop.INSTANCE.getGuiHandler().goalWheelRotation=block.rotation.index;
 					}
+					for(int i = 0; i<10; i++){
+						icon=Loop.INSTANCE.getGuiHandler().getIconManager().getIcon(i);
+						if(icon==null){
+							Loop.INSTANCE.getGuiHandler().addIcon(i, new BlockIcon(block.shape, block.originalCubeTextures, block.rotation));
+							Loop.INSTANCE.getGuiHandler().updateHotbarSelector(i);
+							Loop.INSTANCE.getGuiHandler().goalWheelRotation=block.rotation.index;
+							return;
+						}
+					}
+					Loop.INSTANCE.getGuiHandler().addIcon(Loop.INSTANCE.getGuiHandler().getHotbarSelectorId(), Loop.INSTANCE.getInventory().getBlockIcon(block.shape, block.originalCubeTextures));
+					Loop.INSTANCE.getGuiHandler().goalWheelRotation=block.rotation.index;
 				}
 			}
 		}
@@ -88,30 +86,43 @@ public class UserBlockHandler{
 		blockRotation=Loop.INSTANCE.getGuiHandler().getSelectedRotation();
 		if(shape==null)return;
 		callback=cameraTarget.getTargetBlock(Loop.INSTANCE.getVoxelWorld(), 500, false);
-		if(callback.block!=null){
+		if(callback.block!=-1){
+			short index = Loop.INSTANCE.getVoxelWorld().indexOfBlock(shape, cubeTextures, blockRotation);
 			if(callback.side==0){
-				if(callback.block.chunk.world.getBlock(callback.block.x+1, callback.block.y, callback.block.z, false)==null&&!collidesWithCamera(callback.block.x+1, callback.block.y, callback.block.z))callback.block.chunk.world.setBlock(callback.block.x+1, callback.block.y, callback.block.z, shape, cubeTextures, blockRotation);
+				if(Loop.INSTANCE.getVoxelWorld().getBlock(callback.x+1, callback.y, callback.z, false)==-1
+						&&!collidesWithCamera(callback.x+1, callback.y, callback.z))
+					Loop.INSTANCE.getVoxelWorld().setBlock(callback.x+1, callback.y, callback.z, index, true);
 			}
 			if(callback.side==1){
-				if(callback.block.chunk.world.getBlock(callback.block.x-1, callback.block.y, callback.block.z, false)==null&&!collidesWithCamera(callback.block.x-1, callback.block.y, callback.block.z))callback.block.chunk.world.setBlock(callback.block.x-1, callback.block.y, callback.block.z, shape, cubeTextures, blockRotation);
+				if(Loop.INSTANCE.getVoxelWorld().getBlock(callback.x-1, callback.y, callback.z, false)==-1
+						&&!collidesWithCamera(callback.x-1, callback.y, callback.z))
+					Loop.INSTANCE.getVoxelWorld().setBlock(callback.x-1, callback.y, callback.z, index, true);
 			}
 			if(callback.side==2){
-				if(callback.block.chunk.world.getBlock(callback.block.x, callback.block.y+1, callback.block.z, false)==null&&!collidesWithCamera(callback.block.x, callback.block.y+1, callback.block.z))callback.block.chunk.world.setBlock(callback.block.x, callback.block.y+1, callback.block.z, shape, cubeTextures, blockRotation);
+				if(Loop.INSTANCE.getVoxelWorld().getBlock(callback.x, callback.y+1, callback.z, false)==-1
+						&&!collidesWithCamera(callback.x, callback.y+1, callback.z))
+					Loop.INSTANCE.getVoxelWorld().setBlock(callback.x, callback.y+1, callback.z, index, true);
 			}
 			if(callback.side==3){
-				if(callback.block.chunk.world.getBlock(callback.block.x, callback.block.y-1, callback.block.z, false)==null&&!collidesWithCamera(callback.block.x, callback.block.y-1, callback.block.z))callback.block.chunk.world.setBlock(callback.block.x, callback.block.y-1, callback.block.z, shape, cubeTextures, blockRotation);
+				if(Loop.INSTANCE.getVoxelWorld().getBlock(callback.x, callback.y-1, callback.z, false)==-1
+						&&!collidesWithCamera(callback.x, callback.y-1, callback.z))
+					Loop.INSTANCE.getVoxelWorld().setBlock(callback.x, callback.y-1, callback.z, index, true);
 			}
 			if(callback.side==4){
-				if(callback.block.chunk.world.getBlock(callback.block.x, callback.block.y, callback.block.z+1, false)==null&&!collidesWithCamera(callback.block.x, callback.block.y, callback.block.z+1))callback.block.chunk.world.setBlock(callback.block.x, callback.block.y, callback.block.z+1, shape, cubeTextures, blockRotation);
+				if(Loop.INSTANCE.getVoxelWorld().getBlock(callback.x, callback.y, callback.z+1, false)==-1
+						&&!collidesWithCamera(callback.x, callback.y, callback.z+1))
+					Loop.INSTANCE.getVoxelWorld().setBlock(callback.x, callback.y, callback.z+1, index, true);
 			}
 			if(callback.side==5){
-				if(callback.block.chunk.world.getBlock(callback.block.x, callback.block.y, callback.block.z-1, false)==null&&!collidesWithCamera(callback.block.x, callback.block.y, callback.block.z-1))callback.block.chunk.world.setBlock(callback.block.x, callback.block.y, callback.block.z-1, shape, cubeTextures, blockRotation);
+				if(Loop.INSTANCE.getVoxelWorld().getBlock(callback.x, callback.y, callback.z-1, false)==-1
+						&&!collidesWithCamera(callback.x, callback.y, callback.z-1))
+					Loop.INSTANCE.getVoxelWorld().setBlock(callback.x, callback.y, callback.z-1, index, true);
 			}
 		}
 	}
 	private void deleteBlock(){
 		callback=cameraTarget.getTargetBlock(Loop.INSTANCE.getVoxelWorld(), 500, false);
-		if(callback.block!=null&&callback.block.y>0)callback.block.chunk.setBlock(callback.block.x, callback.block.y, callback.block.z, null, null, null);
+		if(callback.block!=-1&&callback.y>0)Loop.INSTANCE.getVoxelWorld().setBlock(callback.x, callback.y, callback.z, (short)-1, true);
 	}
 	public void update(double time){
 		if(time>lastButtonPing+CLICK_PING_RATE){
@@ -122,16 +133,6 @@ public class UserBlockHandler{
 			if(holdingRightButton){
 				lastButtonPing=time;
 				deleteBlock();
-			}
-		}
-		{
-			if(Loop.INSTANCE.getGuiHandler().getHotbarSelectorId()==9){
-				shape=Loop.INSTANCE.getGuiHandler().getSelectedShape();
-				cubeTextures=Loop.INSTANCE.getGuiHandler().getSelectedCubeTextures();
-				int x = (int)(Math.random()*128);
-				int y = (int)(Math.random()*128);
-				int z = (int)(Math.random()*128);
-				if(Loop.INSTANCE.getVoxelWorld().getBlock(x, y, z, false)==null)Loop.INSTANCE.getVoxelWorld().setBlock(x, y, z, shape, cubeTextures, BlockRotation.getRotation((int)(Math.random()*24)));
 			}
 		}
 	}

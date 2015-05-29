@@ -12,21 +12,25 @@ import org.lwjgl.opengl.GL14;
 
 public class Texture{
 	private int textureId;
-	private final String file;
+	public final String file;
 	private final String folder;
+	public final boolean transparent;
 	private static final int BYTES_PER_PIXEL = 4;
 	private static final ArrayList<Texture> textures = new ArrayList();
+	private static final boolean[] TRANSPARENT_RETURN = new boolean[1];
 	private Texture(String folder, File file, int mipmapLevel, MipmapQuality quality){
 		textureId=loadTexture(loadImage(file), mipmapLevel, quality);
 		textures.add(this);
 		this.file=file.getName();
 		this.folder=folder;
+		transparent=TRANSPARENT_RETURN[0];
 	}
 	public Texture(BufferedImage buf, int mipmapLevel, MipmapQuality quality){
 		textureId=loadTexture(buf, mipmapLevel, quality);
 		textures.add(this);
 		file="N/A";
 		folder="N/A";
+		transparent=TRANSPARENT_RETURN[0];
 	}
 	public void updatePixels(BufferedImage image){
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
@@ -43,13 +47,16 @@ public class Texture{
 		image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
 		ByteBuffer buffer = BufferUtils.createByteBuffer(image.getWidth()*image.getHeight()*BYTES_PER_PIXEL);
 		int x, y;
+		byte b;
+		TRANSPARENT_RETURN[0]=false;
 		for(y=0; y<image.getHeight(); y++){
 			for(x=0; x<image.getWidth(); x++){
 				int pixel = pixels[y*image.getWidth()+x];
 				buffer.put((byte)((pixel>>16)&0xFF));
 				buffer.put((byte)((pixel>>8)&0xFF));
 				buffer.put((byte)(pixel&0xFF));
-				buffer.put((byte)((pixel>>24)&0xFF));
+				buffer.put(b=(byte)((pixel>>24)&0xFF));
+				if(b!=-1)TRANSPARENT_RETURN[0]=true;
 			}
 		}
 		buffer.flip();

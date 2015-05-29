@@ -9,18 +9,17 @@ import wraithaven.conquest.client.GameWorld.LoopControls.MatrixUtils;
 import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorld;
 import wraithaven.conquest.client.GameWorld.Sphere;
 import wraithaven.conquest.client.GameWorld.BoundingBox;
-import wraithaven.conquest.client.GameWorld.Voxel.Block;
 import wraithaven.conquest.client.ClientLauncher;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class InputController{
 	private boolean w, a, s, d, shift, space, rotator;
+	public boolean wireframeMode, cullFace;
 	private int x, y, z;
 	private int bcx1, bcy1, bcz1, bcx2, bcy2, bcz2;
 	private float currentCamX, currentCamY, currentCamZ;
 	public float mouseSensitivity = 0.1f;
 	public float moveSpeed = 10.8f;
-	private Block block;
 	private final Sphere cameraSphere = new Sphere();
 	private final BoundingBox boundingBox = new BoundingBox();
 	private final IntBuffer screenWidth = BufferUtils.createIntBuffer(1);
@@ -43,7 +42,28 @@ public class InputController{
 			if(key==GLFW.GLFW_KEY_F5&&action==GLFW.GLFW_PRESS)Loop.INSTANCE.disposePalette();
 			return;
 		}
-		if(key==GLFW.GLFW_KEY_F12&&action==GLFW.GLFW_RELEASE)GLFW.glfwSetWindowShouldClose(window, GL11.GL_TRUE);
+		if(key==GLFW.GLFW_KEY_P&&action==GLFW.GLFW_PRESS){
+			if(wireframeMode){
+				GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+				if(cullFace){
+					GL11.glEnable(GL11.GL_CULL_FACE);
+					cullFace=true;
+				}
+			}else{
+				GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+				GL11.glDisable(GL11.GL_CULL_FACE);
+				cullFace=false;
+			}
+			wireframeMode=!wireframeMode;
+			return;
+		}
+		if(key==GLFW.GLFW_KEY_O&&action==GLFW.GLFW_PRESS){
+			if(!wireframeMode)return;
+			if(cullFace)GL11.glEnable(GL11.GL_CULL_FACE);
+			else GL11.glDisable(GL11.GL_CULL_FACE);
+			cullFace=!cullFace;
+			return;
+		}
 		if(key==GLFW.GLFW_KEY_W){
 			if(action==GLFW.GLFW_PRESS)w=true;
 			else if(action==GLFW.GLFW_RELEASE)w=false;
@@ -95,8 +115,8 @@ public class InputController{
 		}
 	}
 	public void processMouse(double x, double y){
-		Loop.INSTANCE.getCamera().goalRY=Loop.INSTANCE.getCamera().ry+=(x-screenWidth.get(0))*mouseSensitivity;
-		Loop.INSTANCE.getCamera().goalRX=Loop.INSTANCE.getCamera().rx=(float)Math.max(Math.min(Loop.INSTANCE.getCamera().rx+(y-screenHeight.get(0))*mouseSensitivity, 90), -90);
+		Loop.INSTANCE.getCamera().ry=Loop.INSTANCE.getCamera().ry+=(x-screenWidth.get(0))*mouseSensitivity;
+		Loop.INSTANCE.getCamera().rx=(float)Math.max(Math.min(Loop.INSTANCE.getCamera().rx+(y-screenHeight.get(0))*mouseSensitivity, 90), -90);
 		glfwSetCursorPos(Loop.INSTANCE.getWindow(), screenWidth.get(0), screenHeight.get(0));
 	}
 	public void processWalk(VoxelWorld world, double delta){
@@ -104,16 +124,16 @@ public class InputController{
 		currentCamX=Loop.INSTANCE.getCamera().goalX;
 		currentCamY=Loop.INSTANCE.getCamera().goalY;
 		currentCamZ=Loop.INSTANCE.getCamera().goalZ;
-		if(w)currentCamX+=delta*(float)Math.sin(Math.toRadians(Loop.INSTANCE.getCamera().goalRY));
-		if(a)currentCamX+=delta*(float)Math.sin(Math.toRadians(Loop.INSTANCE.getCamera().goalRY-90));
-		if(s)currentCamX-=delta*(float)Math.sin(Math.toRadians(Loop.INSTANCE.getCamera().goalRY));
-		if(d)currentCamX+=delta*(float)Math.sin(Math.toRadians(Loop.INSTANCE.getCamera().goalRY+90));
+		if(w)currentCamX+=delta*(float)Math.sin(Math.toRadians(Loop.INSTANCE.getCamera().ry));
+		if(a)currentCamX+=delta*(float)Math.sin(Math.toRadians(Loop.INSTANCE.getCamera().ry-90));
+		if(s)currentCamX-=delta*(float)Math.sin(Math.toRadians(Loop.INSTANCE.getCamera().ry));
+		if(d)currentCamX+=delta*(float)Math.sin(Math.toRadians(Loop.INSTANCE.getCamera().ry+90));
 		if(canMoveTo(world, currentCamX, currentCamY, currentCamZ))Loop.INSTANCE.getCamera().goalX=currentCamX;
 		currentCamX=Loop.INSTANCE.getCamera().goalX;
-		if(w)currentCamZ-=delta*(float)Math.cos(Math.toRadians(Loop.INSTANCE.getCamera().goalRY));
-		if(a)currentCamZ-=delta*(float)Math.cos(Math.toRadians(Loop.INSTANCE.getCamera().goalRY-90));
-		if(s)currentCamZ+=delta*(float)Math.cos(Math.toRadians(Loop.INSTANCE.getCamera().goalRY));
-		if(d)currentCamZ-=delta*(float)Math.cos(Math.toRadians(Loop.INSTANCE.getCamera().goalRY+90));
+		if(w)currentCamZ-=delta*(float)Math.cos(Math.toRadians(Loop.INSTANCE.getCamera().ry));
+		if(a)currentCamZ-=delta*(float)Math.cos(Math.toRadians(Loop.INSTANCE.getCamera().ry-90));
+		if(s)currentCamZ+=delta*(float)Math.cos(Math.toRadians(Loop.INSTANCE.getCamera().ry));
+		if(d)currentCamZ-=delta*(float)Math.cos(Math.toRadians(Loop.INSTANCE.getCamera().ry+90));
 		if(canMoveTo(world, currentCamX, currentCamY, currentCamZ))Loop.INSTANCE.getCamera().goalZ=currentCamZ;
 		currentCamZ=Loop.INSTANCE.getCamera().goalZ;
 		if(shift)currentCamY-=delta;
@@ -154,14 +174,13 @@ public class InputController{
 		for(x=bcx1; x<=bcx2; x++){
 			for(y=bcy1; y<=bcy2; y++){
 				for(z=bcz1; z<=bcz2; z++){
-					block=world.getBlock(x, y, z, false);
-					if(block==null)continue;
-					boundingBox.x1=block.x;
-					boundingBox.y1=block.y;
-					boundingBox.z1=block.z;
-					boundingBox.x2=block.x+1;
-					boundingBox.y2=block.y+1;
-					boundingBox.z2=block.z+1;
+					if(world.getBlock(x, y, z, false)==-1)continue;
+					boundingBox.x1=x;
+					boundingBox.y1=y;
+					boundingBox.z1=z;
+					boundingBox.x2=x+1;
+					boundingBox.y2=y+1;
+					boundingBox.z2=z+1;
 					if(intersectsWith(boundingBox, cameraSphere))return false;
 				}
 			}

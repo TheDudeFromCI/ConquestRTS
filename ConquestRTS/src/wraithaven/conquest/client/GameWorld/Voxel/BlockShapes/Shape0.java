@@ -78,5 +78,4 @@ public class Shape0 extends BlockShape{
 	};
 	Shape0(){}
 	protected boolean[] getBlocks(){ return BLOCKS; }
-	protected boolean hasFullSide(int side){ return true; }
 }

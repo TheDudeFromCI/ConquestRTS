@@ -10,19 +10,20 @@ public class SelectedBlock{
 	private static final float OUTLINE_INTENSITY = 0.5f;
 	private static final float OUTLINE_BUFFER = 0.01f;
 	public void render(){
+		if(Loop.INSTANCE.getInputController().wireframeMode)return;
 		callback=cameraTarget.getTargetBlock(Loop.INSTANCE.getVoxelWorld(), 500, false);
-		if(callback.block!=null){
+		if(callback.block!=-1){
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 			GL11.glDisable(GL11.GL_CULL_FACE);
 			GL11.glColor4f(0, 0, 0, OUTLINE_INTENSITY);
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 			GL11.glBegin(GL11.GL_QUADS);
-			float sx = callback.block.x-OUTLINE_BUFFER;
-			float sy = callback.block.y-OUTLINE_BUFFER;
-			float sz = callback.block.z-OUTLINE_BUFFER;
-			float ex = callback.block.x+1+OUTLINE_BUFFER;
-			float ey = callback.block.y+1+OUTLINE_BUFFER;
-			float ez = callback.block.z+1+OUTLINE_BUFFER;
+			float sx = callback.x-OUTLINE_BUFFER;
+			float sy = callback.y-OUTLINE_BUFFER;
+			float sz = callback.z-OUTLINE_BUFFER;
+			float ex = callback.x+1+OUTLINE_BUFFER;
+			float ey = callback.y+1+OUTLINE_BUFFER;
+			float ez = callback.z+1+OUTLINE_BUFFER;
 			GL11.glVertex3f(sx, sy, sz);
 			GL11.glVertex3f(sx, sy, ez);
 			GL11.glVertex3f(ex, sy, ez);
