@@ -1,16 +1,16 @@
 package wraithaven.conquest.client.BuildingCreator;
 
 import org.lwjgl.opengl.GL11;
-import wraithaven.conquest.client.GameWorld.Voxel.Quad;
 import wraithaven.conquest.client.GameWorld.Voxel.Camera;
+import wraithaven.conquest.client.GameWorld.Voxel.Quad;
 import wraithaven.conquest.client.GameWorld.Voxel.QuadBatch;
 import wraithaven.conquest.client.GameWorld.Voxel.Texture;
 
 public class Skybox{
-	private final QuadBatch batch;
 	private static final float[] WHITE_COLORS = {1, 1, 1};
+	private final QuadBatch batch;
 	public Skybox(Texture texture){
-		batch=new QuadBatch(texture, 0, 0, 0);
+		batch = new QuadBatch(texture, 0, 0, 0);
 		batch.addQuad(new Quad(new float[12], WHITE_COLORS, new float[8], 0));
 		batch.addQuad(new Quad(new float[12], WHITE_COLORS, new float[8], 1));
 		batch.addQuad(new Quad(new float[12], WHITE_COLORS, new float[8], 2));

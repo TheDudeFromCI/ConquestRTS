@@ -4,11 +4,11 @@ import java.awt.Dimension;
 import javax.swing.JFrame;
 
 public class AdminPanel{
-	private final JFrame frame;
 	private final ChannelManager channelManager;
+	private final JFrame frame;
 	public AdminPanel(ChannelManager channelManager){
-		this.channelManager=channelManager;
-		frame=new JFrame();
+		this.channelManager = channelManager;
+		frame = new JFrame();
 		frame.setTitle("Wraithaven's Conquest (Server)");
 		frame.setSize(700, 500);
 		frame.setMinimumSize(new Dimension(400, 350));
@@ -16,5 +16,7 @@ public class AdminPanel{
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 	}
-	public ChannelManager getChannelManager(){ return channelManager; }
+	public ChannelManager getChannelManager(){
+		return channelManager;
+	}
 }

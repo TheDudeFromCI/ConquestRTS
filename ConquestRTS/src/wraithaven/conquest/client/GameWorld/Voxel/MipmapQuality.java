@@ -3,9 +3,12 @@ package wraithaven.conquest.client.GameWorld.Voxel;
 import org.lwjgl.opengl.GL11;
 
 public enum MipmapQuality{
-	LOW(GL11.GL_LINEAR_MIPMAP_NEAREST),
-	HIGH(GL11.GL_LINEAR_MIPMAP_LINEAR);
+	HIGH(GL11.GL_LINEAR_MIPMAP_LINEAR), LOW(GL11.GL_LINEAR_MIPMAP_NEAREST);
 	private final int q;
-	private MipmapQuality(int q){ this.q=q; }
-	public int getQuality(){ return q; }
+	private MipmapQuality(int q){
+		this.q = q;
+	}
+	public int getQuality(){
+		return q;
+	}
 }

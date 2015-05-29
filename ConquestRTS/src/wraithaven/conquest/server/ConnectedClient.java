@@ -9,8 +9,11 @@ public class ConnectedClient{
 	public final ClientInstance client;
 	public final PrintWriter out;
 	public ConnectedClient(ClientInstance client, PrintWriter out){
-		this.client=client;
-		this.out=out;
+		this.client = client;
+		this.out = out;
+	}
+	public void kick(){
+		ServerLauncher.server.kickClient(client);
 	}
 	public void kick(String msg){
 		KickMessagePacket packet = new KickMessagePacket();
@@ -18,6 +21,7 @@ public class ConnectedClient{
 		sendPacket(packet);
 		kick();
 	}
-	public void kick(){ ServerLauncher.server.kickClient(client); }
-	public void sendPacket(Packet packet){ out.println(packet.getPacketType().getHexId()+packet.compress()); }
+	public void sendPacket(Packet packet){
+		out.println(packet.getPacketType().getHexId()+packet.compress());
+	}
 }

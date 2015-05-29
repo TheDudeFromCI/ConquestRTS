@@ -8,14 +8,27 @@ public class Channel{
 	private final String name;
 	private final ArrayList<Player> players;
 	public Channel(boolean lobby, String name){
-		this.lobby=lobby;
-		this.name=name;
-		players=new ArrayList(lobby?16:4);
+		this.lobby = lobby;
+		this.name = name;
+		players = new ArrayList(lobby?16:4);
 	}
-	public void addPlayer(Player player){ players.add(player); }
-	public void removePlayer(Player player){ players.remove(player); }
-	public String getName(){ return name; }
-	public boolean isLobby(){ return lobby; }
-	public void sendChannelPacket(Packet packet){ for(Player player : players)player.sendPacket(packet); }
-	public ArrayList<Player> getPlayers(){ return players; }
+	public void addPlayer(Player player){
+		players.add(player);
+	}
+	public String getName(){
+		return name;
+	}
+	public ArrayList<Player> getPlayers(){
+		return players;
+	}
+	public boolean isLobby(){
+		return lobby;
+	}
+	public void removePlayer(Player player){
+		players.remove(player);
+	}
+	public void sendChannelPacket(Packet packet){
+		for(Player player : players)
+			player.sendPacket(packet);
+	}
 }

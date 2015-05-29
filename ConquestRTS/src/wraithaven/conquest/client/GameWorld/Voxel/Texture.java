@@ -11,56 +11,53 @@ import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL14;
 
 public class Texture{
-	private int textureId;
-	public final String file;
-	private final String folder;
-	public final boolean transparent;
 	private static final int BYTES_PER_PIXEL = 4;
 	private static final ArrayList<Texture> textures = new ArrayList();
 	private static final boolean[] TRANSPARENT_RETURN = new boolean[1];
-	private Texture(String folder, File file, int mipmapLevel, MipmapQuality quality){
-		textureId=loadTexture(loadImage(file), mipmapLevel, quality);
-		textures.add(this);
-		this.file=file.getName();
-		this.folder=folder;
-		transparent=TRANSPARENT_RETURN[0];
+	public static void disposeAll(){
+		for(int i = 0; i<textures.size(); i++)
+			textures.get(i).dispose();
+		textures.clear();
 	}
-	public Texture(BufferedImage buf, int mipmapLevel, MipmapQuality quality){
-		textureId=loadTexture(buf, mipmapLevel, quality);
-		textures.add(this);
-		file="N/A";
-		folder="N/A";
-		transparent=TRANSPARENT_RETURN[0];
-	}
-	public void updatePixels(BufferedImage image){
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
-		GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, image.getWidth(), image.getHeight(), GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, generatePixelBuffer(image));
-	}
-	public void dispose(){
-		GL11.glDeleteTextures(textureId);
-		textures.remove(this);
-	}
-	public void bind(){ GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId); }
-	public int getId(){ return textureId; }
 	private static ByteBuffer generatePixelBuffer(BufferedImage image){
 		int[] pixels = new int[image.getWidth()*image.getHeight()];
 		image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
 		ByteBuffer buffer = BufferUtils.createByteBuffer(image.getWidth()*image.getHeight()*BYTES_PER_PIXEL);
 		int x, y;
 		byte b;
-		TRANSPARENT_RETURN[0]=false;
-		for(y=0; y<image.getHeight(); y++){
-			for(x=0; x<image.getWidth(); x++){
+		TRANSPARENT_RETURN[0] = false;
+		for(y = 0; y<image.getHeight(); y++){
+			for(x = 0; x<image.getWidth(); x++){
 				int pixel = pixels[y*image.getWidth()+x];
 				buffer.put((byte)((pixel>>16)&0xFF));
 				buffer.put((byte)((pixel>>8)&0xFF));
 				buffer.put((byte)(pixel&0xFF));
-				buffer.put(b=(byte)((pixel>>24)&0xFF));
-				if(b!=-1)TRANSPARENT_RETURN[0]=true;
+				buffer.put(b = (byte)((pixel>>24)&0xFF));
+				if(b!=-1) TRANSPARENT_RETURN[0] = true;
 			}
 		}
 		buffer.flip();
 		return buffer;
+	}
+	public static int getLoadedTextures(){
+		return textures.size();
+	}
+	public static Texture getTexture(String folder, String file){
+		return getTexture(folder, file, 0, null);
+	}
+	public static Texture getTexture(String folder, String file, int mipmapping, MipmapQuality quality){
+		for(int i = 0; i<textures.size(); i++)
+			if(textures.get(i).file.equals(file)&&textures.get(i).folder.equals(folder)) return textures.get(i);
+		return new Texture(folder, new File(folder, file), mipmapping, quality);
+	}
+	private static BufferedImage loadImage(File file){
+		try{
+			return ImageIO.read(file);
+		}catch(Exception exception){
+			exception.printStackTrace();
+			System.exit(1);
+		}
+		return null;
 	}
 	private static int loadTexture(BufferedImage image, int mipmapLevel, MipmapQuality quality){
 		int textureID = GL11.glGenTextures();
@@ -79,22 +76,36 @@ public class Texture{
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, image.getWidth(), image.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, generatePixelBuffer(image));
 		return textureID;
 	}
-	private static BufferedImage loadImage(File file){
-		try{ return ImageIO.read(file);
-		}catch(Exception exception){
-			exception.printStackTrace();
-			System.exit(1);
-		}
-		return null;
+	public final String file;
+	private final String folder;
+	private int textureId;
+	public final boolean transparent;
+	public Texture(BufferedImage buf, int mipmapLevel, MipmapQuality quality){
+		textureId = loadTexture(buf, mipmapLevel, quality);
+		textures.add(this);
+		file = "N/A";
+		folder = "N/A";
+		transparent = TRANSPARENT_RETURN[0];
 	}
-	public static void disposeAll(){
-		for(int i = 0; i<textures.size(); i++)textures.get(i).dispose();
-		textures.clear();
+	private Texture(String folder, File file, int mipmapLevel, MipmapQuality quality){
+		textureId = loadTexture(loadImage(file), mipmapLevel, quality);
+		textures.add(this);
+		this.file = file.getName();
+		this.folder = folder;
+		transparent = TRANSPARENT_RETURN[0];
 	}
-	public static Texture getTexture(String folder, String file, int mipmapping, MipmapQuality quality){
-		for(int i = 0; i<textures.size(); i++)if(textures.get(i).file.equals(file)&&textures.get(i).folder.equals(folder))return textures.get(i);
-		return new Texture(folder, new File(folder, file), mipmapping, quality);
+	public void bind(){
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
 	}
-	public static Texture getTexture(String folder, String file){ return getTexture(folder, file, 0, null); }
-	public static int getLoadedTextures(){ return textures.size(); }
+	public void dispose(){
+		GL11.glDeleteTextures(textureId);
+		textures.remove(this);
+	}
+	public int getId(){
+		return textureId;
+	}
+	public void updatePixels(BufferedImage image){
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
+		GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, image.getWidth(), image.getHeight(), GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, generatePixelBuffer(image));
+	}
 }

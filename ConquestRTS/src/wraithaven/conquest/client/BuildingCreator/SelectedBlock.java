@@ -1,17 +1,20 @@
 package wraithaven.conquest.client.BuildingCreator;
 
 import org.lwjgl.opengl.GL11;
-import wraithaven.conquest.client.GameWorld.Voxel.CameraTargetCallback;
 import wraithaven.conquest.client.GameWorld.Voxel.CameraTarget;
+import wraithaven.conquest.client.GameWorld.Voxel.CameraTargetCallback;
 
 public class SelectedBlock{
+	private static final float OUTLINE_BUFFER = 0.01f;
+	private static final float OUTLINE_INTENSITY = 0.5f;
 	private CameraTargetCallback callback;
 	private final CameraTarget cameraTarget;
-	private static final float OUTLINE_INTENSITY = 0.5f;
-	private static final float OUTLINE_BUFFER = 0.01f;
+	public SelectedBlock(){
+		cameraTarget = new CameraTarget(Loop.INSTANCE.getCamera());
+	}
 	public void render(){
-		if(Loop.INSTANCE.getInputController().wireframeMode)return;
-		callback=cameraTarget.getTargetBlock(Loop.INSTANCE.getVoxelWorld(), 500, false);
+		if(Loop.INSTANCE.getInputController().wireframeMode) return;
+		callback = cameraTarget.getTargetBlock(Loop.INSTANCE.getVoxelWorld(), 500, false);
 		if(callback.block!=-1){
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 			GL11.glDisable(GL11.GL_CULL_FACE);
@@ -54,5 +57,4 @@ public class SelectedBlock{
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 		}
 	}
-	public SelectedBlock(){ cameraTarget=new CameraTarget(Loop.INSTANCE.getCamera()); }
 }

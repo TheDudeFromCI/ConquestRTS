@@ -8,5 +8,7 @@ public class GuiFrame extends GuiPanel{
 		super(null, bufferWidth, bufferHeight);
 		setSizeAndLocation(0, 0, bufferWidth, bufferHeight);
 	}
-	@Override public Point getOffset(){ return offset; }
+	@Override public Point getOffset(){
+		return offset;
+	}
 }

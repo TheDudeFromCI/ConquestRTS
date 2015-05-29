@@ -12,17 +12,24 @@ public class GameDataFolder{
 			JOptionPane.showMessageDialog(null, "Game assets not found.");
 			System.exit(1);
 		}
-		this.dataFolder=dataFolder;
+		this.dataFolder = dataFolder;
+	}
+	public File getFile(String name){
+		return new File(dataFolder, name);
+	}
+	public BufferedImage getIcon(){
+		return getImage("Icon.png");
 	}
 	public BufferedImage getImage(String name){
-		try{ return ImageIO.read(getFile(name));
+		try{
+			return ImageIO.read(getFile(name));
 		}catch(Exception exception){
 			exception.printStackTrace();
 			System.exit(1);
 		}
 		return null;
 	}
-	public File getFile(String name){ return new File(dataFolder, name); }
-	public BufferedImage getIcon(){ return getImage("Icon.png"); }
-	public BufferedImage getImageWindow(){ return getImage("Image Window.png"); }
+	public BufferedImage getImageWindow(){
+		return getImage("Image Window.png");
+	}
 }

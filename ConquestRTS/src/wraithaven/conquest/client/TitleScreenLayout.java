@@ -5,15 +5,22 @@ import wraithaven.conquest.client.GameWorld.WindowUtil.GuiComponent;
 import wraithaven.conquest.client.GameWorld.WindowUtil.GuiLayout;
 
 public class TitleScreenLayout implements GuiLayout{
-	private int tempX, tempY, tempWidth, tempHeight;
+	private int tempX,
+			tempY,
+			tempWidth,
+			tempHeight;
+	private int getX(int id, float halfWidth){
+		double w = tempWidth/6.0;
+		return (int)(w*(id+0.5)+w/2-halfWidth)+tempX;
+	}
 	public void setParentDimensions(int x, int y, int width, int height){
-		tempX=x;
-		tempY=y;
-		tempWidth=width;
-		tempHeight=height;
+		tempX = x;
+		tempY = y;
+		tempWidth = width;
+		tempHeight = height;
 	}
 	public void validateComponents(ArrayList<GuiComponent> components){
-		if(components.isEmpty())return;
+		if(components.isEmpty()) return;
 		int y1 = (int)(tempHeight*0.72)+tempY;
 		int y2 = (int)(tempHeight*0.87)+tempY;
 		components.get(0).setSizeAndLocation(tempX, tempY, tempWidth, tempHeight);
@@ -27,9 +34,5 @@ public class TitleScreenLayout implements GuiLayout{
 		components.get(8).setSizeAndLocation(getX(2, 47), y2, 94, 34);
 		components.get(9).setSizeAndLocation(getX(3, 47.5f), y2, 95, 34);
 		components.get(10).setSizeAndLocation(getX(4, 60.5f), y2, 121, 34);
-	}
-	private int getX(int id, float halfWidth){
-		double w = tempWidth/6.0;
-		return (int)(w*(id+0.5)+w/2-halfWidth)+tempX;
 	}
 }

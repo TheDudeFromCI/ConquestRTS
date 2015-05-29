@@ -7,11 +7,13 @@ public class GuiButton extends GuiImage{
 	private Runnable onClick;
 	public GuiButton(GuiContainer parent, BufferedImage buf, boolean stretch, Runnable onClick){
 		super(parent, buf, stretch);
-		this.onClick=onClick;
+		this.onClick = onClick;
 	}
 	@Override public void dispose(){
 		super.dispose();
-		onClick=null;
+		onClick = null;
 	}
-	@Override public void mouseReleased(MouseEvent e){ if(isWithinBounds(e.getPoint()))onClick.run(); }
+	@Override public void mouseReleased(MouseEvent e){
+		if(isWithinBounds(e.getPoint())) onClick.run();
+	}
 }

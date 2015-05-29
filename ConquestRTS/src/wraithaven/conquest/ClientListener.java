@@ -1,10 +1,10 @@
 package wraithaven.conquest;
 
 public interface ClientListener{
-	public void unknownHost();
+	public void connectedToServer();
 	public void couldNotConnect();
+	public void disconnected();
 	public void recivedInput(String msg);
 	public void serverClosed();
-	public void disconnected();
-	public void connectedToServer();
+	public void unknownHost();
 }

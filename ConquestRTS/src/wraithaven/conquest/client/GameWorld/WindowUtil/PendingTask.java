@@ -3,9 +3,13 @@ package wraithaven.conquest.client.GameWorld.WindowUtil;
 public abstract class PendingTask implements GameThreadTask{
 	private int tickDelay;
 	public PendingTask(GameThread gameThread, int delay){
-		tickDelay=delay;
+		tickDelay = delay;
 		gameThread.addGameThreadTask(this);
 	}
+	public int getRemainingTicks(){
+		return tickDelay;
+	}
+	public abstract void run();
 	public boolean update(){
 		if(tickDelay==0){
 			run();
@@ -14,6 +18,4 @@ public abstract class PendingTask implements GameThreadTask{
 		tickDelay--;
 		return false;
 	}
-	public int getRemainingTicks(){ return tickDelay; }
-	public abstract void run();
 }

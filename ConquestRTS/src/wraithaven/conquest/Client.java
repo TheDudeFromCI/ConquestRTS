@@ -8,45 +8,65 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class Client{
-	private Socket socket;
-	private BufferedReader in;
-	private PrintWriter out;
 	private ClientListener clientListener;
+	private BufferedReader in;
 	private boolean open = true;
+	private PrintWriter out;
+	private Socket socket;
 	public Client(String ip, int port, ClientListener listener){
-		clientListener=listener;
+		clientListener = listener;
 		try{
-			socket=new Socket(ip, port);
-			in=new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			out=new PrintWriter(socket.getOutputStream(), true);
+			socket = new Socket(ip, port);
+			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			out = new PrintWriter(socket.getOutputStream(), true);
 			Thread clientThread = new Thread(new Runnable(){
 				public void run(){
 					while(open){
 						try{
 							String s = in.readLine();
 							if(s==null){
-								open=false;
+								open = false;
 								clientListener.disconnected();
-								try{ if(socket!=null)socket.close();
-								}catch(Exception exception){ exception.printStackTrace(); }
-								try{ if(in!=null)in.close();
-								}catch(Exception exception){ exception.printStackTrace(); }
-								try{ if(out!=null)out.close();
-								}catch(Exception exception){ exception.printStackTrace(); }
+								try{
+									if(socket!=null) socket.close();
+								}catch(Exception exception){
+									exception.printStackTrace();
+								}
+								try{
+									if(in!=null) in.close();
+								}catch(Exception exception){
+									exception.printStackTrace();
+								}
+								try{
+									if(out!=null) out.close();
+								}catch(Exception exception){
+									exception.printStackTrace();
+								}
 								return;
 							}
 							clientListener.recivedInput(s);
 						}catch(IOException exception){
-							open=false;
+							open = false;
 							clientListener.serverClosed();
-							try{ socket.close();
-							}catch(Exception exception1){ exception.printStackTrace(); }
-							try{ in.close();
-							}catch(Exception exception1){ exception.printStackTrace(); }
-							try{ out.close();
-							}catch(Exception exception1){ exception.printStackTrace(); }
+							try{
+								socket.close();
+							}catch(Exception exception1){
+								exception.printStackTrace();
+							}
+							try{
+								in.close();
+							}catch(Exception exception1){
+								exception.printStackTrace();
+							}
+							try{
+								out.close();
+							}catch(Exception exception1){
+								exception.printStackTrace();
+							}
 							return;
-						}catch(Exception exception){ exception.printStackTrace(); }
+						}catch(Exception exception){
+							exception.printStackTrace();
+						}
 					}
 				}
 			});
@@ -55,31 +75,37 @@ public class Client{
 			clientThread.start();
 			listener.connectedToServer();
 		}catch(UnknownHostException exception){
-			open=false;
+			open = false;
 			listener.unknownHost();
 		}catch(IOException exception){
-			open=false;
+			open = false;
 			listener.couldNotConnect();
 		}catch(Exception exception){
-			open=false;
+			open = false;
 			exception.printStackTrace();
 		}
 	}
 	public void dispose(){
 		try{
 			if(open){
-				open=false;
+				open = false;
 				socket.close();
 				in.close();
 				out.close();
 				clientListener.disconnected();
 			}
-			socket=null;
-			in=null;
-			out=null;
-			clientListener=null;
-		}catch(Exception exception){ exception.printStackTrace();}
+			socket = null;
+			in = null;
+			out = null;
+			clientListener = null;
+		}catch(Exception exception){
+			exception.printStackTrace();
+		}
 	}
-	public void send(String msg){ if(open)out.println(msg); }
-	public boolean isConnected(){ return open; }
+	public boolean isConnected(){
+		return open;
+	}
+	public void send(String msg){
+		if(open) out.println(msg);
+	}
 }

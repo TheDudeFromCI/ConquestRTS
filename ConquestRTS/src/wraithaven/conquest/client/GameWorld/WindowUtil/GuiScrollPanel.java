@@ -9,16 +9,47 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 public class GuiScrollPanel extends GuiComponent{
+	private final ArrayList<ScrollPaneEntry> entries = new ArrayList();
+	private int entryHeight;
+	private Graphics2D graphics;
 	private int scrollPosition;
 	private BufferedImage totalScreen;
-	private Graphics2D graphics;
-	private int entryHeight;
-	private final ArrayList<ScrollPaneEntry> entries = new ArrayList();
 	public GuiScrollPanel(GuiContainer parent, int bufferWidth, int bufferHeight, int entryHeight){
 		super(parent, bufferWidth, bufferHeight);
-		this.entryHeight=entryHeight;
+		this.entryHeight = entryHeight;
 	}
-	public void render(Graphics2D g){
+	public void addScrollPanelEntry(ScrollPaneEntry entry){
+		entries.add(entry);
+		setNeedsRepaint();
+	}
+	public int getIndexOfEntry(ScrollPaneEntry entry){
+		return entries.indexOf(entry);
+	}
+	public int getListSize(){
+		return entries.size();
+	}
+	public ScrollPaneEntry getScrollPaneEntry(int index){
+		return entries.get(index);
+	}
+	@Override public void mouseReleased(MouseEvent e){
+		Point p = e.getPoint();
+		if(!isWithinBounds(p)) return;
+		Point off = getOffset();
+		if(off!=null) p.y -= off.y;
+		p.y -= y;
+		p.y += scrollPosition;
+		int index = p.y/entryHeight;
+		if(index>=entries.size()) return;
+		entries.get(index).onEntryClick();
+	}
+	@Override public void mouseWheelMoved(MouseWheelEvent e){
+		int move = e.getUnitsToScroll();
+		scrollPosition += move;
+		if(scrollPosition<0) scrollPosition = 0;
+		if(scrollPosition>totalScreen.getHeight()-bufferHeight) scrollPosition = Math.max(totalScreen.getHeight()-bufferHeight, 0);
+		setNeedsRepaint();
+	}
+	@Override public void render(Graphics2D g){
 		renderScreen();
 		if(totalScreen.getHeight()<bufferHeight){
 			g.setColor(Color.white);
@@ -30,35 +61,11 @@ public class GuiScrollPanel extends GuiComponent{
 	private void renderScreen(){
 		int intenedSize = Math.max(entries.size()*entryHeight, 1);
 		if(totalScreen==null||totalScreen.getHeight()!=intenedSize){
-			if(graphics!=null)graphics.dispose();
-			totalScreen=ImageUtil.getBestFormat(bufferWidth, intenedSize);
-			graphics=totalScreen.createGraphics();
+			if(graphics!=null) graphics.dispose();
+			totalScreen = ImageUtil.getBestFormat(bufferWidth, intenedSize);
+			graphics = totalScreen.createGraphics();
 		}
-		for(int i = 0; i<entries.size(); i++)entries.get(i).renderEntry(graphics, 0, i*entryHeight, totalScreen.getWidth()-1, entryHeight-1);
+		for(int i = 0; i<entries.size(); i++)
+			entries.get(i).renderEntry(graphics, 0, i*entryHeight, totalScreen.getWidth()-1, entryHeight-1);
 	}
-	@Override public void mouseWheelMoved(MouseWheelEvent e){
-		int move = e.getUnitsToScroll();
-		scrollPosition+=move;
-		if(scrollPosition<0)scrollPosition=0;
-		if(scrollPosition>totalScreen.getHeight()-bufferHeight)scrollPosition=Math.max(totalScreen.getHeight()-bufferHeight, 0);
-		setNeedsRepaint();
-	}
-	@Override public void mouseReleased(MouseEvent e){
-		Point p = e.getPoint();
-		if(!isWithinBounds(p))return;
-		Point off = getOffset();
-		if(off!=null)p.y-=off.y;
-		p.y-=y;
-		p.y+=scrollPosition;
-		int index = p.y/entryHeight;
-		if(index>=entries.size())return;
-		entries.get(index).onEntryClick();
-	}
-	public void addScrollPanelEntry(ScrollPaneEntry entry){
-		entries.add(entry);
-		setNeedsRepaint();
-	}
-	public ScrollPaneEntry getScrollPaneEntry(int index){ return entries.get(index); }
-	public int getIndexOfEntry(ScrollPaneEntry entry){ return entries.indexOf(entry); }
-	public int getListSize(){ return entries.size(); }
 }
