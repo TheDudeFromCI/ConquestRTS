@@ -119,7 +119,7 @@ public class LogInSplash implements SplashScreenProtocol{
 		splash.setIconImage(icon);
 		splash.fadeIn(FADE_TICKS, FADE_DELAY);
 	}
-	@SuppressWarnings("unused")private boolean authinticate(String username, String password){
+	@SuppressWarnings("unused")private static boolean authinticate(String username, String password){
 		//TODO Ping account server for stuff.
 		return true;
 	}

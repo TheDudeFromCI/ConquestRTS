@@ -26,13 +26,6 @@ public class Frustum{
 		modelBuffer=BufferUtils.createFloatBuffer(16);
 		projectionBuffer=BufferUtils.createFloatBuffer(16);
 	}
-	private void normalizePlane(float[][] frustum, int side){
-		float magnitude = (float)Math.sqrt(frustum[side][A]*frustum[side][A]+frustum[side][B]*frustum[side][B]+frustum[side][C]*frustum[side][C]);
-		frustum[side][A]/=magnitude;
-		frustum[side][B]/=magnitude;
-		frustum[side][C]/=magnitude;
-		frustum[side][D]/=magnitude;
-	}
 	public void calculateFrustum(){
 		projectionMatrix=new float[16];
 		modelMatrix=new float[16];
@@ -105,5 +98,12 @@ public class Frustum{
 			return false;
 		}
 		return true;
+	}
+	private static void normalizePlane(float[][] frustum, int side){
+		float magnitude = (float)Math.sqrt(frustum[side][A]*frustum[side][A]+frustum[side][B]*frustum[side][B]+frustum[side][C]*frustum[side][C]);
+		frustum[side][A]/=magnitude;
+		frustum[side][B]/=magnitude;
+		frustum[side][C]/=magnitude;
+		frustum[side][D]/=magnitude;
 	}
 }
