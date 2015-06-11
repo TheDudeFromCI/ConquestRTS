@@ -28,12 +28,12 @@ public class ChunklessBlock{
 		rebuild();
 	}
 	private void countTextures(int i, int side){
-		PROPS_TEMP_STORAGE.clear();
+		ChunklessBlock.PROPS_TEMP_STORAGE.clear();
 		int x, y, z;
 		BlockSideProperties props;
 		if(side==0||side==1){
 			x = i;
-			for(y = 0; y<1; y++){
+			for(y = 0; y<1; y++)
 				for(z = 0; z<1; z++){
 					props = new BlockSideProperties();
 					props.texture = block.textures.getTexture(side);
@@ -42,13 +42,12 @@ public class ChunklessBlock{
 					props.r = block.textures.colors[side*3];
 					props.g = block.textures.colors[side*3+1];
 					props.b = block.textures.colors[side*3+2];
-					if(!PROPS_TEMP_STORAGE.contains(props)) PROPS_TEMP_STORAGE.add(props);
+					if(!ChunklessBlock.PROPS_TEMP_STORAGE.contains(props)) ChunklessBlock.PROPS_TEMP_STORAGE.add(props);
 				}
-			}
 		}
 		if(side==2||side==3){
 			y = i;
-			for(x = 0; x<1; x++){
+			for(x = 0; x<1; x++)
 				for(z = 0; z<1; z++){
 					props = new BlockSideProperties();
 					props.texture = block.textures.getTexture(side);
@@ -57,13 +56,12 @@ public class ChunklessBlock{
 					props.r = block.textures.colors[side*3];
 					props.g = block.textures.colors[side*3+1];
 					props.b = block.textures.colors[side*3+2];
-					if(!PROPS_TEMP_STORAGE.contains(props)) PROPS_TEMP_STORAGE.add(props);
+					if(!ChunklessBlock.PROPS_TEMP_STORAGE.contains(props)) ChunklessBlock.PROPS_TEMP_STORAGE.add(props);
 				}
-			}
 		}
 		if(side==4||side==5){
 			z = i;
-			for(x = 0; x<1; x++){
+			for(x = 0; x<1; x++)
 				for(y = 0; y<1; y++){
 					props = new BlockSideProperties();
 					props.texture = block.textures.getTexture(side);
@@ -72,9 +70,8 @@ public class ChunklessBlock{
 					props.r = block.textures.colors[side*3];
 					props.g = block.textures.colors[side*3+1];
 					props.b = block.textures.colors[side*3+2];
-					if(!PROPS_TEMP_STORAGE.contains(props)) PROPS_TEMP_STORAGE.add(props);
+					if(!ChunklessBlock.PROPS_TEMP_STORAGE.contains(props)) ChunklessBlock.PROPS_TEMP_STORAGE.add(props);
 				}
-			}
 		}
 	}
 	private boolean getSmallBlock(int x, int y, int z, BlockSideProperties props){
@@ -94,30 +91,30 @@ public class ChunklessBlock{
 		int y, z, q;
 		for(y = 0; y<8; y++)
 			for(z = 0; z<8; z++)
-				TEMP_QUADS[y][z] = getSmallBlock(x, y, z, props)&&!hasSmallNeighbor(x, y, z, side);
-		if((q = QuadOptimizer.optimize(TEMP_STORAGE, TEMP_STORAGE_2, TEMP_QUADS, 8, 8))>0){
-			QUAD_COUNTER_X.setup(0, 0, 0, x, side, batch, props.rotation, props.r, props.g, props.b);
-			QuadOptimizer.countQuads(QUAD_COUNTER_X, TEMP_STORAGE, 8, 8, q);
+				ChunklessBlock.TEMP_QUADS[y][z] = getSmallBlock(x, y, z, props)&&!hasSmallNeighbor(x, y, z, side);
+		if((q = QuadOptimizer.optimize(ChunklessBlock.TEMP_STORAGE, ChunklessBlock.TEMP_STORAGE_2, ChunklessBlock.TEMP_QUADS, 8, 8))>0){
+			ChunklessBlock.QUAD_COUNTER_X.setup(0, 0, 0, x, side, batch, props.rotation, props.r, props.g, props.b);
+			QuadOptimizer.countQuads(ChunklessBlock.QUAD_COUNTER_X, ChunklessBlock.TEMP_STORAGE, 8, 8, q);
 		}
 	}
 	private void optimizeSideY(int y, int side, QuadBatch batch, BlockSideProperties props){
 		int x, z, q;
 		for(x = 0; x<8; x++)
 			for(z = 0; z<8; z++)
-				TEMP_QUADS[x][z] = getSmallBlock(x, y, z, props)&&!hasSmallNeighbor(x, y, z, side);
-		if((q = QuadOptimizer.optimize(TEMP_STORAGE, TEMP_STORAGE_2, TEMP_QUADS, 8, 8))>0){
-			QUAD_COUNTER_Y.setup(0, 0, 0, y, side, batch, props.rotation, props.r, props.g, props.b);
-			QuadOptimizer.countQuads(QUAD_COUNTER_Y, TEMP_STORAGE, 8, 8, q);
+				ChunklessBlock.TEMP_QUADS[x][z] = getSmallBlock(x, y, z, props)&&!hasSmallNeighbor(x, y, z, side);
+		if((q = QuadOptimizer.optimize(ChunklessBlock.TEMP_STORAGE, ChunklessBlock.TEMP_STORAGE_2, ChunklessBlock.TEMP_QUADS, 8, 8))>0){
+			ChunklessBlock.QUAD_COUNTER_Y.setup(0, 0, 0, y, side, batch, props.rotation, props.r, props.g, props.b);
+			QuadOptimizer.countQuads(ChunklessBlock.QUAD_COUNTER_Y, ChunklessBlock.TEMP_STORAGE, 8, 8, q);
 		}
 	}
 	private void optimizeSideZ(int z, int side, QuadBatch batch, BlockSideProperties props){
 		int y, x, q;
 		for(x = 0; x<8; x++)
 			for(y = 0; y<8; y++)
-				TEMP_QUADS[x][y] = getSmallBlock(x, y, z, props)&&!hasSmallNeighbor(x, y, z, side);
-		if((q = QuadOptimizer.optimize(TEMP_STORAGE, TEMP_STORAGE_2, TEMP_QUADS, 8, 8))>0){
-			QUAD_COUNTER_Z.setup(0, 0, 0, z, side, batch, props.rotation, props.r, props.g, props.b);
-			QuadOptimizer.countQuads(QUAD_COUNTER_Z, TEMP_STORAGE, 8, 8, q);
+				ChunklessBlock.TEMP_QUADS[x][y] = getSmallBlock(x, y, z, props)&&!hasSmallNeighbor(x, y, z, side);
+		if((q = QuadOptimizer.optimize(ChunklessBlock.TEMP_STORAGE, ChunklessBlock.TEMP_STORAGE_2, ChunklessBlock.TEMP_QUADS, 8, 8))>0){
+			ChunklessBlock.QUAD_COUNTER_Z.setup(0, 0, 0, z, side, batch, props.rotation, props.r, props.g, props.b);
+			QuadOptimizer.countQuads(ChunklessBlock.QUAD_COUNTER_Z, ChunklessBlock.TEMP_STORAGE, 8, 8, q);
 		}
 	}
 	public void rebuild(){
@@ -126,16 +123,16 @@ public class ChunklessBlock{
 		for(j = 0; j<6; j++){
 			for(i = 0; i<1; i++){
 				countTextures(i, j);
-				for(l = 0; l<PROPS_TEMP_STORAGE.size(); l++){
-					batch = holder.getBatch(PROPS_TEMP_STORAGE.get(l).texture);
+				for(l = 0; l<ChunklessBlock.PROPS_TEMP_STORAGE.size(); l++){
+					batch = holder.getBatch(ChunklessBlock.PROPS_TEMP_STORAGE.get(l).texture);
 					for(k = 0; k<8; k++){
-						if(j==0||j==1) optimizeSideX(i*8+k, j, batch, PROPS_TEMP_STORAGE.get(l));
-						if(j==2||j==3) optimizeSideY(i*8+k, j, batch, PROPS_TEMP_STORAGE.get(l));
-						if(j==4||j==5) optimizeSideZ(i*8+k, j, batch, PROPS_TEMP_STORAGE.get(l));
+						if(j==0||j==1) optimizeSideX(i*8+k, j, batch, ChunklessBlock.PROPS_TEMP_STORAGE.get(l));
+						if(j==2||j==3) optimizeSideY(i*8+k, j, batch, ChunklessBlock.PROPS_TEMP_STORAGE.get(l));
+						if(j==4||j==5) optimizeSideZ(i*8+k, j, batch, ChunklessBlock.PROPS_TEMP_STORAGE.get(l));
 					}
 				}
 			}
 		}
-		PROPS_TEMP_STORAGE.clear();
+		ChunklessBlock.PROPS_TEMP_STORAGE.clear();
 	}
 }

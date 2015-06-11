@@ -3,22 +3,14 @@ package wraithaven.conquest.client.GameWorld;
 import wraithaven.conquest.client.GameWorld.LoopControls.VoxelWorldListener;
 import wraithaven.conquest.client.GameWorld.Voxel.Camera;
 import wraithaven.conquest.client.GameWorld.Voxel.CameraTarget;
-import wraithaven.conquest.client.GameWorld.Voxel.CameraTargetCallback;
 import wraithaven.conquest.client.GameWorld.Voxel.Chunk;
 import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorld;
 
 @SuppressWarnings("unused") public class CatcheChunkLoader implements VoxelWorldListener{
-	// private final ArrayList<VoxelChunkQue> que = new ArrayList();
-	private static final int CATCHE_RANGE = 10;
-	private static final int CATCHE_RANGE_SQUARED = CATCHE_RANGE*CATCHE_RANGE;
 	static final int WORLD_HEIGHT = 15;
-	static final int CHUNK_HEIGHT = WORLD_HEIGHT>>Chunk.CHUNK_BITS;
-	private static double getDistanceSquared(int x1, int y1, int z1, int x2, int y2, int z2){ return Math.pow(x1-x2, 2)+Math.pow(y1-y2, 2)+Math.pow(z1-z2, 2); }
-	private CameraTargetCallback callback;
+	static final int CHUNK_HEIGHT = CatcheChunkLoader.WORLD_HEIGHT>>Chunk.CHUNK_BITS;
 	private Camera cam;
 	private CameraTarget cameraTarget;
-	private int camX, camY, camZ;
-	private VoxelWorld world;
 	public boolean isChunkVisible(Chunk chunk){
 		return !chunk.isHidden()&&cam.frustum.cubeInFrustum(chunk.startX, chunk.startY, chunk.startZ, Chunk.BLOCKS_PER_CHUNK);
 	}
@@ -26,7 +18,6 @@ import wraithaven.conquest.client.GameWorld.Voxel.VoxelWorld;
 		// que.add(new VoxelChunkQue(world, chunk));
 	}
 	public void setup(VoxelWorld world, Camera cam){
-		this.world = world;
 		this.cam = cam;
 		cameraTarget = new CameraTarget(cam);
 	}

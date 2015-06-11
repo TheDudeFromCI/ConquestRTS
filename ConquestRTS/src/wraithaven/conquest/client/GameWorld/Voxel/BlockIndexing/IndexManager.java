@@ -7,6 +7,7 @@ import wraithaven.conquest.client.GameWorld.Voxel.BlockShape;
 import wraithaven.conquest.client.GameWorld.Voxel.CubeTextures;
 
 public class IndexManager{
+	public static final short AIR_BLOCK = -1;
 	private final ArrayList<Block> blocks = new ArrayList();
 	public void addBlock(Block block){
 		blocks.add(block);
@@ -25,5 +26,8 @@ public class IndexManager{
 		Block block = new Block(shape, textures, rot);
 		blocks.add(block);
 		return (short)(blocks.size()-1);
+	}
+	public void clear(){
+		blocks.clear();
 	}
 }

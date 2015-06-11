@@ -8,15 +8,15 @@ public class QuadOptimizer{
 	private static final ArrayList<Integer> used = new ArrayList();
 	public static void countQuads(QuadCounter counter, int[][] storage, int width, int height, int quadCount){
 		int x, y, w, h, o;
-		if(quadCount>quadReferences.length) quadReferences = new boolean[quadCount];
-		else for(o = 0; o<quadReferences.length; o++)
-			quadReferences[o] = false;
+		if(quadCount>QuadOptimizer.quadReferences.length) QuadOptimizer.quadReferences = new boolean[quadCount];
+		else for(o = 0; o<QuadOptimizer.quadReferences.length; o++)
+			QuadOptimizer.quadReferences[o] = false;
 		for(x = 0; x<width; x++){
 			for(y = 0; y<height; y++){
 				if(storage[x][y]==-1) continue;
-				if(quadReferences[storage[x][y]]) continue;
+				if(QuadOptimizer.quadReferences[storage[x][y]]) continue;
 				o = storage[x][y];
-				quadReferences[o] = true;
+				QuadOptimizer.quadReferences[o] = true;
 				for(w = x; w<width; w++)
 					if(storage[w][y]!=o) break;
 				for(h = y; h<height; h++)
@@ -32,9 +32,9 @@ public class QuadOptimizer{
 		for(x = 0; x<width; x++)
 			for(y = 0; y<height; y++)
 				temp[x][y] = storage[x][y];
-		int xS = optimizeXStrong(storage, quads, width, height);
-		int yS = optimizeYStrong(temp, quads, width, height);
-		used.clear();
+		int xS = QuadOptimizer.optimizeXStrong(storage, quads, width, height);
+		int yS = QuadOptimizer.optimizeYStrong(temp, quads, width, height);
+		QuadOptimizer.used.clear();
 		if(xS<=yS) return xS;
 		for(x = 0; x<width; x++)
 			for(y = 0; y<height; y++)
@@ -96,11 +96,11 @@ public class QuadOptimizer{
 		}
 		for(x = 0; x<width; x++)
 			for(y = 0; y<height; y++)
-				if(storage[x][y]>-1&&!used.contains(storage[x][y])) used.add(storage[x][y]);
+				if(storage[x][y]>-1&&!QuadOptimizer.used.contains(storage[x][y])) QuadOptimizer.used.add(storage[x][y]);
 		for(x = 0; x<width; x++)
 			for(y = 0; y<height; y++)
-				if(storage[x][y]>-1) storage[x][y] = used.indexOf(storage[x][y]);
-		return used.size();
+				if(storage[x][y]>-1) storage[x][y] = QuadOptimizer.used.indexOf(storage[x][y]);
+		return QuadOptimizer.used.size();
 	}
 	private static int optimizeYStrong(int[][] storage, boolean[][] quads, int width, int height){
 		int x, y, t, q;
@@ -159,10 +159,10 @@ public class QuadOptimizer{
 		}
 		for(x = 0; x<width; x++)
 			for(y = 0; y<height; y++)
-				if(storage[x][y]>-1&&!used.contains(storage[x][y])) used.add(storage[x][y]);
+				if(storage[x][y]>-1&&!QuadOptimizer.used.contains(storage[x][y])) QuadOptimizer.used.add(storage[x][y]);
 		for(x = 0; x<width; x++)
 			for(y = 0; y<height; y++)
-				if(storage[x][y]>-1) storage[x][y] = used.indexOf(storage[x][y]);
-		return used.size();
+				if(storage[x][y]>-1) storage[x][y] = QuadOptimizer.used.indexOf(storage[x][y]);
+		return QuadOptimizer.used.size();
 	}
 }

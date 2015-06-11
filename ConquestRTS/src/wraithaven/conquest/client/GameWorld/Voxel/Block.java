@@ -10,15 +10,15 @@ public class Block{
 		this.shape = shape;
 		this.rotation = rotation;
 		originalCubeTextures = textures;
-		if(rotation==BlockRotation.ROTATION_0) this.textures = textures;
+		if(rotation==BlockRotation.ROTATION_0)this.textures = textures;
 		else{
 			this.textures = new CubeTextures();
-			rotation.rotateTextures(textures, tempRotations);
+			rotation.rotateTextures(textures, Block.tempRotations);
 			int j, s;
 			for(j = 0; j<6; j++){
 				s = rotation.rotateSide(j);
 				this.textures.setColor(j, textures.colors[s*3], textures.colors[s*3+1], textures.colors[s*3+2]);
-				this.textures.setTexture(j, textures.getTexture(s), tempRotations[j]);
+				this.textures.setTexture(j, textures.getTexture(s), Block.tempRotations[j]);
 			}
 		}
 	}

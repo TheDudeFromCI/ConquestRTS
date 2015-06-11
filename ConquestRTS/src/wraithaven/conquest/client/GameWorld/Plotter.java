@@ -80,7 +80,7 @@ public class Plotter implements Plot<Vec3i>{
 		dir.set(direction);
 		dir.normalize();
 		delta.set(size);
-		div(delta, dir);
+		Plotter.div(delta, dir);
 		sign.x = (dir.x>0)?1:(dir.x<0?-1:0);
 		sign.y = (dir.y>0)?1:(dir.y<0?-1:0);
 		sign.z = (dir.z>0)?1:(dir.z<0?-1:0);
@@ -103,7 +103,7 @@ public class Plotter implements Plot<Vec3i>{
 		max.x = (sign.x>0)?ax+size.x-pos.x:pos.x-ax;
 		max.y = (sign.y>0)?ay+size.y-pos.y:pos.y-ay;
 		max.z = (sign.z>0)?az+size.z-pos.z:pos.z-az;
-		div(max, dir);
+		Plotter.div(max, dir);
 	}
 	public Vec3i sign(){
 		return sign;

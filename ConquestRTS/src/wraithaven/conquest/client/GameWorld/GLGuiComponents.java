@@ -1,12 +1,8 @@
 package wraithaven.conquest.client.GameWorld;
 
-import static org.lwjgl.opengl.GL11.GL_QUADS;
-import static org.lwjgl.opengl.GL11.glBegin;
-import static org.lwjgl.opengl.GL11.glEnd;
-import static org.lwjgl.opengl.GL11.glTexCoord2f;
-import static org.lwjgl.opengl.GL11.glVertex3f;
 import java.awt.Dimension;
 import java.util.ArrayList;
+import org.lwjgl.opengl.GL11;
 import wraithaven.conquest.client.GameWorld.LoopControls.MatrixUtils;
 
 public class GLGuiComponents{
@@ -33,16 +29,16 @@ public class GLGuiComponents{
 		for(int i = 0; i<images.size(); i++){
 			img = images.get(i);
 			img.texture.bind();
-			glBegin(GL_QUADS);
-			glTexCoord2f(0, 1);
-			glVertex3f(img.x, img.y, img.z);
-			glTexCoord2f(1, 1);
-			glVertex3f(img.x+img.w, img.y, img.z);
-			glTexCoord2f(1, 0);
-			glVertex3f(img.x+img.w, img.y+img.h, img.z);
-			glTexCoord2f(0, 0);
-			glVertex3f(img.x, img.y+img.h, img.z);
-			glEnd();
+			GL11.glBegin(GL11.GL_QUADS);
+			GL11.glTexCoord2f(0, 1);
+			GL11.glVertex3f(img.x, img.y, img.z);
+			GL11.glTexCoord2f(1, 1);
+			GL11.glVertex3f(img.x+img.w, img.y, img.z);
+			GL11.glTexCoord2f(1, 0);
+			GL11.glVertex3f(img.x+img.w, img.y+img.h, img.z);
+			GL11.glTexCoord2f(0, 0);
+			GL11.glVertex3f(img.x, img.y+img.h, img.z);
+			GL11.glEnd();
 		}
 	}
 }

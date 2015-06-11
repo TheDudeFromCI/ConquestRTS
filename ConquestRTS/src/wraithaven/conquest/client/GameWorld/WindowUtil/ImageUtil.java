@@ -23,7 +23,7 @@ public class ImageUtil{
 		}
 	}
 	public static BufferedImage scaleImage(BufferedImage img, float scale){
-		BufferedImage newBuf = getBestFormat((int)(img.getWidth()*scale), (int)(img.getHeight()*scale));
+		BufferedImage newBuf = ImageUtil.getBestFormat((int)(img.getWidth()*scale), (int)(img.getHeight()*scale));
 		Graphics2D g = newBuf.createGraphics();
 		g.drawImage(img, 0, 0, newBuf.getWidth(), newBuf.getHeight(), null);
 		g.dispose();
@@ -43,9 +43,9 @@ public class ImageUtil{
 		BufferedImage[][] bufs = new BufferedImage[scales][];
 		int i, j;
 		for(i = 0; i<scales; i++){
-			bufs[i] = splitImage(img, rows, cols);
+			bufs[i] = ImageUtil.splitImage(img, rows, cols);
 			if(i>0) for(j = 0; j<bufs[i].length; j++)
-				bufs[i][j] = scaleImage(bufs[i][j], (float)Math.pow(2, -i));
+				bufs[i][j] = ImageUtil.scaleImage(bufs[i][j], (float)Math.pow(2, -i));
 		}
 		return bufs;
 	}

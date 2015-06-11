@@ -1,10 +1,5 @@
 package wraithaven.conquest.client.BuildingCreator;
 
-import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
-import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_HIDDEN;
-import static org.lwjgl.glfw.GLFW.glfwGetWindowSize;
-import static org.lwjgl.glfw.GLFW.glfwSetCursorPos;
-import static org.lwjgl.glfw.GLFW.glfwSetInputMode;
 import java.io.File;
 import java.nio.IntBuffer;
 import org.lwjgl.BufferUtils;
@@ -28,39 +23,23 @@ public class InputController{
 		else if(sphere.z>bb.z2) dmin += Math.pow(sphere.z-bb.z2, 2);
 		return dmin<=Math.pow(sphere.r, 2);
 	}
-	private int bcx1,
-			bcy1,
-			bcz1,
-			bcx2,
-			bcy2,
-			bcz2;
+	private int bcx1, bcy1, bcz1, bcx2, bcy2, bcz2;
 	private final BoundingBox boundingBox = new BoundingBox();
 	private final Sphere cameraSphere = new Sphere();
-	private float currentCamX,
-			currentCamY,
-			currentCamZ;
+	private float currentCamX, currentCamY, currentCamZ;
 	public float mouseSensitivity = 0.1f;
 	public float moveSpeed = 10.8f;
 	private final IntBuffer screenHeight = BufferUtils.createIntBuffer(1);
 	private final IntBuffer screenWidth = BufferUtils.createIntBuffer(1);
-	private boolean w,
-			a,
-			s,
-			d,
-			shift,
-			space,
-			rotator;
-	public boolean wireframeMode,
-			cullFace;
-	private int x,
-			y,
-			z;
+	private boolean w, a, s, d, shift, space, rotator;
+	public boolean wireframeMode, cullFace;
+	private int x, y, z;
 	public InputController(){
-		glfwSetInputMode(Loop.INSTANCE.getWindow(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-		glfwGetWindowSize(Loop.INSTANCE.getWindow(), screenWidth, screenHeight);
+		GLFW.glfwSetInputMode(Loop.INSTANCE.getWindow(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
+		GLFW.glfwGetWindowSize(Loop.INSTANCE.getWindow(), screenWidth, screenHeight);
 		screenWidth.put(0, screenWidth.get(0)/2);
 		screenHeight.put(0, screenHeight.get(0)/2);
-		cameraSphere.r = CAMERA_RADIUS;
+		cameraSphere.r = InputController.CAMERA_RADIUS;
 	}
 	private boolean canMoveTo(VoxelWorld world, float sx, float sy, float sz){
 		if(sx<0||sy<0||sz<0||sx>=BuildingCreator.WORLD_BOUNDS_SIZE||sz>=BuildingCreator.WORLD_BOUNDS_SIZE||sz>=BuildingCreator.WORLD_BOUNDS_SIZE) return false;
@@ -76,14 +55,14 @@ public class InputController{
 		for(x = bcx1; x<=bcx2; x++){
 			for(y = bcy1; y<=bcy2; y++){
 				for(z = bcz1; z<=bcz2; z++){
-					if(world.getBlock(x, y, z, false)==-1) continue;
+					if(world.getBlock(x, y, z, false)==-1)continue;
 					boundingBox.x1 = x;
 					boundingBox.y1 = y;
 					boundingBox.z1 = z;
 					boundingBox.x2 = x+1;
 					boundingBox.y2 = y+1;
 					boundingBox.z2 = z+1;
-					if(intersectsWith(boundingBox, cameraSphere)) return false;
+					if(InputController.intersectsWith(boundingBox, cameraSphere))return false;
 				}
 			}
 		}
@@ -93,7 +72,7 @@ public class InputController{
 		yPos = Math.round(yPos);
 		if(yPos>0){
 			for(int i = 0; i<yPos; i++){
-				if(rotator) Loop.INSTANCE.getGuiHandler().goalWheelRotation--;
+				if(rotator)Loop.INSTANCE.getGuiHandler().goalWheelRotation--;
 				else{
 					if(Loop.INSTANCE.getGuiHandler().getHotbarSelectorId()<10) Loop.INSTANCE.getGuiHandler().updateHotbarSelector((Loop.INSTANCE.getGuiHandler().getHotbarSelectorId()-1+10)%10);
 					else Loop.INSTANCE.getGuiHandler().updateHotbarSelector((Loop.INSTANCE.getGuiHandler().getHotbarSelectorId()%10-1+10)%10+10);
@@ -101,7 +80,7 @@ public class InputController{
 			}
 		}else{
 			for(int i = 0; i>yPos; i--){
-				if(rotator) Loop.INSTANCE.getGuiHandler().goalWheelRotation++;
+				if(rotator)Loop.INSTANCE.getGuiHandler().goalWheelRotation++;
 				else{
 					if(Loop.INSTANCE.getGuiHandler().getHotbarSelectorId()<10) Loop.INSTANCE.getGuiHandler().updateHotbarSelector((Loop.INSTANCE.getGuiHandler().getHotbarSelectorId()+1)%10);
 					else Loop.INSTANCE.getGuiHandler().updateHotbarSelector((Loop.INSTANCE.getGuiHandler().getHotbarSelectorId()%10+1)%10+10);
@@ -109,14 +88,18 @@ public class InputController{
 			}
 		}
 	}
-	public void onKey(long window, int key, int action){
-		if(key==GLFW.GLFW_KEY_F12&&action==GLFW.GLFW_RELEASE) GLFW.glfwSetWindowShouldClose(window, GL11.GL_TRUE);
+	public void onKey(int key, int action){
 		if(key==GLFW.GLFW_KEY_F1){
-			if(action==GLFW.GLFW_PRESS) MatrixUtils.takeScreenShot(new File(ClientLauncher.screenShotFolder, System.currentTimeMillis()+".png"), Loop.INSTANCE.getBuildingCreator().getInit().width, Loop.INSTANCE.getBuildingCreator().getInit().height);
+			if(action==GLFW.GLFW_PRESS)MatrixUtils.takeScreenShot(new File(ClientLauncher.screenShotFolder, System.currentTimeMillis()+".png"), Loop.INSTANCE.getBuildingCreator().getInit().width, Loop.INSTANCE.getBuildingCreator().getInit().height);
 			return;
 		}
+		if(key==GLFW.GLFW_KEY_ESCAPE&&action==GLFW.GLFW_PRESS){
+			if(!Loop.INSTANCE.hasPalette())Loop.INSTANCE.getGuiHandler().togglePauseMenu();
+			return;
+		}
+		if(Loop.INSTANCE.getGuiHandler().isPaused())return;
 		if(Loop.INSTANCE.hasPalette()){
-			if(key==GLFW.GLFW_KEY_F5&&action==GLFW.GLFW_PRESS) Loop.INSTANCE.disposePalette();
+			if(key==GLFW.GLFW_KEY_F5&&action==GLFW.GLFW_PRESS)Loop.INSTANCE.disposePalette();
 			return;
 		}
 		if(key==GLFW.GLFW_KEY_P&&action==GLFW.GLFW_PRESS){
@@ -194,7 +177,7 @@ public class InputController{
 	public void processMouse(double x, double y){
 		Loop.INSTANCE.getCamera().ry = Loop.INSTANCE.getCamera().ry += (x-screenWidth.get(0))*mouseSensitivity;
 		Loop.INSTANCE.getCamera().rx = (float)Math.max(Math.min(Loop.INSTANCE.getCamera().rx+(y-screenHeight.get(0))*mouseSensitivity, 90), -90);
-		glfwSetCursorPos(Loop.INSTANCE.getWindow(), screenWidth.get(0), screenHeight.get(0));
+		GLFW.glfwSetCursorPos(Loop.INSTANCE.getWindow(), screenWidth.get(0), screenHeight.get(0));
 	}
 	public void processWalk(VoxelWorld world, double delta){
 		delta *= moveSpeed;

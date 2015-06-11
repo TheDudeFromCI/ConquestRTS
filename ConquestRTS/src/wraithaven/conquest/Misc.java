@@ -5,7 +5,7 @@ import java.awt.image.BufferedImage;
 public class Misc{
 	public static String compressImageToText(BufferedImage img, char seperator){
 		StringBuilder sb = new StringBuilder();
-		compressImageToText(img, sb, seperator);
+		Misc.compressImageToText(img, sb, seperator);
 		return sb.toString();
 	}
 	public static void compressImageToText(BufferedImage img, StringBuilder sb, char seperator){

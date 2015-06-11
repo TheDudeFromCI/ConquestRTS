@@ -9,7 +9,7 @@ public class Vector4f extends Vector{
 		return dest;
 	}
 	public static float angle(Vector4f a, Vector4f b){
-		float dls = dot(a, b)/(a.length()*b.length());
+		float dls = Vector4f.dot(a, b)/(a.length()*b.length());
 		if(dls<-1f) dls = -1f;
 		else if(dls>1.0f) dls = 1.0f;
 		return (float)Math.acos(dls);

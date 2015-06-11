@@ -5,10 +5,10 @@ import wraithaven.conquest.client.ClientLauncher;
 public class CubeTextures implements Cloneable{
 	public static CubeTextures decrypt(String s){
 		CubeTextures t = new CubeTextures();
-		String[] parts = s.split("D");
-		String[] colorParts = parts[0].split("C");
-		String[] textureParts = parts[1].split("C");
-		String[] rotationParts = parts[2].split("C");
+		String[] parts = s.split("\"");
+		String[] colorParts = parts[0].split("'");
+		String[] textureParts = parts[1].split("'");
+		String[] rotationParts = parts[2].split("'");
 		t.colors[0] = Float.valueOf(colorParts[0]);
 		t.colors[1] = Float.valueOf(colorParts[1]);
 		t.colors[2] = Float.valueOf(colorParts[2]);
@@ -29,49 +29,39 @@ public class CubeTextures implements Cloneable{
 	public static String encrypt(CubeTextures t){
 		StringBuilder s = new StringBuilder();
 		s.append(t.colors[0]);
-		s.append('C');
+		s.append('\'');
 		s.append(t.colors[1]);
-		s.append('C');
+		s.append('\'');
 		s.append(t.colors[2]);
-		s.append('D');
+		s.append('\"');
 		s.append(t.xUp.file);
-		s.append('C');
+		s.append('\'');
 		s.append(t.xDown.file);
-		s.append('C');
+		s.append('\'');
 		s.append(t.yUp.file);
-		s.append('C');
+		s.append('\'');
 		s.append(t.yDown.file);
-		s.append('C');
+		s.append('\'');
 		s.append(t.zUp.file);
-		s.append('C');
+		s.append('\'');
 		s.append(t.zDown.file);
-		s.append('D');
+		s.append('\"');
 		s.append(t.xUpRotation);
-		s.append('C');
+		s.append('\'');
 		s.append(t.xDownRotation);
-		s.append('C');
+		s.append('\'');
 		s.append(t.yUpRotation);
-		s.append('C');
+		s.append('\'');
 		s.append(t.yDownRotation);
-		s.append('C');
+		s.append('\'');
 		s.append(t.zUpRotation);
-		s.append('C');
+		s.append('\'');
 		s.append(t.zDownRotation);
 		return s.toString();
 	}
 	public float[] colors = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-	public Texture xUp,
-			xDown,
-			yUp,
-			yDown,
-			zUp,
-			zDown;
-	public int xUpRotation,
-			xDownRotation,
-			yUpRotation,
-			yDownRotation,
-			zUpRotation,
-			zDownRotation;
+	public Texture xUp, xDown, yUp, yDown, zUp, zDown;
+	public int xUpRotation, xDownRotation, yUpRotation, yDownRotation, zUpRotation, zDownRotation;
 	public CubeTextures duplicate(){
 		CubeTextures c = new CubeTextures();
 		c.xUp = xUp;
@@ -91,21 +81,21 @@ public class CubeTextures implements Cloneable{
 		return c;
 	}
 	public int getRotation(int side){
-		if(side==0) return xUpRotation;
-		if(side==1) return xDownRotation;
-		if(side==2) return yUpRotation;
-		if(side==3) return yDownRotation;
-		if(side==4) return zUpRotation;
-		if(side==5) return zDownRotation;
+		if(side==0)return xUpRotation;
+		if(side==1)return xDownRotation;
+		if(side==2)return yUpRotation;
+		if(side==3)return yDownRotation;
+		if(side==4)return zUpRotation;
+		if(side==5)return zDownRotation;
 		return 0;
 	}
 	public Texture getTexture(int side){
-		if(side==0) return xUp;
-		if(side==1) return xDown;
-		if(side==2) return yUp;
-		if(side==3) return yDown;
-		if(side==4) return zUp;
-		if(side==5) return zDown;
+		if(side==0)return xUp;
+		if(side==1)return xDown;
+		if(side==2)return yUp;
+		if(side==3)return yDown;
+		if(side==4)return zUp;
+		if(side==5)return zDown;
 		return null;
 	}
 	public void set(CubeTextures textures){

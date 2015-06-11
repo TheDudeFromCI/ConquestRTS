@@ -26,7 +26,7 @@ public class NoiseGenerator{
 		this.seed = seed;
 		this.smoothness = smoothness;
 		this.detail = detail+1;
-		maxHeight = findMaxHeight(this.detail);
+		maxHeight = NoiseGenerator.findMaxHeight(this.detail);
 		function = new CosineInterpolation();
 	}
 	private float compress(float[] v, float[] fracs, int stage){
@@ -45,7 +45,7 @@ public class NoiseGenerator{
 		int i, j;
 		for(i = 0; i<x.length; i++){
 			a = x[i]/smoothness*pow;
-			reals[i] = floor(a);
+			reals[i] = NoiseGenerator.floor(a);
 			fracs[i] = a-reals[i];
 		}
 		for(i = 0; i<v.length; i++){

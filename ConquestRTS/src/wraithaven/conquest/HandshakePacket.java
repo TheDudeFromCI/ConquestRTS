@@ -4,10 +4,10 @@ public class HandshakePacket implements Packet{
 	private static final String MESSAGE = "Wraithaven's Conquest; Handshake";
 	private boolean correctFormat;
 	public String compress(){
-		return MESSAGE;
+		return HandshakePacket.MESSAGE;
 	}
 	public void decode(String s){
-		correctFormat = s.equals(MESSAGE);
+		correctFormat = s.equals(HandshakePacket.MESSAGE);
 	}
 	public PacketType getPacketType(){
 		return PacketType.handshake;

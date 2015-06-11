@@ -69,18 +69,18 @@ public class SplashScreen extends ImageWindow{
 				g.clearRect(0, 0, getWidth(), getHeight());
 				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fade));
 				g.drawImage(img, 0, 0, this);
-				g.drawImage(isPlayButtonDown?playButtonDown:playButtonUp, PLAY_BUTTON_X, BUTTON_Y, null);
-				g.drawImage(isSignUpButtonDown?signUpButtonDown:signUpButtonUp, SIGN_UP_BUTTON_X, BUTTON_Y, null);
+				g.drawImage(isPlayButtonDown?playButtonDown:playButtonUp, SplashScreen.PLAY_BUTTON_X, SplashScreen.BUTTON_Y, null);
+				g.drawImage(isSignUpButtonDown?signUpButtonDown:signUpButtonUp, SplashScreen.SIGN_UP_BUTTON_X, SplashScreen.BUTTON_Y, null);
 				g.setColor(Color.black);
 				FontMetrics fm = g.getFontMetrics();
-				int ver = centerTextVertically(fm);
+				int ver = SplashScreen.centerTextVertically(fm);
 				if(username!=null){
-					g.drawString(username, TEXT_X_POSITION, LogInSplash.TEXT_BOX_1_Y+ver);
-					if(showCarret==1&&carretTick) g.drawString(usernameCarretCharacter, TEXT_X_POSITION+fm.stringWidth(usernameCarret), LogInSplash.TEXT_BOX_1_Y+ver);
+					g.drawString(username, SplashScreen.TEXT_X_POSITION, LogInSplash.TEXT_BOX_1_Y+ver);
+					if(showCarret==1&&carretTick) g.drawString(usernameCarretCharacter, SplashScreen.TEXT_X_POSITION+fm.stringWidth(usernameCarret), LogInSplash.TEXT_BOX_1_Y+ver);
 				}
 				if(password!=null){
-					g.drawString(password, TEXT_X_POSITION, LogInSplash.TEXT_BOX_2_Y+ver);
-					if(showCarret==2&&carretTick) g.drawString(passwordCarretCharacter, TEXT_X_POSITION+fm.stringWidth(passwordCarret), LogInSplash.TEXT_BOX_2_Y+ver);
+					g.drawString(password, SplashScreen.TEXT_X_POSITION, LogInSplash.TEXT_BOX_2_Y+ver);
+					if(showCarret==2&&carretTick) g.drawString(passwordCarretCharacter, SplashScreen.TEXT_X_POSITION+fm.stringWidth(passwordCarret), LogInSplash.TEXT_BOX_2_Y+ver);
 				}
 				g.dispose();
 			}

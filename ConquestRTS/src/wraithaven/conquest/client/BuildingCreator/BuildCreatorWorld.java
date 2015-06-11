@@ -20,7 +20,7 @@ public class BuildCreatorWorld implements VoxelWorldListener{
 		textures.yDown = grass;
 		textures.zUp = grass;
 		textures.zDown = grass;
-		index = Loop.INSTANCE.getVoxelWorld().indexOfBlock(ShapeType.SHAPE_0.shape, textures, BlockRotation.ROTATION_0);
+		BuildCreatorWorld.index = Loop.INSTANCE.getVoxelWorld().indexOfBlock(ShapeType.SHAPE_0.shape, textures, BlockRotation.ROTATION_0);
 	}
 	public boolean isChunkVisible(Chunk chunk){
 		return !chunk.isHidden()&&Loop.INSTANCE.getCamera().frustum.cubeInFrustum(chunk.startX, chunk.startY, chunk.startZ, Chunk.BLOCKS_PER_CHUNK);
@@ -30,7 +30,7 @@ public class BuildCreatorWorld implements VoxelWorldListener{
 			int x, z;
 			for(x = chunk.startX; x<=chunk.endX; x++)
 				for(z = chunk.startZ; z<=chunk.endZ; z++)
-					chunk.setBlock(x, 0, z, index);
+					chunk.setBlock(x, 0, z, BuildCreatorWorld.index);
 		}
 	}
 	public void unloadChunk(Chunk chunk){}

@@ -21,35 +21,35 @@ public class MatrixUtils{
 		result[2] = v1[0]*v2[1]-v1[1]*v2[0];
 	}
 	public static void lookAt(float eyex, float eyey, float eyez, float centerx, float centery, float centerz, float upx, float upy, float upz){
-		float[] forward = FORWARD;
-		float[] side = SIDE;
-		float[] up = UP;
+		float[] forward = MatrixUtils.FORWARD;
+		float[] side = MatrixUtils.SIDE;
+		float[] up = MatrixUtils.UP;
 		forward[0] = centerx-eyex;
 		forward[1] = centery-eyey;
 		forward[2] = centerz-eyez;
 		up[0] = upx;
 		up[1] = upy;
 		up[2] = upz;
-		normalize(forward);
-		cross(forward, up, side);
-		normalize(side);
-		cross(side, forward, up);
-		makeIdentity(matrix);
-		matrix.put(0, side[0]);
-		matrix.put(4, side[1]);
-		matrix.put(8, side[2]);
-		matrix.put(1, up[0]);
-		matrix.put(5, up[1]);
-		matrix.put(9, up[2]);
-		matrix.put(2, -forward[0]);
-		matrix.put(6, -forward[1]);
-		matrix.put(10, -forward[2]);
-		GL11.glMultMatrix(matrix);
+		MatrixUtils.normalize(forward);
+		MatrixUtils.cross(forward, up, side);
+		MatrixUtils.normalize(side);
+		MatrixUtils.cross(side, forward, up);
+		MatrixUtils.makeIdentity(MatrixUtils.matrix);
+		MatrixUtils.matrix.put(0, side[0]);
+		MatrixUtils.matrix.put(4, side[1]);
+		MatrixUtils.matrix.put(8, side[2]);
+		MatrixUtils.matrix.put(1, up[0]);
+		MatrixUtils.matrix.put(5, up[1]);
+		MatrixUtils.matrix.put(9, up[2]);
+		MatrixUtils.matrix.put(2, -forward[0]);
+		MatrixUtils.matrix.put(6, -forward[1]);
+		MatrixUtils.matrix.put(10, -forward[2]);
+		GL11.glMultMatrix(MatrixUtils.matrix);
 		GL11.glTranslatef(-eyex, -eyey, -eyez);
 	}
 	private static void makeIdentity(FloatBuffer m){
 		int oldPos = m.position();
-		m.put(IDENTITY_MATRIX);
+		m.put(MatrixUtils.IDENTITY_MATRIX);
 		m.position(oldPos);
 	}
 	public static void matrixLookAt(Vec3f eye, Vec3f center, Vec3f up, float[] result){
@@ -108,14 +108,14 @@ public class MatrixUtils{
 		sine = (float)Math.sin(radians);
 		if(deltaZ==0||sine==0||aspect==0) return;
 		cotangent = (float)Math.cos(radians)/sine;
-		makeIdentity(matrix);
-		matrix.put(0, cotangent/aspect);
-		matrix.put(5, cotangent);
-		matrix.put(10, -(far+near)/deltaZ);
-		matrix.put(11, -1);
-		matrix.put(14, -2*near*far/deltaZ);
-		matrix.put(15, 0);
-		GL11.glMultMatrix(matrix);
+		MatrixUtils.makeIdentity(MatrixUtils.matrix);
+		MatrixUtils.matrix.put(0, cotangent/aspect);
+		MatrixUtils.matrix.put(5, cotangent);
+		MatrixUtils.matrix.put(10, -(far+near)/deltaZ);
+		MatrixUtils.matrix.put(11, -1);
+		MatrixUtils.matrix.put(14, -2*near*far/deltaZ);
+		MatrixUtils.matrix.put(15, 0);
+		GL11.glMultMatrix(MatrixUtils.matrix);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 	}
 	public static void takeScreenShot(File file, int displayWidth, int displayHeight){

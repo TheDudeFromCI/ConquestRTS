@@ -1,11 +1,6 @@
 package wraithaven.conquest.client.BuildingCreator;
 
-import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
-import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_MIDDLE;
-import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
-import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
-import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
-import static org.lwjgl.glfw.GLFW.glfwGetTime;
+import org.lwjgl.glfw.GLFW;
 import wraithaven.conquest.client.GameWorld.BoundingBox;
 import wraithaven.conquest.client.GameWorld.Sphere;
 import wraithaven.conquest.client.GameWorld.Voxel.Block;
@@ -51,27 +46,27 @@ public class UserBlockHandler{
 		cameraSphere.x = Loop.INSTANCE.getCamera().goalX;
 		cameraSphere.y = Loop.INSTANCE.getCamera().goalY;
 		cameraSphere.z = Loop.INSTANCE.getCamera().goalZ;
-		return intersectsWith(boundingBox, cameraSphere);
+		return UserBlockHandler.intersectsWith(boundingBox, cameraSphere);
 	}
 	private void deleteBlock(){
 		callback = cameraTarget.getTargetBlock(Loop.INSTANCE.getVoxelWorld(), 500, false);
 		if(callback.block!=-1&&callback.y>0) Loop.INSTANCE.getVoxelWorld().setBlock(callback.x, callback.y, callback.z, (short)-1, true);
 	}
 	public void mouseClick(int button, int action){
-		if(button==GLFW_MOUSE_BUTTON_LEFT){
-			if(action==GLFW_PRESS){
+		if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT){
+			if(action==GLFW.GLFW_PRESS){
 				holdingRightButton = true;
-				lastButtonPing = glfwGetTime();
+				lastButtonPing = GLFW.glfwGetTime();
 				deleteBlock();
-			}else if(action==GLFW_RELEASE) holdingRightButton = false;
-		}else if(button==GLFW_MOUSE_BUTTON_RIGHT){
-			if(action==GLFW_PRESS){
+			}else if(action==GLFW.GLFW_RELEASE) holdingRightButton = false;
+		}else if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT){
+			if(action==GLFW.GLFW_PRESS){
 				holdingLeftButton = true;
-				lastButtonPing = glfwGetTime();
+				lastButtonPing = GLFW.glfwGetTime();
 				placeBlock();
-			}else if(action==GLFW_RELEASE) holdingLeftButton = false;
-		}else if(button==GLFW_MOUSE_BUTTON_MIDDLE){
-			if(action==GLFW_PRESS){
+			}else if(action==GLFW.GLFW_RELEASE) holdingLeftButton = false;
+		}else if(button==GLFW.GLFW_MOUSE_BUTTON_MIDDLE){
+			if(action==GLFW.GLFW_PRESS){
 				callback = cameraTarget.getTargetBlock(Loop.INSTANCE.getVoxelWorld(), 500, false);
 				if(callback.block!=-1){
 					Block block = Loop.INSTANCE.getVoxelWorld().getBlock(callback.block);
@@ -129,7 +124,7 @@ public class UserBlockHandler{
 		}
 	}
 	public void update(double time){
-		if(time>lastButtonPing+CLICK_PING_RATE){
+		if(time>lastButtonPing+UserBlockHandler.CLICK_PING_RATE){
 			if(holdingLeftButton){
 				lastButtonPing = time;
 				placeBlock();

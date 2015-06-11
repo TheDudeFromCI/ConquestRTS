@@ -45,8 +45,8 @@ public class LogInSplash implements SplashScreenProtocol{
 	public void showSplash(){
 		splash = new SplashScreen(ClientLauncher.game.getFolder().getImage("Splash.png"), new SplashScreenListener(){
 			public void onFadedIn(){
-				username = new TypeListener(ALLOWED_CHARACTERS, null);
-				password = new TypeListener(ALLOWED_CHARACTERS, null);
+				username = new TypeListener(LogInSplash.ALLOWED_CHARACTERS, null);
+				password = new TypeListener(LogInSplash.ALLOWED_CHARACTERS, null);
 				username.setCharacterCap(15);
 				password.setCharacterCap(15);
 				splash.addKeyListener(keyListener = new KeyAdapter(){
@@ -78,12 +78,12 @@ public class LogInSplash implements SplashScreenProtocol{
 							signUpButton;
 					@Override public void mousePressed(MouseEvent e){
 						Point p = e.getPoint();
-						if(p.x>=TEXT_BOX_X&&p.x<TEXT_BOX_X+TEXT_BOX_WIDTH){
-							if(p.y>=TEXT_BOX_1_Y&&p.y<TEXT_BOX_1_Y+TEXT_BOX_HEIGHT){
+						if(p.x>=LogInSplash.TEXT_BOX_X&&p.x<LogInSplash.TEXT_BOX_X+LogInSplash.TEXT_BOX_WIDTH){
+							if(p.y>=LogInSplash.TEXT_BOX_1_Y&&p.y<LogInSplash.TEXT_BOX_1_Y+LogInSplash.TEXT_BOX_HEIGHT){
 								selectedBox = 1;
 								username.setInsert(false);
 								username.setCarretPosition(username.getLength());
-							}else if(p.y>=TEXT_BOX_2_Y&&p.y<TEXT_BOX_2_Y+TEXT_BOX_HEIGHT){
+							}else if(p.y>=LogInSplash.TEXT_BOX_2_Y&&p.y<LogInSplash.TEXT_BOX_2_Y+LogInSplash.TEXT_BOX_HEIGHT){
 								selectedBox = 2;
 								password.setInsert(false);
 								password.setCarretPosition(password.getLength());
@@ -104,10 +104,10 @@ public class LogInSplash implements SplashScreenProtocol{
 						if(playButton){
 							String username = LogInSplash.this.username.toString();
 							String password = LogInSplash.this.password.toString();
-							if(authinticate(username, password)){
+							if(LogInSplash.authinticate(username, password)){
 								splash.removeKeyListener(keyListener);
 								splash.removeMouseListener(mouseListener);
-								splash.fadeOut(FADE_TICKS, FADE_DELAY);
+								splash.fadeOut(LogInSplash.FADE_TICKS, LogInSplash.FADE_DELAY);
 							}else{
 								// TODO Yell at player.
 							}
@@ -132,6 +132,6 @@ public class LogInSplash implements SplashScreenProtocol{
 		});
 		splash.setTitle(title);
 		splash.setIconImage(icon);
-		splash.fadeIn(FADE_TICKS, FADE_DELAY);
+		splash.fadeIn(LogInSplash.FADE_TICKS, LogInSplash.FADE_DELAY);
 	}
 }

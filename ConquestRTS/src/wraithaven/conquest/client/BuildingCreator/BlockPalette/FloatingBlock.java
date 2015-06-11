@@ -31,7 +31,7 @@ public class FloatingBlock implements ChunklessBlockHolder{
 			batch = batches.get(i);
 			if(batch.getTexture()==texture) return batch;
 		}
-		batch = new QuadBatch(texture, 0, 0, 0);
+		batch = new QuadBatch(texture);
 		batches.add(batch);
 		return batch;
 	}
@@ -41,6 +41,7 @@ public class FloatingBlock implements ChunklessBlockHolder{
 	}
 	public void render(){
 		for(int i = 0; i<batches.size(); i++){
+			if(batches.get(i).getSize()==0) continue;
 			batches.get(i).getTexture().bind();
 			batches.get(i).renderPart();
 		}

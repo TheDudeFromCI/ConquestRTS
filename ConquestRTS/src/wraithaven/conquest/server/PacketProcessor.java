@@ -35,10 +35,10 @@ public class PacketProcessor implements ServerListener{
 				c.kick();
 				pendingClients.remove(c);
 			}else ServerLauncher.server.kickClient(client); // Running this
-															// method is a last
-															// resort, and may
-															// lead to possible
-															// errors.
+			// method is a last
+			// resort, and may
+			// lead to possible
+			// errors.
 			return;
 		}
 		if(packet.getPacketType()==PacketType.ping){

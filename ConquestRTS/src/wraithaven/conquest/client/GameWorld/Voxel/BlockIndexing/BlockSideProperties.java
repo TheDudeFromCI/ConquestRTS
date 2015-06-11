@@ -3,11 +3,8 @@ package wraithaven.conquest.client.GameWorld.Voxel.BlockIndexing;
 import wraithaven.conquest.client.GameWorld.Voxel.Texture;
 
 public class BlockSideProperties{
-	public float r,
-			g,
-			b;
-	public int rotation,
-			side;
+	public float r, g, b;
+	public int rotation, side;
 	public Texture texture;
 	@Override public boolean equals(Object o){
 		if(o instanceof BlockSideProperties){

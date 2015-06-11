@@ -1,37 +1,24 @@
 package wraithaven.conquest.client.GameWorld.Voxel;
 
-import static org.lwjgl.opengl.GL11.GL_FLOAT;
-import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
-import static org.lwjgl.opengl.GL11.glColorPointer;
-import static org.lwjgl.opengl.GL11.glDrawElements;
-import static org.lwjgl.opengl.GL11.glTexCoordPointer;
-import static org.lwjgl.opengl.GL11.glVertexPointer;
-import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.GL_DYNAMIC_DRAW;
-import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.glBindBuffer;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Comparator;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL15;
 import wraithaven.conquest.client.BuildingCreator.Loop;
 
 public class QuadBatch{
 	private static final int FLOAT_SIZE = 4;
-	private static final long ZERO = 0;
-	public final float centerX,
-			centerY,
-			centerZ;
 	private FloatBuffer colorBuffer;
 	private final int colorBufferId;
 	private int elementCount,
-			indexCount;
+	indexCount;
 	private int i;
+	public final float centerX,
+			centerY,
+			centerZ;
 	private IntBuffer indexBuffer;
 	private final int indexBufferId;
 	private final ArrayList<Quad> quads = new ArrayList();
@@ -51,15 +38,18 @@ public class QuadBatch{
 	public int triangleCount;
 	private FloatBuffer vertexBuffer;
 	private final int vertexBufferId;
+	public QuadBatch(Texture texture){
+		this(texture, 0, 0, 0);
+	}
 	public QuadBatch(Texture texture, float centerX, float centerY, float centerZ){
 		this.texture = texture;
 		this.centerX = centerX;
 		this.centerY = centerY;
 		this.centerZ = centerZ;
-		vertexBufferId = glGenBuffers();
-		colorBufferId = glGenBuffers();
-		textureCoordBufferId = glGenBuffers();
-		indexBufferId = glGenBuffers();
+		vertexBufferId = GL15.glGenBuffers();
+		colorBufferId = GL15.glGenBuffers();
+		textureCoordBufferId = GL15.glGenBuffers();
+		indexBufferId = GL15.glGenBuffers();
 	}
 	private void addEdge(Quad q, int edge){
 		colorBuffer.put(q.data.get(0)).put(q.data.get(1)).put(q.data.get(2));
@@ -87,10 +77,10 @@ public class QuadBatch{
 		if(!quads.contains(q)) quads.add(q);
 	}
 	public void cleanUp(){
-		glDeleteBuffers(vertexBufferId);
-		glDeleteBuffers(colorBufferId);
-		glDeleteBuffers(textureCoordBufferId);
-		glDeleteBuffers(indexBufferId);
+		GL15.glDeleteBuffers(vertexBufferId);
+		GL15.glDeleteBuffers(colorBufferId);
+		GL15.glDeleteBuffers(textureCoordBufferId);
+		GL15.glDeleteBuffers(indexBufferId);
 	}
 	public void clear(){
 		quads.clear();
@@ -140,14 +130,14 @@ public class QuadBatch{
 		colorBuffer.flip();
 		textureCoordBuffer.flip();
 		indexBuffer.flip();
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
-		glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_DYNAMIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, colorBufferId);
-		glBufferData(GL_ARRAY_BUFFER, colorBuffer, GL_DYNAMIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, textureCoordBufferId);
-		glBufferData(GL_ARRAY_BUFFER, textureCoordBuffer, GL_DYNAMIC_DRAW);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL_DYNAMIC_DRAW);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertexBufferId);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertexBuffer, GL15.GL_DYNAMIC_DRAW);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, colorBufferId);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, colorBuffer, GL15.GL_DYNAMIC_DRAW);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, textureCoordBufferId);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, textureCoordBuffer, GL15.GL_DYNAMIC_DRAW);
+		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
+		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL15.GL_DYNAMIC_DRAW);
 	}
 	public void removeQuad(Quad q){
 		for(i = 0; i<quads.size(); i++){
@@ -158,14 +148,14 @@ public class QuadBatch{
 		}
 	}
 	public void renderPart(){
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
-		glVertexPointer(3, GL_FLOAT, FLOAT_SIZE*3, ZERO);
-		glBindBuffer(GL_ARRAY_BUFFER, colorBufferId);
-		glColorPointer(3, GL_FLOAT, FLOAT_SIZE*3, ZERO);
-		glBindBuffer(GL_ARRAY_BUFFER, textureCoordBufferId);
-		glTexCoordPointer(2, GL_FLOAT, FLOAT_SIZE*2, ZERO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
-		glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, ZERO);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertexBufferId);
+		GL11.glVertexPointer(3, GL11.GL_FLOAT, QuadBatch.FLOAT_SIZE*3, 0);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, colorBufferId);
+		GL11.glColorPointer(3, GL11.GL_FLOAT, QuadBatch.FLOAT_SIZE*3, 0);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, textureCoordBufferId);
+		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, QuadBatch.FLOAT_SIZE*2, 0);
+		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
+		GL11.glDrawElements(GL11.GL_TRIANGLES, indexCount, GL11.GL_UNSIGNED_INT, 0);
 		VoxelWorld.trisRendered += triangleCount;
 	}
 }

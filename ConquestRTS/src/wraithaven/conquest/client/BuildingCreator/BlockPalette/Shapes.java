@@ -42,16 +42,16 @@ public class Shapes{
 			height *= Loop.screenRes.width/width;
 			width = Loop.screenRes.width;
 		}
-		return (float)(1-(100/768.0*height/Loop.screenRes.height+(Loop.screenRes.height-height)/2/Loop.screenRes.height+420.0/BLOCKS_SHOWN/768*id));
+		return (float)(1-(100/768.0*height/Loop.screenRes.height+(Loop.screenRes.height-height)/2/Loop.screenRes.height+420.0/Shapes.BLOCKS_SHOWN/768*id));
 	}
 	private static float screenYToWorldY(float screenY){
 		return (screenY*2-1)*(Shapes.BLOCK_ZOOM/2f);
 	}
 	private static float x(){
-		return (screenXToWorldX(screenXPercent()));
+		return (Shapes.screenXToWorldX(Shapes.screenXPercent()));
 	}
 	private static float y(int id){
-		return screenYToWorldY(screenYPercent(id));
+		return Shapes.screenYToWorldY(Shapes.screenYPercent(id));
 	}
 	private final CubeTextures baseTexture = new CubeTextures();
 	private final ArrayList<BlockIcon> icons = new ArrayList();
@@ -67,11 +67,11 @@ public class Shapes{
 	}
 	public boolean checkMouseClick(double xPos, double yPos){
 		yPos = Loop.screenRes.height-yPos;
-		float x = screenXPercent()*Loop.screenRes.width;
-		int lastShown = Math.min(scrollbarPosition+BLOCKS_SHOWN, icons.size());
-		float dis = BLOCK_ZOOM*BLOCK_ZOOM*1.25f*1.25f;
+		float x = Shapes.screenXPercent()*Loop.screenRes.width;
+		int lastShown = Math.min(scrollbarPosition+Shapes.BLOCKS_SHOWN, icons.size());
+		float dis = Shapes.BLOCK_ZOOM*Shapes.BLOCK_ZOOM*1.25f*1.25f;
 		for(int i = scrollbarPosition; i<lastShown; i++){
-			if(distanceSquared(x, screenYPercent(i-scrollbarPosition)*Loop.screenRes.height, (float)xPos, (float)yPos)<=dis){
+			if(Shapes.distanceSquared(x, Shapes.screenYPercent(i-scrollbarPosition)*Loop.screenRes.height, (float)xPos, (float)yPos)<=dis){
 				selectedBlock = i;
 				return true;
 			}
@@ -95,17 +95,17 @@ public class Shapes{
 		return icons.get(selectedBlock).block.block.shape;
 	}
 	public void render(){
-		int lastShown = Math.min(scrollbarPosition+BLOCKS_SHOWN, icons.size());
-		float x = x();
+		int lastShown = Math.min(scrollbarPosition+Shapes.BLOCKS_SHOWN, icons.size());
+		float x = Shapes.x();
 		for(int i = scrollbarPosition; i<lastShown; i++)
-			icons.get(i).render(x, y(i-scrollbarPosition), -5, 0, 0);
+			icons.get(i).render(x, Shapes.y(i-scrollbarPosition), -5, 0, 0);
 	}
 	public void select(BlockShape shape){
 		for(int i = 0; i<icons.size(); i++){
 			if(icons.get(i).block.block.shape==shape){
 				selectedBlock = i;
-				int ideal = (int)(1-Math.ceil(BLOCKS_SHOWN/2f));
-				if(ideal>icons.size()-BLOCKS_SHOWN) ideal = icons.size()-BLOCKS_SHOWN;
+				int ideal = (int)(1-Math.ceil(Shapes.BLOCKS_SHOWN/2f));
+				if(ideal>icons.size()-Shapes.BLOCKS_SHOWN) ideal = icons.size()-Shapes.BLOCKS_SHOWN;
 				if(ideal<0) ideal = 0;
 				scrollbarPosition = ideal;
 				return;
@@ -113,12 +113,12 @@ public class Shapes{
 		}
 	}
 	public void update(double time){
-		int lastShown = Math.min(scrollbarPosition+BLOCKS_SHOWN, icons.size());
+		int lastShown = Math.min(scrollbarPosition+Shapes.BLOCKS_SHOWN, icons.size());
 		for(int i = 0; i<lastShown; i++)
 			icons.get(i).update(time);
 	}
 	public void updateScrollbar(float percent){
-		int size = icons.size()-BLOCKS_SHOWN;
+		int size = icons.size()-Shapes.BLOCKS_SHOWN;
 		if(size<=0) return;
 		scrollbarPosition = (int)(percent*size);
 	}

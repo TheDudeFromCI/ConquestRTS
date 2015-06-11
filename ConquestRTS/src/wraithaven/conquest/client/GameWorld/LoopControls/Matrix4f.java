@@ -31,22 +31,22 @@ public class Matrix4f extends Matrix{
 		if(determinant!=0){
 			if(dest==null) dest = new Matrix4f();
 			float determinant_inv = 1f/determinant;
-			float t00 = determinant3x3(src.m11, src.m12, src.m13, src.m21, src.m22, src.m23, src.m31, src.m32, src.m33);
-			float t01 = -determinant3x3(src.m10, src.m12, src.m13, src.m20, src.m22, src.m23, src.m30, src.m32, src.m33);
-			float t02 = determinant3x3(src.m10, src.m11, src.m13, src.m20, src.m21, src.m23, src.m30, src.m31, src.m33);
-			float t03 = -determinant3x3(src.m10, src.m11, src.m12, src.m20, src.m21, src.m22, src.m30, src.m31, src.m32);
-			float t10 = -determinant3x3(src.m01, src.m02, src.m03, src.m21, src.m22, src.m23, src.m31, src.m32, src.m33);
-			float t11 = determinant3x3(src.m00, src.m02, src.m03, src.m20, src.m22, src.m23, src.m30, src.m32, src.m33);
-			float t12 = -determinant3x3(src.m00, src.m01, src.m03, src.m20, src.m21, src.m23, src.m30, src.m31, src.m33);
-			float t13 = determinant3x3(src.m00, src.m01, src.m02, src.m20, src.m21, src.m22, src.m30, src.m31, src.m32);
-			float t20 = determinant3x3(src.m01, src.m02, src.m03, src.m11, src.m12, src.m13, src.m31, src.m32, src.m33);
-			float t21 = -determinant3x3(src.m00, src.m02, src.m03, src.m10, src.m12, src.m13, src.m30, src.m32, src.m33);
-			float t22 = determinant3x3(src.m00, src.m01, src.m03, src.m10, src.m11, src.m13, src.m30, src.m31, src.m33);
-			float t23 = -determinant3x3(src.m00, src.m01, src.m02, src.m10, src.m11, src.m12, src.m30, src.m31, src.m32);
-			float t30 = -determinant3x3(src.m01, src.m02, src.m03, src.m11, src.m12, src.m13, src.m21, src.m22, src.m23);
-			float t31 = determinant3x3(src.m00, src.m02, src.m03, src.m10, src.m12, src.m13, src.m20, src.m22, src.m23);
-			float t32 = -determinant3x3(src.m00, src.m01, src.m03, src.m10, src.m11, src.m13, src.m20, src.m21, src.m23);
-			float t33 = determinant3x3(src.m00, src.m01, src.m02, src.m10, src.m11, src.m12, src.m20, src.m21, src.m22);
+			float t00 = Matrix4f.determinant3x3(src.m11, src.m12, src.m13, src.m21, src.m22, src.m23, src.m31, src.m32, src.m33);
+			float t01 = -Matrix4f.determinant3x3(src.m10, src.m12, src.m13, src.m20, src.m22, src.m23, src.m30, src.m32, src.m33);
+			float t02 = Matrix4f.determinant3x3(src.m10, src.m11, src.m13, src.m20, src.m21, src.m23, src.m30, src.m31, src.m33);
+			float t03 = -Matrix4f.determinant3x3(src.m10, src.m11, src.m12, src.m20, src.m21, src.m22, src.m30, src.m31, src.m32);
+			float t10 = -Matrix4f.determinant3x3(src.m01, src.m02, src.m03, src.m21, src.m22, src.m23, src.m31, src.m32, src.m33);
+			float t11 = Matrix4f.determinant3x3(src.m00, src.m02, src.m03, src.m20, src.m22, src.m23, src.m30, src.m32, src.m33);
+			float t12 = -Matrix4f.determinant3x3(src.m00, src.m01, src.m03, src.m20, src.m21, src.m23, src.m30, src.m31, src.m33);
+			float t13 = Matrix4f.determinant3x3(src.m00, src.m01, src.m02, src.m20, src.m21, src.m22, src.m30, src.m31, src.m32);
+			float t20 = Matrix4f.determinant3x3(src.m01, src.m02, src.m03, src.m11, src.m12, src.m13, src.m31, src.m32, src.m33);
+			float t21 = -Matrix4f.determinant3x3(src.m00, src.m02, src.m03, src.m10, src.m12, src.m13, src.m30, src.m32, src.m33);
+			float t22 = Matrix4f.determinant3x3(src.m00, src.m01, src.m03, src.m10, src.m11, src.m13, src.m30, src.m31, src.m33);
+			float t23 = -Matrix4f.determinant3x3(src.m00, src.m01, src.m02, src.m10, src.m11, src.m12, src.m30, src.m31, src.m32);
+			float t30 = -Matrix4f.determinant3x3(src.m01, src.m02, src.m03, src.m11, src.m12, src.m13, src.m21, src.m22, src.m23);
+			float t31 = Matrix4f.determinant3x3(src.m00, src.m02, src.m03, src.m10, src.m12, src.m13, src.m20, src.m22, src.m23);
+			float t32 = -Matrix4f.determinant3x3(src.m00, src.m01, src.m03, src.m10, src.m11, src.m13, src.m20, src.m21, src.m23);
+			float t33 = Matrix4f.determinant3x3(src.m00, src.m01, src.m02, src.m10, src.m11, src.m12, src.m20, src.m21, src.m22);
 			dest.m00 = t00*determinant_inv;
 			dest.m11 = t11*determinant_inv;
 			dest.m22 = t22*determinant_inv;
@@ -331,7 +331,7 @@ public class Matrix4f extends Matrix{
 		return f;
 	}
 	@Override public Matrix invert(){
-		return invert(this, this);
+		return Matrix4f.invert(this, this);
 	}
 	@Override public Matrix load(FloatBuffer buf){
 		m00 = buf.get();
@@ -353,7 +353,7 @@ public class Matrix4f extends Matrix{
 		return this;
 	}
 	public Matrix4f load(Matrix4f src){
-		return load(src, this);
+		return Matrix4f.load(src, this);
 	}
 	@Override public Matrix loadTranspose(FloatBuffer buf){
 		m00 = buf.get();
@@ -378,19 +378,19 @@ public class Matrix4f extends Matrix{
 		return negate(this);
 	}
 	public Matrix4f negate(Matrix4f dest){
-		return negate(this, dest);
+		return Matrix4f.negate(this, dest);
 	}
 	public Matrix4f rotate(float angle, Vector3f axis){
 		return rotate(angle, axis, this);
 	}
 	public Matrix4f rotate(float angle, Vector3f axis, Matrix4f dest){
-		return rotate(angle, axis, this, dest);
+		return Matrix4f.rotate(angle, axis, this, dest);
 	}
 	@Override public Matrix setIdentity(){
-		return setIdentity(this);
+		return Matrix4f.setIdentity(this);
 	}
 	@Override public Matrix setZero(){
-		return setZero(this);
+		return Matrix4f.setZero(this);
 	}
 	@Override public Matrix store(FloatBuffer buf){
 		buf.put(m00);
@@ -454,12 +454,12 @@ public class Matrix4f extends Matrix{
 		return translate(vec, this);
 	}
 	public Matrix4f translate(Vector3f vec, Matrix4f dest){
-		return translate(vec, this, dest);
+		return Matrix4f.translate(vec, this, dest);
 	}
 	@Override public Matrix transpose(){
 		return transpose(this);
 	}
 	public Matrix4f transpose(Matrix4f dest){
-		return transpose(this, dest);
+		return Matrix4f.transpose(this, dest);
 	}
 }

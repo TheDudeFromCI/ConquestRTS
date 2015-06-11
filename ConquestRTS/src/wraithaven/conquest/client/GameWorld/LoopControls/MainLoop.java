@@ -1,42 +1,8 @@
 package wraithaven.conquest.client.GameWorld.LoopControls;
 
-import static org.lwjgl.glfw.Callbacks.errorCallbackPrint;
-import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
-import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
-import static org.lwjgl.glfw.GLFW.glfwCreateWindow;
-import static org.lwjgl.glfw.GLFW.glfwDefaultWindowHints;
-import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
-import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
-import static org.lwjgl.glfw.GLFW.glfwGetTime;
-import static org.lwjgl.glfw.GLFW.glfwGetVideoMode;
-import static org.lwjgl.glfw.GLFW.glfwInit;
-import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
-import static org.lwjgl.glfw.GLFW.glfwPollEvents;
-import static org.lwjgl.glfw.GLFW.glfwSetCursorPosCallback;
-import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
-import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
-import static org.lwjgl.glfw.GLFW.glfwSetMouseButtonCallback;
-import static org.lwjgl.glfw.GLFW.glfwSetScrollCallback;
-import static org.lwjgl.glfw.GLFW.glfwSetWindowPos;
-import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
-import static org.lwjgl.glfw.GLFW.glfwShowWindow;
-import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
-import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
-import static org.lwjgl.glfw.GLFW.glfwTerminate;
-import static org.lwjgl.glfw.GLFW.glfwWindowHint;
-import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL11.GL_FALSE;
-import static org.lwjgl.opengl.GL11.GL_TRUE;
-import static org.lwjgl.opengl.GL11.glClear;
-import static org.lwjgl.opengl.GL11.glClearColor;
-import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL11.glPopMatrix;
-import static org.lwjgl.opengl.GL11.glPushMatrix;
-import static org.lwjgl.system.MemoryUtil.NULL;
 import java.nio.ByteBuffer;
+import org.lwjgl.glfw.Callbacks;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
@@ -45,6 +11,7 @@ import org.lwjgl.glfw.GLFWScrollCallback;
 import org.lwjgl.glfw.GLFWvidmode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
+import org.lwjgl.system.MemoryUtil;
 import wraithaven.conquest.client.GameWorld.Voxel.Texture;
 
 public class MainLoop{
@@ -65,65 +32,65 @@ public class MainLoop{
 			runLoop(recreateInitalizer);
 	}
 	public void dispose(){
-		glfwSetWindowShouldClose(window, GL_TRUE);
+		GLFW.glfwSetWindowShouldClose(window, GL11.GL_TRUE);
 	}
 	public long getWindow(){
 		return window;
 	}
 	private void init(){
-		glfwSetErrorCallback(errorCallback = errorCallbackPrint(System.err));
-		if(glfwInit()!=GL11.GL_TRUE) throw new IllegalStateException("Unable to initialize GLFW");
-		glfwDefaultWindowHints();
-		glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
-		glfwWindowHint(GLFW_RESIZABLE, windowInitalizer.resizeable?GL_TRUE:GL_FALSE);
-		window = glfwCreateWindow(windowInitalizer.width, windowInitalizer.height, windowInitalizer.windowName, windowInitalizer.fullscreen?glfwGetPrimaryMonitor():NULL, NULL);
-		if(window==NULL) throw new RuntimeException("Failed to create the GLFW window");
-		glfwSetKeyCallback(window, keyCallback = new GLFWKeyCallback(){
+		GLFW.glfwSetErrorCallback(errorCallback = Callbacks.errorCallbackPrint(System.err));
+		if(GLFW.glfwInit()!=GL11.GL_TRUE) throw new IllegalStateException("Unable to initialize GLFW");
+		GLFW.glfwDefaultWindowHints();
+		GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GL11.GL_FALSE);
+		GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, windowInitalizer.resizeable?GL11.GL_TRUE:GL11.GL_FALSE);
+		window = GLFW.glfwCreateWindow(windowInitalizer.width, windowInitalizer.height, windowInitalizer.windowName, windowInitalizer.fullscreen?GLFW.glfwGetPrimaryMonitor():MemoryUtil.NULL, MemoryUtil.NULL);
+		if(window==MemoryUtil.NULL) throw new RuntimeException("Failed to create the GLFW window");
+		GLFW.glfwSetKeyCallback(window, keyCallback = new GLFWKeyCallback(){
 			@Override public void invoke(long window, int key, int scancode, int action, int mods){
 				windowInitalizer.loopObjective.key(window, key, action);
 			}
 		});
-		glfwSetMouseButtonCallback(window, mouseButtonCallback = new GLFWMouseButtonCallback(){
+		GLFW.glfwSetMouseButtonCallback(window, mouseButtonCallback = new GLFWMouseButtonCallback(){
 			@Override public void invoke(long window, int button, int action, int mods){
 				windowInitalizer.loopObjective.mouse(window, button, action);
 			}
 		});
-		glfwSetCursorPosCallback(window, cursorPosCallback = new GLFWCursorPosCallback(){
+		GLFW.glfwSetCursorPosCallback(window, cursorPosCallback = new GLFWCursorPosCallback(){
 			@Override public void invoke(long window, double xpos, double ypos){
 				windowInitalizer.loopObjective.mouseMove(window, xpos, ypos);
 			}
 		});
-		glfwSetScrollCallback(window, scrollCallback = new GLFWScrollCallback(){
+		GLFW.glfwSetScrollCallback(window, scrollCallback = new GLFWScrollCallback(){
 			@Override public void invoke(long window, double xoffset, double yoffset){
 				windowInitalizer.loopObjective.mouseWheel(window, xoffset, yoffset);
 			}
 		});
-		ByteBuffer vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-		if(!windowInitalizer.fullscreen) glfwSetWindowPos(window, (GLFWvidmode.width(vidmode)-windowInitalizer.width)/2, (GLFWvidmode.height(vidmode)-windowInitalizer.height)/2);
-		glfwMakeContextCurrent(window);
-		glfwSwapInterval(windowInitalizer.vSync?1:0);
-		glfwShowWindow(window);
+		ByteBuffer vidmode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
+		if(!windowInitalizer.fullscreen)GLFW.glfwSetWindowPos(window, (GLFWvidmode.width(vidmode)-windowInitalizer.width)/2, (GLFWvidmode.height(vidmode)-windowInitalizer.height)/2);
+		GLFW.glfwMakeContextCurrent(window);
+		GLFW.glfwSwapInterval(windowInitalizer.vSync?1:0);
+		GLFW.glfwShowWindow(window);
 	}
 	private void loop(){
 		GLContext.createFromCurrent();
-		glClearColor(windowInitalizer.clearRed, windowInitalizer.clearGreen, windowInitalizer.clearBlue, 0.0f);
+		GL11.glClearColor(windowInitalizer.clearRed, windowInitalizer.clearGreen, windowInitalizer.clearBlue, 0.0f);
 		double lastTime = 0;
 		double currentTime;
 		double delta;
 		windowInitalizer.loopObjective.preLoop();
-		glEnable(GL_DEPTH_TEST);
-		while(glfwWindowShouldClose(window)==GL_FALSE){
-			glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-			currentTime = glfwGetTime();
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		while(GLFW.glfwWindowShouldClose(window)==GL11.GL_FALSE){
+			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
+			currentTime = GLFW.glfwGetTime();
 			delta = currentTime-lastTime;
 			lastTime = currentTime;
-			glPushMatrix();
+			GL11.glPushMatrix();
 			windowInitalizer.loopObjective.update(delta, currentTime);
 			windowInitalizer.loopObjective.render();
-			glPopMatrix();
-			glfwSwapBuffers(window);
-			glfwPollEvents();
-			if(FPS_SYNC) sync(60);
+			GL11.glPopMatrix();
+			GLFW.glfwSwapBuffers(window);
+			GLFW.glfwPollEvents();
+			if(MainLoop.FPS_SYNC) sync(60);
 		}
 	}
 	public void recreate(WindowInitalizer windowInitalizer){
@@ -136,7 +103,7 @@ public class MainLoop{
 		try{
 			init();
 			loop();
-			glfwDestroyWindow(window);
+			GLFW.glfwDestroyWindow(window);
 			keyCallback.release();
 			mouseButtonCallback.release();
 			cursorPosCallback.release();
@@ -145,7 +112,7 @@ public class MainLoop{
 			exception.printStackTrace();
 		}finally{
 			Texture.disposeAll();
-			glfwTerminate();
+			GLFW.glfwTerminate();
 			errorCallback.release();
 			System.exit(0);
 		}

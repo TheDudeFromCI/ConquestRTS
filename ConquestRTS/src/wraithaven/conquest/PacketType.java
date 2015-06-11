@@ -5,7 +5,7 @@ public enum PacketType{
 	public static Packet create(String code){
 		try{
 			Packet packet;
-			for(PacketType pt : values()){
+			for(PacketType pt : PacketType.values()){
 				if(code.startsWith(pt.hexId)){
 					packet = (Packet)pt.packetClass.newInstance();
 					packet.decode(code.substring(3));
@@ -27,7 +27,7 @@ public enum PacketType{
 	private final String hexId;
 	private final Class packetClass;
 	private PacketType(Class packetClass){
-		hexId = getHexCode(ordinal());
+		hexId = PacketType.getHexCode(ordinal());
 		this.packetClass = packetClass;
 	}
 	public String getHexId(){

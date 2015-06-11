@@ -10,13 +10,13 @@ public class Skybox{
 	private static final float[] WHITE_COLORS = {1, 1, 1};
 	private final QuadBatch batch;
 	public Skybox(Texture texture){
-		batch = new QuadBatch(texture, 0, 0, 0);
-		batch.addQuad(new Quad(new float[12], WHITE_COLORS, new float[8], 0));
-		batch.addQuad(new Quad(new float[12], WHITE_COLORS, new float[8], 1));
-		batch.addQuad(new Quad(new float[12], WHITE_COLORS, new float[8], 2));
-		batch.addQuad(new Quad(new float[12], WHITE_COLORS, new float[8], 3));
-		batch.addQuad(new Quad(new float[12], WHITE_COLORS, new float[8], 4));
-		batch.addQuad(new Quad(new float[12], WHITE_COLORS, new float[8], 5));
+		batch = new QuadBatch(texture);
+		batch.addQuad(new Quad(new float[12], Skybox.WHITE_COLORS, new float[8], 0));
+		batch.addQuad(new Quad(new float[12], Skybox.WHITE_COLORS, new float[8], 1));
+		batch.addQuad(new Quad(new float[12], Skybox.WHITE_COLORS, new float[8], 2));
+		batch.addQuad(new Quad(new float[12], Skybox.WHITE_COLORS, new float[8], 3));
+		batch.addQuad(new Quad(new float[12], Skybox.WHITE_COLORS, new float[8], 4));
+		batch.addQuad(new Quad(new float[12], Skybox.WHITE_COLORS, new float[8], 5));
 		batch.recompileBuffer();
 	}
 	public void render(Camera camera){

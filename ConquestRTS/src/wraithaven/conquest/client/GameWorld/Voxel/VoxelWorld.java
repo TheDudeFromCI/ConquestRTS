@@ -38,10 +38,13 @@ public class VoxelWorld{
 		indexManager = new IndexManager();
 	}
 	public void clearAll(){
-		if(chunkStorage instanceof FiniteWorld) for(int i = 0; i<chunkStorage.getChunkCount(); i++)
-			unloadChunk(chunkStorage.getChunk(i));
-		else for(int i = 0; i<chunkStorage.getChunkCount();)
-			unloadChunk(chunkStorage.getChunk(i));
+		if(chunkStorage instanceof FiniteWorld)
+			for(int i = 0; i<chunkStorage.getChunkCount(); i++)
+				unloadChunk(chunkStorage.getChunk(i));
+		else
+			for(int i = 0; i<chunkStorage.getChunkCount();)
+				unloadChunk(chunkStorage.getChunk(i));
+		indexManager.clear();
 	}
 	public Block getBlock(int index){
 		return indexManager.getBlock(index);
@@ -112,7 +115,7 @@ public class VoxelWorld{
 		}
 		Texture bound = null;
 		QuadBatch batch;
-		trisRendered = 0;
+		VoxelWorld.trisRendered = 0;
 		for(int i = 0; i<tempQuads.size(); i++){
 			batch = tempQuads.get(i);
 			if(bound!=batch.getTexture()){
@@ -126,7 +129,7 @@ public class VoxelWorld{
 		chunk = getContainingChunk(x, y, z);
 		if(chunk.setBlock(x, y, z, index)){
 			setNeedsRebatch();
-			if(rebuild) rebuildAll();
+			if(rebuild)rebuildAll();
 		}
 	}
 	public void setNeedsRebatch(){

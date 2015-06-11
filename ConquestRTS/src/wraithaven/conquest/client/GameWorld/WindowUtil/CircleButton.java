@@ -17,8 +17,8 @@ public class CircleButton extends GuiButton{
 	}
 	@Override public boolean isWithinBounds(Point p){
 		Point off = getOffset();
-		if(off==null) return distanceSquared(x+width/2, y+height/2, p.x, p.y)<width/2*width/2;
-		return distanceSquared(x+width/2, y+height/2, p.x-off.x, p.y-off.y)<width/2*width/2;
+		if(off==null) return CircleButton.distanceSquared(x+width/2, y+height/2, p.x, p.y)<width/2*width/2;
+		return CircleButton.distanceSquared(x+width/2, y+height/2, p.x-off.x, p.y-off.y)<width/2*width/2;
 	}
 	@Override public void mouseMoved(MouseEvent e){
 		boolean c = isWithinBounds(e.getPoint());

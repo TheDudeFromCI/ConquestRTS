@@ -3,13 +3,16 @@ package wraithaven.conquest.client.GameWorld.LoopControls;
 import java.nio.FloatBuffer;
 
 public class Vector3f extends Vector{
+	public static final Vector3f X_AXIS = new Vector3f(1, 0, 0);
+	public static final Vector3f Y_AXIS = new Vector3f(0, 1, 0);
+	public static final Vector3f Z_AXIS = new Vector3f(0, 0, 1);
 	public static Vector3f add(Vector3f left, Vector3f right, Vector3f dest){
 		if(dest==null) return new Vector3f(left.x+right.x, left.y+right.y, left.z+right.z);
 		dest.set(left.x+right.x, left.y+right.y, left.z+right.z);
 		return dest;
 	}
 	public static float angle(Vector3f a, Vector3f b){
-		float dls = dot(a, b)/(a.length()*b.length());
+		float dls = Vector3f.dot(a, b)/(a.length()*b.length());
 		if(dls<-1f) dls = -1f;
 		else if(dls>1.0f) dls = 1.0f;
 		return (float)Math.acos(dls);

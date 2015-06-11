@@ -1,18 +1,11 @@
 package wraithaven.conquest.client.BuildingCreator;
 
-import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
-import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_HIDDEN;
-import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_NORMAL;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_C;
-import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
-import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
-import static org.lwjgl.glfw.GLFW.glfwGetCursorPos;
-import static org.lwjgl.glfw.GLFW.glfwSetCursorPos;
-import static org.lwjgl.glfw.GLFW.glfwSetInputMode;
 import java.awt.Dimension;
 import java.nio.DoubleBuffer;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
+import wraithaven.conquest.client.GameWorld.WindowUtil.FileChooser;
 import wraithaven.conquest.client.ClientLauncher;
 import wraithaven.conquest.client.LoadingScreen;
 import wraithaven.conquest.client.LoadingScreenTask;
@@ -51,8 +44,7 @@ public class Loop implements LoopObjective{
 	private DoubleBuffer mouseBufferX = BufferUtils.createDoubleBuffer(1);
 	private DoubleBuffer mouseBufferY = BufferUtils.createDoubleBuffer(1);
 	private PalleteRenderer palleteRenderer;
-	private boolean removePalette,
-			createPalette;
+	private boolean removePalette, createPalette;
 	private SelectedBlock selectedBlock;
 	private Skybox skybox;
 	private UserBlockHandler userBlockHandler;
@@ -60,13 +52,13 @@ public class Loop implements LoopObjective{
 	public Loop(Dimension screenRes, BuildingCreator buildingCreator){
 		Loop.screenRes = screenRes;
 		this.buildingCreator = buildingCreator;
-		INSTANCE = this;
+		Loop.INSTANCE = this;
 	}
 	public void dispose(){
 		world.clearAll();
 		guiHandler.cleanUp();
 		Texture.disposeAll();
-		INSTANCE = null;
+		Loop.INSTANCE = null;
 	}
 	public void disposePalette(){
 		removePalette = true;
@@ -96,36 +88,61 @@ public class Loop implements LoopObjective{
 		return palleteRenderer!=null;
 	}
 	public void key(long window, int key, int action){
-		if(key==GLFW_KEY_C&&action==GLFW_PRESS&&!hasPalette()){
+		if(FileChooser.INSTANCE!=null){
+			FileChooser.INSTANCE.onKey(key, action);
+			return;
+		}
+		if(key==GLFW.GLFW_KEY_C&&action==GLFW.GLFW_PRESS&&!hasPalette()){
 			inventory.setShown(!inventory.isShown());
 			return;
 		}
-		if(inventory.isShown()) return;
-		inputController.onKey(window, key, action);
+		if(inventory.isShown())return;
+		inputController.onKey(key, action);
 	}
 	public void mouse(long window, int button, int action){
 		if(hasPalette()){
-			if(action==GLFW_PRESS){
-				glfwGetCursorPos(window, mouseBufferX, mouseBufferY);
+			if(action==GLFW.GLFW_PRESS){
+				GLFW.glfwGetCursorPos(window, mouseBufferX, mouseBufferY);
 				palleteRenderer.onMouseDown(mouseBufferX.get(0), mouseBufferY.get(0));
-			}else if(action==GLFW_RELEASE) palleteRenderer.onMouseUp(button);
+			}else if(action==GLFW.GLFW_RELEASE)palleteRenderer.onMouseUp(button);
 		}else if(inventory.isShown()){
-			if(action==GLFW_PRESS){
-				glfwGetCursorPos(window, mouseBufferX, mouseBufferY);
+			if(action==GLFW.GLFW_PRESS){
+				GLFW.glfwGetCursorPos(window, mouseBufferX, mouseBufferY);
 				inventory.onMouseDown(mouseBufferX.get(0), mouseBufferY.get(0));
-			}else if(action==GLFW_RELEASE) inventory.onMouseUp();
+			}else if(action==GLFW.GLFW_RELEASE)inventory.onMouseUp();
+		}else if(guiHandler.isPaused()){
+			if(FileChooser.INSTANCE!=null){
+				if(action==GLFW.GLFW_PRESS){
+					GLFW.glfwGetCursorPos(window, mouseBufferX, mouseBufferY);
+					FileChooser.INSTANCE.onMouseDown(mouseBufferX.get(0), mouseBufferY.get(0));
+				}else if(action==GLFW.GLFW_RELEASE)FileChooser.INSTANCE.onMouseUp();
+			}else{
+				if(action==GLFW.GLFW_PRESS){
+					GLFW.glfwGetCursorPos(window, mouseBufferX, mouseBufferY);
+					guiHandler.onMouseDown(mouseBufferX.get(0), mouseBufferY.get(0));
+				}else if(action==GLFW.GLFW_RELEASE)guiHandler.onMouseUp();
+			}
 		}else userBlockHandler.mouseClick(button, action);
 	}
 	public void mouseMove(long window, double x, double y){
-		if(hasPalette()) palleteRenderer.onMouseMove(x, y);
-		else if(inventory.isShown()) inventory.onMouseMove(x, y);
-		else inputController.processMouse(x, y);
+		if(hasPalette())palleteRenderer.onMouseMove(x, y);
+		else if(inventory.isShown())inventory.onMouseMove(x, y);
+		else if(guiHandler.isPaused()){
+			if(FileChooser.INSTANCE!=null)FileChooser.INSTANCE.onMouseMove(x, y);
+			guiHandler.onMouseMove(x, y);
+		}else inputController.processMouse(x, y);
 	}
 	public void mouseWheel(long window, double xPos, double yPos){
+		if(hasPalette())return;
+		if(inventory.isShown())return;
+		if(guiHandler.isPaused()){
+			if(FileChooser.INSTANCE!=null)FileChooser.INSTANCE.onMouseWheel(yPos);
+			return;
+		}
 		inputController.mouseWheel(yPos);
 	}
 	public void preLoop(){
-		camera = new Camera(70, screenRes.width/(float)screenRes.height, CAMERA_NEAR_CLIP, 1000, false);
+		camera = new Camera(70, Loop.screenRes.width/(float)Loop.screenRes.height, Loop.CAMERA_NEAR_CLIP, 1000, false);
 		creatorWorld = new BuildCreatorWorld();
 		world = new VoxelWorld(creatorWorld, new VoxelWorldBounds(0, 0, 0, BuildingCreator.WORLD_BOUNDS_SIZE-1, BuildingCreator.WORLD_BOUNDS_SIZE-1, BuildingCreator.WORLD_BOUNDS_SIZE-1));
 		BuildCreatorWorld.setup();
@@ -136,16 +153,12 @@ public class Loop implements LoopObjective{
 		selectedBlock = new SelectedBlock();
 		inventory = new Inventory();
 		setupCameraPosition();
-		setupOGL();
+		Loop.setupOGL();
 		MainLoop.FPS_SYNC = false;
 		loadingScreen = new LoadingScreen(new LoadingScreenTask(){
 			int chunkLimit = (BuildingCreator.WORLD_BOUNDS_SIZE-1)>>Chunk.CHUNK_BITS;
-			float percent,
-					loadingPercent,
-					rebuildingPercent;
-			int x,
-					z,
-					w;
+			float percent, loadingPercent, rebuildingPercent;
+			int x, z, w;
 			private void load(){
 				for(int i = 0; i<64; i++){
 					world.loadChunk(x, 0, z);
@@ -166,10 +179,11 @@ public class Loop implements LoopObjective{
 					world.getChunk(w).rebuild();
 					w++;
 					rebuildingPercent = w/(float)world.getChunkCount();
+					if(w==world.getChunkCount())return;
 				}
 			}
 			public int update(){
-				if(loadingPercent<1) load();
+				if(loadingPercent<1)load();
 				else rebuild();
 				percent = loadingPercent*0.05f+rebuildingPercent*0.95f;
 				return (int)(percent*100);
@@ -188,7 +202,7 @@ public class Loop implements LoopObjective{
 			loadingScreen.render();
 			return;
 		}
-		if(palleteRenderer!=null) palleteRenderer.render();
+		if(palleteRenderer!=null)palleteRenderer.render();
 		else{
 			skybox.render(camera);
 			world.render();
@@ -207,6 +221,7 @@ public class Loop implements LoopObjective{
 			}
 			GL11.glPopMatrix();
 			guiHandler.render();
+			if(FileChooser.INSTANCE!=null)FileChooser.INSTANCE.render();
 			inventory.render();
 			MatrixUtils.setupPerspective(70, Loop.screenRes.width/(float)Loop.screenRes.height, Loop.CAMERA_NEAR_CLIP, 1000);
 		}
@@ -214,14 +229,14 @@ public class Loop implements LoopObjective{
 			palleteRenderer.dispose();
 			palleteRenderer = null;
 			removePalette = false;
-			glfwSetCursorPos(buildingCreator.getWindow(), screenRes.width/2.0, screenRes.height/2.0);
-			glfwSetInputMode(buildingCreator.getWindow(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+			GLFW.glfwSetCursorPos(buildingCreator.getWindow(), Loop.screenRes.width/2.0, Loop.screenRes.height/2.0);
+			GLFW.glfwSetInputMode(buildingCreator.getWindow(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
 			GL11.glClearColor(219/255f, 246/255f, 251/255f, 0);
 		}
 		if(createPalette){
 			palleteRenderer = new PalleteRenderer();
 			createPalette = false;
-			glfwSetInputMode(buildingCreator.getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			GLFW.glfwSetInputMode(buildingCreator.getWindow(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
 			GL11.glClearColor(0, 0, 0, 0);
 		}
 	}
@@ -240,7 +255,7 @@ public class Loop implements LoopObjective{
 			loadingScreen.update();
 			return;
 		}
-		if(palleteRenderer!=null) palleteRenderer.update(time);
+		if(palleteRenderer!=null)palleteRenderer.update(time);
 		else{
 			inputController.processWalk(world, delta);
 			GL11.glPushMatrix();
@@ -248,6 +263,10 @@ public class Loop implements LoopObjective{
 			userBlockHandler.update(time);
 			world.setNeedsRebatch();
 			guiHandler.update(delta);
+			if(FileChooser.INSTANCE!=null)FileChooser.INSTANCE.update(time);
 		}
+	}
+	public void setLoadingScreen(LoadingScreen ls){
+		loadingScreen = ls;
 	}
 }

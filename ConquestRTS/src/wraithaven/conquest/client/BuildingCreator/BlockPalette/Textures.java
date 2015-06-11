@@ -11,7 +11,7 @@ public class Textures{
 	private static final int TEXTURE_COLS_SHOWN = 7;
 	private static final float TEXTURE_SEPERATION = 10;
 	private static final float TEXTURE_SIZE = 40;
-	private static final float TEXTURE_TOTAL_SIZE = TEXTURE_SIZE+TEXTURE_SEPERATION;
+	private static final float TEXTURE_TOTAL_SIZE = Textures.TEXTURE_SIZE+Textures.TEXTURE_SEPERATION;
 	private float r = 1,
 			g = 1,
 			b = 1;
@@ -28,8 +28,8 @@ public class Textures{
 		textures = new UiElement[texFile.length];
 		for(int i = 0; i<texFile.length; i++){
 			textures[i] = new UiElement(Texture.getTexture(ClientLauncher.textureFolder, texFile[i].getName(), 4, MipmapQuality.HIGH));
-			textures[i].h = TEXTURE_SIZE/768*height;
-			textures[i].w = TEXTURE_SIZE/1024*width;
+			textures[i].h = Textures.TEXTURE_SIZE/768*height;
+			textures[i].w = Textures.TEXTURE_SIZE/1024*width;
 		}
 		updateSliderPosition(0);
 	}
@@ -41,7 +41,7 @@ public class Textures{
 	}
 	public boolean mouseClick(double xPos, double yPos){
 		yPos = Loop.screenRes.height-yPos;
-		int lastShown = Math.min((scrollbarPosition+TEXTURE_COLS_SHOWN)*2, textures.length);
+		int lastShown = Math.min((scrollbarPosition+Textures.TEXTURE_COLS_SHOWN)*2, textures.length);
 		for(int i = scrollbarPosition*2; i<lastShown; i++){
 			if(xPos>=textures[i].x&&xPos<textures[i].x+textures[i].w&&yPos>=textures[i].y&&yPos<textures[i].y+textures[i].h){
 				selectedTexture = i;
@@ -51,7 +51,7 @@ public class Textures{
 		return false;
 	}
 	public void render(){
-		int lastShown = Math.min((scrollbarPosition+TEXTURE_COLS_SHOWN)*2, textures.length);
+		int lastShown = Math.min((scrollbarPosition+Textures.TEXTURE_COLS_SHOWN)*2, textures.length);
 		for(int i = scrollbarPosition*2; i<lastShown; i++)
 			UI.renderElement(textures[i]);
 		renderMain();
@@ -82,19 +82,19 @@ public class Textures{
 		this.b = b;
 	}
 	public void updateSliderPosition(float percent){
-		int size = (int)Math.ceil(textures.length/2f)-TEXTURE_COLS_SHOWN;
+		int size = (int)Math.ceil(textures.length/2f)-Textures.TEXTURE_COLS_SHOWN;
 		if(size<=0) size = 0;
 		scrollbarPosition = (int)(percent*size);
-		int lastShown = Math.min((scrollbarPosition+TEXTURE_COLS_SHOWN)*2, textures.length);
+		int lastShown = Math.min((scrollbarPosition+Textures.TEXTURE_COLS_SHOWN)*2, textures.length);
 		for(int i = scrollbarPosition*2; i<lastShown; i++){
 			textures[i].x = x(i);
 			textures[i].y = y(i);
 		}
 	}
 	private float x(int id){
-		return (id-scrollbarPosition*2)/2*TEXTURE_TOTAL_SIZE/1024*width+51f/1024*width+(Loop.screenRes.width-width)/2;
+		return (id-scrollbarPosition*2)/2*Textures.TEXTURE_TOTAL_SIZE/1024*width+51f/1024*width+(Loop.screenRes.width-width)/2;
 	}
 	private float y(int id){
-		return (1-id%2)*TEXTURE_TOTAL_SIZE/768*height+75f/768*height+(Loop.screenRes.height-height)/2;
+		return (1-id%2)*Textures.TEXTURE_TOTAL_SIZE/768*height+75f/768*height+(Loop.screenRes.height-height)/2;
 	}
 }

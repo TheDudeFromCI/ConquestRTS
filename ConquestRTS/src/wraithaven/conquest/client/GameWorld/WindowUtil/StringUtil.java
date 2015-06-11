@@ -72,15 +72,15 @@ public class StringUtil{
 		return sb.toString();
 	}
 	public static String arrayToString(Object array){
-		if(array instanceof byte[]) return arrayToString((byte[])array);
-		if(array instanceof short[]) return arrayToString((short[])array);
-		if(array instanceof int[]) return arrayToString((int[])array);
-		if(array instanceof long[]) return arrayToString((long[])array);
-		if(array instanceof float[]) return arrayToString((float[])array);
-		if(array instanceof double[]) return arrayToString((double[])array);
-		if(array instanceof boolean[]) return arrayToString((boolean[])array);
-		if(array instanceof char[]) return arrayToString((char[])array);
-		return arrayToString((Object[])array);
+		if(array instanceof byte[]) return StringUtil.arrayToString((byte[])array);
+		if(array instanceof short[]) return StringUtil.arrayToString((short[])array);
+		if(array instanceof int[]) return StringUtil.arrayToString((int[])array);
+		if(array instanceof long[]) return StringUtil.arrayToString((long[])array);
+		if(array instanceof float[]) return StringUtil.arrayToString((float[])array);
+		if(array instanceof double[]) return StringUtil.arrayToString((double[])array);
+		if(array instanceof boolean[]) return StringUtil.arrayToString((boolean[])array);
+		if(array instanceof char[]) return StringUtil.arrayToString((char[])array);
+		return StringUtil.arrayToString((Object[])array);
 	}
 	private static String arrayToString(Object[] o){
 		StringBuilder sb = new StringBuilder();

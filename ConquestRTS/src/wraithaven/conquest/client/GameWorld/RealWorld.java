@@ -37,27 +37,27 @@ public class RealWorld{
 			public void mouse(long window, int button, int action){}
 			public void mouseMove(long window, double xpos, double ypos){}
 			public void mouseWheel(long window, double xPos, double yPos){
-				ZOOM_LEVEL = (float)Math.max(ZOOM_LEVEL-yPos*0.001, 0.01);
-				MatrixUtils.setupOrtho(screenRes.width*ZOOM_LEVEL, screenRes.height*ZOOM_LEVEL, -1000, 1000);
+				RealWorld.ZOOM_LEVEL = (float)Math.max(RealWorld.ZOOM_LEVEL-yPos*0.001, 0.01);
+				MatrixUtils.setupOrtho(screenRes.width*RealWorld.ZOOM_LEVEL, screenRes.height*RealWorld.ZOOM_LEVEL, -1000, 1000);
 			}
 			public void preLoop(){
 				GL11.glEnable(GL11.GL_TEXTURE_2D);
 				GL11.glEnable(GL11.GL_CULL_FACE);
 				GL11.glCullFace(GL11.GL_BACK);
-				cam = new Camera(screenRes.width*ZOOM_LEVEL, screenRes.height*ZOOM_LEVEL, -1000, 1000, true);
+				cam = new Camera(screenRes.width*RealWorld.ZOOM_LEVEL, screenRes.height*RealWorld.ZOOM_LEVEL, -1000, 1000, true);
 				cam.goalY = cam.y = 100;
 				cam.rx = 30;
 				cam.ry = 45;
 				cam.cameraMoveSpeed = 3.75f;
-				voxelWorld = new VoxelWorld(chunkLoader = new CatcheChunkLoader(), new VoxelWorldBounds(-10000, 0, -10000, 10000, 16, 10000));
-				chunkLoader.setup(voxelWorld, cam);
+				RealWorld.voxelWorld = new VoxelWorld(chunkLoader = new CatcheChunkLoader(), new VoxelWorldBounds(-10000, 0, -10000, 10000, 16, 10000));
+				chunkLoader.setup(RealWorld.voxelWorld, cam);
 				inputHandler = new InputHandler(cam);
 				inputHandler.moveSpeed = 30;
 				lastPrint = System.currentTimeMillis();
 			}
 			public void render(){
-				voxelWorld.render();
-				if(DEBUG){
+				RealWorld.voxelWorld.render();
+				if(RealWorld.DEBUG){
 					time = System.currentTimeMillis();
 					frames++;
 					if(time-lastPrint>=1000){
@@ -81,7 +81,7 @@ public class RealWorld{
 				inputHandler.processWalk(delta);
 				cam.update(delta);
 				chunkLoader.update(Math.max((int)(CHUNK_UPDATES_PER_SECOND*delta), 1), time);
-				voxelWorld.setNeedsRebatch();
+				RealWorld.voxelWorld.setNeedsRebatch();
 			}
 		};
 		loop.create(init);

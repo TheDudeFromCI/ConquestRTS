@@ -15,7 +15,7 @@ public class LoadingScreen{
 	private final UiElement textElement;
 	public LoadingScreen(LoadingScreenTask task, Runnable onFinish){
 		this.task = task;
-		textBox = new TextBox("Loading... 0%", 90, 16, Color.black);
+		textBox = new TextBox("Loading... 0%", 90, 16, Color.white);
 		this.onFinish = onFinish;
 		GL11.glClearColor(0, 0, 0, 0);
 		textElement = new UiElement(textBox.getTexture());

@@ -17,8 +17,8 @@ import wraithaven.conquest.client.GameWorld.Voxel.Quad;
 import wraithaven.conquest.client.GameWorld.Voxel.Texture;
 
 public class UI{
-	private static final float BLOCK_ZOOM = 5;
 	public static UI INSTANCE;
+	private static final float BLOCK_ZOOM = 5;
 	private static final float MOUSE_SENSITIVITY = 0.5f;
 	private static Texture getSaveButtonTexture(boolean down){
 		if(down) return Texture.getTexture(ClientLauncher.assetFolder, "SaveGemDown.png");
@@ -51,32 +51,32 @@ public class UI{
 	private final FloatBuffer modelView = BufferUtils.createFloatBuffer(16);
 	private final Matrix4f modelViewMatrix = new Matrix4f();
 	private boolean mouseDown,
-			mouseOnRed,
-			mouseOnGreen,
-			mouseOnBlue,
-			mouseOnTemplate,
-			mouseOnTextures,
-			mouseOnInventory;
+	mouseOnRed,
+	mouseOnGreen,
+	mouseOnBlue,
+	mouseOnTemplate,
+	mouseOnTextures,
+	mouseOnInventory;
 	private double mouseDownX,
-			mouseDownY;
+	mouseDownY;
 	private boolean mouseMove;
 	private double mouseX,
-			mouseY;
+	mouseY;
 	private final Vec3f pos = new Vec3f();
 	private final HorizontalGemSlider redGem;
 	private final UiElement saveButton;
 	private boolean saveDown;
 	private final Shapes shapes;
 	private float shiftYaw,
-			shiftPitch;
+	shiftPitch;
 	private final VerticalGemSlider templateGem;
 	private final Vector4f tempVector = new Vector4f();
 	private final HorizontalGemSlider textureGem;
 	private final Textures textures;
 	private double xOffset,
-			yOffset;
+	yOffset;
 	public UI(){
-		INSTANCE = this;
+		UI.INSTANCE = this;
 		background = new UiElement(Texture.getTexture(ClientLauncher.assetFolder, "Block Palette Background.png"));
 		floatingBlock = new FloatingBlock();
 		shapes = new Shapes();
@@ -108,7 +108,7 @@ public class UI{
 			textures = new Textures((float)width, (float)height);
 			inventoryView = new InventoryView((float)width, (float)height, background.x, background.y);
 			{
-				saveButton = new UiElement(getSaveButtonTexture(false));
+				saveButton = new UiElement(UI.getSaveButtonTexture(false));
 				saveButton.w = 97;
 				saveButton.h = 71;
 				saveButton.x = 370/1024f*(float)width+background.x;
@@ -130,8 +130,8 @@ public class UI{
 		y -= Loop.screenRes.height/2.0;
 		x /= Loop.screenRes.width/2.0;
 		y /= Loop.screenRes.height/2.0;
-		x *= (BLOCK_ZOOM/2)*Loop.screenRes.width/Loop.screenRes.height;
-		y *= (BLOCK_ZOOM/2);
+		x *= (UI.BLOCK_ZOOM/2)*Loop.screenRes.width/Loop.screenRes.height;
+		y *= (UI.BLOCK_ZOOM/2);
 		pos.set((float)x, (float)y, 100);
 		dir.set(0, 0, -1);
 		int i, j, k;
@@ -170,7 +170,7 @@ public class UI{
 		return true;
 	}
 	public void dispose(){
-		INSTANCE = null;
+		UI.INSTANCE = null;
 		floatingBlock.dispose();
 		shapes.dispose();
 	}
@@ -244,8 +244,8 @@ public class UI{
 				textureGem.setSliderPosition(x-xOffset);
 				textures.updateSliderPosition(textureGem.sliderPercent);
 			}else{
-				shiftYaw += (x-mouseDownX)*MOUSE_SENSITIVITY;
-				shiftPitch -= (y-mouseDownY)*MOUSE_SENSITIVITY;
+				shiftYaw += (x-mouseDownX)*UI.MOUSE_SENSITIVITY;
+				shiftPitch -= (y-mouseDownY)*UI.MOUSE_SENSITIVITY;
 				if(shiftPitch>90) shiftPitch = 90;
 				if(shiftPitch<-90) shiftPitch = -90;
 			}
@@ -294,20 +294,20 @@ public class UI{
 	public void render(){
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		MatrixUtils.setupImageOrtho(Loop.screenRes.width, Loop.screenRes.height, -1, 1);
-		renderElement(background);
-		renderElement(redGem.gem);
-		renderElement(greenGem.gem);
-		renderElement(blueGem.gem);
-		renderElement(templateGem.gem);
-		renderElement(textureGem.gem);
-		renderElement(inventoryGem.gem);
-		renderElement(saveButton);
+		UI.renderElement(background);
+		UI.renderElement(redGem.gem);
+		UI.renderElement(greenGem.gem);
+		UI.renderElement(blueGem.gem);
+		UI.renderElement(templateGem.gem);
+		UI.renderElement(textureGem.gem);
+		UI.renderElement(inventoryGem.gem);
+		UI.renderElement(saveButton);
 		textures.render();
 		MatrixUtils.setupOrtho(Shapes.BLOCK_ZOOM*Loop.screenRes.width/Loop.screenRes.height, Shapes.BLOCK_ZOOM, -1000, 1000);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		shapes.render();
 		inventoryView.render();
-		MatrixUtils.setupOrtho(BLOCK_ZOOM*Loop.screenRes.width/Loop.screenRes.height, BLOCK_ZOOM, -1000, 1000);
+		MatrixUtils.setupOrtho(UI.BLOCK_ZOOM*Loop.screenRes.width/Loop.screenRes.height, UI.BLOCK_ZOOM, -1000, 1000);
 		GL11.glPushMatrix();
 		GL11.glTranslatef(-0.6f, 1, -3);
 		GL11.glRotatef(shiftPitch, 1, 0, 0);
@@ -370,16 +370,16 @@ public class UI{
 			if(saveDown&&x>=saveButton.x&&x<saveButton.x+saveButton.w&&y>=saveButton.y&&y<saveButton.y+saveButton.h){
 				Loop.INSTANCE.getInventory().addBlock(shapes.getCurrentShape(), cubeTextures.duplicate());
 			}
-			if(saveDown) saveButton.texture = getSaveButtonTexture(false);
+			if(saveDown) saveButton.texture = UI.getSaveButtonTexture(false);
 			saveDown = false;
 			return false;
 		}
 		if(x>=saveButton.x&&x<saveButton.x+saveButton.w&&y>=saveButton.y&&y<saveButton.y+saveButton.h){
-			saveButton.texture = getSaveButtonTexture(true);
+			saveButton.texture = UI.getSaveButtonTexture(true);
 			saveDown = true;
 			return true;
 		}
-		if(saveDown) saveButton.texture = getSaveButtonTexture(false);
+		if(saveDown) saveButton.texture = UI.getSaveButtonTexture(false);
 		saveDown = false;
 		return false;
 	}
