@@ -323,6 +323,7 @@ public class GuiHandler{
 				&&mouseY<saveButton.y+saveButton.h){
 			new FileChooser(new FileChooserResponse(){
 				public void run(File file){
+					togglePauseMenu();
 					SaveSystem.save(file);
 				}
 			}, true, ".building");
@@ -334,6 +335,7 @@ public class GuiHandler{
 				&&mouseY<loadButton.y+loadButton.h){
 			new FileChooser(new FileChooserResponse(){
 				public void run(File file){
+					togglePauseMenu();
 					SaveSystem.load(file);
 				}
 			}, false, ".building");

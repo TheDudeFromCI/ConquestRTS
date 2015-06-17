@@ -14,6 +14,7 @@ public class Chunk{
 	public static final int HIGH_BLOCK_COUNT = Chunk.BLOCKS_PER_CHUNK-1;
 	public static final int HIGH_SMALL_BLOCK = Chunk.BLOCKS_PER_CHUNK*8-1;
 	public static final int CHUNK_Y_LENGTH = Chunk.BLOCKS_PER_CHUNK*Chunk.BLOCKS_PER_CHUNK;
+	private static final int SMALL_BLOCKS_SQUARED = (int)Math.pow(BLOCKS_PER_CHUNK*8, 2);
 	private static final ArrayList<BlockSideProperties> PROPS_TEMP_STORAGE = new ArrayList();
 	private static final ChunkXQuadCounter QUAD_COUNTER_X = new ChunkXQuadCounter();
 	private static final ChunkYQuadCounter QUAD_COUNTER_Y = new ChunkYQuadCounter();
@@ -33,7 +34,7 @@ public class Chunk{
 		short loc2 = chunk2.blocks[index2];
 		if(loc1==IndexManager.AIR_BLOCK)return false;
 		if(loc2==IndexManager.AIR_BLOCK)return false;
-		if(Loop.INSTANCE.getVoxelWorld().getIndexManager().getBlock(loc2).textures.transparent()) return true;
+		if(Loop.INSTANCE.getVoxelWorld().getIndexManager().getBlock(loc2).textures.transparent())return true;
 		return false;
 	}
 	final ArrayList<QuadBatch> batches = new ArrayList(1);
@@ -56,7 +57,7 @@ public class Chunk{
 		endY = startY+Chunk.HIGH_BLOCK_COUNT;
 		endZ = startZ+Chunk.HIGH_BLOCK_COUNT;
 		for(int i = 0; i<blocks.length; i++)
-			blocks[i] = -1;
+			blocks[i] = IndexManager.AIR_BLOCK;
 	}
 	void addHidden(){
 		hidden++;
@@ -79,7 +80,7 @@ public class Chunk{
 			for(y = 0; y<Chunk.BLOCKS_PER_CHUNK; y++)
 				for(z = 0; z<Chunk.BLOCKS_PER_CHUNK; z++){
 					index = Chunk.blockIndex(x, y, z);
-					if(blocks[index]==-1) continue;
+					if(blocks[index]==IndexManager.AIR_BLOCK)continue;
 					props = new BlockSideProperties();
 					block = world.getIndexManager().getBlock(blocks[index]);
 					props.texture = block.textures.getTexture(side);
@@ -96,7 +97,7 @@ public class Chunk{
 			for(x = 0; x<Chunk.BLOCKS_PER_CHUNK; x++)
 				for(z = 0; z<Chunk.BLOCKS_PER_CHUNK; z++){
 					index = Chunk.blockIndex(x, y, z);
-					if(blocks[index]==-1) continue;
+					if(blocks[index]==IndexManager.AIR_BLOCK)continue;
 					props = new BlockSideProperties();
 					block = world.getIndexManager().getBlock(blocks[index]);
 					props.texture = block.textures.getTexture(side);
@@ -113,7 +114,7 @@ public class Chunk{
 			for(x = 0; x<Chunk.BLOCKS_PER_CHUNK; x++)
 				for(y = 0; y<Chunk.BLOCKS_PER_CHUNK; y++){
 					index = Chunk.blockIndex(x, y, z);
-					if(blocks[index]==-1) continue;
+					if(blocks[index]==IndexManager.AIR_BLOCK)continue;
 					props = new BlockSideProperties();
 					block = world.getIndexManager().getBlock(blocks[index]);
 					props.texture = block.textures.getTexture(side);
@@ -158,7 +159,7 @@ public class Chunk{
 		int blockY = y/8;
 		int blockZ = z/8;
 		int index = Chunk.blockIndex(blockX, blockY, blockZ);
-		if(blocks[index]==-1)return false;
+		if(blocks[index]==IndexManager.AIR_BLOCK)return false;
 		Block block = world.getIndexManager().getBlock(blocks[index]);
 		if(props==null
 				||(block.textures.getTexture(props.side)==props.texture
@@ -170,11 +171,8 @@ public class Chunk{
 	}
 	private boolean getSmallBlockNeighbor(Chunk chunk1, Chunk chunk2, int ox, int oy, int oz, int x, int y, int z){
 		if(makeWallForTransparency(chunk1, chunk2, ox, oy, oz, x, y, z))return false;
-		int blockX = x/8;
-		int blockY = y/8;
-		int blockZ = z/8;
-		int index = Chunk.blockIndex(blockX, blockY, blockZ);
-		if(blocks[index]==-1) return false;
+		int index = Chunk.blockIndex(x/8, y/8, z/8);
+		if(blocks[index]==IndexManager.AIR_BLOCK)return false;
 		Block block = world.getIndexManager().getBlock(blocks[index]);
 		return block.shape.getBlock(x&7, y&7, z&7, block.rotation);
 	}
@@ -204,9 +202,13 @@ public class Chunk{
 		for(y = 0; y<Chunk.SMALL_BLOCK_COUNT; y++)
 			for(z = 0; z<Chunk.SMALL_BLOCK_COUNT; z++)
 				Chunk.TEMP_QUADS[y][z] = false;
+		int blocks = 0;
 		for(y = pos1; y<pos1+size; y++)
-			for(z = pos2; z<pos2+size; z++)
+			for(z = pos2; z<pos2+size; z++){
 				Chunk.TEMP_QUADS[y][z] = getSmallBlock(x, y, z, props)&&!hasSmallNeighbor(x, y, z, side);
+				if(Chunk.TEMP_QUADS[y][z])blocks++;
+			}
+		if(blocks==Chunk.SMALL_BLOCKS_SQUARED)return;
 		if((q = QuadOptimizer.optimize(Chunk.TEMP_STORAGE, Chunk.TEMP_STORAGE_2, Chunk.TEMP_QUADS, Chunk.SMALL_BLOCK_COUNT, Chunk.SMALL_BLOCK_COUNT))>0){
 			Chunk.QUAD_COUNTER_X.setup(startX, startY, startZ, x, side, batch, props.rotation, props.r, props.g, props.b);
 			QuadOptimizer.countQuads(Chunk.QUAD_COUNTER_X, Chunk.TEMP_STORAGE, Chunk.SMALL_BLOCK_COUNT, Chunk.SMALL_BLOCK_COUNT, q);
@@ -217,9 +219,13 @@ public class Chunk{
 		for(x = 0; x<Chunk.SMALL_BLOCK_COUNT; x++)
 			for(z = 0; z<Chunk.SMALL_BLOCK_COUNT; z++)
 				Chunk.TEMP_QUADS[x][z] = false;
+		int blocks = 0;
 		for(x = pos1; x<pos1+size; x++)
-			for(z = pos2; z<pos2+size; z++)
+			for(z = pos2; z<pos2+size; z++){
 				Chunk.TEMP_QUADS[x][z] = getSmallBlock(x, y, z, props)&&!hasSmallNeighbor(x, y, z, side);
+				if(Chunk.TEMP_QUADS[x][z])blocks++;
+			}
+		if(blocks==Chunk.SMALL_BLOCKS_SQUARED)return;
 		if((q = QuadOptimizer.optimize(Chunk.TEMP_STORAGE, Chunk.TEMP_STORAGE_2, Chunk.TEMP_QUADS, Chunk.SMALL_BLOCK_COUNT, Chunk.SMALL_BLOCK_COUNT))>0){
 			Chunk.QUAD_COUNTER_Y.setup(startX, startY, startZ, y, side, batch, props.rotation, props.r, props.g, props.b);
 			QuadOptimizer.countQuads(Chunk.QUAD_COUNTER_Y, Chunk.TEMP_STORAGE, Chunk.SMALL_BLOCK_COUNT, Chunk.SMALL_BLOCK_COUNT, q);
@@ -230,9 +236,13 @@ public class Chunk{
 		for(x = 0; x<Chunk.SMALL_BLOCK_COUNT; x++)
 			for(y = 0; y<Chunk.SMALL_BLOCK_COUNT; y++)
 				Chunk.TEMP_QUADS[x][y] = false;
+		int blocks = 0;
 		for(x = pos1; x<pos1+size; x++)
-			for(y = pos2; y<pos2+size; y++)
+			for(y = pos2; y<pos2+size; y++){
 				Chunk.TEMP_QUADS[x][y] = getSmallBlock(x, y, z, props)&&!hasSmallNeighbor(x, y, z, side);
+				if(Chunk.TEMP_QUADS[x][y])blocks++;
+			}
+		if(blocks==Chunk.SMALL_BLOCKS_SQUARED)return;
 		if((q = QuadOptimizer.optimize(Chunk.TEMP_STORAGE, Chunk.TEMP_STORAGE_2, Chunk.TEMP_QUADS, Chunk.SMALL_BLOCK_COUNT, Chunk.SMALL_BLOCK_COUNT))>0){
 			Chunk.QUAD_COUNTER_Z.setup(startX, startY, startZ, z, side, batch, props.rotation, props.r, props.g, props.b);
 			QuadOptimizer.countQuads(Chunk.QUAD_COUNTER_Z, Chunk.TEMP_STORAGE, Chunk.SMALL_BLOCK_COUNT, Chunk.SMALL_BLOCK_COUNT, q);
@@ -288,7 +298,7 @@ public class Chunk{
 		y &= Chunk.HIGH_BLOCK_COUNT;
 		z &= Chunk.HIGH_BLOCK_COUNT;
 		int index = Chunk.blockIndex(x, y, z);
-		if(blocks[index]==blockIndex) return false;
+		if(blocks[index]==blockIndex)return false;
 		blocks[index] = blockIndex;
 		removeHidden();
 		needsBatchUpdate = true;

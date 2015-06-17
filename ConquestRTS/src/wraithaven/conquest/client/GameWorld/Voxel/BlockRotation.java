@@ -100,6 +100,7 @@ public class BlockRotation{
 		rz = rotation.z;
 	}
 	public void rotate(int[] pos){
+		if(index==0)return;
 		BlockRotation.tempVec.x = pos[0]-3.5f;
 		BlockRotation.tempVec.y = pos[1]-3.5f;
 		BlockRotation.tempVec.z = pos[2]-3.5f;

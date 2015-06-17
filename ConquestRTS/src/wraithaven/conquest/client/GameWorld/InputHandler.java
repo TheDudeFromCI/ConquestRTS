@@ -2,15 +2,13 @@ package wraithaven.conquest.client.GameWorld;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
-import wraithaven.conquest.client.GameWorld.Voxel.Camera;
+import wraithaven.conquest.client.BuildingCreator.Loop;
 
 public class InputHandler{
-	private final Camera cam;
 	private Sphere cameraSphere = new Sphere();
 	public float moveSpeed = 8;
 	private boolean w, a, s, d;
-	public InputHandler(Camera cam){
-		this.cam = cam;
+	public InputHandler(){
 		cameraSphere.r = 0.3f;
 	}
 	public void onKey(long window, int key, int action){
@@ -18,37 +16,41 @@ public class InputHandler{
 		if(key==GLFW.GLFW_KEY_W){
 			if(action==GLFW.GLFW_PRESS)w = true;
 			else if(action==GLFW.GLFW_RELEASE)w = false;
+			return;
 		}
 		if(key==GLFW.GLFW_KEY_A){
 			if(action==GLFW.GLFW_PRESS)a = true;
 			else if(action==GLFW.GLFW_RELEASE)a = false;
+			return;
 		}
 		if(key==GLFW.GLFW_KEY_S){
 			if(action==GLFW.GLFW_PRESS)s = true;
 			else if(action==GLFW.GLFW_RELEASE)s = false;
+			return;
 		}
 		if(key==GLFW.GLFW_KEY_D){
 			if(action==GLFW.GLFW_PRESS)d = true;
 			else if(action==GLFW.GLFW_RELEASE)d = false;
+			return;
 		}
 	}
 	public void processWalk(double delta){
 		delta *= moveSpeed;
 		if(w){
-			cam.goalX += delta*(float)Math.sin(Math.toRadians(cam.ry));
-			cam.goalZ -= delta*(float)Math.cos(Math.toRadians(cam.ry));
+			Loop.INSTANCE.getCamera().goalX += delta*(float)Math.sin(Math.toRadians(Loop.INSTANCE.getCamera().ry));
+			Loop.INSTANCE.getCamera().goalZ -= delta*(float)Math.cos(Math.toRadians(Loop.INSTANCE.getCamera().ry));
 		}
 		if(a){
-			cam.goalX += delta*(float)Math.sin(Math.toRadians(cam.ry-90));
-			cam.goalZ -= delta*(float)Math.cos(Math.toRadians(cam.ry-90));
+			Loop.INSTANCE.getCamera().goalX += delta*(float)Math.sin(Math.toRadians(Loop.INSTANCE.getCamera().ry-90));
+			Loop.INSTANCE.getCamera().goalZ -= delta*(float)Math.cos(Math.toRadians(Loop.INSTANCE.getCamera().ry-90));
 		}
 		if(s){
-			cam.goalX -= delta*(float)Math.sin(Math.toRadians(cam.ry));
-			cam.goalZ += delta*(float)Math.cos(Math.toRadians(cam.ry));
+			Loop.INSTANCE.getCamera().goalX -= delta*(float)Math.sin(Math.toRadians(Loop.INSTANCE.getCamera().ry));
+			Loop.INSTANCE.getCamera().goalZ += delta*(float)Math.cos(Math.toRadians(Loop.INSTANCE.getCamera().ry));
 		}
 		if(d){
-			cam.goalX += delta*(float)Math.sin(Math.toRadians(cam.ry+90));
-			cam.goalZ -= delta*(float)Math.cos(Math.toRadians(cam.ry+90));
+			Loop.INSTANCE.getCamera().goalX += delta*(float)Math.sin(Math.toRadians(Loop.INSTANCE.getCamera().ry+90));
+			Loop.INSTANCE.getCamera().goalZ -= delta*(float)Math.cos(Math.toRadians(Loop.INSTANCE.getCamera().ry+90));
 		}
 	}
 }

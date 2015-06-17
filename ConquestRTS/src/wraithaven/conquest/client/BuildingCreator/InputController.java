@@ -5,6 +5,7 @@ import java.nio.IntBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
+import wraithaven.conquest.client.GameWorld.Voxel.BlockIndexing.IndexManager;
 import wraithaven.conquest.client.ClientLauncher;
 import wraithaven.conquest.client.GameWorld.BoundingBox;
 import wraithaven.conquest.client.GameWorld.Sphere;
@@ -42,7 +43,7 @@ public class InputController{
 		cameraSphere.r = InputController.CAMERA_RADIUS;
 	}
 	private boolean canMoveTo(VoxelWorld world, float sx, float sy, float sz){
-		if(sx<0||sy<0||sz<0||sx>=BuildingCreator.WORLD_BOUNDS_SIZE||sz>=BuildingCreator.WORLD_BOUNDS_SIZE||sz>=BuildingCreator.WORLD_BOUNDS_SIZE) return false;
+		if(sx<0||sy<0||sz<0||sx>=BuildingCreator.WORLD_BOUNDS_SIZE||sy>=BuildingCreator.WORLD_BOUNDS_SIZE||sz>=BuildingCreator.WORLD_BOUNDS_SIZE)return false;
 		cameraSphere.x = sx;
 		cameraSphere.y = sy;
 		cameraSphere.z = sz;
@@ -55,7 +56,7 @@ public class InputController{
 		for(x = bcx1; x<=bcx2; x++){
 			for(y = bcy1; y<=bcy2; y++){
 				for(z = bcz1; z<=bcz2; z++){
-					if(world.getBlock(x, y, z, false)==-1)continue;
+					if(world.getBlock(x, y, z, false)==IndexManager.AIR_BLOCK)continue;
 					boundingBox.x1 = x;
 					boundingBox.y1 = y;
 					boundingBox.z1 = z;
@@ -188,16 +189,16 @@ public class InputController{
 		if(a) currentCamX += delta*(float)Math.sin(Math.toRadians(Loop.INSTANCE.getCamera().ry-90));
 		if(s) currentCamX -= delta*(float)Math.sin(Math.toRadians(Loop.INSTANCE.getCamera().ry));
 		if(d) currentCamX += delta*(float)Math.sin(Math.toRadians(Loop.INSTANCE.getCamera().ry+90));
-		if(canMoveTo(world, currentCamX, currentCamY, currentCamZ)) Loop.INSTANCE.getCamera().goalX = currentCamX;
+		if(canMoveTo(world, currentCamX, currentCamY, currentCamZ))Loop.INSTANCE.getCamera().goalX = currentCamX;
 		currentCamX = Loop.INSTANCE.getCamera().goalX;
 		if(w) currentCamZ -= delta*(float)Math.cos(Math.toRadians(Loop.INSTANCE.getCamera().ry));
 		if(a) currentCamZ -= delta*(float)Math.cos(Math.toRadians(Loop.INSTANCE.getCamera().ry-90));
 		if(s) currentCamZ += delta*(float)Math.cos(Math.toRadians(Loop.INSTANCE.getCamera().ry));
 		if(d) currentCamZ -= delta*(float)Math.cos(Math.toRadians(Loop.INSTANCE.getCamera().ry+90));
-		if(canMoveTo(world, currentCamX, currentCamY, currentCamZ)) Loop.INSTANCE.getCamera().goalZ = currentCamZ;
+		if(canMoveTo(world, currentCamX, currentCamY, currentCamZ))Loop.INSTANCE.getCamera().goalZ = currentCamZ;
 		currentCamZ = Loop.INSTANCE.getCamera().goalZ;
 		if(shift) currentCamY -= delta;
 		if(space) currentCamY += delta;
-		if(canMoveTo(world, currentCamX, currentCamY, currentCamZ)) Loop.INSTANCE.getCamera().goalY = currentCamY;
+		if(canMoveTo(world, currentCamX, currentCamY, currentCamZ))Loop.INSTANCE.getCamera().goalY = currentCamY;
 	}
 }

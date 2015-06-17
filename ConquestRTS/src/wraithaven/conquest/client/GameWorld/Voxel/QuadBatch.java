@@ -11,14 +11,12 @@ import wraithaven.conquest.client.BuildingCreator.Loop;
 
 public class QuadBatch{
 	private static final int FLOAT_SIZE = 4;
+	public static final int MAX_SIZE = 500;
 	private FloatBuffer colorBuffer;
 	private final int colorBufferId;
-	private int elementCount,
-	indexCount;
+	private int elementCount, indexCount;
 	private int i;
-	public final float centerX,
-			centerY,
-			centerZ;
+	public final float centerX, centerY, centerZ;
 	private IntBuffer indexBuffer;
 	private final int indexBufferId;
 	private final ArrayList<Quad> quads = new ArrayList();
@@ -157,5 +155,11 @@ public class QuadBatch{
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
 		GL11.glDrawElements(GL11.GL_TRIANGLES, indexCount, GL11.GL_UNSIGNED_INT, 0);
 		VoxelWorld.trisRendered += triangleCount;
+	}
+	public boolean isFull(){
+		return getSize()>=MAX_SIZE;
+	}
+	public boolean containsQuad(Quad q){
+		return quads.contains(q);
 	}
 }

@@ -24,6 +24,7 @@ public class ChunkYQuadCounter implements QuadCounter{
 		ChunkYQuadCounter.mat3.rotate((float)Math.toRadians(270), Vector3f.Z_AXIS);
 	}
 	private QuadBatch batch;
+	private QuadListener listener;
 	private int y, side, startX, startY, startZ, r, m;
 	public void addQuad(int x, int z, int w, int h){
 		float smallX = x/8f+startX;
@@ -70,7 +71,8 @@ public class ChunkYQuadCounter implements QuadCounter{
 			next(  z, x+w);
 		}
 		rot();
-		batch.addQuad(new Quad(ChunkYQuadCounter.QUAD_POINTS, ChunkYQuadCounter.COLORS, ChunkYQuadCounter.TEXTURE_POSITIONS, side));
+		if(listener!=null)listener.addQuad(new Quad(ChunkYQuadCounter.QUAD_POINTS, ChunkYQuadCounter.COLORS, ChunkYQuadCounter.TEXTURE_POSITIONS, side));
+		else batch.addQuad(new Quad(ChunkYQuadCounter.QUAD_POINTS, ChunkYQuadCounter.COLORS, ChunkYQuadCounter.TEXTURE_POSITIONS, side));
 	}
 	private void next(float x, float y){
 		ChunkYQuadCounter.TEXTURE_POSITIONS[  m] = y/8f;
@@ -113,6 +115,20 @@ public class ChunkYQuadCounter implements QuadCounter{
 		this.y      =      y;
 		this.side   =   side;
 		this.batch  =  batch;
+		this.listener = null;
+		this.startX = startX;
+		this.startY = startY;
+		this.startZ = startZ;
+		this.r      =      r;
+		ChunkYQuadCounter.COLORS[0] = red;
+		ChunkYQuadCounter.COLORS[1] = green;
+		ChunkYQuadCounter.COLORS[2] = blue;
+	}
+	public void setup(int startX, int startY, int startZ, int y, int side, QuadListener listener, int r, float red, float green, float blue){
+		this.y      =      y;
+		this.side   =   side;
+		this.listener  =  listener;
+		this.batch = null;
 		this.startX = startX;
 		this.startY = startY;
 		this.startZ = startZ;

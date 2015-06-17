@@ -24,10 +24,11 @@ public class ChunkXQuadCounter implements QuadCounter{
 		ChunkXQuadCounter.mat3.rotate((float)Math.toRadians(270), Vector3f.Z_AXIS);
 	}
 	private QuadBatch batch;
-	private int x, side, startX, startY, startZ, r, m;
+	private QuadListener listener;
+	private int x, side, startX, startY, startZ, r, m, extraOffsetY;
 	public void addQuad(int y, int z, int w, int h){
 		float smallX = x/8f+startX;
-		float smallY = y/8f+startY;
+		float smallY = y/8f+startY+extraOffsetY/8f;
 		float smallZ = z/8f+startZ;
 		float bigX   = smallX+1/8f;
 		float bigY   = smallY+w/8f;
@@ -70,7 +71,8 @@ public class ChunkXQuadCounter implements QuadCounter{
 			next(  z, y+w);
 		}
 		rot();
-		batch.addQuad(new Quad(ChunkXQuadCounter.QUAD_POINTS, ChunkXQuadCounter.COLORS, ChunkXQuadCounter.TEXTURE_POSITIONS, side));
+		if(listener!=null)listener.addQuad(new Quad(ChunkXQuadCounter.QUAD_POINTS, ChunkXQuadCounter.COLORS, ChunkXQuadCounter.TEXTURE_POSITIONS, side));
+		else batch.addQuad(new Quad(ChunkXQuadCounter.QUAD_POINTS, ChunkXQuadCounter.COLORS, ChunkXQuadCounter.TEXTURE_POSITIONS, side));
 	}
 	private void next(float x, float y){
 		ChunkXQuadCounter.TEXTURE_POSITIONS[  m] = y/8f;
@@ -113,10 +115,26 @@ public class ChunkXQuadCounter implements QuadCounter{
 		this.x      =      x;
 		this.side   =   side;
 		this.batch  =  batch;
+		this.listener = null;
 		this.startX = startX;
 		this.startY = startY;
 		this.startZ = startZ;
 		this.r      =      r;
+		this.extraOffsetY = 0;
+		ChunkXQuadCounter.COLORS[0] = red;
+		ChunkXQuadCounter.COLORS[1] = green;
+		ChunkXQuadCounter.COLORS[2] = blue;
+	}
+	public void setup(int startX, int startY, int startZ, int x, int side, QuadListener listener, int r, float red, float green, float blue, int extraOffsetY){
+		this.x      =      x;
+		this.side   =   side;
+		this.batch  =  null;
+		this.listener = listener;
+		this.startX = startX;
+		this.startY = startY;
+		this.startZ = startZ;
+		this.r      =      r;
+		this.extraOffsetY = extraOffsetY;
 		ChunkXQuadCounter.COLORS[0] = red;
 		ChunkXQuadCounter.COLORS[1] = green;
 		ChunkXQuadCounter.COLORS[2] = blue;

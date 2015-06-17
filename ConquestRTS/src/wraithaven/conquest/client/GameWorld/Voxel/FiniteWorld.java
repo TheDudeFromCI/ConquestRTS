@@ -15,7 +15,7 @@ public class FiniteWorld implements ChunkStorage{
 		if(chunk.chunkX<bounds.chunkStartX||chunk.chunkX>bounds.chunkEndX) return;
 		if(chunk.chunkY<bounds.chunkStartY||chunk.chunkY>bounds.chunkEndY) return;
 		if(chunk.chunkZ<bounds.chunkStartZ||chunk.chunkZ>bounds.chunkEndZ) return;
-		chunks[chunk.chunkX-bounds.startX][chunk.chunkY-bounds.startY][chunk.chunkZ-bounds.startZ] = chunk;
+		chunks[chunk.chunkX-bounds.chunkStartX][chunk.chunkY-bounds.chunkStartY][chunk.chunkZ-bounds.chunkStartZ] = chunk;
 		chunkList.add(chunk);
 	}
 	public Chunk getChunk(int index){
@@ -25,7 +25,7 @@ public class FiniteWorld implements ChunkStorage{
 		if(x<bounds.chunkStartX||x>bounds.chunkEndX) return null;
 		if(y<bounds.chunkStartY||y>bounds.chunkEndY) return null;
 		if(z<bounds.chunkStartZ||z>bounds.chunkEndZ) return null;
-		return chunks[x-bounds.startX][y-bounds.startY][z-bounds.startZ];
+		return chunks[x-bounds.chunkStartX][y-bounds.chunkStartY][z-bounds.chunkStartZ];
 	}
 	public int getChunkCount(){
 		return chunkList.size();
@@ -34,7 +34,7 @@ public class FiniteWorld implements ChunkStorage{
 		if(chunk.chunkX<bounds.chunkStartX||chunk.chunkX>bounds.chunkEndX) return;
 		if(chunk.chunkY<bounds.chunkStartY||chunk.chunkY>bounds.chunkEndY) return;
 		if(chunk.chunkZ<bounds.chunkStartZ||chunk.chunkZ>bounds.chunkEndZ) return;
-		chunks[chunk.chunkX-bounds.startX][chunk.chunkY-bounds.startY][chunk.chunkZ-bounds.startZ] = null;
+		chunks[chunk.chunkX-bounds.chunkStartX][chunk.chunkY-bounds.chunkStartY][chunk.chunkZ-bounds.chunkStartZ] = null;
 		chunkList.remove(chunk);
 	}
 }

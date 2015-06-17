@@ -1,14 +1,13 @@
 package wraithaven.conquest.client.GameWorld.Voxel;
 
+import wraithaven.conquest.client.GameWorld.Voxel.BlockIndexing.IndexManager;
 import wraithaven.conquest.client.GameWorld.Plotter;
 import wraithaven.conquest.client.GameWorld.Vec3i;
 
 public class CameraTarget{
 	private final CameraTargetCallback callback = new CameraTargetCallback();
 	private final Camera cam;
-	private int chunkX,
-			chunkY,
-			chunkZ;
+	private int chunkX, chunkY, chunkZ;
 	private Chunk lastChunk;
 	private final Plotter plotter = new Plotter(0, 0, 0, 1, 1, 1);
 	private final Vec3i v = plotter.get();
@@ -22,8 +21,12 @@ public class CameraTarget{
 			chunkX = v.x>>Chunk.CHUNK_BITS;
 			chunkY = v.y>>Chunk.CHUNK_BITS;
 			chunkZ = v.z>>Chunk.CHUNK_BITS;
-			if(lastChunk==null||lastChunk.chunkX!=chunkX||lastChunk.chunkY!=chunkY||lastChunk.chunkZ!=chunkZ) lastChunk = world.getChunk(chunkX, chunkY, chunkZ, load);
-			if(lastChunk!=null&&(callback.block = lastChunk.getBlock(v.x, v.y, v.z))!=-1){
+			if(lastChunk==null
+					||lastChunk.chunkX!=chunkX
+					||lastChunk.chunkY!=chunkY
+					||lastChunk.chunkZ!=chunkZ)lastChunk = world.getChunk(chunkX, chunkY, chunkZ, load);
+			if(lastChunk!=null
+					&&(callback.block = lastChunk.getBlock(v.x, v.y, v.z))!=IndexManager.AIR_BLOCK){
 				callback.x = v.x;
 				callback.y = v.y;
 				callback.z = v.z;
@@ -31,7 +34,7 @@ public class CameraTarget{
 				return callback;
 			}
 		}
-		callback.block = -1;
+		callback.block = IndexManager.AIR_BLOCK;
 		callback.side = -1;
 		return callback;
 	}

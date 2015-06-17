@@ -33,7 +33,7 @@ public class Texture{
 				buffer.put((byte)((pixel>>8)&0xFF));
 				buffer.put((byte)(pixel&0xFF));
 				buffer.put(b = (byte)((pixel>>24)&0xFF));
-				if(b!=-1) Texture.TRANSPARENT_RETURN[0] = true;
+				if(b!=-1)Texture.TRANSPARENT_RETURN[0] = true;
 			}
 		}
 		buffer.flip();

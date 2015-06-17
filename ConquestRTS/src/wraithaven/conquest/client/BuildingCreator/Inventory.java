@@ -100,7 +100,8 @@ public class Inventory{
 		mouseY = Loop.screenRes.height-y;
 	}
 	public void onMouseUp(){
-		if(selectedIcon==-1&&selectedHotbar==-1)return;
+		if(selectedIcon==-1
+				&&selectedHotbar==-1)return;
 		if(selectedIcon>-1){
 			if(mouseX>=Loop.screenRes.width-GuiHandler.HOTBAR_SLOT){
 				float y;
@@ -144,8 +145,8 @@ public class Inventory{
 		int lastShown = Math.min(scrollPosition+Inventory.TOTAL_SHOWN, blocks.size());
 		for(int i = scrollPosition; i<lastShown; i++)
 			blocks.get(i).render(Inventory.getX(i), Inventory.getY(i));
-		if(selectedIcon!=-1) blocks.get(selectedIcon).render(Inventory.getX(mouseX), Inventory.getY(mouseY));
-		if(selectedHotbar!=-1) Loop.INSTANCE.getGuiHandler().getIconManager().getIcon(selectedHotbar).render(Inventory.getX(mouseX), Inventory.getY(mouseY));
+		if(selectedIcon!=-1)blocks.get(selectedIcon).render(Inventory.getX(mouseX), Inventory.getY(mouseY));
+		if(selectedHotbar!=-1)Loop.INSTANCE.getGuiHandler().getIconManager().getIcon(selectedHotbar).render(Inventory.getX(mouseX), Inventory.getY(mouseY));
 	}
 	public void setShown(boolean shown){
 		this.shown = shown;

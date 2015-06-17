@@ -44,18 +44,18 @@ public class VoxelWorld{
 		else
 			for(int i = 0; i<chunkStorage.getChunkCount();)
 				unloadChunk(chunkStorage.getChunk(i));
-		indexManager.clear();
+		indexManager.blocks.clear();
 	}
 	public Block getBlock(int index){
 		return indexManager.getBlock(index);
 	}
 	public int getBlock(int x, int y, int z){
 		chunk = getContainingChunk(x, y, z);
-		return chunk==null?-1:chunk.getBlock(x, y, z);
+		return chunk==null?IndexManager.AIR_BLOCK:chunk.getBlock(x, y, z);
 	}
 	public int getBlock(int x, int y, int z, boolean load){
 		Chunk c = getContainingChunk(x, y, z, load);
-		if(c==null) return -1;
+		if(c==null)return IndexManager.AIR_BLOCK;
 		return c.getBlock(x, y, z);
 	}
 	public Chunk getChunk(int index){
@@ -86,8 +86,12 @@ public class VoxelWorld{
 	}
 	public Chunk loadChunk(int chunkX, int chunkY, int chunkZ){
 		if(bounds!=null){
-			if(chunkX<bounds.chunkStartX||chunkY<bounds.chunkStartY||chunkZ<bounds.chunkStartZ) return null;
-			if(chunkX>bounds.chunkEndX||chunkY>bounds.chunkEndY||chunkZ>bounds.chunkEndZ) return null;
+			if(chunkX<bounds.chunkStartX
+					||chunkY<bounds.chunkStartY
+					||chunkZ<bounds.chunkStartZ)return null;
+			if(chunkX>bounds.chunkEndX
+					||chunkY>bounds.chunkEndY
+					||chunkZ>bounds.chunkEndZ)return null;
 		}
 		chunk = new Chunk(this, chunkX, chunkY, chunkZ);
 		chunkStorage.addChunk(chunk);
@@ -146,5 +150,10 @@ public class VoxelWorld{
 		worldListener.unloadChunk(c);
 		c.dispose();
 		setNeedsRebatch();
+	}
+	public void dispose(){
+		for(int i = 0; i<chunkStorage.getChunkCount(); i++)
+			for(QuadBatch batch : getChunk(i).batches)
+				batch.cleanUp();
 	}
 }

@@ -96,7 +96,7 @@ public class QuadOptimizer{
 		}
 		for(x = 0; x<width; x++)
 			for(y = 0; y<height; y++)
-				if(storage[x][y]>-1&&!QuadOptimizer.used.contains(storage[x][y])) QuadOptimizer.used.add(storage[x][y]);
+				if(storage[x][y]>-1&&!QuadOptimizer.used.contains(storage[x][y]))QuadOptimizer.used.add(storage[x][y]);
 		for(x = 0; x<width; x++)
 			for(y = 0; y<height; y++)
 				if(storage[x][y]>-1) storage[x][y] = QuadOptimizer.used.indexOf(storage[x][y]);

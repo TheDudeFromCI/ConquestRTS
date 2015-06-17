@@ -24,6 +24,7 @@ public class Loop implements LoopObjective{
 	public static Loop INSTANCE;
 	public static float ISO_ZOOM = 0.12f;
 	public static Dimension screenRes;
+	public static int EXTRA_TERRAIN_DISTANCE = 128;
 	private static void setupOGL(){
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glEnable(GL11.GL_CULL_FACE);
@@ -88,6 +89,7 @@ public class Loop implements LoopObjective{
 		return palleteRenderer!=null;
 	}
 	public void key(long window, int key, int action){
+		if(loadingScreen!=null)return;
 		if(FileChooser.INSTANCE!=null){
 			FileChooser.INSTANCE.onKey(key, action);
 			return;
@@ -100,6 +102,7 @@ public class Loop implements LoopObjective{
 		inputController.onKey(key, action);
 	}
 	public void mouse(long window, int button, int action){
+		if(loadingScreen!=null)return;
 		if(hasPalette()){
 			if(action==GLFW.GLFW_PRESS){
 				GLFW.glfwGetCursorPos(window, mouseBufferX, mouseBufferY);
@@ -125,6 +128,7 @@ public class Loop implements LoopObjective{
 		}else userBlockHandler.mouseClick(button, action);
 	}
 	public void mouseMove(long window, double x, double y){
+		if(loadingScreen!=null)return;
 		if(hasPalette())palleteRenderer.onMouseMove(x, y);
 		else if(inventory.isShown())inventory.onMouseMove(x, y);
 		else if(guiHandler.isPaused()){
@@ -133,6 +137,7 @@ public class Loop implements LoopObjective{
 		}else inputController.processMouse(x, y);
 	}
 	public void mouseWheel(long window, double xPos, double yPos){
+		if(loadingScreen!=null)return;
 		if(hasPalette())return;
 		if(inventory.isShown())return;
 		if(guiHandler.isPaused()){
@@ -144,7 +149,7 @@ public class Loop implements LoopObjective{
 	public void preLoop(){
 		camera = new Camera(70, Loop.screenRes.width/(float)Loop.screenRes.height, Loop.CAMERA_NEAR_CLIP, 1000, false);
 		creatorWorld = new BuildCreatorWorld();
-		world = new VoxelWorld(creatorWorld, new VoxelWorldBounds(0, 0, 0, BuildingCreator.WORLD_BOUNDS_SIZE-1, BuildingCreator.WORLD_BOUNDS_SIZE-1, BuildingCreator.WORLD_BOUNDS_SIZE-1));
+		world = new VoxelWorld(creatorWorld, new VoxelWorldBounds(-EXTRA_TERRAIN_DISTANCE, 0, -EXTRA_TERRAIN_DISTANCE, BuildingCreator.WORLD_BOUNDS_SIZE-1+EXTRA_TERRAIN_DISTANCE, BuildingCreator.WORLD_BOUNDS_SIZE-1, BuildingCreator.WORLD_BOUNDS_SIZE-1+EXTRA_TERRAIN_DISTANCE));
 		BuildCreatorWorld.setup();
 		inputController = new InputController();
 		userBlockHandler = new UserBlockHandler();
@@ -156,15 +161,18 @@ public class Loop implements LoopObjective{
 		Loop.setupOGL();
 		MainLoop.FPS_SYNC = false;
 		loadingScreen = new LoadingScreen(new LoadingScreenTask(){
-			int chunkLimit = (BuildingCreator.WORLD_BOUNDS_SIZE-1)>>Chunk.CHUNK_BITS;
+			int chunkLimit = (BuildingCreator.WORLD_BOUNDS_SIZE-1+EXTRA_TERRAIN_DISTANCE)/Chunk.BLOCKS_PER_CHUNK;
 			float percent, loadingPercent, rebuildingPercent;
-			int x, z, w;
+			int extraDistance = EXTRA_TERRAIN_DISTANCE/Chunk.BLOCKS_PER_CHUNK-1;
+			int x = -extraDistance, z = -extraDistance, w;
+			int maxIterations = (int)Math.pow(Loop.EXTRA_TERRAIN_DISTANCE/Chunk.BLOCKS_PER_CHUNK+BuildingCreator.WORLD_BOUNDS_CHUNKS, 2), loops;
 			private void load(){
 				for(int i = 0; i<64; i++){
 					world.loadChunk(x, 0, z);
+					loops++;
 					z++;
 					if(z>chunkLimit){
-						z = 0;
+						z = -extraDistance;
 						x++;
 						if(x>chunkLimit){
 							loadingPercent = 1;
@@ -172,7 +180,7 @@ public class Loop implements LoopObjective{
 						}
 					}
 				}
-				loadingPercent = (x*chunkLimit+z)/(float)(chunkLimit*chunkLimit);
+				loadingPercent = loops/(float)maxIterations;
 			}
 			private void rebuild(){
 				for(int i = 0; i<64; i++){
@@ -183,8 +191,8 @@ public class Loop implements LoopObjective{
 				}
 			}
 			public int update(){
-				if(loadingPercent<1)load();
-				else rebuild();
+				if(loadingPercent==1)rebuild();
+				else load();
 				percent = loadingPercent*0.05f+rebuildingPercent*0.95f;
 				return (int)(percent*100);
 			}

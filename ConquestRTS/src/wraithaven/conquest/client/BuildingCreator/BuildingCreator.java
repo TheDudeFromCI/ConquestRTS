@@ -2,12 +2,14 @@ package wraithaven.conquest.client.BuildingCreator;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import wraithaven.conquest.client.GameWorld.Voxel.Chunk;
 import wraithaven.conquest.client.GameWorld.LoopControls.MainLoop;
 import wraithaven.conquest.client.GameWorld.LoopControls.WindowInitalizer;
 
 public class BuildingCreator{
 	public static final boolean DEBUG = false;
 	public static final int WORLD_BOUNDS_SIZE = 128;
+	public static final int WORLD_BOUNDS_CHUNKS = WORLD_BOUNDS_SIZE/Chunk.BLOCKS_PER_CHUNK;
 	private WindowInitalizer init;
 	private MainLoop loop;
 	private WindowInitalizer createInitalizer(){

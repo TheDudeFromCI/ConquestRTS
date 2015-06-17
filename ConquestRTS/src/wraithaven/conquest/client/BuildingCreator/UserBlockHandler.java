@@ -1,6 +1,7 @@
 package wraithaven.conquest.client.BuildingCreator;
 
 import org.lwjgl.glfw.GLFW;
+import wraithaven.conquest.client.GameWorld.Voxel.BlockIndexing.IndexManager;
 import wraithaven.conquest.client.GameWorld.BoundingBox;
 import wraithaven.conquest.client.GameWorld.Sphere;
 import wraithaven.conquest.client.GameWorld.Voxel.Block;
@@ -14,12 +15,12 @@ public class UserBlockHandler{
 	private static final double CLICK_PING_RATE = 0.2;
 	private static boolean intersectsWith(BoundingBox bb, Sphere sphere){
 		float dmin = 0;
-		if(sphere.x<bb.x1) dmin += Math.pow(sphere.x-bb.x1, 2);
-		else if(sphere.x>bb.x2) dmin += Math.pow(sphere.x-bb.x2, 2);
-		if(sphere.y<bb.y1) dmin += Math.pow(sphere.y-bb.y1, 2);
-		else if(sphere.y>bb.y2) dmin += Math.pow(sphere.y-bb.y2, 2);
-		if(sphere.z<bb.z1) dmin += Math.pow(sphere.z-bb.z1, 2);
-		else if(sphere.z>bb.z2) dmin += Math.pow(sphere.z-bb.z2, 2);
+		if(sphere.x<bb.x1)dmin += Math.pow(sphere.x-bb.x1, 2);
+		else if(sphere.x>bb.x2)dmin += Math.pow(sphere.x-bb.x2, 2);
+		if(sphere.y<bb.y1)dmin += Math.pow(sphere.y-bb.y1, 2);
+		else if(sphere.y>bb.y2)dmin += Math.pow(sphere.y-bb.y2, 2);
+		if(sphere.z<bb.z1)dmin += Math.pow(sphere.z-bb.z1, 2);
+		else if(sphere.z>bb.z2)dmin += Math.pow(sphere.z-bb.z2, 2);
 		return dmin<=Math.pow(sphere.r, 2);
 	}
 	private BlockRotation blockRotation;
@@ -28,8 +29,7 @@ public class UserBlockHandler{
 	private final Sphere cameraSphere = new Sphere();
 	private final CameraTarget cameraTarget;
 	private CubeTextures cubeTextures;
-	private boolean holdingLeftButton,
-			holdingRightButton;
+	private boolean holdingLeftButton, holdingRightButton;
 	private double lastButtonPing;
 	private BlockShape shape;
 	public UserBlockHandler(){
@@ -50,7 +50,8 @@ public class UserBlockHandler{
 	}
 	private void deleteBlock(){
 		callback = cameraTarget.getTargetBlock(Loop.INSTANCE.getVoxelWorld(), 500, false);
-		if(callback.block!=-1&&callback.y>0) Loop.INSTANCE.getVoxelWorld().setBlock(callback.x, callback.y, callback.z, (short)-1, true);
+		if(callback.block!=IndexManager.AIR_BLOCK
+				&&callback.y>0)Loop.INSTANCE.getVoxelWorld().setBlock(callback.x, callback.y, callback.z, IndexManager.AIR_BLOCK, true);
 	}
 	public void mouseClick(int button, int action){
 		if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT){
@@ -68,7 +69,7 @@ public class UserBlockHandler{
 		}else if(button==GLFW.GLFW_MOUSE_BUTTON_MIDDLE){
 			if(action==GLFW.GLFW_PRESS){
 				callback = cameraTarget.getTargetBlock(Loop.INSTANCE.getVoxelWorld(), 500, false);
-				if(callback.block!=-1){
+				if(callback.block!=IndexManager.AIR_BLOCK){
 					Block block = Loop.INSTANCE.getVoxelWorld().getBlock(callback.block);
 					BlockIcon icon;
 					for(int i = 0; i<10; i++){
@@ -101,25 +102,31 @@ public class UserBlockHandler{
 		blockRotation = Loop.INSTANCE.getGuiHandler().getSelectedRotation();
 		if(shape==null) return;
 		callback = cameraTarget.getTargetBlock(Loop.INSTANCE.getVoxelWorld(), 500, false);
-		if(callback.block!=-1){
+		if(callback.block!=IndexManager.AIR_BLOCK){
 			short index = Loop.INSTANCE.getVoxelWorld().indexOfBlock(shape, cubeTextures, blockRotation);
 			if(callback.side==0){
-				if(Loop.INSTANCE.getVoxelWorld().getBlock(callback.x+1, callback.y, callback.z, false)==-1&&!collidesWithCamera(callback.x+1, callback.y, callback.z)) Loop.INSTANCE.getVoxelWorld().setBlock(callback.x+1, callback.y, callback.z, index, true);
+				if(Loop.INSTANCE.getVoxelWorld().getBlock(callback.x+1, callback.y, callback.z, false)==IndexManager.AIR_BLOCK
+						&&!collidesWithCamera(callback.x+1, callback.y, callback.z))Loop.INSTANCE.getVoxelWorld().setBlock(callback.x+1, callback.y, callback.z, index, true);
 			}
 			if(callback.side==1){
-				if(Loop.INSTANCE.getVoxelWorld().getBlock(callback.x-1, callback.y, callback.z, false)==-1&&!collidesWithCamera(callback.x-1, callback.y, callback.z)) Loop.INSTANCE.getVoxelWorld().setBlock(callback.x-1, callback.y, callback.z, index, true);
+				if(Loop.INSTANCE.getVoxelWorld().getBlock(callback.x-1, callback.y, callback.z, false)==IndexManager.AIR_BLOCK
+						&&!collidesWithCamera(callback.x-1, callback.y, callback.z))Loop.INSTANCE.getVoxelWorld().setBlock(callback.x-1, callback.y, callback.z, index, true);
 			}
 			if(callback.side==2){
-				if(Loop.INSTANCE.getVoxelWorld().getBlock(callback.x, callback.y+1, callback.z, false)==-1&&!collidesWithCamera(callback.x, callback.y+1, callback.z)) Loop.INSTANCE.getVoxelWorld().setBlock(callback.x, callback.y+1, callback.z, index, true);
+				if(Loop.INSTANCE.getVoxelWorld().getBlock(callback.x, callback.y+1, callback.z, false)==IndexManager.AIR_BLOCK
+						&&!collidesWithCamera(callback.x, callback.y+1, callback.z))Loop.INSTANCE.getVoxelWorld().setBlock(callback.x, callback.y+1, callback.z, index, true);
 			}
 			if(callback.side==3){
-				if(Loop.INSTANCE.getVoxelWorld().getBlock(callback.x, callback.y-1, callback.z, false)==-1&&!collidesWithCamera(callback.x, callback.y-1, callback.z)) Loop.INSTANCE.getVoxelWorld().setBlock(callback.x, callback.y-1, callback.z, index, true);
+				if(Loop.INSTANCE.getVoxelWorld().getBlock(callback.x, callback.y-1, callback.z, false)==IndexManager.AIR_BLOCK
+						&&!collidesWithCamera(callback.x, callback.y-1, callback.z))Loop.INSTANCE.getVoxelWorld().setBlock(callback.x, callback.y-1, callback.z, index, true);
 			}
 			if(callback.side==4){
-				if(Loop.INSTANCE.getVoxelWorld().getBlock(callback.x, callback.y, callback.z+1, false)==-1&&!collidesWithCamera(callback.x, callback.y, callback.z+1)) Loop.INSTANCE.getVoxelWorld().setBlock(callback.x, callback.y, callback.z+1, index, true);
+				if(Loop.INSTANCE.getVoxelWorld().getBlock(callback.x, callback.y, callback.z+1, false)==IndexManager.AIR_BLOCK
+						&&!collidesWithCamera(callback.x, callback.y, callback.z+1))Loop.INSTANCE.getVoxelWorld().setBlock(callback.x, callback.y, callback.z+1, index, true);
 			}
 			if(callback.side==5){
-				if(Loop.INSTANCE.getVoxelWorld().getBlock(callback.x, callback.y, callback.z-1, false)==-1&&!collidesWithCamera(callback.x, callback.y, callback.z-1)) Loop.INSTANCE.getVoxelWorld().setBlock(callback.x, callback.y, callback.z-1, index, true);
+				if(Loop.INSTANCE.getVoxelWorld().getBlock(callback.x, callback.y, callback.z-1, false)==IndexManager.AIR_BLOCK
+						&&!collidesWithCamera(callback.x, callback.y, callback.z-1))Loop.INSTANCE.getVoxelWorld().setBlock(callback.x, callback.y, callback.z-1, index, true);
 			}
 		}
 	}
