@@ -2,10 +2,10 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="C:/Users/Phealoon/Documents/Eclipse Code/LWJGL/jar/lwjgl.jar" sourcepath="C:/Users/Phealoon/Documents/Eclipse Code/LWJGL/src.zip">
+	<classpathentry kind="lib" path="C:/Documents and Settings/TheDudeFromCI/My Documents/eclipse/LWJGL/jar/lwjgl.jar" sourcepath="C:/Documents and Settings/TheDudeFromCI/My Documents/eclipse/LWJGL/src.zip">
 		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/C:/Users/Phealoon/Documents/Eclipse%20Code/LWJGL/doc/javadoc.zip!/"/>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="C:/Users/Phealoon/Documents/Eclipse Code/LWJGL/native/windows/x64"/>
+			<attribute name="javadoc_location" value="jar:file:/C:/Documents%20and%20Settings/TheDudeFromCI/My%20Documents/eclipse/LWJGL/doc/javadoc.zip!/"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="C:/Documents and Settings/TheDudeFromCI/My Documents/eclipse/LWJGL/native"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
