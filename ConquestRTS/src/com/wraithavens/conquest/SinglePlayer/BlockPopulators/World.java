@@ -16,7 +16,6 @@ public class World{
 		world = new VoxelWorld(8);
 	}
 	public void initalize(SinglePlayerGame game){
-		Block.loadTextures();
 		if(created){
 		}else{
 			worldGen = new WorldGenerator();

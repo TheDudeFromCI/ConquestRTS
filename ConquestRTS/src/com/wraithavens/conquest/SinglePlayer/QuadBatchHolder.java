@@ -1,20 +1,18 @@
 package com.wraithavens.conquest.SinglePlayer;
 
 import java.util.ArrayList;
-import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Texture;
 
 public abstract class QuadBatchHolder{
 	private final ArrayList<QuadBatch> batches = new ArrayList();
 	private boolean compiled;
-	public final void addQuad(Quad q, Texture t){
+	public final void addQuad(Quad q){
 		if(compiled)throw new RuntimeException("Batches already compiled!");
 		for(int i = 0; i<batches.size(); i++)
-			if(batches.get(i).getTexture()==t
-			&&!batches.get(i).isFull()){
+			if(!batches.get(i).isFull()){
 				batches.get(i).addQuad(q);
 				return;
 			}
-		QuadBatch batch = new QuadBatch(t);
+		QuadBatch batch = new QuadBatch();
 		batch.addQuad(q);
 		batches.add(batch);
 	}

@@ -7,7 +7,6 @@ import com.wraithavens.conquest.SinglePlayer.Quad;
 import com.wraithavens.conquest.SinglePlayer.QuadBatchHolder;
 import com.wraithavens.conquest.SinglePlayer.QuadListener;
 import com.wraithavens.conquest.SinglePlayer.QuadOptimizer;
-import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Texture;
 
 class Chunk extends QuadBatchHolder implements EmptyChunk{
 	private static final int getIndex(int x, int y, int z){
@@ -27,12 +26,8 @@ class Chunk extends QuadBatchHolder implements EmptyChunk{
 	private static final BlockProperties PROPERTIES = new BlockProperties(Math.min(Chunk.BLOCKS_PER_CHUNK*Chunk.BLOCKS_PER_CHUNK, Block.values().length));
 	private final byte[] blocks = new byte[Chunk.TOTAL_BLOCKS];
 	private final QuadListener quadListener = new QuadListener(){
-		private Texture texture;
 		public void addQuad(Quad q){
-			Chunk.this.addQuad(q, texture);
-		}
-		public void prepare(Texture texture){
-			this.texture = texture;
+			Chunk.this.addQuad(q);
 		}
 	};
 	private boolean needsRebuild;
@@ -86,8 +81,7 @@ class Chunk extends QuadBatchHolder implements EmptyChunk{
 								&&isOpen(x, y, z, j);
 						q = QuadOptimizer.optimize(Chunk.QUAD_STORAGE, Chunk.QUAD_STORAGE_2, Chunk.QUAD_LAYER, Chunk.BLOCKS_PER_CHUNK, Chunk.BLOCKS_PER_CHUNK, Chunk.HIGH_QUALITY_QUAD_MESHING);
 						if(q==0)continue;
-						quadListener.prepare(Block.values()[Chunk.PROPERTIES.get(i)+Block.ID_SHIFT].getTexture());
-						Chunk.X_QUAD_COUNTER.setup(chunkX<<Chunk.CHUNK_BITS, chunkY<<Chunk.CHUNK_BITS, chunkZ<<Chunk.CHUNK_BITS, x, j, quadListener);
+						Chunk.X_QUAD_COUNTER.setup(chunkX<<Chunk.CHUNK_BITS, chunkY<<Chunk.CHUNK_BITS, chunkZ<<Chunk.CHUNK_BITS, x, j, quadListener, Block.values()[PROPERTIES.get(i)+Block.ID_SHIFT]);
 						QuadOptimizer.countQuads(Chunk.X_QUAD_COUNTER, Chunk.QUAD_STORAGE, Chunk.BLOCKS_PER_CHUNK, Chunk.BLOCKS_PER_CHUNK, q);
 					}
 				}
@@ -108,8 +102,7 @@ class Chunk extends QuadBatchHolder implements EmptyChunk{
 								&&isOpen(x, y, z, j);
 						q = QuadOptimizer.optimize(Chunk.QUAD_STORAGE, Chunk.QUAD_STORAGE_2, Chunk.QUAD_LAYER, Chunk.BLOCKS_PER_CHUNK, Chunk.BLOCKS_PER_CHUNK, Chunk.HIGH_QUALITY_QUAD_MESHING);
 						if(q==0)continue;
-						quadListener.prepare(Block.values()[Chunk.PROPERTIES.get(i)+Block.ID_SHIFT].getTexture());
-						Chunk.Y_QUAD_COUNTER.setup(chunkX<<Chunk.CHUNK_BITS, chunkY<<Chunk.CHUNK_BITS, chunkZ<<Chunk.CHUNK_BITS, y, j, quadListener);
+						Chunk.Y_QUAD_COUNTER.setup(chunkX<<Chunk.CHUNK_BITS, chunkY<<Chunk.CHUNK_BITS, chunkZ<<Chunk.CHUNK_BITS, y, j, quadListener, Block.values()[PROPERTIES.get(i)+Block.ID_SHIFT]);
 						QuadOptimizer.countQuads(Chunk.Y_QUAD_COUNTER, Chunk.QUAD_STORAGE, Chunk.BLOCKS_PER_CHUNK, Chunk.BLOCKS_PER_CHUNK, q);
 					}
 				}
@@ -129,8 +122,7 @@ class Chunk extends QuadBatchHolder implements EmptyChunk{
 								&&isOpen(x, y, z, j);
 						q = QuadOptimizer.optimize(Chunk.QUAD_STORAGE, Chunk.QUAD_STORAGE_2, Chunk.QUAD_LAYER, Chunk.BLOCKS_PER_CHUNK, Chunk.BLOCKS_PER_CHUNK, Chunk.HIGH_QUALITY_QUAD_MESHING);
 						if(q==0)continue;
-						quadListener.prepare(Block.values()[Chunk.PROPERTIES.get(i)+Block.ID_SHIFT].getTexture());
-						Chunk.Z_QUAD_COUNTER.setup(chunkX<<Chunk.CHUNK_BITS, chunkY<<Chunk.CHUNK_BITS, chunkZ<<Chunk.CHUNK_BITS, z, j, quadListener);
+						Chunk.Z_QUAD_COUNTER.setup(chunkX<<Chunk.CHUNK_BITS, chunkY<<Chunk.CHUNK_BITS, chunkZ<<Chunk.CHUNK_BITS, z, j, quadListener, Block.values()[PROPERTIES.get(i)+Block.ID_SHIFT]);
 						QuadOptimizer.countQuads(Chunk.Z_QUAD_COUNTER, Chunk.QUAD_STORAGE, Chunk.BLOCKS_PER_CHUNK, Chunk.BLOCKS_PER_CHUNK, q);
 					}
 				}

@@ -1,6 +1,7 @@
 package com.wraithavens.conquest.SinglePlayer.RenderHelpers;
 
 import org.lwjgl.opengl.GL11;
+import com.wraithavens.conquest.Math.Vector3f;
 
 public class Camera{
 	public float cameraMoveSpeed = 1;
@@ -28,5 +29,11 @@ public class Camera{
 		z = (float)((z*(1f-delta*cameraMoveSpeed))+(goalZ*delta*cameraMoveSpeed));
 		translateInvertMatrix();
 		frustum.calculateFrustum();
+	}
+	public Vector3f getDirection(Vector3f direction){
+		direction.x = (float)(Math.cos(Math.toRadians(ry-90))*Math.cos(Math.toRadians(-rx)));
+		direction.y = (float)Math.sin(Math.toRadians(-rx));
+		direction.z = (float)(Math.sin(Math.toRadians(ry-90))*Math.cos(Math.toRadians(-rx)));
+		return direction;
 	}
 }

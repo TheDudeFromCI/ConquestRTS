@@ -6,6 +6,7 @@ import java.io.FileReader;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL32;
+import com.wraithavens.conquest.Math.Vector3f;
 
 public class ShaderProgram{
 	private static String readFile(File file){
@@ -28,6 +29,7 @@ public class ShaderProgram{
 	private final int vs;
 	private final int fs;
 	private final int gs;
+	private int[] uniforms;
 	public ShaderProgram(File vertexShader, File geometryShader, File fragmentShader){
 		this(ShaderProgram.readFile(vertexShader), geometryShader==null?null:ShaderProgram.readFile(geometryShader), ShaderProgram.readFile(fragmentShader));
 	}
@@ -67,5 +69,17 @@ public class ShaderProgram{
 	}
 	public int getAttributeLocation(String attribute){
 		return GL20.glGetAttribLocation(program, attribute);
+	}
+	public void loadUniforms(String... uni){
+		uniforms = new int[uni.length];
+		int i = 0;
+		for(String s : uni){
+			uniforms[i] = GL20.glGetUniformLocation(program, s);
+			i++;
+		}
+	}
+	public void setUniformVec3(int index, Vector3f vector){
+		bind();
+		GL20.glUniform3f(index, vector.x, vector.y, vector.x);
 	}
 }

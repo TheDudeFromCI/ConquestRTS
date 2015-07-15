@@ -5,9 +5,9 @@ import org.lwjgl.opengl.GL11;
 import com.wraithavens.conquest.Launcher.Driver;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.MatrixUtils;
+import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.World;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.WorldRenderer;
-import com.wraithavens.conquest.SinglePlayer.Entities.Model;
 import com.wraithavens.conquest.SinglePlayer.Entities.ModelGroup;
 import com.wraithavens.conquest.SinglePlayer.Entities.ModelInstance;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
@@ -22,6 +22,7 @@ public class SinglePlayerGame implements Driver{
 	private final float cameraSpeed = 20f;
 	private final float mouseSpeed = 0.2f;
 	private final Camera camera;
+	private ModelGroup modelGroups;
 	public SinglePlayerGame(World world){
 		this.world = world;
 		camera = new Camera();
@@ -41,19 +42,14 @@ public class SinglePlayerGame implements Driver{
 			camera.goalX = 0.5f;
 			camera.goalY = world.getHeightAt(0, 0)+1;
 			camera.goalZ = 0.5f;
-			models = new ModelGroup();
-			Model model = Model.load("Character Mesh.mesh");
-			ModelInstance mi = new ModelInstance(model);
-			mi.position.y = world.getHeightAt(0, 0);
-			models.instances.add(mi);
+			modelGroups = new ModelGroup();
 		}
 	}
-	private ModelGroup models;
 	public void render(){
 		if(!initalized)return;
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
 		renderer.render();
-		models.render();
+		modelGroups.render();
 		GL11.glPopMatrix();
 	}
 	public void update(double delta, double time){
@@ -70,7 +66,15 @@ public class SinglePlayerGame implements Driver{
 		camera.update(delta);
 		if(x!=(long)(camera.x*100)
 				||y!=(long)(camera.y*100)
-				||z!=(long)(camera.z*100))world.setNeedsRebuffer();
+				||z!=(long)(camera.z*100)){
+			world.setNeedsRebuffer();
+		}
+	}
+	private void lookAtPlayer(ModelInstance mi){
+		float deltaX = mi.position.x-camera.x;
+		float deltaZ = mi.position.z-camera.z;
+		float angle = -(float)Math.toDegrees(Math.atan2(deltaZ, deltaX))-90;
+		mi.rotation.y = angle;
 	}
 	public void onKey(int key, int action){
 		if(key==GLFW.GLFW_KEY_W){
@@ -93,9 +97,20 @@ public class SinglePlayerGame implements Driver{
 			else if(action==GLFW.GLFW_RELEASE)space = false;
 		}else if(key==GLFW.GLFW_KEY_P){
 			if(action==GLFW.GLFW_PRESS){
-				models.instances.get(0).position.set(camera.x, world.getHeightAt((int)camera.x, (int)camera.z), camera.z);
-				models.instances.get(0).rotation.set(-90, -camera.ry+180, 0);
-				System.out.println("Moved NPC to: "+models.instances.get(0).position);
+				modelGroups.instances.get(0).position.set(camera.x, world.getHeightAt((int)camera.x, (int)camera.z), camera.z);
+				modelGroups.instances.get(0).rotation.set(-90, -camera.ry+180, 0);
+				System.out.println("Moved NPC to: "+modelGroups.instances.get(0).position);
+			}
+		}else if(key==GLFW.GLFW_KEY_ESCAPE){
+			if(action==GLFW.GLFW_PRESS)GLFW.glfwSetWindowShouldClose(WraithavensConquest.INSTANCE.getWindow(), GL11.GL_TRUE);
+		}else if(key==GLFW.GLFW_KEY_L){
+			if(action==GLFW.GLFW_PRESS){
+				modelGroups.getShader().setUniformVec3(0, camera.getDirection(new Vector3f()));
+			}
+		}else if(key==GLFW.GLFW_KEY_M){
+			if(action==GLFW.GLFW_PRESS){
+				for(int i = 0; i<modelGroups.instances.size(); i++)
+					lookAtPlayer(modelGroups.instances.get(i));
 			}
 		}
 	}
@@ -144,6 +159,7 @@ public class SinglePlayerGame implements Driver{
 	public void dispose(){
 		if(initalized){
 			System.out.println("Disposed single player driver.");
+			modelGroups.dispose();
 			world.dispose();
 			Texture.disposeAll();
 		}

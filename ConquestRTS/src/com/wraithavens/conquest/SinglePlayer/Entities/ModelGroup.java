@@ -14,6 +14,7 @@ public class ModelGroup{
 		modelShader = new ShaderProgram(new File(WraithavensConquest.assetFolder, "Entity Shader.vert"), null, new File(WraithavensConquest.assetFolder, "Entity Shader.frag"));
 		ModelGroup.LOCATION = modelShader.getAttributeLocation("weight");
 		GL20.glEnableVertexAttribArray(ModelGroup.LOCATION);
+		modelShader.loadUniforms("lightDirection");
 	}
 	public void render(){
 		modelShader.bind();
@@ -21,7 +22,11 @@ public class ModelGroup{
 			instances.get(i).render();
 	}
 	public void dispose(){
+		System.out.println("Disposed model group.");
 		for(int i = 0; i<instances.size(); i++)
 			instances.get(i).dispose();
+	}
+	public ShaderProgram getShader(){
+		return modelShader;
 	}
 }

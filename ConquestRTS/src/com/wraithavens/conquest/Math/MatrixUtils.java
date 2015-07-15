@@ -43,5 +43,4 @@ public class MatrixUtils{
 		GL11.glMultMatrixf(MatrixUtils.matrix);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 	}
-
 }

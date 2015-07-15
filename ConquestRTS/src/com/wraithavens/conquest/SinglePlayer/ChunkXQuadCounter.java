@@ -1,10 +1,12 @@
 package com.wraithavens.conquest.SinglePlayer;
 
+import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Block;
+
 public class ChunkXQuadCounter implements QuadCounter{
-	private static final float[] TEXTURE_POSITIONS = new float[ 8];
 	private static final float[] QUAD_POINTS       = new float[12];
+	private static final float[] COLORS = new float[3];
 	private QuadListener listener;
-	private int x, side, startX, startY, startZ, m;
+	private int x, side, startX, startY, startZ;
 	private final boolean full;
 	public ChunkXQuadCounter(boolean full){
 		this.full = full;
@@ -17,62 +19,43 @@ public class ChunkXQuadCounter implements QuadCounter{
 		float bigY   = full?smallY+w:smallY+w/8f;
 		float bigZ   = full?smallZ+h:smallZ+h/8f;
 		if(side==0){
-			ChunkXQuadCounter.QUAD_POINTS[ 0] =   bigX;
-			ChunkXQuadCounter.QUAD_POINTS[ 1] =   bigY;
-			ChunkXQuadCounter.QUAD_POINTS[ 2] =   bigZ;
-			ChunkXQuadCounter.QUAD_POINTS[ 3] =   bigX;
-			ChunkXQuadCounter.QUAD_POINTS[ 4] = smallY;
-			ChunkXQuadCounter.QUAD_POINTS[ 5] =   bigZ;
-			ChunkXQuadCounter.QUAD_POINTS[ 6] =   bigX;
-			ChunkXQuadCounter.QUAD_POINTS[ 7] = smallY;
-			ChunkXQuadCounter.QUAD_POINTS[ 8] = smallZ;
-			ChunkXQuadCounter.QUAD_POINTS[ 9] =   bigX;
-			ChunkXQuadCounter.QUAD_POINTS[10] =   bigY;
-			ChunkXQuadCounter.QUAD_POINTS[11] = smallZ;
-			m = 4;
-			if(full){
-				next(z, y);
-				next(z, y+w);
-				next(z+h, y+w);
-				next(z+h, y);
-			}else{
-				next(    8-z,   y);
-				next(    8-z, y+w);
-				next(8-(z+h), y+w);
-				next(8-(z+h),   y);
-			}
+			QUAD_POINTS[ 0] =   bigX;
+			QUAD_POINTS[ 1] =   bigY;
+			QUAD_POINTS[ 2] =   bigZ;
+			QUAD_POINTS[ 3] =   bigX;
+			QUAD_POINTS[ 4] = smallY;
+			QUAD_POINTS[ 5] =   bigZ;
+			QUAD_POINTS[ 6] =   bigX;
+			QUAD_POINTS[ 7] = smallY;
+			QUAD_POINTS[ 8] = smallZ;
+			QUAD_POINTS[ 9] =   bigX;
+			QUAD_POINTS[10] =   bigY;
+			QUAD_POINTS[11] = smallZ;
 		}else{
-			ChunkXQuadCounter.QUAD_POINTS[ 0] = smallX;
-			ChunkXQuadCounter.QUAD_POINTS[ 1] = smallY;
-			ChunkXQuadCounter.QUAD_POINTS[ 2] = smallZ;
-			ChunkXQuadCounter.QUAD_POINTS[ 3] = smallX;
-			ChunkXQuadCounter.QUAD_POINTS[ 4] = smallY;
-			ChunkXQuadCounter.QUAD_POINTS[ 5] =   bigZ;
-			ChunkXQuadCounter.QUAD_POINTS[ 6] = smallX;
-			ChunkXQuadCounter.QUAD_POINTS[ 7] =   bigY;
-			ChunkXQuadCounter.QUAD_POINTS[ 8] =   bigZ;
-			ChunkXQuadCounter.QUAD_POINTS[ 9] = smallX;
-			ChunkXQuadCounter.QUAD_POINTS[10] =   bigY;
-			ChunkXQuadCounter.QUAD_POINTS[11] = smallZ;
-			m = 0;
-			next(  z,   y);
-			next(z+h,   y);
-			next(z+h, y+w);
-			next(  z, y+w);
+			QUAD_POINTS[ 0] = smallX;
+			QUAD_POINTS[ 1] = smallY;
+			QUAD_POINTS[ 2] = smallZ;
+			QUAD_POINTS[ 3] = smallX;
+			QUAD_POINTS[ 4] = smallY;
+			QUAD_POINTS[ 5] =   bigZ;
+			QUAD_POINTS[ 6] = smallX;
+			QUAD_POINTS[ 7] =   bigY;
+			QUAD_POINTS[ 8] =   bigZ;
+			QUAD_POINTS[ 9] = smallX;
+			QUAD_POINTS[10] =   bigY;
+			QUAD_POINTS[11] = smallZ;
 		}
-		listener.addQuad(new Quad(ChunkXQuadCounter.QUAD_POINTS, ChunkXQuadCounter.TEXTURE_POSITIONS, side));
+		listener.addQuad(new Quad(QUAD_POINTS, COLORS, side));
 	}
-	private void next(float x, float y){
-		ChunkXQuadCounter.TEXTURE_POSITIONS[  m] = full?y:y/8f;
-		ChunkXQuadCounter.TEXTURE_POSITIONS[m+1] = full?x:x/8f;
-		m = (m+2)%8;
-	}
-	public void setup(int startX, int startY, int startZ, int x, int side, QuadListener listener){
+	public void setup(int startX, int startY, int startZ, int x, int side, QuadListener listener, Block block){
 		this.x      =      x;
 		this.side   =   side;
 		this.listener  =  listener;
 		this.startX = startX;
 		this.startY = startY;
 		this.startZ = startZ;
+		COLORS[0] = block.red;
+		COLORS[1] = block.green;
+		COLORS[2] = block.blue;
 	}
 }
