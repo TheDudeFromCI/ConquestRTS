@@ -1,4 +1,4 @@
-package com.wraithavens.conquest.SinglePlayer.NewWorldRenderer;
+package com.wraithavens.conquest.SinglePlayer.Heightmap;
 
 class HeightMap{
 	final int posX;

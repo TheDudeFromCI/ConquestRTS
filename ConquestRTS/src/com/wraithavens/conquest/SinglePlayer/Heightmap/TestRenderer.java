@@ -1,4 +1,4 @@
-package com.wraithavens.conquest.SinglePlayer.NewWorldRenderer;
+package com.wraithavens.conquest.SinglePlayer.Heightmap;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
