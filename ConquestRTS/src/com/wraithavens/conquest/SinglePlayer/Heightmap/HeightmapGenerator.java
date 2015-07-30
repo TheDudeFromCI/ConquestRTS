@@ -7,20 +7,20 @@ import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.Utility.NoiseGenerator;
 
-public class HeightmapGenerator{
+class HeightmapGenerator{
 	private static final Vector3f tempVec1 = new Vector3f();
 	private static final Vector3f tempVec2 = new Vector3f();
 	private final int size;
 	private final float scale;
 	private final NoiseGenerator noise;
 	private final float maxHeight;
-	public HeightmapGenerator(int size, float scale, NoiseGenerator noise, float maxHeight){
+	HeightmapGenerator(int size, float scale, NoiseGenerator noise, float maxHeight){
 		this.size = size;
 		this.noise = noise;
 		this.scale = scale;
 		this.maxHeight = maxHeight;
 	}
-	public HeightmapTexture getTexture(int x, int y){
+	HeightmapTexture getTexture(int x, int y){
 		// ---
 		// When loading an already generated texture, this method is usally very
 		// quick, and it has an almost unnoticable drop in FPS. Through,

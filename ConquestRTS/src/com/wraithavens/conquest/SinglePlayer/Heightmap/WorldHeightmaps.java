@@ -12,7 +12,7 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 import com.wraithavens.conquest.Utility.CosineInterpolation;
 import com.wraithavens.conquest.Utility.NoiseGenerator;
 
-public class WorldHeightmaps{
+class WorldHeightmaps{
 	/**
 	 * This function takes any value, <i>x</i>, and groups it into evenly sized
 	 * chunks.
@@ -31,7 +31,7 @@ public class WorldHeightmaps{
 	// then the actual value, so that the last pixels are used on multiple
 	// height maps, for seemlessness.
 	// ---
-	static final int TextureDetail = 64;
+	private static final int TextureDetail = 64;
 	// ---
 	// The actual distance covered by the heightmap.
 	// ---
@@ -82,11 +82,6 @@ public class WorldHeightmaps{
 		for(int i = 0; i<heightmaps.length; i++)
 			if(heightmaps[i]!=null)
 				heightmaps[i].dispose();
-	}
-	public void render(){
-		shader.bind();
-		for(int i = 0; i<heightmaps.length; i++)
-			renderVbo(i);
 	}
 	public void update(float x, float z){
 		if(isSafeView(x, z))
@@ -258,5 +253,10 @@ public class WorldHeightmaps{
 		// ---
 		for(int i = 0; i<9; i++)
 			heightmaps[i] = tempStorage[i];
+	}
+	void render(){
+		shader.bind();
+		for(int i = 0; i<heightmaps.length; i++)
+			renderVbo(i);
 	}
 }

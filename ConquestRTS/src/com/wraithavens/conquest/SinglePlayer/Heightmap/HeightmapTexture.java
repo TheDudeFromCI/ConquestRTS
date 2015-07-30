@@ -45,7 +45,7 @@ class HeightmapTexture{
 			GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, generatePixelBuffer(image));
 		return textureID;
 	}
-	private int textureId;
+	private final int textureId;
 	public HeightmapTexture(BufferedImage buf){
 		textureId = loadTexture(buf);
 	}

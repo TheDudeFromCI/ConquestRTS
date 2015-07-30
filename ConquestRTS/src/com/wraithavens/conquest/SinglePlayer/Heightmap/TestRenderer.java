@@ -14,7 +14,9 @@ public class TestRenderer implements Driver{
 	private final float mouseSpeed = 0.2f;
 	private final Camera camera = new Camera();
 	private double frameDelta;
-	public void dispose(){}
+	public void dispose(){
+		heightMaps.dispose();
+	}
 	public void initalize(double time){
 		heightMaps = new WorldHeightmaps();
 		camera.cameraMoveSpeed = 10.0f;
