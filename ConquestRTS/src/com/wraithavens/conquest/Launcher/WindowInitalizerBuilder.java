@@ -34,22 +34,24 @@ class WindowInitalizerBuilder extends JFrame{
 			}
 		});
 	}
-	private void init(){
-		setTitle("Game Visual Properties");
-		setSize(365, 340);
-		setResizable(false);
-		setLocationRelativeTo(null);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	}
 	private void addComponents(){
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{50, 50, 50, 60, 60, 0};
-		gridBagLayout.rowHeights = new int[]{200, 20, 20, 0, 20, 0};
-		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.columnWidths = new int[]{
+			50, 50, 50, 60, 60, 0
+		};
+		gridBagLayout.rowHeights = new int[]{
+			200, 20, 20, 0, 20, 0
+		};
+		gridBagLayout.columnWeights = new double[]{
+			0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE
+		};
+		gridBagLayout.rowWeights = new double[]{
+			0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE
+		};
 		getContentPane().setLayout(gridBagLayout);
 		BufferedImage splashImage = null;
-		try{ splashImage = ImageIO.read(new File(WraithavensConquest.assetFolder, "Splash.png"));
+		try{
+			splashImage = ImageIO.read(new File(WraithavensConquest.assetFolder, "Splash.png"));
 		}catch(Exception exception){
 			exception.printStackTrace();
 			System.exit(1);
@@ -117,21 +119,12 @@ class WindowInitalizerBuilder extends JFrame{
 		getContentPane().add(btnExit, gbc_btnExit);
 		loadSettings();
 	}
-	WindowInitalizer build(){
-		while(true){
-			if(done){
-				saveSettings();
-				WindowInitalizer init = new WindowInitalizer();
-				ResolutionSize resolution = (ResolutionSize)comboBox.getSelectedItem();
-				init.width = resolution.width;
-				init.height = resolution.height;
-				init.fullscreen = fullScreen.isSelected();
-				init.vSync = vSync.isSelected();
-				return init;
-			}
-			try{ Thread.sleep(1);
-			}catch(Exception exception){}
-		}
+	private void init(){
+		setTitle("Game Visual Properties");
+		setSize(365, 340);
+		setResizable(false);
+		setLocationRelativeTo(null);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	private void loadSettings(){
 		CompactBinaryFile file = new CompactBinaryFile(WraithavensConquest.programFolder, "Settings.dat");
@@ -156,5 +149,26 @@ class WindowInitalizerBuilder extends JFrame{
 		file.addBit(fullScreen.isSelected());
 		file.addBit(vSync.isSelected());
 		file.stopWriting();
+	}
+	WindowInitalizer build(){
+		for(int i = 0; i<10000; i++){
+			if(done){
+				saveSettings();
+				WindowInitalizer init = new WindowInitalizer();
+				ResolutionSize resolution = (ResolutionSize)comboBox.getSelectedItem();
+				init.width = resolution.width;
+				init.height = resolution.height;
+				init.fullscreen = fullScreen.isSelected();
+				init.vSync = vSync.isSelected();
+				return init;
+			}
+			if(isVisible())
+				i = 0; // Break loop if frame is not visible for 10 seconds.
+			try{
+				Thread.sleep(1);
+			}catch(Exception exception){}
+		}
+		System.exit(0);
+		return null;
 	}
 }

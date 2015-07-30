@@ -26,8 +26,30 @@ public class NoiseGenerator{
 		maxHeight = NoiseGenerator.findMaxHeight(this.detail);
 		function = new LinearInterpolation();
 	}
+	public float noise(float... x){
+		if(reals==null||x.length!=reals.length){
+			reals = new int[x.length];
+			fracs = new float[x.length];
+			v = new float[(int)Math.pow(2, x.length)];
+			edge = new int[x.length+1];
+			c = new int[x.length];
+			for(int i = 0; i<c.length; i++)
+				c[i] = (int)Math.pow(2, i);
+		}
+		float total = 0;
+		int pow;
+		for(int k = 0; k<detail; k++){
+			pow = (int)Math.pow(2, k);
+			total += layerNoise(x, pow, k)/pow;
+		}
+		return total/maxHeight+1-1.0f;
+	}
+	public void setFunction(InterpolationFunction function){
+		this.function = function;
+	}
 	private float compress(float[] v, float[] fracs, int stage){
-		if(v.length==2) return function.interpolate(v[0], v[1], fracs[stage]);
+		if(v.length==2)
+			return function.interpolate(v[0], v[1], fracs[stage]);
 		float[] k = new float[v.length/2];
 		for(int i = 0; i<k.length; i++)
 			k[i] = function.interpolate(v[i*2], v[i*2+1], fracs[stage]);
@@ -49,24 +71,6 @@ public class NoiseGenerator{
 		}
 		return compress(v, fracs, 0);
 	}
-	public float noise(float... x){
-		if(reals==null||x.length!=reals.length){
-			reals = new int[x.length];
-			fracs = new float[x.length];
-			v = new float[(int)Math.pow(2, x.length)];
-			edge = new int[x.length+1];
-			c = new int[x.length];
-			for(int i = 0; i<c.length; i++)
-				c[i] = (int)Math.pow(2, i);
-		}
-		float total = 0;
-		int pow;
-		for(int k = 0; k<detail; k++){
-			pow = (int)Math.pow(2, k);
-			total += layerNoise(x, pow, k)/pow;
-		}
-		return (total/maxHeight+1)*0.5f;
-	}
 	private float random(int[] x){
 		final long s = 4294967291L;
 		long t = seed;
@@ -75,8 +79,5 @@ public class NoiseGenerator{
 		for(int a : x)
 			t += a*a*s;
 		return new Random(t).nextFloat();
-	}
-	public void setFunction(InterpolationFunction function){
-		this.function = function;
 	}
 }

@@ -1,4 +1,4 @@
-package com.wraithavens.conquest.SinglePlayer;
+package com.wraithavens.conquest.SinglePlayer.BlockPopulators;
 
 import java.util.ArrayList;
 

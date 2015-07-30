@@ -28,6 +28,14 @@ abstract class EmptyLoop implements LoopObjective{
 		mainLoop.create(init);
 	}
 	@Override
+	public void key(long window, int key, int action){}
+	@Override
+	public void mouse(long window, int button, int action){}
+	@Override
+	public void mouseMove(long window, double xpos, double ypos){}
+	@Override
+	public void mouseWheel(long window, double xPos, double yPos){}
+	@Override
 	public void preLoop(){
 		EmptyLoop.setupOGL();
 		MainLoop.FPS_SYNC = true;
@@ -42,12 +50,4 @@ abstract class EmptyLoop implements LoopObjective{
 			frames = 0;
 		}
 	}
-	@Override
-	public void key(long window, int key, int action){}
-	@Override
-	public void mouse(long window, int button, int action){}
-	@Override
-	public void mouseMove(long window, double xpos, double ypos){}
-	@Override
-	public void mouseWheel(long window, double xPos, double yPos){}
 }

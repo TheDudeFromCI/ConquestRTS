@@ -10,13 +10,17 @@ import com.wraithavens.conquest.TitleScreen.TitleScreen;
 
 public class WraithavensConquest extends EmptyLoop{
 	public static void main(String[] args){
-		WraithavensConquest.programFolder = System.getProperty("user.dir")+File.separatorChar+"Data";
-		WraithavensConquest.assetFolder = WraithavensConquest.programFolder+File.separatorChar+"Assets";
-		WraithavensConquest.textureFolder = WraithavensConquest.programFolder+File.separatorChar+"Textures";
-		WraithavensConquest.loadingScreenImagesFolder = WraithavensConquest.programFolder+File.separatorChar+"Loading Screen Images";
-		WraithavensConquest.modelFolder = WraithavensConquest.programFolder+File.separatorChar+"Models";
+		programFolder = System.getProperty("user.dir")+File.separatorChar+"Data";
+		assetFolder = programFolder+File.separatorChar+"Assets";
+		textureFolder = programFolder+File.separatorChar+"Textures";
+		loadingScreenImagesFolder = programFolder+File.separatorChar+"Loading Screen Images";
+		modelFolder = programFolder+File.separatorChar+"Models";
+		saveFolder = programFolder+File.separatorChar+"Save";
+		currentGameUUID = "Pre-Alpha"; // TODO Remove this later, once game
+										// saving and loading is in.
 		WindowInitalizerBuilder builder = new WindowInitalizerBuilder();
 		new WraithavensConquest(builder.build());
+		System.exit(0);
 	}
 	private static void printContextInfo(){
 		System.out.println("Version info:");
@@ -39,6 +43,8 @@ public class WraithavensConquest extends EmptyLoop{
 	public static String textureFolder;
 	public static String loadingScreenImagesFolder;
 	public static String modelFolder;
+	public static String saveFolder;
+	public static String currentGameUUID;
 	public static WraithavensConquest INSTANCE;
 	private Driver driver;
 	private Driver newDriver;
@@ -46,14 +52,39 @@ public class WraithavensConquest extends EmptyLoop{
 	private WraithavensConquest(WindowInitalizer init){
 		super(init);
 	}
-	public void render(){
-		if(driver!=null)driver.render();
-		if(newDriver!=null){
-			if(driver!=null)driver.dispose();
-			driver = newDriver;
-			newDriver = null;
-			driver.initalize(currentTime);
-		}
+	@Override
+	public void cleanUp(){
+		if(driver!=null)
+			driver.dispose();
+	}
+	public int getScreenHeight(){
+		return init.height;
+	}
+	public int getScreenWidth(){
+		return init.width;
+	}
+	public long getWindow(){
+		return mainLoop.getWindow();
+	}
+	@Override
+	public void key(long window, int key, int action){
+		if(driver!=null)
+			driver.onKey(key, action);
+	}
+	@Override
+	public void mouse(long window, int button, int action){
+		if(driver!=null)
+			driver.onMouse(button, action);
+	}
+	@Override
+	public void mouseMove(long window, double xpos, double ypos){
+		if(driver!=null)
+			driver.onMouseMove(xpos, ypos);
+	}
+	@Override
+	public void mouseWheel(long window, double xPos, double yPos){
+		if(driver!=null)
+			driver.onMouseWheel(xPos, yPos);
 	}
 	@Override
 	public void preLoop(){
@@ -63,42 +94,25 @@ public class WraithavensConquest extends EmptyLoop{
 		WraithavensConquest.INSTANCE = this;
 		setDriver(new TitleScreen());
 	}
-	@Override
-	public void update(double delta, double time){
-		super.update(delta, time);
-		if(driver!=null)driver.update(delta, time);
-		currentTime = time;
+	public void render(){
+		if(driver!=null)
+			driver.render();
+		if(newDriver!=null){
+			if(driver!=null)
+				driver.dispose();
+			driver = newDriver;
+			newDriver = null;
+			driver.initalize(currentTime);
+		}
 	}
 	public void setDriver(Driver driver){
 		newDriver = driver;
 	}
 	@Override
-	public void key(long window, int key, int action){
-		if(driver!=null)driver.onKey(key, action);
-	}
-	@Override
-	public void mouse(long window, int button, int action){
-		if(driver!=null)driver.onMouse(button, action);
-	}
-	@Override
-	public void mouseMove(long window, double xpos, double ypos){
-		if(driver!=null)driver.onMouseMove(xpos, ypos);
-	}
-	@Override
-	public void mouseWheel(long window, double xPos, double yPos){
-		if(driver!=null)driver.onMouseWheel(xPos, yPos);
-	}
-	public int getScreenWidth(){
-		return init.width;
-	}
-	public int getScreenHeight(){
-		return init.height;
-	}
-	public long getWindow(){
-		return mainLoop.getWindow();
-	}
-	@Override
-	public void cleanUp(){
-		if(driver!=null)driver.dispose();
+	public void update(double delta, double time){
+		super.update(delta, time);
+		if(driver!=null)
+			driver.update(delta, time);
+		currentTime = time;
 	}
 }

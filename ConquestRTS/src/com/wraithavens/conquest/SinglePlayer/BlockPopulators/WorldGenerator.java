@@ -1,4 +1,4 @@
-package com.wraithavens.conquest.SinglePlayer;
+package com.wraithavens.conquest.SinglePlayer.BlockPopulators;
 
 import java.util.Random;
 import com.wraithavens.conquest.Utility.CosineInterpolation;
@@ -14,7 +14,7 @@ public class WorldGenerator{
 	}
 	private WorldGenerator(long seed){
 		Random r = new Random(seed);
-		generator1 = new NoiseGenerator(r.nextLong(), 25, 3);
+		generator1 = new NoiseGenerator(r.nextLong(), 100, 3);
 		generator1.setFunction(new CosineInterpolation());
 		generator2 = new NoiseGenerator(r.nextLong(), 100, 2);
 		generator3 = new NoiseGenerator(r.nextLong(), 150, 3);
@@ -26,10 +26,10 @@ public class WorldGenerator{
 		x /= smoothing;
 		z /= smoothing;
 		int h = (int)(generator1.noise(x, z)*200);
-		int max = (int)(generator2.noise(x, z)*50+150);
-		int min = (int)(generator3.noise(x, z)*50);
-		if(h>max)h = max;
-		if(h<min)h = min;
+		// int max = (int)(generator2.noise(x, z)*50+150);
+		// int min = (int)(generator3.noise(x, z)*50);
+		// if(h>max)h = max;
+		// if(h<min)h = min;
 		return h+1;
 	}
 }

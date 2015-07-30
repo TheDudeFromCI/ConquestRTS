@@ -2,6 +2,7 @@ package com.wraithavens.conquest.Utility;
 
 import java.io.File;
 import java.net.URI;
+import java.util.Arrays;
 
 @SuppressWarnings("serial")
 public class CompactBinaryFile extends File{
@@ -141,6 +142,9 @@ public class CompactBinaryFile extends File{
 		b[2] = (byte)getNumber(8);
 		b[3] = (byte)getNumber(8);
 		return BinaryFileUtil.byteArrayToFloat(b);
+	}
+	public void prepareSpace(int bytes){
+		binary = Arrays.copyOf(binary, binary.length+bytes);
 	}
 	public CompactBinaryFile(File parent, String child){ super(parent, child); }
 	public CompactBinaryFile(String parent, String child){ super(parent, child); }
