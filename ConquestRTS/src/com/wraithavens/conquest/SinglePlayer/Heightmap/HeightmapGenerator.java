@@ -9,7 +9,7 @@ import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 
 class HeightmapGenerator{
 	private static final Vector3f tempVec = new Vector3f();
-	private static final int ExtraDetail = 1;
+	private static final int ExtraDetail = 4;
 	private final int size;
 	private final float scale;
 	private final WorldNoiseMachine noise;

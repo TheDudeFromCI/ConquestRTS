@@ -10,6 +10,7 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 public class TestRenderer implements Driver{
 	private WorldHeightmaps heightMaps;
 	private boolean w, a, s, d, space, shift, lockedMouse, walkLock, e;
+	private boolean wireframeMode, ludacrisSpeed;
 	private final float cameraSpeed = 4.317f*4;
 	private final float mouseSpeed = 0.2f;
 	private final Camera camera = new Camera();
@@ -62,6 +63,17 @@ public class TestRenderer implements Driver{
 				e = true;
 			else if(action==GLFW.GLFW_RELEASE)
 				e = false;
+		}else if(key==GLFW.GLFW_KEY_1){
+			if(action==GLFW.GLFW_PRESS){
+				if(wireframeMode)
+					GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+				else
+					GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+				wireframeMode = !wireframeMode;
+			}
+		}else if(key==GLFW.GLFW_KEY_2){
+			if(action==GLFW.GLFW_PRESS)
+				ludacrisSpeed = !ludacrisSpeed;
 		}else if(key==GLFW.GLFW_KEY_ESCAPE){
 			if(action==GLFW.GLFW_PRESS)
 				GLFW.glfwSetWindowShouldClose(WraithavensConquest.INSTANCE.getWindow(), GL11.GL_TRUE);
@@ -113,7 +125,7 @@ public class TestRenderer implements Driver{
 	private void move(double delta){
 		delta *= cameraSpeed;
 		if(e)
-			delta *= 10;
+			delta *= ludacrisSpeed?100:10;
 		if(w||walkLock){
 			camera.goalX += delta*(float)Math.sin(Math.toRadians(camera.ry));
 			camera.goalZ -= delta*(float)Math.cos(Math.toRadians(camera.ry));

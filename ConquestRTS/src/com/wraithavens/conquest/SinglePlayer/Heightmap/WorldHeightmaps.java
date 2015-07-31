@@ -34,7 +34,7 @@ class WorldHeightmaps{
 	// higher values results in a higher detailed mesh. Use powers of two for
 	// most optimal GPU use.
 	// ---
-	private static final int TextureDetail = 64;
+	private static final int TextureDetail = 256;
 	// ---
 	// The actual distance covered by the heightmap segments on 1 axis.
 	// ---
@@ -75,7 +75,7 @@ class WorldHeightmaps{
 			// The layout may be slightly similar for the actual game, but this
 			// part is more or less a test.
 			// ---
-			SubNoise worldHeightNoise1 = SubNoise.build(0, 600, 5, cos, 250, 0);
+			SubNoise worldHeightNoise1 = SubNoise.build(0, 6000, 5, cos, 2500, 0);
 			SubNoise humidityNoise1 = SubNoise.build(1, 7500, 10, cos, 1, 0);
 			SubNoise tempatureNoise1 = SubNoise.build(2, 20000, 11, cos, 1, 0);
 			SubNoise prairieRed = SubNoise.build(3, 120, 2, lerp, 0.15f, 0.25f);

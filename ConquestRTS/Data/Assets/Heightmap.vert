@@ -1,8 +1,8 @@
 uniform sampler2D texture;
 out vec2 uv;
 
-const float maxHeight = 250.0f;
-const float textureSize = 64.0f;
+const float maxHeight = 2500.0f;
+const float textureSize = 256.0f;
 const float inverseTextureSize = 1.0f/textureSize;
 
 void main(){

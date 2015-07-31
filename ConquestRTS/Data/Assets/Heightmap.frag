@@ -5,8 +5,8 @@ in vec2 uv;
 const vec3 lightDirection = vec3(0.35f, 0.3f, 0.35f);
 const vec2 size = vec2(2.0f, 0.0f);
 const ivec3 off = ivec3(-1, 0, 1);
-const float maxHeight = 250.0f;
-const float textureSize = 64.0f;
+const float maxHeight = 2500.0f;
+const float textureSize = 256.0f;
 const float inverseTextureSize = 1.0f/textureSize;
 
 void main(){
