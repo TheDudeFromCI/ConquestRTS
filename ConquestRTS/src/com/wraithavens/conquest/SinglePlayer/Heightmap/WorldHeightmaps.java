@@ -5,12 +5,15 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL15;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
+import com.wraithavens.conquest.SinglePlayer.Noise.AdvancedNoise;
+import com.wraithavens.conquest.SinglePlayer.Noise.ColorNoise;
+import com.wraithavens.conquest.SinglePlayer.Noise.SubNoise;
+import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 import com.wraithavens.conquest.Utility.CosineInterpolation;
-import com.wraithavens.conquest.Utility.NoiseGenerator;
+import com.wraithavens.conquest.Utility.LinearInterpolation;
 
 class WorldHeightmaps{
 	/**
@@ -27,15 +30,15 @@ class WorldHeightmaps{
 		return x>=0?x/w*w:(x-(w-1))/w*w;
 	}
 	// ---
-	// The amount of pixels in the heightmap image. This is set to two lower
-	// then the actual value, so that the last pixels are used on multiple
-	// height maps, for seemlessness.
+	// The amount of vertices used per row/col in the heightmap mesh. Using
+	// higher values results in a higher detailed mesh. Use powers of two for
+	// most optimal GPU use.
 	// ---
 	private static final int TextureDetail = 64;
 	// ---
-	// The actual distance covered by the heightmap.
+	// The actual distance covered by the heightmap segments on 1 axis.
 	// ---
-	private static final int TextureSize = 512;
+	private static final int TextureSize = 8192;
 	private static final int Vertices = TextureDetail*TextureDetail;
 	private static final int VertexSize = 5;
 	private static final int indexCount = (TextureDetail*2+2)*(TextureDetail-1)-2;
@@ -62,12 +65,35 @@ class WorldHeightmaps{
 		// And prepare the texture loader/generator.
 		// Note: This noise generator must be the exact same as the once that
 		// creates the mountains for the blocks, otherwise it won't look right.
-		// I use the seed 0 here for debug, but any seed can be used. As long as
-		// the same seed is always used on the world save folder.
+		// I use the server hard seed here for debug, but any seed can be used.
+		// As long as the same seed is always used on the world save folder.
 		// ---
-		NoiseGenerator noise = new NoiseGenerator(0, 200, 5);
-		noise.setFunction(new CosineInterpolation());
-		generator = new HeightmapGenerator(TextureDetail, TextureSize/(TextureDetail-1.0f), noise, 250);
+		{
+			CosineInterpolation cos = new CosineInterpolation();
+			LinearInterpolation lerp = new LinearInterpolation();
+			// ---
+			// The layout may be slightly similar for the actual game, but this
+			// part is more or less a test.
+			// ---
+			SubNoise worldHeightNoise1 = SubNoise.build(0, 600, 5, cos, 250, 0);
+			SubNoise humidityNoise1 = SubNoise.build(1, 7500, 10, cos, 1, 0);
+			SubNoise tempatureNoise1 = SubNoise.build(2, 20000, 11, cos, 1, 0);
+			SubNoise prairieRed = SubNoise.build(3, 120, 2, lerp, 0.15f, 0.25f);
+			SubNoise prairieGreen = SubNoise.build(4, 20, 0, lerp, 0.1f, 0);
+			SubNoise prairieBlue = SubNoise.build(5, 80, 2, lerp, 0.15f, 0.3f);
+			// ---
+			// And compiling these together.
+			// ---
+			AdvancedNoise worldHeight = new AdvancedNoise();
+			worldHeight.addSubNoise(worldHeightNoise1);
+			AdvancedNoise humidity = new AdvancedNoise();
+			humidity.addSubNoise(humidityNoise1);
+			AdvancedNoise tempature = new AdvancedNoise();
+			tempature.addSubNoise(tempatureNoise1);
+			ColorNoise prairieColor = new ColorNoise(prairieRed, prairieGreen, prairieBlue);
+			WorldNoiseMachine machine = new WorldNoiseMachine(worldHeight, humidity, tempature, prairieColor);
+			generator = new HeightmapGenerator(TextureDetail, TextureSize/(TextureDetail-1.0f), machine);
+		}
 		// ---
 		// Just to make sure there is some data on the list.
 		// ---
@@ -126,7 +152,6 @@ class WorldHeightmaps{
 	private void buildShader(){
 		shader.loadUniforms("texture");
 		shader.setUniform1I(0, 0);
-		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 	}
 	private void buildVBOs(){
 		buildIndexData();
@@ -141,8 +166,8 @@ class WorldHeightmaps{
 				vertexData.put(x*s);
 				vertexData.put(0.0f);
 				vertexData.put(y*s);
-				vertexData.put(x/(float)TextureDetail);
-				vertexData.put(y/(float)TextureDetail);
+				vertexData.put(x/(TextureDetail-1.0f));
+				vertexData.put(y/(TextureDetail-1.0f));
 			}
 		vertexData.flip();
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
@@ -185,7 +210,7 @@ class WorldHeightmaps{
 				subZ = TextureSize;
 			subX += x;
 			subZ += z;
-			heightmaps[i] = new HeightMap(subX, subZ, generator.getTexture(subX, subZ));
+			heightmaps[i] = new HeightMap(subX, subZ, generator.getHeightmapTexture(subX, subZ));
 			System.out.println(i+1+"/9");
 		}
 		System.out.println("Heightmaps loaded.");
@@ -215,7 +240,7 @@ class WorldHeightmaps{
 	private void renderVbo(int index){
 		if(heightmaps[index]==null)
 			return;
-		heightmaps[index].texture.bind();
+		heightmaps[index].heightmapTexture.bind();
 		GL11.glPushMatrix();
 		GL11.glTranslatef(heightmaps[index].posX, 0, heightmaps[index].posZ);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);

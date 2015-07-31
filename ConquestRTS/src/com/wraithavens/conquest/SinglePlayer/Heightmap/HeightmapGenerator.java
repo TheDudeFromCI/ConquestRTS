@@ -5,50 +5,23 @@ import java.io.File;
 import javax.imageio.ImageIO;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.Vector3f;
-import com.wraithavens.conquest.Utility.NoiseGenerator;
+import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 
 class HeightmapGenerator{
-	private static final Vector3f tempVec1 = new Vector3f();
-	private static final Vector3f tempVec2 = new Vector3f();
+	private static final Vector3f tempVec = new Vector3f();
+	private static final int ExtraDetail = 1;
 	private final int size;
 	private final float scale;
-	private final NoiseGenerator noise;
-	private final float maxHeight;
-	HeightmapGenerator(int size, float scale, NoiseGenerator noise, float maxHeight){
-		this.size = size;
+	private final WorldNoiseMachine noise;
+	HeightmapGenerator(int size, float scale, WorldNoiseMachine noise){
+		this.size = size*ExtraDetail;
 		this.noise = noise;
 		this.scale = scale;
-		this.maxHeight = maxHeight;
-	}
-	HeightmapTexture getTexture(int x, int y){
-		// ---
-		// When loading an already generated texture, this method is usally very
-		// quick, and it has an almost unnoticable drop in FPS. Through,
-		// generating father out does cause some major FPS drop.
-		// ---
-		File file = new File(WraithavensConquest.saveFolder+File.separatorChar+"Heightmaps", x+","+y+".png");
-		if(file.exists()){
-			System.out.println("Loading Heightmap: "+file.getName());
-			return new HeightmapTexture(file);
-		}
-		return new HeightmapTexture(generate(x, y));
 	}
 	private int calculateColor(float x, float y){
-		float center = noise.noise(x, y);
-		// ---
-		// Multiply these by their max height for better results... I think...
-		// ---
-		float north = noise.noise(x, y-1)*maxHeight;
-		float east = noise.noise(x+1, y)*maxHeight;
-		float south = noise.noise(x, y+1)*maxHeight;
-		float west = noise.noise(x-1, y)*maxHeight;
-		tempVec1.set(2.0f, 0.0f, east-west);
-		tempVec1.normalise();
-		tempVec2.set(0.0f, 2.0f, north-south);
-		tempVec2.normalise();
-		tempVec1.cross(tempVec2);
-		return ((int)(center*255)<<24)+((int)(tempVec1.x*255)<<16)+((int)(tempVec1.y*255)<<8)
-			+(int)(tempVec1.z*255);
+		noise.getPrairieColor(x, y, tempVec);
+		return ((int)((float)noise.getNormalisedWorldHeight(x, y)*255)<<24)+((int)(tempVec.x*255)<<16)
+			+((int)(tempVec.y*255)<<8)+(int)(tempVec.z*255);
 	}
 	private BufferedImage generate(int offX, int offY){
 		System.out.println("Generating height map.");
@@ -59,7 +32,7 @@ class HeightmapGenerator{
 		int x, y;
 		for(x = 0; x<size; x++)
 			for(y = 0; y<size; y++)
-				rgb[y*size+x] = calculateColor(x*scale+offX, y*scale+offY);
+				rgb[y*size+x] = calculateColor(x*scale/ExtraDetail+offX, y*scale/ExtraDetail+offY);
 		img.setRGB(0, 0, size, size, rgb, 0, size);
 		System.out.println("Finished in "+(System.currentTimeMillis()-time)+" ms.");
 		File heightmapFile =
@@ -75,5 +48,18 @@ class HeightmapGenerator{
 			exception.printStackTrace();
 		}
 		return img;
+	}
+	HeightmapTexture getHeightmapTexture(int x, int y){
+		// ---
+		// When loading an already generated texture, this method is usally very
+		// quick, and it has an almost unnoticable drop in FPS. Through,
+		// generating father out does cause some major FPS drop.
+		// ---
+		File file = new File(WraithavensConquest.saveFolder+File.separatorChar+"Heightmaps", x+","+y+".png");
+		if(file.exists()){
+			System.out.println("Loading Heightmap: "+file.getName());
+			return new HeightmapTexture(file);
+		}
+		return new HeightmapTexture(generate(x, y));
 	}
 }

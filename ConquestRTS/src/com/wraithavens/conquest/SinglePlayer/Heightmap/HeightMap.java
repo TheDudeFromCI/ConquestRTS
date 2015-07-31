@@ -3,13 +3,13 @@ package com.wraithavens.conquest.SinglePlayer.Heightmap;
 class HeightMap{
 	final int posX;
 	final int posZ;
-	final HeightmapTexture texture;
-	HeightMap(int posX, int posZ, HeightmapTexture texture){
+	final HeightmapTexture heightmapTexture;
+	HeightMap(int posX, int posZ, HeightmapTexture heightmapTexture){
 		this.posX = posX;
 		this.posZ = posZ;
-		this.texture = texture;
+		this.heightmapTexture = heightmapTexture;
 	}
 	void dispose(){
-		texture.dispose();
+		heightmapTexture.dispose();
 	}
 }

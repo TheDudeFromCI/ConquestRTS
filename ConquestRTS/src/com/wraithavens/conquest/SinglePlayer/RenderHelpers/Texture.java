@@ -12,17 +12,17 @@ import org.lwjgl.opengl.GL14;
 
 public class Texture{
 	public static void disposeAll(){
-		for(int i = 0; i<Texture.textures.size(); i++)
-			Texture.textures.get(i).dispose();
-		Texture.textures.clear();
+		for(int i = 0; i<textures.size(); i++)
+			textures.get(i).dispose();
+		textures.clear();
 	}
 	public static Texture getTexture(String folder, String file){
 		return Texture.getTexture(folder, file, 0);
 	}
 	public static Texture getTexture(String folder, String file, int mipmapping){
-		for(int i = 0; i<Texture.textures.size(); i++)
-			if(Texture.textures.get(i).file.equals(file)&&Texture.textures.get(i).folder.equals(folder))
-				return Texture.textures.get(i);
+		for(int i = 0; i<textures.size(); i++)
+			if(textures.get(i).file.equals(file)&&textures.get(i).folder.equals(folder))
+				return textures.get(i);
 		return new Texture(folder, new File(folder, file), mipmapping);
 	}
 	private static ByteBuffer generatePixelBuffer(BufferedImage image){
