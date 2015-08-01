@@ -7,6 +7,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+// ---
+// TODO Make this file format much, much, much smaller. It's way to freaking
+// large. It takes way too much precious time to save and load.
+// ---
 public class HeightmapFormat{
 	private static int byteArrayToInteger(byte[] b){
 		return b[3]&0xFF|(b[2]&0xFF)<<8|(b[1]&0xFF)<<16|(b[0]&0xFF)<<24;

@@ -18,6 +18,10 @@ class HeightmapGenerator{
 		out[2] = tempVec.z;
 		out[3] = (float)(noise.getWorldHeight(x, y)/noise.getMaxHeight());
 	}
+	// ---
+	// TODO Make this generate slower, over the span of several frames to avoid
+	// FPS drop.
+	// ---
 	private HeightmapRaw generate(int offX, int offY){
 		System.out.println("Generating height map.");
 		System.out.println("  Origin: "+offX+", "+offY);
