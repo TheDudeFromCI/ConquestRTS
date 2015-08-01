@@ -23,6 +23,9 @@ public class WorldNoiseMachine{
 	public double getHumidity(float x, float y){
 		return humidity.noise(x, y);
 	}
+	public double getMaxHeight(){
+		return worldHeight.getMaxHeight();
+	}
 	public double getNormalisedWorldHeight(float x, float y){
 		return worldHeight.normalisedNoise(x, y);
 	}

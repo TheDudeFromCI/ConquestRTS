@@ -1,22 +1,18 @@
 uniform sampler2D texture;
+uniform vec3 mountainData;
+uniform vec3 sunDirection;
 in vec2 uv;
 
-//Actually this is the opposite of the direction, but, whatever.
-const vec3 lightDirection = vec3(0.35f, 0.3f, 0.35f);
-const vec2 size = vec2(2.0f, 0.0f);
 const ivec3 off = ivec3(-1, 0, 1);
-const float maxHeight = 2500.0f;
-const float textureSize = 256.0f;
-const float inverseTextureSize = 1.0f/textureSize;
 
 void main(){
-	float zy = textureOffset(texture, uv, off.zy).a*maxHeight;
-	float xy = textureOffset(texture, uv, off.xy).a*maxHeight;
-	float yz = textureOffset(texture, uv, off.yz).a*maxHeight;
-	float yx = textureOffset(texture, uv, off.yx).a*maxHeight;
-	vec3 hor = normalize(vec3(size.xy, zy-xy));
-	vec3 ver = normalize(vec3(size.yx, yz-yx));
-	vec3 color = texture(texture, uv+vec2(inverseTextureSize*0.5f)).rgb;
-	float lightLevel = clamp(dot(cross(hor, ver), lightDirection), 0.0f, 1.0f)*0.5f+0.5f;
-	gl_FragColor = vec4(vec3(lightLevel)*color, 1.0f);
+	float z0 = textureOffset(texture, uv, off.xz).a;
+	float z1 = textureOffset(texture, uv, off.yz).a;
+	float z2 = textureOffset(texture, uv, off.zz).a;
+	float z3 = textureOffset(texture, uv, off.xy).a;
+	float z4 = textureOffset(texture, uv, off.zy).a;
+	float z5 = textureOffset(texture, uv, off.xx).a;
+	float z6 = textureOffset(texture, uv, off.yx).a;
+	float z7 = textureOffset(texture, uv, off.zx).a;
+	gl_FragColor = vec4(vec3(clamp(dot(normalize(vec3(z2+2.0f*z4+z7-z0-2.0f*z3-z5, 1.0f/mountainData.z, z5+2.0f*z6+z7-z0-2.0f*z1-z2)), sunDirection), 0.0f, 1.0f)*0.5f+0.5f)*texture(texture, uv+vec2(mountainData.y*0.5f)).rgb, 1.0f);
 }

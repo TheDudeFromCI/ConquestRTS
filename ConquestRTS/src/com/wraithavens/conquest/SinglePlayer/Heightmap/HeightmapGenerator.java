@@ -1,53 +1,54 @@
 package com.wraithavens.conquest.SinglePlayer.Heightmap;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
-import javax.imageio.ImageIO;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 
 class HeightmapGenerator{
 	private static final Vector3f tempVec = new Vector3f();
-	private static final int ExtraDetail = 4;
-	private final int size;
-	private final float scale;
 	private final WorldNoiseMachine noise;
-	HeightmapGenerator(int size, float scale, WorldNoiseMachine noise){
-		this.size = size*ExtraDetail;
+	HeightmapGenerator(WorldNoiseMachine noise){
 		this.noise = noise;
-		this.scale = scale;
 	}
-	private int calculateColor(float x, float y){
+	private void calculateColor(float x, float y, float[] out){
 		noise.getPrairieColor(x, y, tempVec);
-		return ((int)((float)noise.getNormalisedWorldHeight(x, y)*255)<<24)+((int)(tempVec.x*255)<<16)
-			+((int)(tempVec.y*255)<<8)+(int)(tempVec.z*255);
+		out[0] = tempVec.x;
+		out[1] = tempVec.y;
+		out[2] = tempVec.z;
+		out[3] = (float)(noise.getWorldHeight(x, y)/noise.getMaxHeight());
 	}
-	private BufferedImage generate(int offX, int offY){
+	private HeightmapRaw generate(int offX, int offY){
 		System.out.println("Generating height map.");
 		System.out.println("  Origin: "+offX+", "+offY);
-		BufferedImage img = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+		HeightmapRaw raw = new HeightmapRaw();
 		long time = System.currentTimeMillis();
-		int[] rgb = new int[size*size];
 		int x, y;
-		for(x = 0; x<size; x++)
-			for(y = 0; y<size; y++)
-				rgb[y*size+x] = calculateColor(x*scale/ExtraDetail+offX, y*scale/ExtraDetail+offY);
-		img.setRGB(0, 0, size, size, rgb, 0, size);
+		float s = WorldHeightmaps.ViewDistance*2/(WorldHeightmaps.TextureDetail-1.0f);
+		float[] temp = new float[4];
+		for(x = 0; x<WorldHeightmaps.TextureDetail; x++)
+			for(y = 0; y<WorldHeightmaps.TextureDetail; y++){
+				calculateColor(x*s-WorldHeightmaps.ViewDistance/2+offX, y*s-WorldHeightmaps.ViewDistance/2+offY,
+					temp);
+				raw.setColor(x, y, temp);
+			}
 		System.out.println("Finished in "+(System.currentTimeMillis()-time)+" ms.");
 		File heightmapFile =
-			new File(WraithavensConquest.saveFolder+File.separatorChar+"Heightmaps", offX+","+offY+".png");
+			new File(WraithavensConquest.saveFolder+File.separatorChar+"Heightmaps", offX+","+offY+".dat");
 		try{
 			// ---
 			// First ensure the directory exists, then save the newly generated
 			// heightmap for future reference.
 			// ---
-			heightmapFile.getParentFile().mkdirs();
-			ImageIO.write(img, "PNG", heightmapFile);
+			HeightmapFormat format = new HeightmapFormat(heightmapFile);
+			format.beginWriting();
+			for(float f : raw.getColors())
+				format.writeFloat(f);
+			format.stopWriting();
 		}catch(Exception exception){
 			exception.printStackTrace();
 		}
-		return img;
+		return raw;
 	}
 	HeightmapTexture getHeightmapTexture(int x, int y){
 		// ---
@@ -55,7 +56,7 @@ class HeightmapGenerator{
 		// quick, and it has an almost unnoticable drop in FPS. Through,
 		// generating father out does cause some major FPS drop.
 		// ---
-		File file = new File(WraithavensConquest.saveFolder+File.separatorChar+"Heightmaps", x+","+y+".png");
+		File file = new File(WraithavensConquest.saveFolder+File.separatorChar+"Heightmaps", x+","+y+".dat");
 		if(file.exists()){
 			System.out.println("Loading Heightmap: "+file.getName());
 			return new HeightmapTexture(file);

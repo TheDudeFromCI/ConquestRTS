@@ -125,7 +125,7 @@ public class TestRenderer implements Driver{
 	private void move(double delta){
 		delta *= cameraSpeed;
 		if(e)
-			delta *= ludacrisSpeed?100:10;
+			delta *= ludacrisSpeed?1000:10;
 		if(w||walkLock){
 			camera.goalX += delta*(float)Math.sin(Math.toRadians(camera.ry));
 			camera.goalZ -= delta*(float)Math.cos(Math.toRadians(camera.ry));
