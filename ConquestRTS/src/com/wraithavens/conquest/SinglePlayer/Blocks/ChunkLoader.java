@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Utility.CompactBinaryFile;
 
-public class ChunkLoader{
+class ChunkLoader{
 	private static RawChunk load(File file, int x, int y, int z){
 		RawChunk rawChunk = new RawChunk(x, y, z);
 		CompactBinaryFile f = new CompactBinaryFile(file.getAbsolutePath());
@@ -34,12 +34,9 @@ public class ChunkLoader{
 	private int x;
 	private int y;
 	private int z;
-	public ChunkLoader(ChunkGenerator generator, int maxDistance){
+	ChunkLoader(ChunkGenerator generator, int maxDistance){
 		this.generator = generator;
 		cellSorter = new CellSorter(maxDistance/16);
-	}
-	public int getX(){
-		return x;
 	}
 	public int getY(){
 		return y;
@@ -79,5 +76,8 @@ public class ChunkLoader{
 		RawChunk raw = generator.generateRawChunk(x, y, z);
 		save(file, raw);
 		return raw;
+	}
+	int getX(){
+		return x;
 	}
 }

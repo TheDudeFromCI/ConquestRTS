@@ -11,7 +11,7 @@ public class WorldNoiseMachine{
 	 * humidity, tempature, etc.
 	 *
 	 * @param seeds
-	 *            - An array of 7 longs which determine the seeds for each
+	 *            - An array of 4 longs which determine the seeds for each
 	 *            component of the world.
 	 * @return The world noise machine that generates a world under the
 	 *         requested conditions.
@@ -24,54 +24,34 @@ public class WorldNoiseMachine{
 		CosineInterpolation cos = new CosineInterpolation();
 		LinearInterpolation lerp = new LinearInterpolation();
 		SubNoise worldHeightNoise1 = SubNoise.build(seeds[0], 6000, 6, cos, 5000, 0);
-		SubNoise humidityNoise1 = SubNoise.build(seeds[2], 7500, 10, cos, 1, 0);
-		SubNoise tempatureNoise1 = SubNoise.build(seeds[3], 20000, 11, cos, 1, 0);
-		SubNoise prairieRed = SubNoise.build(seeds[4], 120, 2, lerp, 0.15f, 0.25f);
-		SubNoise prairieGreen = SubNoise.build(seeds[5], 20, 0, lerp, 0.1f, 0);
-		SubNoise prairieBlue = SubNoise.build(seeds[6], 80, 2, lerp, 0.15f, 0.3f);
+		SubNoise prairieRed = SubNoise.build(seeds[1], 120, 2, lerp, 0.15f, 0.25f);
+		SubNoise prairieGreen = SubNoise.build(seeds[2], 20, 0, lerp, 0.1f, 0);
+		SubNoise prairieBlue = SubNoise.build(seeds[3], 80, 2, lerp, 0.15f, 0.3f);
 		// ---
 		// And compiling these together.
 		// ---
 		AdvancedNoise worldHeight = new AdvancedNoise();
 		worldHeight.addSubNoise(worldHeightNoise1);
-		AdvancedNoise humidity = new AdvancedNoise();
-		humidity.addSubNoise(humidityNoise1);
-		AdvancedNoise tempature = new AdvancedNoise();
-		tempature.addSubNoise(tempatureNoise1);
 		ColorNoise prairieColor = new ColorNoise(prairieRed, prairieGreen, prairieBlue);
-		return new WorldNoiseMachine(worldHeight, humidity, tempature, prairieColor);
+		return new WorldNoiseMachine(worldHeight, prairieColor);
 	}
 	// ---
 	// General world-wide generators.
 	// ---
 	private final AdvancedNoise worldHeight;
-	private final AdvancedNoise humidity;
-	private final AdvancedNoise tempature;
 	// ---
 	// Biome specific noise generators.
 	// ---
 	private final ColorNoise prairieColor;
-	public WorldNoiseMachine(
-		AdvancedNoise worldHeight, AdvancedNoise humidity, AdvancedNoise tempature, ColorNoise prairieColor){
+	private WorldNoiseMachine(AdvancedNoise worldHeight, ColorNoise prairieColor){
 		this.worldHeight = worldHeight;
-		this.humidity = humidity;
-		this.tempature = tempature;
 		this.prairieColor = prairieColor;
-	}
-	public double getHumidity(float x, float y){
-		return humidity.noise(x, y);
 	}
 	public double getMaxHeight(){
 		return worldHeight.getMaxHeight();
 	}
-	public double getNormalisedWorldHeight(float x, float y){
-		return worldHeight.normalisedNoise(x, y);
-	}
 	public void getPrairieColor(float x, float y, Vector3f colorOut){
 		prairieColor.noise(x, y, colorOut);
-	}
-	public double getTempature(float x, float y){
-		return tempature.noise(x, y);
 	}
 	public double getWorldHeight(float x, float y){
 		return worldHeight.noise(x, y);

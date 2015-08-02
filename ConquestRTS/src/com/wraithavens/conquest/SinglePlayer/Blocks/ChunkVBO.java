@@ -5,20 +5,13 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 
-public class ChunkVBO{
+class ChunkVBO{
 	private final int vbo;
 	private int indexCount;
-	public boolean isOpen = true;
-	public ChunkVBO(int vbo, int indexCount){
+	boolean isOpen = true;
+	ChunkVBO(int vbo, int indexCount){
 		this.vbo = vbo;
 		this.indexCount = indexCount;
-	}
-	public void compile(FloatBuffer vertexData, int indexCount){
-		isOpen = false;
-		this.indexCount = indexCount;
-		vertexData.flip();
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertexData, GL15.GL_DYNAMIC_DRAW);
 	}
 	public void dispose(){
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
@@ -35,5 +28,12 @@ public class ChunkVBO{
 		GL20.glVertexAttribPointer(World.SHADER_LOCATION, 1, GL11.GL_FLOAT, false, 32, 24);
 		GL20.glVertexAttribPointer(World.SHADER_LOCATION_2, 1, GL11.GL_FLOAT, false, 32, 28);
 		GL11.glDrawElements(GL11.GL_TRIANGLES, indexCount, GL11.GL_UNSIGNED_SHORT, 0);
+	}
+	void compile(FloatBuffer vertexData, int indexCount){
+		isOpen = false;
+		this.indexCount = indexCount;
+		vertexData.flip();
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertexData, GL15.GL_DYNAMIC_DRAW);
 	}
 }

@@ -12,9 +12,9 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 import com.wraithavens.conquest.Utility.Algorithms;
 
 public class WorldHeightmaps{
-	public static final int TextureDetail = 1024;
-	public static final int VertexCount = 256;
-	public static final int ViewDistance = 16384;
+	static final int TextureDetail = 1024;
+	private static final int VertexCount = 256;
+	static final int ViewDistance = 16384;
 	private static final int Vertices = VertexCount*VertexCount;
 	private static final int VertexSize = 5;
 	private static final int indexCount = (VertexCount*2+2)*(VertexCount-1)-2;

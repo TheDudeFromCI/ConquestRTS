@@ -11,7 +11,7 @@ import java.io.IOException;
 // TODO Make this file format much, much, much smaller. It's way to freaking
 // large. It takes way too much precious time to save and load.
 // ---
-public class HeightmapFormat{
+class HeightmapFormat{
 	private static int byteArrayToInteger(byte[] b){
 		return b[3]&0xFF|(b[2]&0xFF)<<8|(b[1]&0xFF)<<16|(b[0]&0xFF)<<24;
 	}
@@ -27,7 +27,7 @@ public class HeightmapFormat{
 	private BufferedInputStream in;
 	private BufferedOutputStream out;
 	private final byte[] temp = new byte[4];
-	public HeightmapFormat(File file){
+	HeightmapFormat(File file){
 		this.file = file;
 		if(!file.exists()){
 			file.getParentFile().mkdirs();
@@ -36,18 +36,6 @@ public class HeightmapFormat{
 			}catch(IOException e){
 				e.printStackTrace();
 			}
-		}
-	}
-	public void beginReading(){
-		if(writing)
-			throw new IllegalStateException("Still writing file!");
-		if(reading)
-			throw new IllegalStateException("Already reading file!");
-		reading = true;
-		try{
-			in = new BufferedInputStream(new FileInputStream(file));
-		}catch(Exception exception){
-			exception.printStackTrace();
 		}
 	}
 	public void beginWriting(){
@@ -61,12 +49,6 @@ public class HeightmapFormat{
 		}catch(Exception exception){
 			exception.printStackTrace();
 		}
-	}
-	public boolean isReading(){
-		return reading;
-	}
-	public boolean isWriting(){
-		return writing;
 	}
 	/**
 	 * @param out
@@ -102,17 +84,6 @@ public class HeightmapFormat{
 			exception.printStackTrace();
 		}
 	}
-	/**
-	 * @param in
-	 *            - A RGBA array for the color of the next pixel in the
-	 *            heightmap.
-	 */
-	public void write(float[] in){
-		writeFloat(in[0]);
-		writeFloat(in[1]);
-		writeFloat(in[2]);
-		writeFloat(in[3]);
-	}
 	public void writeFloat(float f){
 		try{
 			integerToByteArray(Float.floatToIntBits(f), temp);
@@ -129,5 +100,17 @@ public class HeightmapFormat{
 			e.printStackTrace();
 		}
 		return 0;
+	}
+	void beginReading(){
+		if(writing)
+			throw new IllegalStateException("Still writing file!");
+		if(reading)
+			throw new IllegalStateException("Already reading file!");
+		reading = true;
+		try{
+			in = new BufferedInputStream(new FileInputStream(file));
+		}catch(Exception exception){
+			exception.printStackTrace();
+		}
 	}
 }

@@ -16,15 +16,6 @@ public class Texture{
 			textures.get(i).dispose();
 		textures.clear();
 	}
-	public static Texture getTexture(String folder, String file){
-		return Texture.getTexture(folder, file, 0);
-	}
-	public static Texture getTexture(String folder, String file, int mipmapping){
-		for(int i = 0; i<textures.size(); i++)
-			if(textures.get(i).file.equals(file)&&textures.get(i).folder.equals(folder))
-				return textures.get(i);
-		return new Texture(folder, new File(folder, file), mipmapping);
-	}
 	private static ByteBuffer generatePixelBuffer(BufferedImage image){
 		int[] pixels = new int[image.getWidth()*image.getHeight()];
 		image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
@@ -90,31 +81,20 @@ public class Texture{
 	private static final ArrayList<Texture> textures = new ArrayList();
 	private static final boolean[] TRANSPARENT_RETURN = new boolean[1];
 	private final String file;
-	private final String folder;
 	private final int textureId;
-	public Texture(BufferedImage image){
-		textureId = Texture.loadTexture(image, 0);
-		textures.add(this);
-		file = "";
-		folder = "";
-	}
-	private Texture(String folder, File file, int mipmapLevel){
+	private Texture(File file, int mipmapLevel){
 		textureId = Texture.loadTexture(Texture.loadImage(file), mipmapLevel);
 		textures.add(this);
 		this.file = file.getName();
-		this.folder = folder;
 	}
 	public void bind(){
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
 	}
-	public void dispose(){
+	private void dispose(){
 		if(GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D)==textureId)
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		GL11.glDeleteTextures(textureId);
 		textures.remove(this);
 		System.out.println("Disposed "+(file.isEmpty()?"Unnamed file.":file));
-	}
-	public int getId(){
-		return textureId;
 	}
 }

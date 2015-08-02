@@ -2,8 +2,8 @@ package com.wraithavens.conquest.SinglePlayer.Blocks;
 
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Block;
 
-public class RawChunk{
-	public static final int getBlockIndex(int x, int y, int z){
+class RawChunk{
+	private static final int getBlockIndex(int x, int y, int z){
 		return (x&15)+(y&15)*16+(z&15)*256;
 	}
 	private final byte[] blocks = new byte[4096];
@@ -11,15 +11,12 @@ public class RawChunk{
 	private final int y;
 	private final int z;
 	private int blockCount = 0;
-	public RawChunk(int x, int y, int z){
+	RawChunk(int x, int y, int z){
 		for(int i = 0; i<blocks.length; i++)
 			blocks[i] = Block.AIR;
 		this.x = x;
 		this.y = y;
 		this.z = z;
-	}
-	public byte getBlock(int x, int y, int z){
-		return blocks[getBlockIndex(x, y, z)];
 	}
 	public int getX(){
 		return x;
@@ -42,5 +39,8 @@ public class RawChunk{
 				blockCount--;
 			blocks[index] = type;
 		}
+	}
+	byte getBlock(int x, int y, int z){
+		return blocks[getBlockIndex(x, y, z)];
 	}
 }

@@ -3,12 +3,15 @@ package com.wraithavens.conquest.SinglePlayer.Blocks;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Block;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 
-public class ChunkGenerator{
+class ChunkGenerator{
 	private final WorldNoiseMachine machine;
-	public ChunkGenerator(WorldNoiseMachine machine){
+	ChunkGenerator(WorldNoiseMachine machine){
 		this.machine = machine;
 	}
-	public RawChunk generateRawChunk(int startX, int startY, int startZ){
+	public int getHeightAt(int x, int z){
+		return (int)machine.getWorldHeight(x, z);
+	}
+	RawChunk generateRawChunk(int startX, int startY, int startZ){
 		RawChunk raw = new RawChunk(startX, startY, startZ);
 		int x, y, z, h;
 		for(x = startX; x<startX+16; x++)
@@ -18,8 +21,5 @@ public class ChunkGenerator{
 					raw.setBlock(x, y, z, Block.GRASS.id());
 			}
 		return raw;
-	}
-	public int getHeightAt(int x, int z){
-		return (int)machine.getWorldHeight(x, z);
 	}
 }

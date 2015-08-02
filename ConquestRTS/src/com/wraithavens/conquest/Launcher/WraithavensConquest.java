@@ -12,9 +12,6 @@ public class WraithavensConquest extends EmptyLoop{
 	public static void main(String[] args){
 		programFolder = System.getProperty("user.dir")+File.separatorChar+"Data";
 		assetFolder = programFolder+File.separatorChar+"Assets";
-		textureFolder = programFolder+File.separatorChar+"Textures";
-		loadingScreenImagesFolder = programFolder+File.separatorChar+"Loading Screen Images";
-		modelFolder = programFolder+File.separatorChar+"Models";
 		saveFolder = programFolder+File.separatorChar+"Saves";
 		// ---
 		// TODO Remove this later, once game saving and loading is in.
@@ -43,11 +40,12 @@ public class WraithavensConquest extends EmptyLoop{
 	}
 	static String programFolder;
 	public static String assetFolder;
-	public static String textureFolder;
-	public static String loadingScreenImagesFolder;
-	public static String modelFolder;
+	// TODO Remove unused code found by UCDetector
+	// public static String loadingScreenImagesFolder;
+	// TODO Remove unused code found by UCDetector
+	// public static String modelFolder;
 	public static String saveFolder;
-	public static String currentGameUUID;
+	private static String currentGameUUID;
 	public static WraithavensConquest INSTANCE;
 	private Driver driver;
 	private Driver newDriver;

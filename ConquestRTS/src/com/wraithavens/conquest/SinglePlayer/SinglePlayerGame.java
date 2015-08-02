@@ -27,7 +27,7 @@ public class SinglePlayerGame implements Driver{
 	}
 	public void initalize(double time){
 		long[] seeds = new long[]{
-			0, 1, 2, 3, 4, 5, 6
+			0, 1, 2, 3
 		};
 		WorldNoiseMachine machine = WorldNoiseMachine.generate(seeds);
 		camera.cameraMoveSpeed = 10.0f;

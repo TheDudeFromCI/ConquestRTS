@@ -13,8 +13,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
 import org.lwjgl.system.MemoryUtil;
 
-public class MainLoop{
-	public static boolean FPS_SYNC = true;
+class MainLoop{
+	static boolean FPS_SYNC = true;
 	private GLFWCursorPosCallback cursorPosCallback;
 	private GLFWErrorCallback errorCallback;
 	private GLFWKeyCallback keyCallback;

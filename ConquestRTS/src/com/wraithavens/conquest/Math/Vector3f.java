@@ -10,14 +10,6 @@ public class Vector3f extends Vector{
 	public Vector3f(float x, float y, float z){
 		set(x, y, z);
 	}
-	public void cross(Vector3f v){
-		float cx = y*v.z-z*v.y;
-		float cy = z*v.x-x*v.z;
-		float cz = x*v.y-y*v.x;
-		x = cx;
-		y = cy;
-		z = cz;
-	}
 	@Override
 	public boolean equals(Object obj){
 		if(this==obj)
@@ -48,12 +40,6 @@ public class Vector3f extends Vector{
 		y = -y;
 		z = -z;
 		return this;
-	}
-	public void normalise(){
-		double length = Math.sqrt(lengthSquared());
-		x /= length;
-		y /= length;
-		z /= length;
 	}
 	@Override
 	public Vector scale(float scale){

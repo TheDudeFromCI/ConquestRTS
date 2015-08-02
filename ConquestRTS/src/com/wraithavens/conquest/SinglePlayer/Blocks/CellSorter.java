@@ -4,16 +4,13 @@ import java.io.File;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Utility.BinaryFileUtil;
 
-public class CellSorter{
+class CellSorter{
 	private final byte[] cells;
 	private int pos = -1;
-	public CellSorter(int viewDistance){
+	CellSorter(int viewDistance){
 		cells =
 			BinaryFileUtil.readFile(new File(WraithavensConquest.assetFolder+File.separatorChar+"ChunkLoad",
 				"ChunkLoad"+viewDistance+".dat"));
-	}
-	public int getX(){
-		return cells[pos*3]*16;
 	}
 	public int getY(){
 		return cells[pos*3+1]*16;
@@ -31,5 +28,8 @@ public class CellSorter{
 	}
 	public void reset(){
 		pos = -1;
+	}
+	int getX(){
+		return cells[pos*3]*16;
 	}
 }

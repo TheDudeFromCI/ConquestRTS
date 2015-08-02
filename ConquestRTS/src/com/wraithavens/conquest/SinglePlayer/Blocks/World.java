@@ -14,8 +14,8 @@ import com.wraithavens.conquest.Utility.Algorithms;
 
 public class World{
 	private static final int ViewDistance = 20*16;
-	public static int SHADER_LOCATION;
-	public static int SHADER_LOCATION_2;
+	static int SHADER_LOCATION;
+	static int SHADER_LOCATION_2;
 	private final Camera camera;
 	private final ChunkGenerator generator;
 	private final ChunkLoader chunkLoader;
@@ -48,15 +48,8 @@ public class World{
 			vbos.get(i).dispose();
 		vbos.clear();
 		painters.clear();
-	}
-	public ChunkVBO generateVBO(){
-		for(int i = 0; i<vbos.size(); i++)
-			if(vbos.get(i).isOpen)
-				return vbos.get(i);
-		int vbo = GL15.glGenBuffers();
-		ChunkVBO v = new ChunkVBO(vbo, 0);
-		vbos.add(v);
-		return v;
+		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
+		GL15.glDeleteBuffers(ibo);
 	}
 	public int getHeightAt(int x, int z){
 		return generator.getHeightAt(x, z);
@@ -108,5 +101,14 @@ public class World{
 		int z = Algorithms.groupLocation((int)camera.z, 16);
 		return Math.abs(x-painter.x)>ViewDistance||Math.abs(y-painter.y)>ViewDistance
 			||Math.abs(z-painter.z)>ViewDistance;
+	}
+	ChunkVBO generateVBO(){
+		for(int i = 0; i<vbos.size(); i++)
+			if(vbos.get(i).isOpen)
+				return vbos.get(i);
+		int vbo = GL15.glGenBuffers();
+		ChunkVBO v = new ChunkVBO(vbo, 0);
+		vbos.add(v);
+		return v;
 	}
 }

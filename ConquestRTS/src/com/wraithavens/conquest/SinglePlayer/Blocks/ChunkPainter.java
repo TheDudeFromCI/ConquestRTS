@@ -12,7 +12,7 @@ import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Quad;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.QuadListener;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.QuadOptimizer;
 
-public class ChunkPainter{
+class ChunkPainter{
 	private static boolean isAir(RawChunk raw, int x, int y, int z){
 		if(x<0)
 			return true;
@@ -54,23 +54,15 @@ public class ChunkPainter{
 	private static final ChunkZQuadCounter Z_QUAD_COUNTER = new ChunkZQuadCounter();
 	private static final BlockProperties PROPERTIES = new BlockProperties(Math.min(256, Block.values().length));
 	private ChunkVBO vbo;
-	public final int x;
-	public final int y;
-	public final int z;
-	public ChunkPainter(World world, RawChunk raw){
+	final int x;
+	final int y;
+	final int z;
+	ChunkPainter(World world, RawChunk raw){
 		x = raw.getX();
 		y = raw.getY();
 		z = raw.getZ();
 		if(!raw.isEmpty())
 			build(world, raw);
-	}
-	public void dispose(){
-		if(vbo!=null)
-			vbo.open();
-	}
-	public void render(){
-		if(vbo!=null)
-			vbo.render();
 	}
 	private void build(World world, RawChunk raw){
 		ArrayList<Quad> quads = new ArrayList();
@@ -97,7 +89,7 @@ public class ChunkPainter{
 						for(y = 0; y<16; y++)
 							for(z = 0; z<16; z++)
 								QUAD_LAYER[y][z] =
-									raw.getBlock(x, y, z)==PROPERTIES.get(i)&&isOpen(raw, x, y, z, j);
+								raw.getBlock(x, y, z)==PROPERTIES.get(i)&&isOpen(raw, x, y, z, j);
 						q = QuadOptimizer.optimize(QUAD_STORAGE, QUAD_STORAGE_2, QUAD_LAYER, 16, 16, true);
 						if(q==0)
 							continue;
@@ -121,7 +113,7 @@ public class ChunkPainter{
 						for(x = 0; x<16; x++)
 							for(z = 0; z<16; z++)
 								QUAD_LAYER[x][z] =
-									raw.getBlock(x, y, z)==PROPERTIES.get(i)&&isOpen(raw, x, y, z, j);
+								raw.getBlock(x, y, z)==PROPERTIES.get(i)&&isOpen(raw, x, y, z, j);
 						q = QuadOptimizer.optimize(QUAD_STORAGE, QUAD_STORAGE_2, QUAD_LAYER, 16, 16, true);
 						if(q==0)
 							continue;
@@ -145,7 +137,7 @@ public class ChunkPainter{
 						for(x = 0; x<16; x++)
 							for(y = 0; y<16; y++)
 								QUAD_LAYER[x][y] =
-									raw.getBlock(x, y, z)==PROPERTIES.get(i)&&isOpen(raw, x, y, z, j);
+								raw.getBlock(x, y, z)==PROPERTIES.get(i)&&isOpen(raw, x, y, z, j);
 						q = QuadOptimizer.optimize(QUAD_STORAGE, QUAD_STORAGE_2, QUAD_LAYER, 16, 16, true);
 						if(q==0)
 							continue;
@@ -189,5 +181,13 @@ public class ChunkPainter{
 		}
 		vbo = world.generateVBO();
 		vbo.compile(vertexData, indexCount);
+	}
+	void dispose(){
+		if(vbo!=null)
+			vbo.open();
+	}
+	void render(){
+		if(vbo!=null)
+			vbo.render();
 	}
 }
