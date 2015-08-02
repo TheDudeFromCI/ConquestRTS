@@ -13,14 +13,16 @@ public class TestRenderer implements Driver{
 	private WorldHeightmaps heightMaps;
 	private boolean w, a, s, d, shift, space, fly, lockedMouse, walkLock, e;
 	private boolean wireframeMode;
-	private final float cameraSpeed = 4.317f;
+	private final float cameraSpeed = 40f;
 	private final float mouseSpeed = 0.2f;
 	private final Camera camera = new Camera();
 	private double frameDelta;
 	private World world;
 	public void dispose(){
-		heightMaps.dispose();
-		world.dispose();
+		if(heightMaps!=null)
+			heightMaps.dispose();
+		if(world!=null)
+			world.dispose();
 	}
 	public void initalize(double time){
 		long[] seeds = new long[]{

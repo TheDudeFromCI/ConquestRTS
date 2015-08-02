@@ -11,7 +11,7 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 import com.wraithavens.conquest.Utility.Algorithms;
 
 public class World{
-	private static final int ViewDistance = 1024;
+	private static final int ViewDistance = 20*16;
 	public static int SHADER_LOCATION;
 	public static int SHADER_LOCATION_2;
 	private final Camera camera;
@@ -24,7 +24,7 @@ public class World{
 	public World(WorldNoiseMachine machine, Camera camera){
 		this.camera = camera;
 		generator = new ChunkGenerator(machine);
-		chunkLoader = new ChunkLoader(generator);
+		chunkLoader = new ChunkLoader(generator, ViewDistance);
 		shader =
 			new ShaderProgram(new File(WraithavensConquest.assetFolder, "Basic Shader.vert"), null, new File(
 				WraithavensConquest.assetFolder, "Basic Shader.frag"));
@@ -37,7 +37,6 @@ public class World{
 		shader.setUniform1I(0, 0);
 		chunkLoader.updateLocation(Algorithms.groupLocation((int)camera.x, 16),
 			Algorithms.groupLocation((int)camera.y, 16), Algorithms.groupLocation((int)camera.z, 16));
-		chunkLoader.setViewDistance(ViewDistance);
 	}
 	public void dispose(){
 		for(int i = 0; i<vbos.size(); i++)
@@ -47,15 +46,12 @@ public class World{
 	}
 	public ChunkVBO generateVBO(){
 		for(int i = 0; i<vbos.size(); i++)
-			if(vbos.get(i).isOpen){
-				System.out.println("Recycled Vbo: "+(i+1)+"/"+vbos.size());
+			if(vbos.get(i).isOpen)
 				return vbos.get(i);
-			}
 		int vbo = GL15.glGenBuffers();
 		int ibo = GL15.glGenBuffers();
 		ChunkVBO v = new ChunkVBO(vbo, ibo, 0);
 		vbos.add(v);
-		System.out.println("Created Vbo: "+vbos.size());
 		return v;
 	}
 	public int getHeightAt(int x, int z){

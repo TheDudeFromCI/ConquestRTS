@@ -29,14 +29,14 @@ public class ChunkLoader{
 					f.addNumber(raw.getBlock(a, b, c), 8);
 		f.stopWriting();
 	}
-	private final SpiralGridAlgorithm spiral;
+	private final CellSorter cellSorter;
 	private final ChunkGenerator generator;
 	private int x;
 	private int y;
 	private int z;
-	public ChunkLoader(ChunkGenerator generator){
+	public ChunkLoader(ChunkGenerator generator, int maxDistance){
 		this.generator = generator;
-		spiral = new SpiralGridAlgorithm();
+		cellSorter = new CellSorter(maxDistance/16);
 	}
 	public int getX(){
 		return x;
@@ -52,29 +52,24 @@ public class ChunkLoader{
 		// Don't load anything if we've reached the end of our view distance.
 		// ---
 		RawChunk raw;
-		while(spiral.hasNext()){
-			spiral.next();
+		while(cellSorter.hasNext()){
+			cellSorter.next();
 			raw = load(chunks);
 			if(raw!=null)
 				return raw;
 		}
 		return null;
 	}
-	public void setViewDistance(int distance){
-		spiral.setMaxDistance(distance);
-		spiral.reset();
-	}
 	public void updateLocation(int x, int y, int z){
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		spiral.setOrigin(x, y, z);
-		spiral.reset();
+		cellSorter.reset();
 	}
 	private RawChunk load(ArrayList<ChunkPainter> chunks){
-		int x = spiral.getX();
-		int y = spiral.getY();
-		int z = spiral.getZ();
+		int x = cellSorter.getX()+this.x;
+		int y = cellSorter.getY()+this.y;
+		int z = cellSorter.getZ()+this.z;
 		for(ChunkPainter painter : chunks)
 			if(painter.x==x&&painter.y==y&&painter.z==z)
 				return null;
