@@ -46,17 +46,16 @@ public class World{
 		painters.clear();
 	}
 	public ChunkVBO generateVBO(){
-		System.out.println("Gathering Chunk Vbo.");
 		for(int i = 0; i<vbos.size(); i++)
 			if(vbos.get(i).isOpen){
-				System.out.println("  Returned Vbo: "+(i+1)+"/"+vbos.size());
+				System.out.println("Recycled Vbo: "+(i+1)+"/"+vbos.size());
 				return vbos.get(i);
 			}
 		int vbo = GL15.glGenBuffers();
 		int ibo = GL15.glGenBuffers();
 		ChunkVBO v = new ChunkVBO(vbo, ibo, 0);
 		vbos.add(v);
-		System.out.println("  Created Vbo: "+vbos.size());
+		System.out.println("Created Vbo: "+vbos.size());
 		return v;
 	}
 	public int getHeightAt(int x, int z){

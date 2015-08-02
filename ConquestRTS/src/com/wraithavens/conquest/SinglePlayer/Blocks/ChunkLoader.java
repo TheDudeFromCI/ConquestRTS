@@ -51,10 +51,14 @@ public class ChunkLoader{
 		// ---
 		// Don't load anything if we've reached the end of our view distance.
 		// ---
-		if(!spiral.hasNext())
-			return null;
-		spiral.next();
-		return load(chunks);
+		RawChunk raw;
+		while(spiral.hasNext()){
+			spiral.next();
+			raw = load(chunks);
+			if(raw!=null)
+				return raw;
+		}
+		return null;
 	}
 	public void setViewDistance(int distance){
 		spiral.setMaxDistance(distance);
