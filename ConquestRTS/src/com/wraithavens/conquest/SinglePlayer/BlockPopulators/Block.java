@@ -13,7 +13,7 @@ public enum Block{
 		this.green = green;
 		this.blue = blue;
 	}
-	public short id(){
-		return (short)(ordinal()-ID_SHIFT);
+	public byte id(){
+		return (byte)(ordinal()-ID_SHIFT);
 	}
 }

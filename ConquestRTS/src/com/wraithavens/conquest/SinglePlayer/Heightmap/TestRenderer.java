@@ -5,23 +5,31 @@ import org.lwjgl.opengl.GL11;
 import com.wraithavens.conquest.Launcher.Driver;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.MatrixUtils;
+import com.wraithavens.conquest.SinglePlayer.Blocks.World;
+import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 
 public class TestRenderer implements Driver{
 	private WorldHeightmaps heightMaps;
 	private boolean w, a, s, d, space, shift, lockedMouse, walkLock, e;
-	private boolean wireframeMode, ludacrisSpeed;
-	private final float cameraSpeed = 4.317f*4;
+	private boolean wireframeMode;
+	private final float cameraSpeed = 4.317f;
 	private final float mouseSpeed = 0.2f;
 	private final Camera camera = new Camera();
 	private double frameDelta;
+	private World world;
 	public void dispose(){
 		heightMaps.dispose();
 	}
 	public void initalize(double time){
-		heightMaps = new WorldHeightmaps();
+		long[] seeds = new long[]{
+			0, 1, 2, 3, 4, 5, 6
+		};
+		WorldNoiseMachine machine = WorldNoiseMachine.generate(seeds);
 		camera.cameraMoveSpeed = 10.0f;
-		camera.goalY = 10;
+		camera.goalY = camera.y = (float)machine.getWorldHeight(0, 0)+6;
+		world = new World(machine, camera);
+		heightMaps = new WorldHeightmaps(machine);
 		GL11.glClearColor(0.4f, 0.6f, 0.9f, 1);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
@@ -71,9 +79,6 @@ public class TestRenderer implements Driver{
 					GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 				wireframeMode = !wireframeMode;
 			}
-		}else if(key==GLFW.GLFW_KEY_2){
-			if(action==GLFW.GLFW_PRESS)
-				ludacrisSpeed = !ludacrisSpeed;
 		}else if(key==GLFW.GLFW_KEY_ESCAPE){
 			if(action==GLFW.GLFW_PRESS)
 				GLFW.glfwSetWindowShouldClose(WraithavensConquest.INSTANCE.getWindow(), GL11.GL_TRUE);
@@ -116,36 +121,45 @@ public class TestRenderer implements Driver{
 		GL11.glPushMatrix();
 		updateCamera(frameDelta);
 		heightMaps.render();
+		world.render();
 		GL11.glPopMatrix();
 	}
 	public void update(double delta, double time){
 		frameDelta = delta;
 		move(delta);
+		world.update();
 	}
 	private void move(double delta){
 		delta *= cameraSpeed;
+		boolean cameraMoved = false;
 		if(e)
-			delta *= ludacrisSpeed?1000:10;
+			delta *= 50;
 		if(w||walkLock){
 			camera.goalX += delta*(float)Math.sin(Math.toRadians(camera.ry));
 			camera.goalZ -= delta*(float)Math.cos(Math.toRadians(camera.ry));
+			cameraMoved = true;
 		}
 		if(a){
 			camera.goalX += delta*(float)Math.sin(Math.toRadians(camera.ry-90));
 			camera.goalZ -= delta*(float)Math.cos(Math.toRadians(camera.ry-90));
+			cameraMoved = true;
 		}
 		if(s){
 			camera.goalX -= delta*(float)Math.sin(Math.toRadians(camera.ry));
 			camera.goalZ += delta*(float)Math.cos(Math.toRadians(camera.ry));
+			cameraMoved = true;
 		}
 		if(d){
 			camera.goalX += delta*(float)Math.sin(Math.toRadians(camera.ry+90));
 			camera.goalZ -= delta*(float)Math.cos(Math.toRadians(camera.ry+90));
+			cameraMoved = true;
 		}
 		if(space)
 			camera.goalY += delta;
 		if(shift)
 			camera.goalY -= delta;
+		if(cameraMoved)
+			camera.goalY = world.getHeightAt((int)camera.x, (int)camera.z)+6;
 	}
 	private void updateCamera(double delta){
 		float x = camera.x;

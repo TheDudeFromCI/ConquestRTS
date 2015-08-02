@@ -9,6 +9,6 @@ out vec2 uv;
 
 void main(){
 	vec2 u = gl_MultiTexCoord0.xy;
-	gl_Position = gl_ModelViewProjectionMatrix*(gl_Vertex+vec2(0.0f, texture(texture, (round(u*mountainData.x)+0.5f)*mountainData.y).a*mountainData.z).xyxx);
+	gl_Position = gl_ModelViewProjectionMatrix*(gl_Vertex+vec2(0.0f, texture(texture, u).a*mountainData.z).xyxx);
 	uv = u;
 }

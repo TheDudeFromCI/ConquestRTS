@@ -7,28 +7,11 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
-import com.wraithavens.conquest.SinglePlayer.Noise.AdvancedNoise;
-import com.wraithavens.conquest.SinglePlayer.Noise.ColorNoise;
-import com.wraithavens.conquest.SinglePlayer.Noise.SubNoise;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
-import com.wraithavens.conquest.Utility.CosineInterpolation;
-import com.wraithavens.conquest.Utility.LinearInterpolation;
+import com.wraithavens.conquest.Utility.Algorithms;
 
 class WorldHeightmaps{
-	/**
-	 * This function takes any value, <i>x</i>, and groups it into evenly sized
-	 * chunks.
-	 *
-	 * @param x
-	 *            - The location.
-	 * @param w
-	 *            - The chunk size.
-	 * @return The grouped value of x.
-	 */
-	static int groupLocation(int x, int w){
-		return x>=0?x/w*w:(x-(w-1))/w*w;
-	}
 	public static final int TextureDetail = 1024;
 	public static final int VertexCount = 256;
 	public static final int ViewDistance = 16384;
@@ -40,7 +23,7 @@ class WorldHeightmaps{
 	private final int ibo;
 	private final ShaderProgram shader;
 	private final HeightmapGenerator generator;
-	public WorldHeightmaps(){
+	public WorldHeightmaps(WorldNoiseMachine machine){
 		// ---
 		// Prepare the mesh.
 		// ---
@@ -54,42 +37,13 @@ class WorldHeightmaps{
 			new ShaderProgram(new File(WraithavensConquest.assetFolder, "Heightmap.vert"), null, new File(
 				WraithavensConquest.assetFolder, "Heightmap.frag"));
 		// ---
-		// And prepare the texture loader/generator.
-		// Note: This noise generator must be the exact same as the once that
-		// creates the mountains for the blocks, otherwise it won't look right.
-		// I use the server hard seed here for debug, but any seed can be used.
-		// As long as the same seed is always used on the world save folder.
-		// ---
-		CosineInterpolation cos = new CosineInterpolation();
-		LinearInterpolation lerp = new LinearInterpolation();
-		// ---
-		// The layout may be slightly similar for the actual game, but this
-		// part is more or less a test.
-		// ---
-		SubNoise worldHeightNoise1 = SubNoise.build(0, 6000, 6, cos, 40000, 0);
-		SubNoise worldHeightNoise2 = SubNoise.build(6, 300, 3, lerp, 800, 0);
-		SubNoise humidityNoise1 = SubNoise.build(1, 7500, 10, cos, 1, 0);
-		SubNoise tempatureNoise1 = SubNoise.build(2, 20000, 11, cos, 1, 0);
-		SubNoise prairieRed = SubNoise.build(3, 120, 2, lerp, 0.15f, 0.25f);
-		SubNoise prairieGreen = SubNoise.build(4, 20, 0, lerp, 0.1f, 0);
-		SubNoise prairieBlue = SubNoise.build(5, 80, 2, lerp, 0.15f, 0.3f);
-		// ---
-		// And compiling these together.
-		// ---
-		AdvancedNoise worldHeight = new AdvancedNoise();
-		worldHeight.addSubNoise(worldHeightNoise1);
-		worldHeight.addSubNoise(worldHeightNoise2);
-		AdvancedNoise humidity = new AdvancedNoise();
-		humidity.addSubNoise(humidityNoise1);
-		AdvancedNoise tempature = new AdvancedNoise();
-		tempature.addSubNoise(tempatureNoise1);
-		ColorNoise prairieColor = new ColorNoise(prairieRed, prairieGreen, prairieBlue);
-		WorldNoiseMachine machine = new WorldNoiseMachine(worldHeight, humidity, tempature, prairieColor);
-		generator = new HeightmapGenerator(machine);
-		// ---
 		// Now upload all known data.
 		// ---
 		buildShader((float)machine.getMaxHeight());
+		// ---
+		// And prepare the texture loader/generator.
+		// ---
+		generator = new HeightmapGenerator(machine);
 		// ---
 		// Just to make sure there is some data on the list.
 		// ---
@@ -106,7 +60,8 @@ class WorldHeightmaps{
 	public void update(float x, float z){
 		if(isSafeView(x, z))
 			return;
-		updateHeightmaps(groupLocation((int)x, ViewDistance), groupLocation((int)z, ViewDistance));
+		updateHeightmaps(Algorithms.groupLocation((int)x, ViewDistance),
+			Algorithms.groupLocation((int)z, ViewDistance));
 	}
 	private void buildIndexData(){
 		IntBuffer indexData = BufferUtils.createIntBuffer(indexCount);
@@ -176,10 +131,25 @@ class WorldHeightmaps{
 		return x>=heightmap.getX()&&x<heightmap.getX()+ViewDistance&&z>=heightmap.getZ()
 			&&z<heightmap.getZ()+ViewDistance;
 	}
-	private void renderVbo(){
+	private void updateHeightmaps(int x, int z){
+		System.out.println("Loading new heightmap.");
+		heightmap.update(x, z, generator.getHeightmapTexture(x, z));
+	}
+	void render(){
+		// ---
+		// Do nothing if we don't have anything to draw.
+		// ---
 		if(heightmap.isNull())
 			return;
+		// ---
+		// Prepare the GPU for heightmap information.
+		// ---
+		shader.bind();
 		heightmap.bind();
+		// ---
+		// Finally, offset the mesh to it's correct location, then render the
+		// heightmap mesh. :)
+		// ---
 		GL11.glPushMatrix();
 		GL11.glTranslatef(heightmap.getX(), 0, heightmap.getZ());
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
@@ -188,13 +158,10 @@ class WorldHeightmaps{
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 		GL11.glDrawElements(GL11.GL_TRIANGLE_STRIP, indexCount, GL11.GL_UNSIGNED_INT, 0);
 		GL11.glPopMatrix();
-	}
-	private void updateHeightmaps(int x, int z){
-		System.out.println("Loading new heightmap.");
-		heightmap.update(x, z, generator.getHeightmapTexture(x, z));
-	}
-	void render(){
-		shader.bind();
-		renderVbo();
+		// ---
+		// Clear the depth buffer, so the rest of the game looks like it's
+		// fading out into the mountains, rather then clipping into them.
+		// ---
+		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 	}
 }
