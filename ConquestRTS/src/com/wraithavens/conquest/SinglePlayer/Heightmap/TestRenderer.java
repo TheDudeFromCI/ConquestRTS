@@ -11,7 +11,7 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 
 public class TestRenderer implements Driver{
 	private WorldHeightmaps heightMaps;
-	private boolean w, a, s, d, space, shift, lockedMouse, walkLock, e;
+	private boolean w, a, s, d, lockedMouse, walkLock, e;
 	private boolean wireframeMode;
 	private final float cameraSpeed = 4.317f;
 	private final float mouseSpeed = 0.2f;
@@ -20,6 +20,7 @@ public class TestRenderer implements Driver{
 	private World world;
 	public void dispose(){
 		heightMaps.dispose();
+		world.dispose();
 	}
 	public void initalize(double time){
 		long[] seeds = new long[]{
@@ -56,16 +57,6 @@ public class TestRenderer implements Driver{
 				d = true;
 			else if(action==GLFW.GLFW_RELEASE)
 				d = false;
-		}else if(key==GLFW.GLFW_KEY_SPACE){
-			if(action==GLFW.GLFW_PRESS)
-				space = true;
-			else if(action==GLFW.GLFW_RELEASE)
-				space = false;
-		}else if(key==GLFW.GLFW_KEY_LEFT_SHIFT){
-			if(action==GLFW.GLFW_PRESS)
-				shift = true;
-			else if(action==GLFW.GLFW_RELEASE)
-				shift = false;
 		}else if(key==GLFW.GLFW_KEY_E){
 			if(action==GLFW.GLFW_PRESS)
 				e = true;
@@ -154,10 +145,6 @@ public class TestRenderer implements Driver{
 			camera.goalZ -= delta*(float)Math.cos(Math.toRadians(camera.ry+90));
 			cameraMoved = true;
 		}
-		if(space)
-			camera.goalY += delta;
-		if(shift)
-			camera.goalY -= delta;
 		if(cameraMoved)
 			camera.goalY = world.getHeightAt((int)camera.x, (int)camera.z)+6;
 	}

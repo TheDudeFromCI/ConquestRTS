@@ -2,6 +2,7 @@ package com.wraithavens.conquest.SinglePlayer.Blocks;
 
 import java.io.File;
 import java.util.ArrayList;
+import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
@@ -17,6 +18,7 @@ public class World{
 	private final ChunkGenerator generator;
 	private final ChunkLoader chunkLoader;
 	private final ArrayList<ChunkPainter> painters = new ArrayList();
+	private final ArrayList<ChunkVBO> vbos = new ArrayList();
 	private final ShaderProgram shader;
 	private int step;
 	public World(WorldNoiseMachine machine, Camera camera){
@@ -37,6 +39,26 @@ public class World{
 			Algorithms.groupLocation((int)camera.y, 16), Algorithms.groupLocation((int)camera.z, 16));
 		chunkLoader.setViewDistance(ViewDistance);
 	}
+	public void dispose(){
+		for(int i = 0; i<vbos.size(); i++)
+			vbos.get(i).dispose();
+		vbos.clear();
+		painters.clear();
+	}
+	public ChunkVBO generateVBO(){
+		System.out.println("Gathering Chunk Vbo.");
+		for(int i = 0; i<vbos.size(); i++)
+			if(vbos.get(i).isOpen){
+				System.out.println("  Returned Vbo: "+(i+1)+"/"+vbos.size());
+				return vbos.get(i);
+			}
+		int vbo = GL15.glGenBuffers();
+		int ibo = GL15.glGenBuffers();
+		ChunkVBO v = new ChunkVBO(vbo, ibo, 0);
+		vbos.add(v);
+		System.out.println("  Created Vbo: "+vbos.size());
+		return v;
+	}
 	public int getHeightAt(int x, int z){
 		return generator.getHeightAt(x, z);
 	}
@@ -54,9 +76,8 @@ public class World{
 		if(step%1==0){
 			clearEmpties();
 			RawChunk raw = chunkLoader.loadNextChunk(painters);
-			if(raw!=null){
-				painters.add(new ChunkPainter(raw));
-			}
+			if(raw!=null)
+				painters.add(new ChunkPainter(this, raw));
 		}
 		step++;
 	}
