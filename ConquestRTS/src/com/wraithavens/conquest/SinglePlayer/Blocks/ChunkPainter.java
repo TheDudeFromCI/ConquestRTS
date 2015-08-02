@@ -4,9 +4,7 @@ import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Block;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.BlockProperties;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.ChunkXQuadCounter;
@@ -17,7 +15,7 @@ import com.wraithavens.conquest.SinglePlayer.BlockPopulators.QuadListener;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.QuadOptimizer;
 
 public class ChunkPainter{
-	private static VBO build(RawChunk raw){
+	private static ChunkVBO build(RawChunk raw){
 		ArrayList<Quad> quads = new ArrayList();
 		QuadListener quadListener = new QuadListener(){
 			public void addQuad(Quad q){
@@ -42,7 +40,7 @@ public class ChunkPainter{
 						for(y = 0; y<16; y++)
 							for(z = 0; z<16; z++)
 								QUAD_LAYER[y][z] =
-									raw.getBlock(x, y, z)==PROPERTIES.get(i)&&isOpen(raw, x, y, z, j);
+								raw.getBlock(x, y, z)==PROPERTIES.get(i)&&isOpen(raw, x, y, z, j);
 						q = QuadOptimizer.optimize(QUAD_STORAGE, QUAD_STORAGE_2, QUAD_LAYER, 16, 16, true);
 						if(q==0)
 							continue;
@@ -66,7 +64,7 @@ public class ChunkPainter{
 						for(x = 0; x<16; x++)
 							for(z = 0; z<16; z++)
 								QUAD_LAYER[x][z] =
-									raw.getBlock(x, y, z)==PROPERTIES.get(i)&&isOpen(raw, x, y, z, j);
+								raw.getBlock(x, y, z)==PROPERTIES.get(i)&&isOpen(raw, x, y, z, j);
 						q = QuadOptimizer.optimize(QUAD_STORAGE, QUAD_STORAGE_2, QUAD_LAYER, 16, 16, true);
 						if(q==0)
 							continue;
@@ -90,7 +88,7 @@ public class ChunkPainter{
 						for(x = 0; x<16; x++)
 							for(y = 0; y<16; y++)
 								QUAD_LAYER[x][y] =
-									raw.getBlock(x, y, z)==PROPERTIES.get(i)&&isOpen(raw, x, y, z, j);
+								raw.getBlock(x, y, z)==PROPERTIES.get(i)&&isOpen(raw, x, y, z, j);
 						q = QuadOptimizer.optimize(QUAD_STORAGE, QUAD_STORAGE_2, QUAD_LAYER, 16, 16, true);
 						if(q==0)
 							continue;
@@ -104,7 +102,7 @@ public class ChunkPainter{
 		int vbo = GL15.glGenBuffers();
 		int ibo = GL15.glGenBuffers();
 		int elementCount = compileBuffer(quads, vbo, ibo);
-		return new VBO(vbo, ibo, elementCount);
+		return new ChunkVBO(vbo, ibo, elementCount);
 	}
 	private static int compileBuffer(ArrayList<Quad> quads, int vboId, int iboId){
 		int points = quads.size()*4;
@@ -190,7 +188,7 @@ public class ChunkPainter{
 	private static final ChunkYQuadCounter Y_QUAD_COUNTER = new ChunkYQuadCounter();
 	private static final ChunkZQuadCounter Z_QUAD_COUNTER = new ChunkZQuadCounter();
 	private static final BlockProperties PROPERTIES = new BlockProperties(Math.min(256, Block.values().length));
-	private final VBO vbo;
+	private final ChunkVBO vbo;
 	public final int x;
 	public final int y;
 	public final int z;
@@ -205,14 +203,7 @@ public class ChunkPainter{
 			vbo.dispose();
 	}
 	public void render(){
-		if(vbo==null)
-			return;
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo.vbo);
-		GL11.glVertexPointer(3, GL11.GL_FLOAT, 32, 0);
-		GL11.glColorPointer(3, GL11.GL_FLOAT, 32, 12);
-		GL20.glVertexAttribPointer(World.SHADER_LOCATION, 1, GL11.GL_FLOAT, false, 32, 24);
-		GL20.glVertexAttribPointer(World.SHADER_LOCATION_2, 1, GL11.GL_FLOAT, false, 32, 28);
-		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, vbo.ibo);
-		GL11.glDrawElements(GL11.GL_TRIANGLES, vbo.indexCount, GL11.GL_UNSIGNED_SHORT, 0);
+		if(vbo!=null)
+			vbo.render();
 	}
 }
