@@ -1,7 +1,9 @@
 package com.wraithavens.conquest.SinglePlayer.Blocks;
 
 import java.io.File;
+import java.nio.ShortBuffer;
 import java.util.ArrayList;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
@@ -21,7 +23,10 @@ public class World{
 	private final ArrayList<ChunkVBO> vbos = new ArrayList();
 	private final ShaderProgram shader;
 	private int step;
+	private final int ibo;
 	public World(WorldNoiseMachine machine, Camera camera){
+		ibo = GL15.glGenBuffers();
+		generateIndexBuffer();
 		this.camera = camera;
 		generator = new ChunkGenerator(machine);
 		chunkLoader = new ChunkLoader(generator, ViewDistance);
@@ -49,8 +54,7 @@ public class World{
 			if(vbos.get(i).isOpen)
 				return vbos.get(i);
 		int vbo = GL15.glGenBuffers();
-		int ibo = GL15.glGenBuffers();
-		ChunkVBO v = new ChunkVBO(vbo, ibo, 0);
+		ChunkVBO v = new ChunkVBO(vbo, 0);
 		vbos.add(v);
 		return v;
 	}
@@ -59,6 +63,7 @@ public class World{
 	}
 	public void render(){
 		shader.bind();
+		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 		for(ChunkPainter painter : painters)
 			painter.render();
 	}
@@ -83,6 +88,19 @@ public class World{
 				painters.remove(i);
 			}else
 				i++;
+	}
+	private void generateIndexBuffer(){
+		int maxQuads = 16*16*16/2*6;
+		ShortBuffer indexData = BufferUtils.createShortBuffer(maxQuads*6);
+		short e = 0;
+		for(int i = 0; i<maxQuads; i++){
+			indexData.put(e).put((short)(e+1)).put((short)(e+2));
+			indexData.put(e).put((short)(e+2)).put((short)(e+3));
+			e += 4;
+		}
+		indexData.flip();
+		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
+		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_STATIC_DRAW);
 	}
 	private boolean shouldUnload(ChunkPainter painter){
 		int x = Algorithms.groupLocation((int)camera.x, 16);

@@ -1,7 +1,6 @@
 package com.wraithavens.conquest.SinglePlayer.Blocks;
 
 import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import org.lwjgl.BufferUtils;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Block;
@@ -161,10 +160,7 @@ public class ChunkPainter{
 	}
 	private void compileBuffer(ArrayList<Quad> quads, World world){
 		int points = quads.size()*4;
-		int indices = quads.size()*6;
 		FloatBuffer vertexData = BufferUtils.createFloatBuffer(points*8);
-		ShortBuffer indexData = BufferUtils.createShortBuffer(indices);
-		short elementCount = 0;
 		int indexCount = 0;
 		Quad q;
 		float shade;
@@ -189,12 +185,9 @@ public class ChunkPainter{
 			vertexData.put(q.data.get(12)).put(q.data.get(13)).put(q.data.get(14));
 			vertexData.put(shade);
 			vertexData.put(grass);
-			indexData.put(elementCount).put((short)(elementCount+1)).put((short)(elementCount+2));
-			indexData.put(elementCount).put((short)(elementCount+2)).put((short)(elementCount+3));
-			elementCount += 4;
 			indexCount += 6;
 		}
 		vbo = world.generateVBO();
-		vbo.compile(vertexData, indexData, indexCount);
+		vbo.compile(vertexData, indexCount);
 	}
 }
