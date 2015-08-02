@@ -1,4 +1,4 @@
-package com.wraithavens.conquest.SinglePlayer.Heightmap;
+package com.wraithavens.conquest.SinglePlayer;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
@@ -6,10 +6,11 @@ import com.wraithavens.conquest.Launcher.Driver;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.MatrixUtils;
 import com.wraithavens.conquest.SinglePlayer.Blocks.World;
+import com.wraithavens.conquest.SinglePlayer.Heightmap.WorldHeightmaps;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 
-public class TestRenderer implements Driver{
+public class SinglePlayerGame implements Driver{
 	private WorldHeightmaps heightMaps;
 	private boolean w, a, s, d, shift, space, fly, lockedMouse, walkLock, e;
 	private boolean wireframeMode;

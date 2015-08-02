@@ -3,7 +3,7 @@ package com.wraithavens.conquest.TitleScreen;
 import org.lwjgl.opengl.GL11;
 import com.wraithavens.conquest.Launcher.Driver;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
-import com.wraithavens.conquest.SinglePlayer.Heightmap.TestRenderer;
+import com.wraithavens.conquest.SinglePlayer.SinglePlayerGame;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Texture;
 
 public class TitleScreen implements Driver{
@@ -13,7 +13,7 @@ public class TitleScreen implements Driver{
 	public void initalize(double time){
 		// World world = new World();
 		// WraithavensConquest.INSTANCE.setDriver(new SinglePlayerGame(world));
-		WraithavensConquest.INSTANCE.setDriver(new TestRenderer());
+		WraithavensConquest.INSTANCE.setDriver(new SinglePlayerGame());
 	}
 	public void onKey(int key, int action){}
 	public void onMouse(int button, int action){}

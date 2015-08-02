@@ -11,7 +11,7 @@ import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 import com.wraithavens.conquest.Utility.Algorithms;
 
-class WorldHeightmaps{
+public class WorldHeightmaps{
 	public static final int TextureDetail = 1024;
 	public static final int VertexCount = 256;
 	public static final int ViewDistance = 16384;
@@ -56,6 +56,35 @@ class WorldHeightmaps{
 		GL15.glDeleteBuffers(ibo);
 		shader.dispose();
 		heightmap.dispose();
+	}
+	public void render(){
+		// ---
+		// Do nothing if we don't have anything to draw.
+		// ---
+		if(heightmap.isNull())
+			return;
+		// ---
+		// Prepare the GPU for heightmap information.
+		// ---
+		shader.bind();
+		heightmap.bind();
+		// ---
+		// Finally, offset the mesh to it's correct location, then render the
+		// heightmap mesh. :)
+		// ---
+		GL11.glPushMatrix();
+		GL11.glTranslatef(heightmap.getX(), 0, heightmap.getZ());
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
+		GL11.glVertexPointer(3, GL11.GL_FLOAT, 20, 0);
+		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 20, 12);
+		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
+		GL11.glDrawElements(GL11.GL_TRIANGLE_STRIP, indexCount, GL11.GL_UNSIGNED_INT, 0);
+		GL11.glPopMatrix();
+		// ---
+		// Clear the depth buffer, so the rest of the game looks like it's
+		// fading out into the mountains, rather then clipping into them.
+		// ---
+		// GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 	}
 	public void update(float x, float z){
 		if(isSafeView(x, z))
@@ -134,34 +163,5 @@ class WorldHeightmaps{
 	private void updateHeightmaps(int x, int z){
 		System.out.println("Loading new heightmap.");
 		heightmap.update(x, z, generator.getHeightmapTexture(x, z));
-	}
-	void render(){
-		// ---
-		// Do nothing if we don't have anything to draw.
-		// ---
-		if(heightmap.isNull())
-			return;
-		// ---
-		// Prepare the GPU for heightmap information.
-		// ---
-		shader.bind();
-		heightmap.bind();
-		// ---
-		// Finally, offset the mesh to it's correct location, then render the
-		// heightmap mesh. :)
-		// ---
-		GL11.glPushMatrix();
-		GL11.glTranslatef(heightmap.getX(), 0, heightmap.getZ());
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
-		GL11.glVertexPointer(3, GL11.GL_FLOAT, 20, 0);
-		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 20, 12);
-		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
-		GL11.glDrawElements(GL11.GL_TRIANGLE_STRIP, indexCount, GL11.GL_UNSIGNED_INT, 0);
-		GL11.glPopMatrix();
-		// ---
-		// Clear the depth buffer, so the rest of the game looks like it's
-		// fading out into the mountains, rather then clipping into them.
-		// ---
-		// GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 	}
 }
