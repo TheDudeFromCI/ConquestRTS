@@ -162,6 +162,6 @@ class WorldHeightmaps{
 		// Clear the depth buffer, so the rest of the game looks like it's
 		// fading out into the mountains, rather then clipping into them.
 		// ---
-		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+		// GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 	}
 }

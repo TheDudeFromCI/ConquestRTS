@@ -15,9 +15,12 @@ public class WraithavensConquest extends EmptyLoop{
 		textureFolder = programFolder+File.separatorChar+"Textures";
 		loadingScreenImagesFolder = programFolder+File.separatorChar+"Loading Screen Images";
 		modelFolder = programFolder+File.separatorChar+"Models";
-		saveFolder = programFolder+File.separatorChar+"Save";
-		currentGameUUID = "Pre-Alpha"; // TODO Remove this later, once game
-										// saving and loading is in.
+		saveFolder = programFolder+File.separatorChar+"Saves";
+		// ---
+		// TODO Remove this later, once game saving and loading is in.
+		// ---
+		currentGameUUID = "Pre-Alpha";
+		saveFolder += File.separatorChar+currentGameUUID;
 		WindowInitalizerBuilder builder = new WindowInitalizerBuilder();
 		new WraithavensConquest(builder.build());
 		System.exit(0);

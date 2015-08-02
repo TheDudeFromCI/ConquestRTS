@@ -28,12 +28,12 @@ class HeightmapGenerator{
 		HeightmapRaw raw = new HeightmapRaw();
 		long time = System.currentTimeMillis();
 		int x, y;
-		float s = WorldHeightmaps.ViewDistance*2/(WorldHeightmaps.TextureDetail-1.0f);
 		float[] temp = new float[4];
 		for(x = 0; x<WorldHeightmaps.TextureDetail; x++)
 			for(y = 0; y<WorldHeightmaps.TextureDetail; y++){
-				calculateColor(x*s-WorldHeightmaps.ViewDistance/2+offX, y*s-WorldHeightmaps.ViewDistance/2+offY,
-					temp);
+				calculateColor(x/(float)WorldHeightmaps.TextureDetail*WorldHeightmaps.ViewDistance*2f
+					-WorldHeightmaps.ViewDistance/2f+offX, y/(float)WorldHeightmaps.TextureDetail
+					*WorldHeightmaps.ViewDistance*2f-WorldHeightmaps.ViewDistance/2f+offY, temp);
 				raw.setColor(x, y, temp);
 			}
 		System.out.println("Finished in "+(System.currentTimeMillis()-time)+" ms.");

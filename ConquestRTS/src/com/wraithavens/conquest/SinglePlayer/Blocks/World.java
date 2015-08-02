@@ -11,7 +11,7 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 import com.wraithavens.conquest.Utility.Algorithms;
 
 public class World{
-	private static final int ViewDistance = 128;
+	private static final int ViewDistance = 1024;
 	public static int SHADER_LOCATION;
 	public static int SHADER_LOCATION_2;
 	private final Camera camera;

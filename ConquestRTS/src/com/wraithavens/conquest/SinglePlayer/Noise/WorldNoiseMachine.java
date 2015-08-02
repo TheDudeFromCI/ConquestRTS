@@ -23,8 +23,7 @@ public class WorldNoiseMachine{
 		// ---
 		CosineInterpolation cos = new CosineInterpolation();
 		LinearInterpolation lerp = new LinearInterpolation();
-		SubNoise worldHeightNoise1 = SubNoise.build(seeds[0], 6000, 6, cos, 40000, 0);
-		SubNoise worldHeightNoise2 = SubNoise.build(seeds[1], 300, 3, lerp, 800, 0);
+		SubNoise worldHeightNoise1 = SubNoise.build(seeds[0], 6000, 6, cos, 5000, 0);
 		SubNoise humidityNoise1 = SubNoise.build(seeds[2], 7500, 10, cos, 1, 0);
 		SubNoise tempatureNoise1 = SubNoise.build(seeds[3], 20000, 11, cos, 1, 0);
 		SubNoise prairieRed = SubNoise.build(seeds[4], 120, 2, lerp, 0.15f, 0.25f);
@@ -35,7 +34,6 @@ public class WorldNoiseMachine{
 		// ---
 		AdvancedNoise worldHeight = new AdvancedNoise();
 		worldHeight.addSubNoise(worldHeightNoise1);
-		worldHeight.addSubNoise(worldHeightNoise2);
 		AdvancedNoise humidity = new AdvancedNoise();
 		humidity.addSubNoise(humidityNoise1);
 		AdvancedNoise tempature = new AdvancedNoise();

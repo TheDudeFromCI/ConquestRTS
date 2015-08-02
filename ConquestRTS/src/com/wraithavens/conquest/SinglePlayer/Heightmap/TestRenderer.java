@@ -11,7 +11,7 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 
 public class TestRenderer implements Driver{
 	private WorldHeightmaps heightMaps;
-	private boolean w, a, s, d, lockedMouse, walkLock, e;
+	private boolean w, a, s, d, shift, space, fly, lockedMouse, walkLock, e;
 	private boolean wireframeMode;
 	private final float cameraSpeed = 4.317f;
 	private final float mouseSpeed = 0.2f;
@@ -29,6 +29,8 @@ public class TestRenderer implements Driver{
 		WorldNoiseMachine machine = WorldNoiseMachine.generate(seeds);
 		camera.cameraMoveSpeed = 10.0f;
 		camera.goalY = camera.y = (float)machine.getWorldHeight(0, 0)+6;
+		camera.goalX = 8192;
+		camera.goalZ = 8192;
 		world = new World(machine, camera);
 		heightMaps = new WorldHeightmaps(machine);
 		GL11.glClearColor(0.4f, 0.6f, 0.9f, 1);
@@ -62,6 +64,16 @@ public class TestRenderer implements Driver{
 				e = true;
 			else if(action==GLFW.GLFW_RELEASE)
 				e = false;
+		}else if(key==GLFW.GLFW_KEY_SPACE){
+			if(action==GLFW.GLFW_PRESS)
+				space = true;
+			else if(action==GLFW.GLFW_RELEASE)
+				space = false;
+		}else if(key==GLFW.GLFW_KEY_LEFT_SHIFT){
+			if(action==GLFW.GLFW_PRESS)
+				shift = true;
+			else if(action==GLFW.GLFW_RELEASE)
+				shift = false;
 		}else if(key==GLFW.GLFW_KEY_1){
 			if(action==GLFW.GLFW_PRESS){
 				if(wireframeMode)
@@ -69,6 +81,10 @@ public class TestRenderer implements Driver{
 				else
 					GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 				wireframeMode = !wireframeMode;
+			}
+		}else if(key==GLFW.GLFW_KEY_2){
+			if(action==GLFW.GLFW_PRESS){
+				fly = !fly;
 			}
 		}else if(key==GLFW.GLFW_KEY_ESCAPE){
 			if(action==GLFW.GLFW_PRESS)
@@ -145,7 +161,11 @@ public class TestRenderer implements Driver{
 			camera.goalZ -= delta*(float)Math.cos(Math.toRadians(camera.ry+90));
 			cameraMoved = true;
 		}
-		if(cameraMoved)
+		if(space)
+			camera.goalY += delta;
+		if(shift)
+			camera.goalY -= delta;
+		if(cameraMoved&&fly)
 			camera.goalY = world.getHeightAt((int)camera.x, (int)camera.z)+6;
 	}
 	private void updateCamera(double delta){
