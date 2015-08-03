@@ -166,7 +166,7 @@ public class SinglePlayerGame implements Driver{
 		if(shift)
 			camera.goalY -= delta;
 		if(cameraMoved&&fly)
-			camera.goalY = world.getHeightAt((int)camera.x, (int)camera.z)+6;
+			camera.goalY = world.getHeightAt((int)camera.goalX, (int)camera.goalZ)+6;
 	}
 	private void updateCamera(double delta){
 		float x = camera.x;
