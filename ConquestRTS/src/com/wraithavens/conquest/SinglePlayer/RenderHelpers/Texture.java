@@ -87,9 +87,10 @@ public class Texture{
 		textures.add(this);
 		this.file = file.getName();
 	}
-	public void bind(){
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
-	}
+	// TODO Remove unused code found by UCDetector
+	// public void bind(){
+	// GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
+	// }
 	private void dispose(){
 		if(GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D)==textureId)
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);

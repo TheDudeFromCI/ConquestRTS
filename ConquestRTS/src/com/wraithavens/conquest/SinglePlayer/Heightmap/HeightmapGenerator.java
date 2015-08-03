@@ -7,7 +7,7 @@ import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
-public class HeightmapGenerator{
+class HeightmapGenerator{
 	private static void loadHeightmap(FloatBuffer vertexData, File file){
 		System.out.println("Loading heightmap.");
 		BinaryFile bin = new BinaryFile(file);

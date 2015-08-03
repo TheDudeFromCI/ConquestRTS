@@ -3,7 +3,7 @@ package com.wraithavens.conquest.SinglePlayer.Noise;
 import java.util.Random;
 import com.wraithavens.conquest.Utility.InterpolationFunction;
 
-public class NoiseGenerator{
+class NoiseGenerator{
 	private static float findMaxHeight(int detail){
 		float m = 0;
 		for(int i = 0; i<detail; i++)
@@ -15,38 +15,14 @@ public class NoiseGenerator{
 	private InterpolationFunction function;
 	private final float maxHeight;
 	private int[] reals, edge, c;
-	private long seed;
+	private final long seed;
 	private final float smoothness;
 	private final Random r = new Random();
-	public NoiseGenerator(long seed, float smoothness, int detail){
+	NoiseGenerator(long seed, float smoothness, int detail){
 		this.seed = seed;
 		this.smoothness = smoothness;
 		this.detail = detail+1;
 		maxHeight = findMaxHeight(detail);
-	}
-	public InterpolationFunction getFunction(){
-		return function;
-	}
-	public float noise(float... x){
-		if(reals==null||x.length!=reals.length){
-			reals = new int[x.length];
-			fracs = new float[x.length];
-			v = new float[(int)Math.pow(2, x.length)];
-			edge = new int[x.length+1];
-			c = new int[x.length];
-			for(int i = 0; i<c.length; i++)
-				c[i] = (int)Math.pow(2, i);
-		}
-		float total = 0;
-		int pow;
-		for(int k = 0; k<detail; k++){
-			pow = (int)Math.pow(2, k);
-			total += layerNoise(x, pow, k)/pow;
-		}
-		return total/maxHeight+1-1;
-	}
-	public void resetSeed(long seed){
-		this.seed = seed;
 	}
 	public void setFunction(InterpolationFunction function){
 		this.function = function;
@@ -91,5 +67,23 @@ public class NoiseGenerator{
 	private int randomInt(long seed){
 		r.setSeed(seed);
 		return r.nextInt();
+	}
+	float noise(float... x){
+		if(reals==null||x.length!=reals.length){
+			reals = new int[x.length];
+			fracs = new float[x.length];
+			v = new float[(int)Math.pow(2, x.length)];
+			edge = new int[x.length+1];
+			c = new int[x.length];
+			for(int i = 0; i<c.length; i++)
+				c[i] = (int)Math.pow(2, i);
+		}
+		float total = 0;
+		int pow;
+		for(int k = 0; k<detail; k++){
+			pow = (int)Math.pow(2, k);
+			total += layerNoise(x, pow, k)/pow;
+		}
+		return total/maxHeight+1-1;
 	}
 }

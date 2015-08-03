@@ -42,7 +42,7 @@ public class BinaryFile{
 				}
 		}
 	}
-	private byte[] binary;
+	private final byte[] binary;
 	private int pos;
 	/**
 	 * Reads all binary data from a file into a byte array.
@@ -65,18 +65,6 @@ public class BinaryFile{
 	}
 	public void addFloat(float n){
 		addInt(Float.floatToIntBits(n));
-	}
-	public void addInt(int n){
-		binary[pos] = (byte)(n&0xFF);
-		binary[pos+1] = (byte)(n>>8&0xFF);
-		binary[pos+2] = (byte)(n>>16&0xFF);
-		binary[pos+3] = (byte)(n>>24&0xFF);
-		pos += 4;
-	}
-	public void addShort(short n){
-		binary[pos] = (byte)(n&0xFF);
-		binary[pos+1] = (byte)(n>>8&0xFF);
-		pos += 2;
 	}
 	public void compile(File file){
 		if(!file.exists()){
@@ -104,14 +92,16 @@ public class BinaryFile{
 	public float getFloat(){
 		return Float.intBitsToFloat(getInt());
 	}
-	public int getInt(){
+	private void addInt(int n){
+		binary[pos] = (byte)(n&0xFF);
+		binary[pos+1] = (byte)(n>>8&0xFF);
+		binary[pos+2] = (byte)(n>>16&0xFF);
+		binary[pos+3] = (byte)(n>>24&0xFF);
+		pos += 4;
+	}
+	private int getInt(){
 		int i = binary[pos]&0xFF|(binary[pos+1]&0xFF)<<8|(binary[pos+2]&0xFF)<<16|(binary[pos+3]&0xFF)<<24;
 		pos += 4;
 		return i;
-	}
-	public short getShort(){
-		short s = (short)(binary[pos]&0xFF|(binary[pos+1]&0xFF)<<8);
-		pos += 2;
-		return s;
 	}
 }

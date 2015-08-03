@@ -32,7 +32,6 @@ public class Octree{
 	private static final int OctreeDepth = 10; // 16384 Blocks^2
 	private static final int MainBranchSize = (int)Math.pow(2, OctreeDepth);
 	private final ArrayList<OctreeBranch> branches = new ArrayList();
-	private boolean stop = false;
 	public void addVoxel(VoxelChunk voxel){
 		// ---
 		// Loop through all branches and load the parent branch of the new
@@ -75,12 +74,6 @@ public class Octree{
 					branches.remove(i);
 				return;
 			}
-	}
-	public void runTask(OctreeTask task){
-		stop = false;
-		task.prepareRun();
-		for(OctreeBranch b : branches)
-			testBranch(b, task);
 	}
 	private void clear(OctreeBranch b){
 		if(b==null)
@@ -140,8 +133,6 @@ public class Octree{
 		condenseVoxel(parent);
 	}
 	private void testBranch(OctreeBranch branch, OctreeTask task){
-		if(stop)
-			return;
 		if(!task.shouldRun(branch.owner))
 			return;
 		if(branch.children!=null){
@@ -151,7 +142,8 @@ public class Octree{
 		}else
 			task.run(branch.owner);
 	}
-	void stop(){
-		stop = true;
+	void runTask(OctreeTask task){
+		for(OctreeBranch b : branches)
+			testBranch(b, task);
 	}
 }

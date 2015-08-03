@@ -63,14 +63,6 @@ public class ChunkPainter extends VoxelChunk{
 		if(vbo!=null)
 			vbo.open();
 	}
-	public void render(){
-		// ---
-		// Skip if it's obvious that there is nothing here.
-		// ---
-		if(vbo==null)
-			return;
-		vbo.render();
-	}
 	private void build(World world, RawChunk raw){
 		ArrayList<Quad> quads = new ArrayList();
 		QuadListener quadListener = new QuadListener(){
@@ -96,7 +88,7 @@ public class ChunkPainter extends VoxelChunk{
 						for(y = 0; y<16; y++)
 							for(z = 0; z<16; z++)
 								QUAD_LAYER[y][z] =
-								raw.getBlock(x, y, z)==PROPERTIES.get(i)&&isOpen(raw, x, y, z, j);
+									raw.getBlock(x, y, z)==PROPERTIES.get(i)&&isOpen(raw, x, y, z, j);
 						q = QuadOptimizer.optimize(QUAD_STORAGE, QUAD_STORAGE_2, QUAD_LAYER, 16, 16, true);
 						if(q==0)
 							continue;
@@ -120,7 +112,7 @@ public class ChunkPainter extends VoxelChunk{
 						for(x = 0; x<16; x++)
 							for(z = 0; z<16; z++)
 								QUAD_LAYER[x][z] =
-								raw.getBlock(x, y, z)==PROPERTIES.get(i)&&isOpen(raw, x, y, z, j);
+									raw.getBlock(x, y, z)==PROPERTIES.get(i)&&isOpen(raw, x, y, z, j);
 						q = QuadOptimizer.optimize(QUAD_STORAGE, QUAD_STORAGE_2, QUAD_LAYER, 16, 16, true);
 						if(q==0)
 							continue;
@@ -144,7 +136,7 @@ public class ChunkPainter extends VoxelChunk{
 						for(x = 0; x<16; x++)
 							for(y = 0; y<16; y++)
 								QUAD_LAYER[x][y] =
-								raw.getBlock(x, y, z)==PROPERTIES.get(i)&&isOpen(raw, x, y, z, j);
+									raw.getBlock(x, y, z)==PROPERTIES.get(i)&&isOpen(raw, x, y, z, j);
 						q = QuadOptimizer.optimize(QUAD_STORAGE, QUAD_STORAGE_2, QUAD_LAYER, 16, 16, true);
 						if(q==0)
 							continue;
@@ -188,5 +180,13 @@ public class ChunkPainter extends VoxelChunk{
 		}
 		vbo = world.generateVBO();
 		vbo.compile(vertexData, indexCount);
+	}
+	void render(){
+		// ---
+		// Skip if it's obvious that there is nothing here.
+		// ---
+		if(vbo==null)
+			return;
+		vbo.render();
 	}
 }

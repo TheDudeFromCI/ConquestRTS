@@ -7,13 +7,9 @@ public abstract class OctreeTask{
 	public OctreeTask(Octree octree){
 		this.octree = octree;
 	}
-	public void prepareRun(){}
 	public abstract void run(VoxelChunk chunk);
-	public void runTask(){
+	public final void runTask(){
 		octree.runTask(this);
 	}
 	public abstract boolean shouldRun(VoxelChunk voxel);
-	public void stop(){
-		octree.stop();
-	}
 }

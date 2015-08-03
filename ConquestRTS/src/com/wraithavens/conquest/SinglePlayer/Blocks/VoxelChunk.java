@@ -11,19 +11,19 @@ public class VoxelChunk{
 		this.z = z;
 		this.size = size;
 	}
-	public boolean containsBlock(int x, int y, int z){
+	public final boolean containsBlock(int x, int y, int z){
 		return x>=this.x&&y>=this.y&&z>=this.z&&x<this.x+size&&y<this.y+size&&z<this.z+size;
 	}
-	public int getSize(){
+	public final int getSize(){
 		return size;
 	}
-	public int getX(){
+	public final int getX(){
 		return x;
 	}
-	public int getY(){
+	public final int getY(){
 		return y;
 	}
-	public int getZ(){
+	public final int getZ(){
 		return z;
 	}
 }
