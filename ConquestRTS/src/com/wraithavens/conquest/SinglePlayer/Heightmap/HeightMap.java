@@ -5,22 +5,21 @@ import java.nio.IntBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
-import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 
 class HeightMap{
-	private static final int VertexCount = 1024;
+	static final int VertexCount = 1024;
 	static final int ViewDistance = 16384;
 	private static final int Vertices = VertexCount*VertexCount;
 	private static final int VertexSize = 9;
 	private static final int indexCount = (VertexCount*2+2)*(VertexCount-1)-2;
 	private int posX;
 	private int posZ;
-	private final WorldNoiseMachine machine;
+	private final HeightmapGenerator generator;
 	private final int vbo;
 	private final int ibo;
 	public HeightMap(WorldNoiseMachine machine){
-		this.machine = machine;
+		generator = new HeightmapGenerator(machine);
 		vbo = GL15.glGenBuffers();
 		ibo = GL15.glGenBuffers();
 		buildIndexData();
@@ -64,57 +63,11 @@ class HeightMap{
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_STATIC_DRAW);
 	}
-	private void calculateNormal(float x, float z, Vector3f out){
-		double z0 = machine.getWorldHeight(x-1, z+1)/machine.getMaxHeight();
-		double z1 = machine.getWorldHeight(x, z+1)/machine.getMaxHeight();
-		double z2 = machine.getWorldHeight(x+1, z+1)/machine.getMaxHeight();
-		double z3 = machine.getWorldHeight(x-1, z)/machine.getMaxHeight();
-		double z4 = machine.getWorldHeight(x, z)/machine.getMaxHeight();
-		double z5 = machine.getWorldHeight(x-1, z-1)/machine.getMaxHeight();
-		double z6 = machine.getWorldHeight(x, z-1)/machine.getMaxHeight();
-		double z7 = machine.getWorldHeight(x+1, z-1)/machine.getMaxHeight();
-		out.set((float)(z2+2.0f*z4+z7-z0-2.0f*z3-z5), (float)(1.0f/machine.getMaxHeight()), (float)(z5+2.0f*z6
-			+z7-z0-2.0f*z1-z2));
-		out.normalize();
-	}
 	private void rebuild(){
 		System.out.println("Rebuilding heightmap.");
 		long time = System.currentTimeMillis();
 		FloatBuffer vertexData = BufferUtils.createFloatBuffer(Vertices*VertexSize);
-		int x, y;
-		float s = ViewDistance*2/(VertexCount-1.0f);
-		float blockX;
-		float blockZ;
-		Vector3f normal = new Vector3f();
-		Vector3f color = new Vector3f();
-		for(y = 0; y<VertexCount; y++)
-			for(x = 0; x<VertexCount; x++){
-				// ---
-				// Get the vertex information in real-world.
-				// ---
-				blockX = x*s-ViewDistance/2;
-				blockZ = y*s-ViewDistance/2;
-				calculateNormal(blockX, blockZ, normal);
-				machine.getPrairieColor(blockX, blockZ, color);
-				// ---
-				// Bind the vertex location
-				// ---
-				vertexData.put(blockX);
-				vertexData.put(Math.round(machine.getWorldHeight(blockX, blockZ)));
-				vertexData.put(blockZ);
-				// ---
-				// Bind the vertex color.
-				// ---
-				vertexData.put(color.x);
-				vertexData.put(color.y);
-				vertexData.put(color.z);
-				// ---
-				// Bind the vertex normal.
-				// ---
-				vertexData.put(normal.x);
-				vertexData.put(normal.y);
-				vertexData.put(normal.z);
-			}
+		generator.getHeightmap(posX, posZ, vertexData);
 		vertexData.flip();
 		// ---
 		// Now compile and build the vertex data. Here I use static draw instead
