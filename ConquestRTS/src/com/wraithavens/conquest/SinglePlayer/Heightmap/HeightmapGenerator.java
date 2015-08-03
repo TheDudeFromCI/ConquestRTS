@@ -5,34 +5,15 @@ import java.nio.FloatBuffer;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
-import com.wraithavens.conquest.Utility.CompactBinaryFile;
+import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class HeightmapGenerator{
-	private static void loadHeightmap(FloatBuffer vertexData, String file){
+	private static void loadHeightmap(FloatBuffer vertexData, File file){
 		System.out.println("Loading heightmap.");
-		CompactBinaryFile f = new CompactBinaryFile(file);
-		f.read();
-		for(int i = 0; i<HeightMap.Vertices; i++){
-			// ---
-			// Load height.
-			// ---
-			vertexData.put(Float.intBitsToFloat((int)f.getNumber(32)));
-			vertexData.put(Float.intBitsToFloat((int)f.getNumber(32)));
-			vertexData.put(Float.intBitsToFloat((int)f.getNumber(32)));
-			// ---
-			// Load color.
-			// ---
-			vertexData.put(Float.intBitsToFloat((int)f.getNumber(32)));
-			vertexData.put(Float.intBitsToFloat((int)f.getNumber(32)));
-			vertexData.put(Float.intBitsToFloat((int)f.getNumber(32)));
-			// ---
-			// Load normal.
-			// ---
-			vertexData.put(Float.intBitsToFloat((int)f.getNumber(32)));
-			vertexData.put(Float.intBitsToFloat((int)f.getNumber(32)));
-			vertexData.put(Float.intBitsToFloat((int)f.getNumber(32)));
-		}
-		f.stopReading();
+		BinaryFile bin = new BinaryFile(file);
+		int floats = HeightMap.Vertices*9;
+		for(int i = 0; i<floats; i++)
+			vertexData.put(bin.getFloat());
 		System.out.println("Heightmap loaded.");
 	}
 	private final WorldNoiseMachine machine;
@@ -52,7 +33,7 @@ public class HeightmapGenerator{
 			+z7-z0-2.0f*z1-z2));
 		out.normalize();
 	}
-	private void generateHeightmap(int x, int z, FloatBuffer vertexData, String file){
+	private void generateHeightmap(int x, int z, FloatBuffer vertexData, File file){
 		System.out.println("Generating heightmap: "+x+", "+z+"");
 		int a, b;
 		float s = HeightMap.ViewDistance*2/(HeightMap.VertexCount-1.0f);
@@ -61,10 +42,7 @@ public class HeightmapGenerator{
 		float height;
 		Vector3f normal = new Vector3f();
 		Vector3f color = new Vector3f();
-		CompactBinaryFile f = new CompactBinaryFile(file);
-		f.ensureExistance();
-		f.write();
-		f.prepareSpace(HeightMap.Vertices*36);
+		BinaryFile bin = new BinaryFile(HeightMap.Vertices*36);
 		for(b = 0; b<HeightMap.VertexCount; b++)
 			for(a = 0; a<HeightMap.VertexCount; a++){
 				// ---
@@ -80,29 +58,29 @@ public class HeightmapGenerator{
 				vertexData.put(blockX);
 				vertexData.put(height = (float)machine.getWorldHeight(blockX, blockZ));
 				vertexData.put(blockZ);
-				f.addNumber(Float.floatToIntBits(blockX), 32);
-				f.addNumber(Float.floatToIntBits(height), 32);
-				f.addNumber(Float.floatToIntBits(blockZ), 32);
+				bin.addFloat(blockX);
+				bin.addFloat(height);
+				bin.addFloat(blockZ);
 				// ---
 				// Bind the vertex color.
 				// ---
 				vertexData.put(color.x);
 				vertexData.put(color.y);
 				vertexData.put(color.z);
-				f.addNumber(Float.floatToIntBits(color.x), 32);
-				f.addNumber(Float.floatToIntBits(color.y), 32);
-				f.addNumber(Float.floatToIntBits(color.z), 32);
+				bin.addFloat(color.x);
+				bin.addFloat(color.y);
+				bin.addFloat(color.z);
 				// ---
 				// Bind the vertex normal.
 				// ---
 				vertexData.put(normal.x);
 				vertexData.put(normal.y);
 				vertexData.put(normal.z);
-				f.addNumber(Float.floatToIntBits(normal.x), 32);
-				f.addNumber(Float.floatToIntBits(normal.y), 32);
-				f.addNumber(Float.floatToIntBits(normal.z), 32);
+				bin.addFloat(normal.x);
+				bin.addFloat(normal.y);
+				bin.addFloat(normal.z);
 			}
-		f.stopWriting();
+		bin.compile(file);
 		System.out.println("Heightmap generated.");
 	}
 	void getHeightmap(int x, int z, FloatBuffer vertexData){
@@ -112,8 +90,8 @@ public class HeightmapGenerator{
 		// Otherwise generate a new one, and save it.
 		// ---
 		if(!file.exists()||file.length()==0)
-			generateHeightmap(x, z, vertexData, file.getAbsolutePath());
+			generateHeightmap(x, z, vertexData, file);
 		else
-			loadHeightmap(vertexData, file.getAbsolutePath());
+			loadHeightmap(vertexData, file);
 	}
 }
