@@ -97,7 +97,7 @@ public class BinaryFile{
 		return i;
 	}
 	public short getShort(){
-		short s = (short)(binary[pos]+(binary[pos+1]<<8));
+		short s = (short)(binary[pos]&0xFF|(binary[pos+1]&0xFF)<<8);
 		pos += 2;
 		return s;
 	}
