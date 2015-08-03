@@ -9,10 +9,10 @@ import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 
 class HeightMap{
-	static final int VertexCount = 1024;
+	private static final int VertexCount = 1024;
 	static final int ViewDistance = 16384;
-	static final int Vertices = VertexCount*VertexCount;
-	static final int VertexSize = 9;
+	private static final int Vertices = VertexCount*VertexCount;
+	private static final int VertexSize = 9;
 	private static final int indexCount = (VertexCount*2+2)*(VertexCount-1)-2;
 	private int posX;
 	private int posZ;
@@ -86,6 +86,7 @@ class HeightMap{
 		float blockX;
 		float blockZ;
 		Vector3f normal = new Vector3f();
+		Vector3f color = new Vector3f();
 		for(y = 0; y<VertexCount; y++)
 			for(x = 0; x<VertexCount; x++){
 				// ---
@@ -94,6 +95,7 @@ class HeightMap{
 				blockX = x*s-ViewDistance/2;
 				blockZ = y*s-ViewDistance/2;
 				calculateNormal(blockX, blockZ, normal);
+				machine.getPrairieColor(blockX, blockZ, color);
 				// ---
 				// Bind the vertex location
 				// ---
@@ -103,9 +105,9 @@ class HeightMap{
 				// ---
 				// Bind the vertex color.
 				// ---
-				vertexData.put(1.0f);
-				vertexData.put(1.0f);
-				vertexData.put(1.0f);
+				vertexData.put(color.x);
+				vertexData.put(color.y);
+				vertexData.put(color.z);
 				// ---
 				// Bind the vertex normal.
 				// ---

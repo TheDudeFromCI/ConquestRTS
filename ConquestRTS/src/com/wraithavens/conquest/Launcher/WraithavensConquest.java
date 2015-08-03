@@ -46,7 +46,6 @@ public class WraithavensConquest extends EmptyLoop{
 	// TODO Remove unused code found by UCDetector
 	// public static String modelFolder;
 	public static String saveFolder;
-	private static String currentGameUUID;
 	public static WraithavensConquest INSTANCE;
 	private Driver driver;
 	private Driver newDriver;
