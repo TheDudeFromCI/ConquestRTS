@@ -13,6 +13,7 @@ public class WraithavensConquest extends EmptyLoop{
 		programFolder = System.getProperty("user.dir")+File.separatorChar+"Data";
 		assetFolder = programFolder+File.separatorChar+"Assets";
 		saveFolder = programFolder+File.separatorChar+"Saves";
+		chunkLoadFolder = programFolder+File.separatorChar+"ChunkLoad";
 		// ---
 		// TODO Remove this later, once game saving and loading is in.
 		// ---
@@ -41,6 +42,7 @@ public class WraithavensConquest extends EmptyLoop{
 	}
 	static String programFolder;
 	public static String assetFolder;
+	public static String chunkLoadFolder;
 	// TODO Remove unused code found by UCDetector
 	// public static String loadingScreenImagesFolder;
 	// TODO Remove unused code found by UCDetector

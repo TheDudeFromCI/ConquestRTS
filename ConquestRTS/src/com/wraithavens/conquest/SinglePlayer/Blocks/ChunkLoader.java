@@ -44,7 +44,7 @@ class ChunkLoader{
 	public int getZ(){
 		return z;
 	}
-	public RawChunk loadNextChunk(ArrayList<ChunkPainter> chunks){
+	public RawChunk loadNextChunk(ArrayList<VoxelChunk> chunks){
 		// ---
 		// Don't load anything if we've reached the end of our view distance.
 		// ---
@@ -63,13 +63,40 @@ class ChunkLoader{
 		this.z = z;
 		cellSorter.reset();
 	}
-	private RawChunk load(ArrayList<ChunkPainter> chunks){
+	private boolean containsVoxel(ArrayList<VoxelChunk> chunks, int x, int y, int z){
+		for(int i = 0; i<chunks.size(); i++)
+			if(containsVoxel(chunks.get(i), x, y, z))
+				return true;
+		return false;
+	}
+	private boolean containsVoxel(VoxelChunk voxel, int x, int y, int z){
+		if(x<voxel.x)
+			return false;
+		if(y<voxel.y)
+			return false;
+		if(z<voxel.z)
+			return false;
+		if(x>=voxel.x+voxel.size)
+			return false;
+		if(y>=voxel.y+voxel.size)
+			return false;
+		if(z>=voxel.z+voxel.size)
+			return false;
+		if(x==voxel.x&&y==voxel.y&&z==voxel.z)
+			return true;
+		if(!voxel.hasChildrenVoxels())
+			return false;
+		for(int i = 0; i<8; i++)
+			if(containsVoxel(voxel.getChild(i), x, y, z))
+				return true;
+		return false;
+	}
+	private RawChunk load(ArrayList<VoxelChunk> chunks){
 		int x = cellSorter.getX()+this.x;
 		int y = cellSorter.getY()+this.y;
 		int z = cellSorter.getZ()+this.z;
-		for(ChunkPainter painter : chunks)
-			if(painter.x==x&&painter.y==y&&painter.z==z)
-				return null;
+		if(containsVoxel(chunks, x, y, z))
+			return null;
 		File file = new File(WraithavensConquest.saveFolder+File.separatorChar+"Chunks", x+","+y+","+z+".dat");
 		if(file.exists())
 			return load(file, x, y, z);

@@ -8,9 +8,7 @@ class CellSorter{
 	private final byte[] cells;
 	private int pos = -1;
 	CellSorter(int viewDistance){
-		cells =
-			BinaryFileUtil.readFile(new File(WraithavensConquest.assetFolder+File.separatorChar+"ChunkLoad",
-				"ChunkLoad"+viewDistance+".dat"));
+		cells = BinaryFileUtil.readFile(new File(WraithavensConquest.chunkLoadFolder, viewDistance+".dat"));
 	}
 	public int getY(){
 		return cells[pos*3+1]*16;
@@ -19,7 +17,7 @@ class CellSorter{
 		return cells[pos*3+2]*16;
 	}
 	public boolean hasNext(){
-		return pos<cells.length/3;
+		return pos<cells.length/3-1;
 	}
 	public void next(){
 		pos++;
