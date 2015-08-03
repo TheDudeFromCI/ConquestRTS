@@ -16,8 +16,9 @@ public class WraithavensConquest extends EmptyLoop{
 		// ---
 		// TODO Remove this later, once game saving and loading is in.
 		// ---
-		currentGameUUID = "Pre-Alpha";
-		saveFolder += File.separatorChar+currentGameUUID;
+		// currentGameUUID = "Pre-Alpha";
+		// saveFolder += File.separatorChar+currentGameUUID;
+		saveFolder = "C:/Documents and Settings/TheDudeFromCI/Desktop/Talantra Saves";
 		WindowInitalizerBuilder builder = new WindowInitalizerBuilder();
 		new WraithavensConquest(builder.build());
 		System.exit(0);
