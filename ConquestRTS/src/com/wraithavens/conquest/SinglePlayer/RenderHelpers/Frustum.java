@@ -4,7 +4,7 @@ import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
-class Frustum{
+public class Frustum{
 	private static void normalizePlane(float[][] frustum, int side){
 		float magnitude =
 			(float)Math.sqrt(frustum[side][Frustum.A]*frustum[side][Frustum.A]+frustum[side][Frustum.B]
@@ -34,37 +34,36 @@ class Frustum{
 		modelBuffer = BufferUtils.createFloatBuffer(16);
 		projectionBuffer = BufferUtils.createFloatBuffer(16);
 	}
-	// TODO Remove unused code found by UCDetector
-	// public boolean cubeInFrustum(float x, float y, float z, float size){
-	// for(int i = 0; i<6; i++){
-	// if(frustum[i][Frustum.A]*(x-size)+frustum[i][Frustum.B]*(y-size)+frustum[i][Frustum.C]*(z-size)
-	// +frustum[i][Frustum.D]>0)
-	// continue;
-	// if(frustum[i][Frustum.A]*(x+size)+frustum[i][Frustum.B]*(y-size)+frustum[i][Frustum.C]*(z-size)
-	// +frustum[i][Frustum.D]>0)
-	// continue;
-	// if(frustum[i][Frustum.A]*(x-size)+frustum[i][Frustum.B]*(y+size)+frustum[i][Frustum.C]*(z-size)
-	// +frustum[i][Frustum.D]>0)
-	// continue;
-	// if(frustum[i][Frustum.A]*(x+size)+frustum[i][Frustum.B]*(y+size)+frustum[i][Frustum.C]*(z-size)
-	// +frustum[i][Frustum.D]>0)
-	// continue;
-	// if(frustum[i][Frustum.A]*(x-size)+frustum[i][Frustum.B]*(y-size)+frustum[i][Frustum.C]*(z+size)
-	// +frustum[i][Frustum.D]>0)
-	// continue;
-	// if(frustum[i][Frustum.A]*(x+size)+frustum[i][Frustum.B]*(y-size)+frustum[i][Frustum.C]*(z+size)
-	// +frustum[i][Frustum.D]>0)
-	// continue;
-	// if(frustum[i][Frustum.A]*(x-size)+frustum[i][Frustum.B]*(y+size)+frustum[i][Frustum.C]*(z+size)
-	// +frustum[i][Frustum.D]>0)
-	// continue;
-	// if(frustum[i][Frustum.A]*(x+size)+frustum[i][Frustum.B]*(y+size)+frustum[i][Frustum.C]*(z+size)
-	// +frustum[i][Frustum.D]>0)
-	// continue;
-	// return false;
-	// }
-	// return true;
-	// }
+	public boolean cubeInFrustum(float x, float y, float z, float size){
+		for(int i = 0; i<6; i++){
+			if(frustum[i][Frustum.A]*(x-size)+frustum[i][Frustum.B]*(y-size)+frustum[i][Frustum.C]*(z-size)
+				+frustum[i][Frustum.D]>0)
+				continue;
+			if(frustum[i][Frustum.A]*(x+size)+frustum[i][Frustum.B]*(y-size)+frustum[i][Frustum.C]*(z-size)
+				+frustum[i][Frustum.D]>0)
+				continue;
+			if(frustum[i][Frustum.A]*(x-size)+frustum[i][Frustum.B]*(y+size)+frustum[i][Frustum.C]*(z-size)
+				+frustum[i][Frustum.D]>0)
+				continue;
+			if(frustum[i][Frustum.A]*(x+size)+frustum[i][Frustum.B]*(y+size)+frustum[i][Frustum.C]*(z-size)
+				+frustum[i][Frustum.D]>0)
+				continue;
+			if(frustum[i][Frustum.A]*(x-size)+frustum[i][Frustum.B]*(y-size)+frustum[i][Frustum.C]*(z+size)
+				+frustum[i][Frustum.D]>0)
+				continue;
+			if(frustum[i][Frustum.A]*(x+size)+frustum[i][Frustum.B]*(y-size)+frustum[i][Frustum.C]*(z+size)
+				+frustum[i][Frustum.D]>0)
+				continue;
+			if(frustum[i][Frustum.A]*(x-size)+frustum[i][Frustum.B]*(y+size)+frustum[i][Frustum.C]*(z+size)
+				+frustum[i][Frustum.D]>0)
+				continue;
+			if(frustum[i][Frustum.A]*(x+size)+frustum[i][Frustum.B]*(y+size)+frustum[i][Frustum.C]*(z+size)
+				+frustum[i][Frustum.D]>0)
+				continue;
+			return false;
+		}
+		return true;
+	}
 	void calculateFrustum(){
 		for(int i = 0; i<16; i++){
 			clipMatrix[i] = 0;

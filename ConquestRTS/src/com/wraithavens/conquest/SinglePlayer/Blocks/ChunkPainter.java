@@ -12,7 +12,7 @@ import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Quad;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.QuadListener;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.QuadOptimizer;
 
-class ChunkPainter extends VoxelChunk{
+public class ChunkPainter extends VoxelChunk{
 	private static boolean isAir(RawChunk raw, int x, int y, int z){
 		if(x<0)
 			return true;
@@ -56,30 +56,19 @@ class ChunkPainter extends VoxelChunk{
 	private ChunkVBO vbo;
 	ChunkPainter(World world, RawChunk raw){
 		super(raw.getX(), raw.getY(), raw.getZ(), 16);
-		isEmpty = raw.isEmpty();
 		if(!raw.isEmpty())
 			build(world, raw);
 	}
-	@Override
 	public void dispose(){
 		if(vbo!=null)
 			vbo.open();
 	}
-	@Override
-	public void render(ChunkRenderTester tester){
+	public void render(){
 		// ---
 		// Skip if it's obvious that there is nothing here.
 		// ---
-		if(isEmpty)
+		if(vbo==null)
 			return;
-		// ---
-		// There's something here, but we actually see what's here?
-		// ---
-		if(!tester.canRender(this))
-			return;
-		// ---
-		// Ok, all checks passed. Let's render!
-		// ---
 		vbo.render();
 	}
 	private void build(World world, RawChunk raw){
@@ -107,7 +96,7 @@ class ChunkPainter extends VoxelChunk{
 						for(y = 0; y<16; y++)
 							for(z = 0; z<16; z++)
 								QUAD_LAYER[y][z] =
-									raw.getBlock(x, y, z)==PROPERTIES.get(i)&&isOpen(raw, x, y, z, j);
+								raw.getBlock(x, y, z)==PROPERTIES.get(i)&&isOpen(raw, x, y, z, j);
 						q = QuadOptimizer.optimize(QUAD_STORAGE, QUAD_STORAGE_2, QUAD_LAYER, 16, 16, true);
 						if(q==0)
 							continue;
@@ -131,7 +120,7 @@ class ChunkPainter extends VoxelChunk{
 						for(x = 0; x<16; x++)
 							for(z = 0; z<16; z++)
 								QUAD_LAYER[x][z] =
-									raw.getBlock(x, y, z)==PROPERTIES.get(i)&&isOpen(raw, x, y, z, j);
+								raw.getBlock(x, y, z)==PROPERTIES.get(i)&&isOpen(raw, x, y, z, j);
 						q = QuadOptimizer.optimize(QUAD_STORAGE, QUAD_STORAGE_2, QUAD_LAYER, 16, 16, true);
 						if(q==0)
 							continue;
@@ -155,7 +144,7 @@ class ChunkPainter extends VoxelChunk{
 						for(x = 0; x<16; x++)
 							for(y = 0; y<16; y++)
 								QUAD_LAYER[x][y] =
-									raw.getBlock(x, y, z)==PROPERTIES.get(i)&&isOpen(raw, x, y, z, j);
+								raw.getBlock(x, y, z)==PROPERTIES.get(i)&&isOpen(raw, x, y, z, j);
 						q = QuadOptimizer.optimize(QUAD_STORAGE, QUAD_STORAGE_2, QUAD_LAYER, 16, 16, true);
 						if(q==0)
 							continue;

@@ -89,9 +89,12 @@ public class SinglePlayerGame implements Driver{
 		}else if(key==GLFW.GLFW_KEY_ESCAPE){
 			if(action==GLFW.GLFW_PRESS)
 				GLFW.glfwSetWindowShouldClose(WraithavensConquest.INSTANCE.getWindow(), GL11.GL_TRUE);
-		}else if(key==GLFW.GLFW_KEY_P){
+		}else if(key==GLFW.GLFW_KEY_3){
 			if(action==GLFW.GLFW_PRESS)
 				walkLock = !walkLock;
+		}else if(key==GLFW.GLFW_KEY_4){
+			if(action==GLFW.GLFW_PRESS)
+				world.unloadAllChunks();
 		}
 	}
 	public void onMouse(int button, int action){

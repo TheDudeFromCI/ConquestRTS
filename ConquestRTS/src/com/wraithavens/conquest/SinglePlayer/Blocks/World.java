@@ -8,6 +8,8 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.MatrixUtils;
+import com.wraithavens.conquest.SinglePlayer.Blocks.Octree.Octree;
+import com.wraithavens.conquest.SinglePlayer.Blocks.Octree.OctreeTask;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
@@ -32,11 +34,12 @@ public class World{
 	private final Camera camera;
 	private final ChunkGenerator generator;
 	private final ChunkLoader chunkLoader;
-	private final ArrayList<VoxelChunk> voxels = new ArrayList();
+	private final ArrayList<ChunkPainter> voxels = new ArrayList();
 	private final ArrayList<ChunkVBO> vbos = new ArrayList();
 	private final ShaderProgram shader;
 	private final int ibo;
-	private final BlockCuller chunkRenderTester;
+	private final Octree octree;
+	private final OctreeTask octreeRenderTask;
 	public World(WorldNoiseMachine machine, Camera camera){
 		ibo = GL15.glGenBuffers();
 		generateIndexBuffer();
@@ -55,7 +58,19 @@ public class World{
 		shader.setUniform1I(0, 0);
 		chunkLoader.updateLocation(Algorithms.groupLocation((int)camera.x, 16),
 			Algorithms.groupLocation((int)camera.y, 16), Algorithms.groupLocation((int)camera.z, 16));
-		chunkRenderTester = new BlockCuller();
+		octree = new Octree();
+		octreeRenderTask = new OctreeTask(octree){
+			@Override
+			public void run(VoxelChunk chunk){
+				if(chunk instanceof ChunkPainter)
+					((ChunkPainter)chunk).render();
+			}
+			@Override
+			public boolean shouldRun(VoxelChunk voxel){
+				return camera.getFrustum().cubeInFrustum(voxel.getX(), voxel.getY(), voxel.getZ(),
+					voxel.getSize());
+			}
+		};
 	}
 	public void dispose(){
 		for(int i = 0; i<vbos.size(); i++)
@@ -83,8 +98,16 @@ public class World{
 		// ---
 		// And finally, preform the renders.
 		// ---
-		for(VoxelChunk v : voxels)
-			v.render(chunkRenderTester);
+		octreeRenderTask.runTask();
+	}
+	public void unloadAllChunks(){
+		for(int i = 0; i<voxels.size(); i++){
+			octree.removeVoxel(voxels.get(i));
+			voxels.get(i).dispose();
+		}
+		voxels.clear();
+		chunkLoader.updateLocation(Algorithms.groupLocation((int)camera.x, 16),
+			Algorithms.groupLocation((int)camera.y, 16), Algorithms.groupLocation((int)camera.z, 16));
 	}
 	public void update(){
 		int x = Algorithms.groupLocation((int)camera.x, 16);
@@ -99,15 +122,15 @@ public class World{
 			raw = chunkLoader.loadNextChunk(voxels);
 			if(raw==null)
 				break;
-			// ---
-			// TODO Add voxel heirarchy.
-			// ---
-			voxels.add(new ChunkPainter(this, raw));
+			ChunkPainter chunk = new ChunkPainter(this, raw);
+			voxels.add(chunk);
+			octree.addVoxel(chunk);
 		}
 	}
 	private void clearEmpties(){
 		for(int i = 0; i<voxels.size();)
 			if(shouldUnload(voxels.get(i))){
+				octree.removeVoxel(voxels.get(i));
 				voxels.get(i).dispose();
 				voxels.remove(i);
 			}else

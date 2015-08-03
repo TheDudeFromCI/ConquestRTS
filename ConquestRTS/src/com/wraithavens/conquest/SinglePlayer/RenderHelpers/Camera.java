@@ -11,6 +11,9 @@ public class Camera{
 	public float z;
 	public float rx;
 	public float ry;
+	public Frustum getFrustum(){
+		return frustum;
+	}
 	public void update(double delta){
 		// ---
 		// The clamping is important to prevent the camera from "bouncing" or
