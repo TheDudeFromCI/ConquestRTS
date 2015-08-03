@@ -14,6 +14,12 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 import com.wraithavens.conquest.Utility.Algorithms;
 
 public class World{
+	private static boolean outside(){
+		int r = aabb1[3]+aabb2[3];
+		return Math.abs(aabb1[0]-aabb2[0])>r&&Math.abs(aabb1[1]-aabb2[1])>r&&Math.abs(aabb1[2]-aabb2[2])>r;
+	}
+	private static final int[] aabb1 = new int[4];
+	private static final int[] aabb2 = new int[4];
 	private static final int ViewDistance = ViewDistances.View_8.value*16;
 	static int SHADER_LOCATION;
 	static int SHADER_LOCATION_2;
@@ -115,14 +121,25 @@ public class World{
 		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_STATIC_DRAW);
 	}
 	private boolean shouldUnload(VoxelChunk voxel){
-		int x = Algorithms.groupLocation((int)camera.x, 16);
-		int y = Algorithms.groupLocation((int)camera.y, 16);
-		int z = Algorithms.groupLocation((int)camera.z, 16);
 		// ---
-		// TODO Add better distance checker for cubic shapes of unequals sizes.
+		// Lets test bounding boxes to see which chucks are within view
+		// distance. Here I give the camera view distance a 1 extra chunk buffer
+		// just to avoid a chunk from attempting to load outside of the camera's
+		// view distance somehow. That would be very bad. :P
 		// ---
-		return Math.abs(x-voxel.x)>ViewDistance||Math.abs(y-voxel.y)>ViewDistance
-			||Math.abs(z-voxel.z)>ViewDistance;
+		aabb1[0] = (int)camera.x;
+		aabb1[1] = (int)camera.y;
+		aabb1[2] = (int)camera.z;
+		aabb1[3] = ViewDistance+16;
+		// ---
+		// Now for the chunk itself. Reordered to save a couple of precious
+		// clock cycles, at no cost. ;)
+		// ---
+		aabb2[3] = voxel.size/2;
+		aabb2[0] = voxel.x+aabb2[3];
+		aabb2[1] = voxel.y+aabb2[3];
+		aabb2[2] = voxel.z+aabb2[3];
+		return outside();
 	}
 	ChunkVBO generateVBO(){
 		for(int i = 0; i<vbos.size(); i++)
