@@ -1,8 +1,8 @@
 package com.wraithavens.conquest.SinglePlayer.Blocks;
 
 import java.io.File;
-import java.util.ArrayList;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
+import com.wraithavens.conquest.SinglePlayer.Blocks.Octree.Octree;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
 class ChunkLoader{
@@ -40,7 +40,7 @@ class ChunkLoader{
 	public int getZ(){
 		return z;
 	}
-	public RawChunk loadNextChunk(ArrayList<ChunkPainter> chunks){
+	public RawChunk loadNextChunk(Octree chunks){
 		// ---
 		// Don't load anything if we've reached the end of our view distance.
 		// ---
@@ -59,13 +59,12 @@ class ChunkLoader{
 		this.z = z;
 		cellSorter.reset();
 	}
-	private RawChunk load(ArrayList<ChunkPainter> chunks){
+	private RawChunk load(Octree chunks){
 		int x = cellSorter.getX()+this.x;
 		int y = cellSorter.getY()+this.y;
 		int z = cellSorter.getZ()+this.z;
-		for(ChunkPainter painter : chunks)
-			if(painter.x==x&&painter.y==y&&painter.z==z)
-				return null;
+		if(chunks.containsChunk(x, y, z))
+			return null;
 		File file = new File(WraithavensConquest.saveFolder+File.separatorChar+"Chunks", x+","+y+","+z+".dat");
 		if(file.exists()&&file.length()>0)
 			return load(file, x, y, z);

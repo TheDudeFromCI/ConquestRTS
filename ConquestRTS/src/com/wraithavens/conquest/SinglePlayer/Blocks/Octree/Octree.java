@@ -56,6 +56,17 @@ public class Octree{
 		}
 		placeVoxel(parent, voxel);
 	}
+	public void clear(){
+		for(int i = 0; i<branches.size(); i++)
+			clear(branches.get(i));
+		branches.clear();
+	}
+	public boolean containsChunk(int x, int y, int z){
+		for(int i = 0; i<branches.size(); i++)
+			if(branches.get(i).owner.containsBlock(x, y, z))
+				return containsChunk(branches.get(i), x, y, z);
+		return false;
+	}
 	public void removeVoxel(VoxelChunk voxel){
 		for(int i = 0; i<branches.size(); i++)
 			if(branches.get(i).owner.containsBlock(voxel.getX(), voxel.getY(), voxel.getZ())){
@@ -70,6 +81,30 @@ public class Octree{
 		task.prepareRun();
 		for(OctreeBranch b : branches)
 			testBranch(b, task);
+	}
+	private void clear(OctreeBranch b){
+		if(b==null)
+			return;
+		if(b.owner instanceof ChunkPainter){
+			((ChunkPainter)b.owner).dispose();
+			return;
+		}
+		if(b.children==null)
+			return;
+		for(int i = 0; i<8; i++)
+			clear(b.children[i]);
+	}
+	private boolean containsChunk(OctreeBranch b, int x, int y, int z){
+		if(b==null)
+			return false;
+		if(b.owner instanceof ChunkPainter)
+			return b.owner.getX()==x&&b.owner.getY()==y&&b.owner.getZ()==z;
+		if(b.children==null)
+			return false;
+		for(int i = 0; i<8; i++)
+			if(containsChunk(b.children[i], x, y, z))
+				return true;
+		return false;
 	}
 	private void placeVoxel(OctreeBranch parent, VoxelChunk child){
 		if(parent.children==null)

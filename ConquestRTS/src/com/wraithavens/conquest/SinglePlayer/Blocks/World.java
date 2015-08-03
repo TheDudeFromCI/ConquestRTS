@@ -16,9 +16,19 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 import com.wraithavens.conquest.Utility.Algorithms;
 
 public class World{
-	private static boolean outside(){
+	/**
+	 * Returns 0 when box is full outside of camera view. Returns 1 when box is
+	 * partly outside of camera view. Retusn 2 when box is completely inside
+	 * camera view.
+	 */
+	private static int outside(){
+		if(Math.abs(aabb1[0]-aabb2[0])+aabb2[3]<=aabb1[3]&&Math.abs(aabb1[1]-aabb2[1])+aabb2[3]<=aabb1[3]
+			&&Math.abs(aabb1[2]-aabb2[2])+aabb2[3]<=aabb1[3])
+			return 2;
 		int r = aabb1[3]+aabb2[3];
-		return Math.abs(aabb1[0]-aabb2[0])>r||Math.abs(aabb1[1]-aabb2[1])>r||Math.abs(aabb1[2]-aabb2[2])>r;
+		if(Math.abs(aabb1[0]-aabb2[0])>r||Math.abs(aabb1[1]-aabb2[1])>r||Math.abs(aabb1[2]-aabb2[2])>r)
+			return 1;
+		return 0;
 	}
 	private static final int[] aabb1 = new int[4];
 	private static final int[] aabb2 = new int[4];
@@ -34,12 +44,13 @@ public class World{
 	private final Camera camera;
 	private final ChunkGenerator generator;
 	private final ChunkLoader chunkLoader;
-	private final ArrayList<ChunkPainter> voxels = new ArrayList();
 	private final ArrayList<ChunkVBO> vbos = new ArrayList();
 	private final ShaderProgram shader;
 	private final int ibo;
 	private final Octree octree;
-	private final OctreeTask octreeRenderTask;
+	private final OctreeTask renderTask;
+	private final OctreeTask unloadChunksTask;
+	private final ArrayList<ChunkPainter> toRemove = new ArrayList();
 	public World(WorldNoiseMachine machine, Camera camera){
 		ibo = GL15.glGenBuffers();
 		generateIndexBuffer();
@@ -59,7 +70,7 @@ public class World{
 		chunkLoader.updateLocation(Algorithms.groupLocation((int)camera.x, 16),
 			Algorithms.groupLocation((int)camera.y, 16), Algorithms.groupLocation((int)camera.z, 16));
 		octree = new Octree();
-		octreeRenderTask = new OctreeTask(octree){
+		renderTask = new OctreeTask(octree){
 			@Override
 			public void run(VoxelChunk chunk){
 				if(chunk instanceof ChunkPainter)
@@ -71,12 +82,25 @@ public class World{
 					voxel.getSize());
 			}
 		};
+		unloadChunksTask = new OctreeTask(octree){
+			@Override
+			public void run(VoxelChunk chunk){
+				if(chunk instanceof ChunkPainter)
+					toRemove.add((ChunkPainter)chunk);
+			}
+			@Override
+			public boolean shouldRun(VoxelChunk voxel){
+				if(voxel instanceof ChunkPainter)
+					return shouldUnload(voxel)==0;
+				return shouldUnload(voxel)<2;
+			}
+		};
 	}
 	public void dispose(){
 		for(int i = 0; i<vbos.size(); i++)
 			vbos.get(i).dispose();
 		vbos.clear();
-		voxels.clear();
+		octree.clear();
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
 		GL15.glDeleteBuffers(ibo);
 	}
@@ -98,14 +122,14 @@ public class World{
 		// ---
 		// And finally, preform the renders.
 		// ---
-		octreeRenderTask.runTask();
+		renderTask.runTask();
 	}
 	public void unloadAllChunks(){
-		for(int i = 0; i<voxels.size(); i++){
-			octree.removeVoxel(voxels.get(i));
-			voxels.get(i).dispose();
-		}
-		voxels.clear();
+		octree.clear();
+		// ---
+		// This part just resets the chunk loader, so new chunks will start
+		// generating around the camera again.
+		// ---
 		chunkLoader.updateLocation(Algorithms.groupLocation((int)camera.x, 16),
 			Algorithms.groupLocation((int)camera.y, 16), Algorithms.groupLocation((int)camera.z, 16));
 	}
@@ -119,22 +143,22 @@ public class World{
 		RawChunk raw;
 		int max = ChunksPerFrame;
 		for(int i = 0; i<max; i++){
-			raw = chunkLoader.loadNextChunk(voxels);
+			raw = chunkLoader.loadNextChunk(octree);
 			if(raw==null)
 				break;
-			ChunkPainter chunk = new ChunkPainter(this, raw);
-			voxels.add(chunk);
-			octree.addVoxel(chunk);
+			octree.addVoxel(new ChunkPainter(this, raw));
 		}
 	}
 	private void clearEmpties(){
-		for(int i = 0; i<voxels.size();)
-			if(shouldUnload(voxels.get(i))){
-				octree.removeVoxel(voxels.get(i));
-				voxels.get(i).dispose();
-				voxels.remove(i);
-			}else
-				i++;
+		unloadChunksTask.runTask();
+		if(!toRemove.isEmpty()){
+			for(ChunkPainter chunk : toRemove){
+				chunk.dispose();
+				octree.removeVoxel(chunk);
+			}
+			System.out.println("Unloaded "+toRemove.size()+" chunks.");
+			toRemove.clear();
+		}
 	}
 	private void generateIndexBuffer(){
 		int maxQuads = 16*16*16/2*6;
@@ -149,7 +173,7 @@ public class World{
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_STATIC_DRAW);
 	}
-	private boolean shouldUnload(VoxelChunk voxel){
+	private int shouldUnload(VoxelChunk voxel){
 		// ---
 		// Lets test bounding boxes to see which chucks are within view
 		// distance. Here I give the camera view distance a 1 extra chunk buffer
