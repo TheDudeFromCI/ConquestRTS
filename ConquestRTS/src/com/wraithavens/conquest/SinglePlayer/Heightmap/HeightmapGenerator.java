@@ -16,15 +16,15 @@ public class HeightmapGenerator{
 			// ---
 			// Load height.
 			// ---
-			vertexData.put(f.getNumber(32));
-			vertexData.put(f.getNumber(16));
-			vertexData.put(f.getNumber(32));
+			vertexData.put(Float.intBitsToFloat((int)f.getNumber(32)));
+			vertexData.put(Float.intBitsToFloat((int)f.getNumber(32)));
+			vertexData.put(Float.intBitsToFloat((int)f.getNumber(32)));
 			// ---
 			// Load color.
 			// ---
-			vertexData.put((f.getNumber(8)+128)/255f);
-			vertexData.put((f.getNumber(8)+128)/255f);
-			vertexData.put((f.getNumber(8)+128)/255f);
+			vertexData.put(Float.intBitsToFloat((int)f.getNumber(32)));
+			vertexData.put(Float.intBitsToFloat((int)f.getNumber(32)));
+			vertexData.put(Float.intBitsToFloat((int)f.getNumber(32)));
 			// ---
 			// Load normal.
 			// ---
@@ -64,7 +64,7 @@ public class HeightmapGenerator{
 		CompactBinaryFile f = new CompactBinaryFile(file);
 		f.ensureExistance();
 		f.write();
-		f.prepareSpace(HeightMap.Vertices*25);
+		f.prepareSpace(HeightMap.Vertices*36);
 		for(b = 0; b<HeightMap.VertexCount; b++)
 			for(a = 0; a<HeightMap.VertexCount; a++){
 				// ---
@@ -90,8 +90,8 @@ public class HeightmapGenerator{
 				vertexData.put(color.y);
 				vertexData.put(color.z);
 				f.addNumber(Float.floatToIntBits(color.x), 32);
-				f.addNumber(Float.floatToIntBits(color.x), 32);
-				f.addNumber(Float.floatToIntBits(color.x), 32);
+				f.addNumber(Float.floatToIntBits(color.y), 32);
+				f.addNumber(Float.floatToIntBits(color.z), 32);
 				// ---
 				// Bind the vertex normal.
 				// ---
@@ -107,7 +107,11 @@ public class HeightmapGenerator{
 	}
 	void getHeightmap(int x, int z, FloatBuffer vertexData){
 		File file = new File(WraithavensConquest.saveFolder+File.separatorChar+"Heightmaps", x+","+z+".dat");
-		if(!file.exists())
+		// ---
+		// Check to see if the file exists, and contains data. If yes, load it.
+		// Otherwise generate a new one, and save it.
+		// ---
+		if(!file.exists()||file.length()==0)
 			generateHeightmap(x, z, vertexData, file.getAbsolutePath());
 		else
 			loadHeightmap(vertexData, file.getAbsolutePath());

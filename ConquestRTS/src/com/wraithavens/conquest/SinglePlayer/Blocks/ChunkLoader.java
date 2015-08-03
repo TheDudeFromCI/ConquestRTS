@@ -98,7 +98,7 @@ class ChunkLoader{
 		if(containsVoxel(chunks, x, y, z))
 			return null;
 		File file = new File(WraithavensConquest.saveFolder+File.separatorChar+"Chunks", x+","+y+","+z+".dat");
-		if(file.exists())
+		if(file.exists()&&file.length()>0)
 			return load(file, x, y, z);
 		RawChunk raw = generator.generateRawChunk(x, y, z);
 		save(file, raw);

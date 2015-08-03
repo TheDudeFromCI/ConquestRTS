@@ -1,6 +1,7 @@
-package com.wraithavens.conquest.Utility;
+package com.wraithavens.conquest.SinglePlayer.Noise;
 
 import java.util.Random;
+import com.wraithavens.conquest.Utility.InterpolationFunction;
 
 public class NoiseGenerator{
 	private static float findMaxHeight(int detail){
@@ -9,22 +10,22 @@ public class NoiseGenerator{
 			m += Math.pow(2, -i);
 		return m;
 	}
-	private static int floor(float x){
-		return x>=0?(int)x:(int)x-1;
-	}
 	private final int detail;
 	private float[] fracs, v;
 	private InterpolationFunction function;
 	private final float maxHeight;
 	private int[] reals, edge, c;
-	private final long seed;
+	private long seed;
 	private final float smoothness;
+	private final Random r = new Random();
 	public NoiseGenerator(long seed, float smoothness, int detail){
 		this.seed = seed;
 		this.smoothness = smoothness;
 		this.detail = detail+1;
-		maxHeight = NoiseGenerator.findMaxHeight(this.detail);
-		function = new LinearInterpolation();
+		maxHeight = findMaxHeight(detail);
+	}
+	public InterpolationFunction getFunction(){
+		return function;
 	}
 	public float noise(float... x){
 		if(reals==null||x.length!=reals.length){
@@ -42,7 +43,10 @@ public class NoiseGenerator{
 			pow = (int)Math.pow(2, k);
 			total += layerNoise(x, pow, k)/pow;
 		}
-		return total/maxHeight+1-1.0f;
+		return total/maxHeight+1-1;
+	}
+	public void resetSeed(long seed){
+		this.seed = seed;
 	}
 	public void setFunction(InterpolationFunction function){
 		this.function = function;
@@ -56,12 +60,12 @@ public class NoiseGenerator{
 		return compress(k, fracs, stage+1);
 	}
 	private float layerNoise(float[] x, int pow, int k){
-		edge[x.length] = new Random(seed+k).nextInt();
+		edge[x.length] = randomInt(seed+k);
 		float a;
 		int i, j;
 		for(i = 0; i<x.length; i++){
 			a = x[i]/smoothness*pow;
-			reals[i] = NoiseGenerator.floor(a);
+			reals[i] = (int)Math.floor(a);
 			fracs[i] = a-reals[i];
 		}
 		for(i = 0; i<v.length; i++){
@@ -78,6 +82,14 @@ public class NoiseGenerator{
 			t = t*s+a;
 		for(int a : x)
 			t += a*a*s;
-		return new Random(t).nextFloat();
+		return randomFloat(t);
+	}
+	private float randomFloat(long seed){
+		r.setSeed(seed);
+		return r.nextFloat();
+	}
+	private int randomInt(long seed){
+		r.setSeed(seed);
+		return r.nextInt();
 	}
 }

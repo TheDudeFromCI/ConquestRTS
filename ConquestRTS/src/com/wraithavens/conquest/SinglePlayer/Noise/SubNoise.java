@@ -1,7 +1,6 @@
 package com.wraithavens.conquest.SinglePlayer.Noise;
 
 import com.wraithavens.conquest.Utility.InterpolationFunction;
-import com.wraithavens.conquest.Utility.NoiseGenerator;
 
 class SubNoise{
 	static SubNoise build(long seed, float smoothness, int detail, InterpolationFunction function,
