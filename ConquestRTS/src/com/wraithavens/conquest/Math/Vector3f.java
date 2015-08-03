@@ -10,30 +10,45 @@ public class Vector3f extends Vector{
 	public Vector3f(float x, float y, float z){
 		set(x, y, z);
 	}
-	@Override public boolean equals(Object obj){
-		if(this==obj) return true;
-		if(obj==null) return false;
-		if(getClass()!=obj.getClass()) return false;
+	@Override
+	public boolean equals(Object obj){
+		if(this==obj)
+			return true;
+		if(obj==null)
+			return false;
+		if(getClass()!=obj.getClass())
+			return false;
 		Vector3f other = (Vector3f)obj;
-		if(x==other.x&&y==other.y&&z==other.z) return true;
+		if(x==other.x&&y==other.y&&z==other.z)
+			return true;
 		return false;
 	}
-	@Override public float lengthSquared(){
+	@Override
+	public float lengthSquared(){
 		return x*x+y*y+z*z;
 	}
-	@Override public Vector load(FloatBuffer buf){
+	@Override
+	public Vector load(FloatBuffer buf){
 		x = buf.get();
 		y = buf.get();
 		z = buf.get();
 		return this;
 	}
-	@Override public Vector negate(){
+	@Override
+	public Vector negate(){
 		x = -x;
 		y = -y;
 		z = -z;
 		return this;
 	}
-	@Override public Vector scale(float scale){
+	public void normalize(){
+		double mag = Math.sqrt(lengthSquared());
+		x /= mag;
+		y /= mag;
+		z /= mag;
+	}
+	@Override
+	public Vector scale(float scale){
 		x *= scale;
 		y *= scale;
 		z *= scale;
@@ -44,13 +59,15 @@ public class Vector3f extends Vector{
 		this.y = y;
 		this.z = z;
 	}
-	@Override public Vector store(FloatBuffer buf){
+	@Override
+	public Vector store(FloatBuffer buf){
 		buf.put(x);
 		buf.put(y);
 		buf.put(z);
 		return this;
 	}
-	@Override public String toString(){
+	@Override
+	public String toString(){
 		StringBuilder sb = new StringBuilder(64);
 		sb.append("Vector3f[");
 		sb.append(x);

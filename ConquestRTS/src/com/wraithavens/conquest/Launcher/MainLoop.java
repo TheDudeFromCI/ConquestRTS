@@ -8,6 +8,7 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
 import org.lwjgl.glfw.GLFWScrollCallback;
+import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import org.lwjgl.glfw.GLFWvidmode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
@@ -19,49 +20,63 @@ class MainLoop{
 	private GLFWErrorCallback errorCallback;
 	private GLFWKeyCallback keyCallback;
 	private GLFWMouseButtonCallback mouseButtonCallback;
+	private GLFWWindowSizeCallback windowSizeCallback;
 	private WindowInitalizer recreateInitalizer;
 	private GLFWScrollCallback scrollCallback;
 	private long variableYieldTime, lastTime;
 	private long window;
 	private WindowInitalizer windowInitalizer;
-	void create(WindowInitalizer windowInitalizer){
-		runLoop(windowInitalizer);
-		while(recreateInitalizer!=null)
-			runLoop(recreateInitalizer);
-	}
-	long getWindow(){
-		return window;
-	}
 	private void init(){
 		GLFW.glfwSetErrorCallback(errorCallback = Callbacks.errorCallbackPrint(System.err));
-		if(GLFW.glfwInit()!=GL11.GL_TRUE) throw new IllegalStateException("Unable to initialize GLFW");
+		if(GLFW.glfwInit()!=GL11.GL_TRUE)
+			throw new IllegalStateException("Unable to initialize GLFW");
 		GLFW.glfwDefaultWindowHints();
 		GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GL11.GL_FALSE);
-		GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GL11.GL_FALSE);
-		window = GLFW.glfwCreateWindow(windowInitalizer.width, windowInitalizer.height, "Wraithaven's Conquest", windowInitalizer.fullscreen?GLFW.glfwGetPrimaryMonitor():MemoryUtil.NULL, MemoryUtil.NULL);
-		if(window==MemoryUtil.NULL) throw new RuntimeException("Failed to create the GLFW window");
+		GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GL11.GL_TRUE);
+		window =
+			GLFW.glfwCreateWindow(windowInitalizer.width, windowInitalizer.height, "Wraithaven's Conquest",
+				windowInitalizer.fullscreen?GLFW.glfwGetPrimaryMonitor():MemoryUtil.NULL, MemoryUtil.NULL);
+		if(window==MemoryUtil.NULL)
+			throw new RuntimeException("Failed to create the GLFW window");
 		GLFW.glfwSetKeyCallback(window, keyCallback = new GLFWKeyCallback(){
-			@Override public void invoke(long window, int key, int scancode, int action, int mods){
+			@Override
+			public void invoke(long window, int key, int scancode, int action, int mods){
 				windowInitalizer.loopObjective.key(window, key, action);
 			}
 		});
 		GLFW.glfwSetMouseButtonCallback(window, mouseButtonCallback = new GLFWMouseButtonCallback(){
-			@Override public void invoke(long window, int button, int action, int mods){
+			@Override
+			public void invoke(long window, int button, int action, int mods){
 				windowInitalizer.loopObjective.mouse(window, button, action);
 			}
 		});
 		GLFW.glfwSetCursorPosCallback(window, cursorPosCallback = new GLFWCursorPosCallback(){
-			@Override public void invoke(long window, double xpos, double ypos){
+			@Override
+			public void invoke(long window, double xpos, double ypos){
 				windowInitalizer.loopObjective.mouseMove(window, xpos, ypos);
 			}
 		});
 		GLFW.glfwSetScrollCallback(window, scrollCallback = new GLFWScrollCallback(){
-			@Override public void invoke(long window, double xoffset, double yoffset){
+			@Override
+			public void invoke(long window, double xoffset, double yoffset){
 				windowInitalizer.loopObjective.mouseWheel(window, xoffset, yoffset);
 			}
 		});
+		GLFW.glfwSetWindowSizeCallback(window, windowSizeCallback = new GLFWWindowSizeCallback(){
+			@Override
+			public void invoke(long window, int width, int height){
+				if(WraithavensConquest.INSTANCE!=null){
+					System.out.println("Window resized. W="+width+", H="+height);
+					GL11.glViewport(0, 0, width, height);
+					WraithavensConquest.INSTANCE.init.width = width;
+					WraithavensConquest.INSTANCE.init.height = height;
+				}
+			}
+		});
 		ByteBuffer vidmode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
-		if(!windowInitalizer.fullscreen)GLFW.glfwSetWindowPos(window, (GLFWvidmode.width(vidmode)-windowInitalizer.width)/2, (GLFWvidmode.height(vidmode)-windowInitalizer.height)/2);
+		if(!windowInitalizer.fullscreen)
+			GLFW.glfwSetWindowPos(window, (GLFWvidmode.width(vidmode)-windowInitalizer.width)/2,
+				(GLFWvidmode.height(vidmode)-windowInitalizer.height)/2);
 		GLFW.glfwMakeContextCurrent(window);
 		GLFW.glfwSwapInterval(windowInitalizer.vSync?1:0);
 		GLFW.glfwShowWindow(window);
@@ -83,7 +98,8 @@ class MainLoop{
 			GL11.glPopMatrix();
 			GLFW.glfwSwapBuffers(window);
 			GLFW.glfwPollEvents();
-			if(MainLoop.FPS_SYNC)sync();
+			if(MainLoop.FPS_SYNC)
+				sync();
 		}
 	}
 	private void runLoop(WindowInitalizer windowInitalizer){
@@ -97,6 +113,7 @@ class MainLoop{
 			mouseButtonCallback.release();
 			cursorPosCallback.release();
 			scrollCallback.release();
+			windowSizeCallback.release();
 		}catch(Exception exception){
 			exception.printStackTrace();
 		}finally{
@@ -114,8 +131,10 @@ class MainLoop{
 			long t;
 			while(true){
 				t = System.nanoTime()-lastTime;
-				if(t<sleepTime-yieldTime)Thread.sleep(1);
-				else if(t<sleepTime)Thread.yield();
+				if(t<sleepTime-yieldTime)
+					Thread.sleep(1);
+				else if(t<sleepTime)
+					Thread.yield();
 				else{
 					overSleep = t-sleepTime;
 					break;
@@ -125,8 +144,18 @@ class MainLoop{
 			e.printStackTrace();
 		}finally{
 			lastTime = System.nanoTime()-Math.min(overSleep, sleepTime);
-			if(overSleep>variableYieldTime)variableYieldTime = Math.min(variableYieldTime+200*1000, sleepTime);
-			else if(overSleep<variableYieldTime-200*1000)variableYieldTime = Math.max(variableYieldTime-2*1000, 0);
+			if(overSleep>variableYieldTime)
+				variableYieldTime = Math.min(variableYieldTime+200*1000, sleepTime);
+			else if(overSleep<variableYieldTime-200*1000)
+				variableYieldTime = Math.max(variableYieldTime-2*1000, 0);
 		}
+	}
+	void create(WindowInitalizer windowInitalizer){
+		runLoop(windowInitalizer);
+		while(recreateInitalizer!=null)
+			runLoop(recreateInitalizer);
+	}
+	long getWindow(){
+		return window;
 	}
 }

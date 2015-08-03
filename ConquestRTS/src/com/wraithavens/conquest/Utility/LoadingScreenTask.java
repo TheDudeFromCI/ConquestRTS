@@ -1,5 +1,6 @@
 package com.wraithavens.conquest.Utility;
 
-public interface LoadingScreenTask{
-	public boolean runStep();
-}
+// TODO Remove unused code found by UCDetector
+// interface LoadingScreenTask{
+// public boolean runStep();
+// }

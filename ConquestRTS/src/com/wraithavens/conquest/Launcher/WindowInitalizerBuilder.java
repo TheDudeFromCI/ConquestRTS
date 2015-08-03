@@ -16,7 +16,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
-import com.wraithavens.conquest.Utility.CompactBinaryFile;
+import com.wraithavens.conquest.Utility.BinaryFile;
 
 class WindowInitalizerBuilder extends JFrame{
 	private JCheckBox fullScreen;
@@ -34,22 +34,24 @@ class WindowInitalizerBuilder extends JFrame{
 			}
 		});
 	}
-	private void init(){
-		setTitle("Game Visual Properties");
-		setSize(365, 340);
-		setResizable(false);
-		setLocationRelativeTo(null);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	}
 	private void addComponents(){
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{50, 50, 50, 60, 60, 0};
-		gridBagLayout.rowHeights = new int[]{200, 20, 20, 0, 20, 0};
-		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.columnWidths = new int[]{
+			50, 50, 50, 60, 60, 0
+		};
+		gridBagLayout.rowHeights = new int[]{
+			200, 20, 20, 0, 20, 0
+		};
+		gridBagLayout.columnWeights = new double[]{
+			0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE
+		};
+		gridBagLayout.rowWeights = new double[]{
+			0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE
+		};
 		getContentPane().setLayout(gridBagLayout);
 		BufferedImage splashImage = null;
-		try{ splashImage = ImageIO.read(new File(WraithavensConquest.assetFolder, "Splash.png"));
+		try{
+			splashImage = ImageIO.read(new File(WraithavensConquest.assetFolder, "Splash.png"));
 		}catch(Exception exception){
 			exception.printStackTrace();
 			System.exit(1);
@@ -117,8 +119,36 @@ class WindowInitalizerBuilder extends JFrame{
 		getContentPane().add(btnExit, gbc_btnExit);
 		loadSettings();
 	}
+	private void init(){
+		setTitle("Game Visual Properties");
+		setSize(365, 340);
+		setResizable(false);
+		setLocationRelativeTo(null);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+	private void loadSettings(){
+		File file = new File(WraithavensConquest.programFolder, "Settings.dat");
+		if(file.exists()&&file.length()>0){
+			BinaryFile bin = new BinaryFile(file);
+			int id = bin.getByte();
+			for(int i = 0; i<comboBox.getItemCount(); i++)
+				if(((ResolutionSize)comboBox.getItemAt(i)).id==id){
+					comboBox.setSelectedIndex(i);
+					break;
+				}
+			fullScreen.setSelected(bin.getBoolean());
+			vSync.setSelected(bin.getBoolean());
+		}
+	}
+	private void saveSettings(){
+		BinaryFile bin = new BinaryFile(3);
+		bin.addByte((byte)((ResolutionSize)comboBox.getSelectedItem()).id);
+		bin.addBoolean(fullScreen.isSelected());
+		bin.addBoolean(vSync.isSelected());
+		bin.compile(new File(WraithavensConquest.programFolder, "Settings.dat"));
+	}
 	WindowInitalizer build(){
-		while(true){
+		for(int i = 0; i<10000; i++){
 			if(done){
 				saveSettings();
 				WindowInitalizer init = new WindowInitalizer();
@@ -129,32 +159,13 @@ class WindowInitalizerBuilder extends JFrame{
 				init.vSync = vSync.isSelected();
 				return init;
 			}
-			try{ Thread.sleep(1);
+			if(isVisible())
+				i = 0; // Break loop if frame is not visible for 10 seconds.
+			try{
+				Thread.sleep(1);
 			}catch(Exception exception){}
 		}
-	}
-	private void loadSettings(){
-		CompactBinaryFile file = new CompactBinaryFile(WraithavensConquest.programFolder, "Settings.dat");
-		if(file.exists()){
-			file.read();
-			int id = (int)file.getNumber(5);
-			for(int i = 0; i<comboBox.getItemCount(); i++)
-				if(((ResolutionSize)comboBox.getItemAt(i)).id==id){
-					comboBox.setSelectedIndex(i);
-					break;
-				}
-			fullScreen.setSelected(file.nextBit());
-			vSync.setSelected(file.nextBit());
-			file.stopReading();
-		}
-	}
-	private void saveSettings(){
-		CompactBinaryFile file = new CompactBinaryFile(WraithavensConquest.programFolder, "Settings.dat");
-		file.ensureExistance();
-		file.write();
-		file.addNumber(((ResolutionSize)comboBox.getSelectedItem()).id, 5);
-		file.addBit(fullScreen.isSelected());
-		file.addBit(vSync.isSelected());
-		file.stopWriting();
+		System.exit(0);
+		return null;
 	}
 }
