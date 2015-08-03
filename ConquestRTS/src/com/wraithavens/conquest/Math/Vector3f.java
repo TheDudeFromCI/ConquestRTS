@@ -41,6 +41,12 @@ public class Vector3f extends Vector{
 		z = -z;
 		return this;
 	}
+	public void normalize(){
+		double mag = Math.sqrt(lengthSquared());
+		x /= mag;
+		y /= mag;
+		z /= mag;
+	}
 	@Override
 	public Vector scale(float scale){
 		x *= scale;

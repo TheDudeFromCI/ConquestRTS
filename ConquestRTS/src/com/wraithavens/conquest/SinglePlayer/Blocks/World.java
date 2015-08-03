@@ -7,6 +7,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
+import com.wraithavens.conquest.Math.MatrixUtils;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
@@ -55,8 +56,20 @@ public class World{
 		return generator.getHeightAt(x, z);
 	}
 	public void render(){
+		// ---
+		// This adjusts the clipping plane, so depth testing for blocks and
+		// entities are more accurate.
+		// ---
+		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
+			/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 0.5f, 1000);
+		// ---
+		// Prepare to render chunks.
+		// ---
 		shader.bind();
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
+		// ---
+		// And finally, preform the renders.
+		// ---
 		for(ChunkPainter painter : painters)
 			painter.render();
 	}

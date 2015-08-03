@@ -4,7 +4,6 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import com.wraithavens.conquest.Launcher.Driver;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
-import com.wraithavens.conquest.Math.MatrixUtils;
 import com.wraithavens.conquest.SinglePlayer.Blocks.World;
 import com.wraithavens.conquest.SinglePlayer.Heightmap.WorldHeightmaps;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
@@ -38,8 +37,6 @@ public class SinglePlayerGame implements Driver{
 		heightMaps = new WorldHeightmaps(machine);
 		GL11.glClearColor(0.4f, 0.6f, 0.9f, 1);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
-			/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 1, 4000000);
 	}
 	public void onKey(int key, int action){
 		if(key==GLFW.GLFW_KEY_W){

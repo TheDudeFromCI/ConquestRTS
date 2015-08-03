@@ -1,14 +1,8 @@
-uniform sampler2D texture;
-uniform vec3 mountainData;
-out vec2 uv;
-
-// Mountain Data:
-// 0 = Texture Size
-// 1 = Inverse Texture Size
-// 2 = Max Height
+out vec3 color;
+out vec3 normal;
 
 void main(){
-	vec2 u = gl_MultiTexCoord0.xy;
-	gl_Position = gl_ModelViewProjectionMatrix*(gl_Vertex+vec2(0.0f, texture(texture, u).a*mountainData.z).xyxx);
-	uv = u;
+	gl_Position = gl_ModelViewProjectionMatrix*gl_Vertex;
+	color = gl_Color.rgb;
+	normal = gl_Normal;
 }
