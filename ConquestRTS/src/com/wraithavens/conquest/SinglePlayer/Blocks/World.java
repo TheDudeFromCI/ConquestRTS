@@ -16,10 +16,16 @@ import com.wraithavens.conquest.Utility.Algorithms;
 public class World{
 	private static boolean outside(){
 		int r = aabb1[3]+aabb2[3];
-		return Math.abs(aabb1[0]-aabb2[0])>r&&Math.abs(aabb1[1]-aabb2[1])>r&&Math.abs(aabb1[2]-aabb2[2])>r;
+		return Math.abs(aabb1[0]-aabb2[0])>r||Math.abs(aabb1[1]-aabb2[1])>r||Math.abs(aabb1[2]-aabb2[2])>r;
 	}
 	private static final int[] aabb1 = new int[4];
 	private static final int[] aabb2 = new int[4];
+	/**
+	 * This value denotes the number of chunks that should be attempted to load
+	 * each frame. Turning this higher will allow chunks to load faster, at the
+	 * expense of Fps.
+	 */
+	private static final int ChunksPerFrame = 2;
 	private static final int ViewDistance = ViewDistances.View_8.value*16;
 	static int SHADER_LOCATION;
 	static int SHADER_LOCATION_2;
@@ -29,7 +35,6 @@ public class World{
 	private final ArrayList<VoxelChunk> voxels = new ArrayList();
 	private final ArrayList<ChunkVBO> vbos = new ArrayList();
 	private final ShaderProgram shader;
-	private int step;
 	private final int ibo;
 	private final BlockCuller chunkRenderTester;
 	public World(WorldNoiseMachine machine, Camera camera){
@@ -87,17 +92,18 @@ public class World{
 		int z = Algorithms.groupLocation((int)camera.z, 16);
 		if(chunkLoader.getX()!=x||chunkLoader.getY()!=y||chunkLoader.getZ()!=z)
 			chunkLoader.updateLocation(x, y, z);
-		if(step%1==0){
-			clearEmpties();
-			RawChunk raw = chunkLoader.loadNextChunk(voxels);
-			if(raw!=null){
-				// ---
-				// TODO Add voxel heirarchy.
-				// ---
-				voxels.add(new ChunkPainter(this, raw));
-			}
+		clearEmpties();
+		RawChunk raw;
+		int max = ChunksPerFrame;
+		for(int i = 0; i<max; i++){
+			raw = chunkLoader.loadNextChunk(voxels);
+			if(raw==null)
+				break;
+			// ---
+			// TODO Add voxel heirarchy.
+			// ---
+			voxels.add(new ChunkPainter(this, raw));
 		}
-		step++;
 	}
 	private void clearEmpties(){
 		for(int i = 0; i<voxels.size();)
