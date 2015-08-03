@@ -23,11 +23,8 @@ public class CompactBinaryFile extends File{
 			return (b&2)==2;
 		return (b&1)==1;
 	}
-	private static long power(int p){
-		long a = 1;
-		for(int i = 0; i<p; i++)
-			a *= 2;
-		return a;
+	private static long pow(int p){
+		return (long)Math.pow(2, p);
 	}
 	private byte[] binary;
 	private int pos;
@@ -93,7 +90,7 @@ public class CompactBinaryFile extends File{
 			throw new IllegalArgumentException("Cannot write a number with more then 64 bits!");
 		long a;
 		for(int i = bits-1; i>=0; i--){
-			a = CompactBinaryFile.power(i);
+			a = CompactBinaryFile.pow(i);
 			addBit((number&a)==a);
 		}
 	}
@@ -138,7 +135,7 @@ public class CompactBinaryFile extends File{
 		long n = 0;
 		for(int i = bits-1; i>=0; i--)
 			if(nextBit())
-				n += CompactBinaryFile.power(i);
+				n += pow(i);
 		return n;
 	}
 	public long getPosition(){

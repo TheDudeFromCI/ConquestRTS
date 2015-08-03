@@ -21,7 +21,9 @@ class CellSorter{
 	}
 	public void next(){
 		pos++;
-		if(pos%10==0)
+		if(!hasNext())
+			System.out.println("All chunks loaded.");
+		else if(pos>0&&pos%100==0)
 			System.out.println(pos+"/"+cells.length/3+" chunks loaded.");
 	}
 	public void reset(){

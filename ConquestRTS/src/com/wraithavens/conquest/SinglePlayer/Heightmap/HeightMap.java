@@ -10,7 +10,7 @@ import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 class HeightMap{
 	static final int VertexCount = 1024;
 	static final int ViewDistance = 16384;
-	private static final int Vertices = VertexCount*VertexCount;
+	static final int Vertices = VertexCount*VertexCount;
 	private static final int VertexSize = 9;
 	private static final int indexCount = (VertexCount*2+2)*(VertexCount-1)-2;
 	private int posX;
