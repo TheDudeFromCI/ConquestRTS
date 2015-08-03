@@ -16,7 +16,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
-import com.wraithavens.conquest.Utility.CompactBinaryFile;
+import com.wraithavens.conquest.Utility.BinaryFile;
 
 class WindowInitalizerBuilder extends JFrame{
 	private JCheckBox fullScreen;
@@ -127,28 +127,25 @@ class WindowInitalizerBuilder extends JFrame{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	private void loadSettings(){
-		CompactBinaryFile file = new CompactBinaryFile(WraithavensConquest.programFolder, "Settings.dat");
-		if(file.exists()){
-			file.read();
-			int id = (int)file.getNumber(5);
+		File file = new File(WraithavensConquest.programFolder, "Settings.dat");
+		if(file.exists()&&file.length()>0){
+			BinaryFile bin = new BinaryFile(file);
+			int id = bin.getByte();
 			for(int i = 0; i<comboBox.getItemCount(); i++)
 				if(((ResolutionSize)comboBox.getItemAt(i)).id==id){
 					comboBox.setSelectedIndex(i);
 					break;
 				}
-			fullScreen.setSelected(file.nextBit());
-			vSync.setSelected(file.nextBit());
-			file.stopReading();
+			fullScreen.setSelected(bin.getBoolean());
+			vSync.setSelected(bin.getBoolean());
 		}
 	}
 	private void saveSettings(){
-		CompactBinaryFile file = new CompactBinaryFile(WraithavensConquest.programFolder, "Settings.dat");
-		file.ensureExistance();
-		file.write();
-		file.addNumber(((ResolutionSize)comboBox.getSelectedItem()).id, 5);
-		file.addBit(fullScreen.isSelected());
-		file.addBit(vSync.isSelected());
-		file.stopWriting();
+		BinaryFile bin = new BinaryFile(3);
+		bin.addByte((byte)((ResolutionSize)comboBox.getSelectedItem()).id);
+		bin.addBoolean(fullScreen.isSelected());
+		bin.addBoolean(vSync.isSelected());
+		bin.compile(new File(WraithavensConquest.programFolder, "Settings.dat"));
 	}
 	WindowInitalizer build(){
 		for(int i = 0; i<10000; i++){

@@ -3,31 +3,27 @@ package com.wraithavens.conquest.SinglePlayer.Blocks;
 import java.io.File;
 import java.util.ArrayList;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
-import com.wraithavens.conquest.Utility.CompactBinaryFile;
+import com.wraithavens.conquest.Utility.BinaryFile;
 
 class ChunkLoader{
 	private static RawChunk load(File file, int x, int y, int z){
 		RawChunk rawChunk = new RawChunk(x, y, z);
-		CompactBinaryFile f = new CompactBinaryFile(file.getAbsolutePath());
-		f.read();
+		BinaryFile bin = new BinaryFile(file);
 		int a, b, c;
 		for(a = 0; a<16; a++)
 			for(b = 0; b<16; b++)
 				for(c = 0; c<16; c++)
-					rawChunk.setBlock(a, b, c, (byte)f.getNumber(8));
-		f.stopReading();
+					rawChunk.setBlock(a, b, c, bin.getByte());
 		return rawChunk;
 	}
 	private static void save(File file, RawChunk raw){
-		CompactBinaryFile f = new CompactBinaryFile(file.getAbsolutePath());
-		f.ensureExistance();
-		f.write();
+		BinaryFile bin = new BinaryFile(4096);
 		int a, b, c;
 		for(a = 0; a<16; a++)
 			for(b = 0; b<16; b++)
 				for(c = 0; c<16; c++)
-					f.addNumber(raw.getBlock(a, b, c), 8);
-		f.stopWriting();
+					bin.addByte(raw.getBlock(a, b, c));
+		bin.compile(file);
 	}
 	private final CellSorter cellSorter;
 	private final ChunkGenerator generator;

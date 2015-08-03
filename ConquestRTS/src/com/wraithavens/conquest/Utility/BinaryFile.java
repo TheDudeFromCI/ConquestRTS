@@ -56,6 +56,13 @@ public class BinaryFile{
 	public BinaryFile(int space){
 		binary = new byte[space];
 	}
+	public void addBoolean(boolean val){
+		addByte((byte)(val?1:0));
+	}
+	public void addByte(byte n){
+		binary[pos] = n;
+		pos++;
+	}
 	public void addFloat(float n){
 		addInt(Float.floatToIntBits(n));
 	}
@@ -83,6 +90,12 @@ public class BinaryFile{
 		}
 		write(file, binary);
 	}
+	public byte[] getBinary(){
+		return binary;
+	}
+	public boolean getBoolean(){
+		return getByte()==1;
+	}
 	public byte getByte(){
 		byte b = binary[pos];
 		pos++;
@@ -100,9 +113,5 @@ public class BinaryFile{
 		short s = (short)(binary[pos]&0xFF|(binary[pos+1]&0xFF)<<8);
 		pos += 2;
 		return s;
-	}
-	public void placeByte(byte n){
-		binary[pos] = n;
-		pos++;
 	}
 }

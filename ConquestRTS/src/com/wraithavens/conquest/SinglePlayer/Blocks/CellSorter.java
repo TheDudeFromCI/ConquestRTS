@@ -2,13 +2,14 @@ package com.wraithavens.conquest.SinglePlayer.Blocks;
 
 import java.io.File;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
-import com.wraithavens.conquest.Utility.BinaryFileUtil;
+import com.wraithavens.conquest.Utility.BinaryFile;
 
 class CellSorter{
 	private final byte[] cells;
 	private int pos = -1;
 	CellSorter(int viewDistance){
-		cells = BinaryFileUtil.readFile(new File(WraithavensConquest.chunkLoadFolder, viewDistance+".dat"));
+		BinaryFile bin = new BinaryFile(new File(WraithavensConquest.chunkLoadFolder, viewDistance+".dat"));
+		cells = bin.getBinary();
 	}
 	public int getY(){
 		return cells[pos*3+1]*16;

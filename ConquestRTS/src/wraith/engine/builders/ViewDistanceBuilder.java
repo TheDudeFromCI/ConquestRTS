@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import com.wraithavens.conquest.SinglePlayer.Blocks.ViewDistances;
-import com.wraithavens.conquest.Utility.CompactBinaryFile;
+import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class ViewDistanceBuilder{
 	public static void main(String[] args){
@@ -28,16 +28,13 @@ public class ViewDistanceBuilder{
 				}
 			});
 			System.out.println("  Saving cells.");
-			CompactBinaryFile f = new CompactBinaryFile(folder, view.value+".dat");
-			f.ensureExistance();
-			f.write();
-			f.prepareSpace(cells.size()*3);
+			BinaryFile bin = new BinaryFile(cells.size()*3);
 			for(double[] c : cells){
-				f.addNumber((byte)c[0], 8);
-				f.addNumber((byte)c[1], 8);
-				f.addNumber((byte)c[2], 8);
+				bin.addByte((byte)c[0]);
+				bin.addByte((byte)c[1]);
+				bin.addByte((byte)c[2]);
 			}
-			f.stopWriting();
+			bin.compile(new File(folder, view.value+".dat"));
 		}
 		System.out.println("Finished.");
 	}
