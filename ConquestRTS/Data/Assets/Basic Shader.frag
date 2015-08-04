@@ -83,5 +83,5 @@ float cnoise(vec3 P){
 	return 2.2*n_xyz;
 }
 void main(){
-    gl_FragColor = vec4(mix(color, color*texture2D(grassShade, clamp(fract(uv), min, max)).rgb, grass)*(cnoise(pos)*0.2f+1.0f), 1.0f);
+    gl_FragColor = vec4(mix(color, color*texture2D(grassShade, clamp(fract(uv), min, max)).rgb, grass)*(cnoise(pos)*0.2f+0.9f), 1.0f);
 }
