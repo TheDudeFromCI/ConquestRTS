@@ -8,10 +8,10 @@ public class VoxelBiome extends VoxelChunk{
 		super(x, y, z, size);
 		biome = new BiomeMap(machine, x, z);
 	}
+	public void dispose(){
+		biome.dispose();
+	}
 	void bind(){
 		biome.bind();
-	}
-	void dispose(){
-		biome.dispose();
 	}
 }

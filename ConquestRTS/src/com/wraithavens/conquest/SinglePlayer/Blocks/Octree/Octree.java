@@ -12,6 +12,7 @@ public class Octree{
 	private static boolean condenseVoxel(OctreeBranch branch){
 		if(containsChunk(branch))
 			return false;
+		disposeBiomes(branch);
 		branch.children = null;
 		return true;
 	}
@@ -26,6 +27,26 @@ public class Octree{
 			if(containsChunk(branch.children[i]))
 				return true;
 		return false;
+	}
+	private static void disposeBiomes(OctreeBranch b){
+		if(b.owner.getSize()<=BiomeMap.TextureSize)
+			return;
+		if(b.children==null)
+			return;
+		for(int i = 0; i<8; i++)
+			disposeChildBiomes(b.children[i]);
+	}
+	private static void disposeChildBiomes(OctreeBranch b){
+		if(b==null)
+			return;
+		if(b.owner instanceof VoxelBiome){
+			((VoxelBiome)b.owner).dispose();
+			return;
+		}
+		if(b.owner.getSize()<BiomeMap.TextureSize)
+			return;
+		for(int i = 0; i<8; i++)
+			disposeChildBiomes(b.children[i]);
 	}
 	private static int getChildIndex(VoxelChunk parent, VoxelChunk child){
 		int half = parent.getSize()/2;
