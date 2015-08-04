@@ -92,6 +92,9 @@ public class BinaryFile{
 	public float getFloat(){
 		return Float.intBitsToFloat(getInt());
 	}
+	public int size(){
+		return binary.length;
+	}
 	private void addInt(int n){
 		binary[pos] = (byte)(n&0xFF);
 		binary[pos+1] = (byte)(n>>8&0xFF);

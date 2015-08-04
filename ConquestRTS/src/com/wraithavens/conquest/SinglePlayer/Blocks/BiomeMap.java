@@ -61,7 +61,7 @@ public class BiomeMap{
 	}
 	private static int loadTexture(WorldNoiseMachine machine, int posX, int posZ){
 		File file =
-			new File(WraithavensConquest.currentGameFolder+File.separatorChar+"Biomes", posX+","+posZ+".dat");
+			new File(WraithavensConquest.currentGameFolder+File.separatorChar+"Biomes", posX+"a"+posZ+".dat");
 		if(file.exists()&&file.length()>0)
 			return loadTexture(file);
 		return generateTexture(machine, file, posX, posZ);

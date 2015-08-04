@@ -1,5 +1,6 @@
 package com.wraithavens.conquest.SinglePlayer.Blocks;
 
+import org.lwjgl.opengl.GL13;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 
 public class VoxelBiome extends VoxelChunk{
@@ -12,6 +13,7 @@ public class VoxelBiome extends VoxelChunk{
 		biome.dispose();
 	}
 	void bind(){
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		biome.bind();
 	}
 }

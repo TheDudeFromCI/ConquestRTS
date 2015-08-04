@@ -64,8 +64,8 @@ public class World{
 		SHADER_LOCATION_2 = shader.getAttributeLocation("isGrass");
 		GL20.glEnableVertexAttribArray(SHADER_LOCATION);
 		GL20.glEnableVertexAttribArray(SHADER_LOCATION_2);
-		shader.loadUniforms("grassShade");
 		shader.bind();
+		shader.loadUniforms("grassShade");
 		shader.setUniform1I(0, 0);
 		chunkLoader.updateLocation(Algorithms.groupLocation((int)camera.x, 16),
 			Algorithms.groupLocation((int)camera.y, 16), Algorithms.groupLocation((int)camera.z, 16));
