@@ -1,8 +1,11 @@
 package com.wraithavens.conquest.SinglePlayer.Blocks.Octree;
 
 import java.util.ArrayList;
+import com.wraithavens.conquest.SinglePlayer.Blocks.BiomeMap;
 import com.wraithavens.conquest.SinglePlayer.Blocks.ChunkPainter;
+import com.wraithavens.conquest.SinglePlayer.Blocks.VoxelBiome;
 import com.wraithavens.conquest.SinglePlayer.Blocks.VoxelChunk;
+import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.Utility.Algorithms;
 
 public class Octree{
@@ -32,6 +35,10 @@ public class Octree{
 	private static final int OctreeDepth = 10; // 16384 Blocks^2
 	private static final int MainBranchSize = (int)Math.pow(2, OctreeDepth);
 	private final ArrayList<OctreeBranch> branches = new ArrayList();
+	private final WorldNoiseMachine machine;
+	public Octree(WorldNoiseMachine machine){
+		this.machine = machine;
+	}
 	public void addVoxel(VoxelChunk voxel){
 		// ---
 		// Loop through all branches and load the parent branch of the new
@@ -111,8 +118,12 @@ public class Octree{
 			int voxX = Algorithms.groupLocation(child.getX(), parent.owner.getSize()/2);
 			int voxY = Algorithms.groupLocation(child.getY(), parent.owner.getSize()/2);
 			int voxZ = Algorithms.groupLocation(child.getZ(), parent.owner.getSize()/2);
-			parent.children[index] =
-				new OctreeBranch(new VoxelChunk(voxX, voxY, voxZ, parent.owner.getSize()/2));
+			VoxelChunk v;
+			if(parent.owner.getSize()/2==BiomeMap.TextureSize)
+				v = new VoxelBiome(machine, voxX, voxY, voxZ, parent.owner.getSize()/2);
+			else
+				v = new VoxelChunk(voxX, voxY, voxZ, parent.owner.getSize()/2);
+			parent.children[index] = new OctreeBranch(v);
 		}
 		placeVoxel(parent.children[index], child);
 	}
@@ -135,12 +146,11 @@ public class Octree{
 	private void testBranch(OctreeBranch branch, OctreeTask task){
 		if(!task.shouldRun(branch.owner))
 			return;
-		if(branch.children!=null){
+		task.run(branch.owner);
+		if(branch.children!=null)
 			for(int i = 0; i<branch.children.length; i++)
 				if(branch.children[i]!=null)
 					testBranch(branch.children[i], task);
-		}else
-			task.run(branch.owner);
 	}
 	void runTask(OctreeTask task){
 		for(OctreeBranch b : branches)

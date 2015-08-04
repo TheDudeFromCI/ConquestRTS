@@ -25,7 +25,7 @@ public class WorldNoiseMachine{
 		LinearInterpolation lerp = new LinearInterpolation();
 		SubNoise worldHeightNoise1 = SubNoise.build(seeds[0], 6000, 6, cos, 5000, 0);
 		SubNoise prairieRed = SubNoise.build(seeds[1], 120, 2, lerp, 0.15f, 0.25f);
-		SubNoise prairieGreen = SubNoise.build(seeds[2], 20, 0, lerp, 0.1f, 0);
+		SubNoise prairieGreen = SubNoise.build(seeds[2], 20, 1, lerp, 0.1f, 0);
 		SubNoise prairieBlue = SubNoise.build(seeds[3], 80, 2, lerp, 0.15f, 0.3f);
 		// ---
 		// And compiling these together.

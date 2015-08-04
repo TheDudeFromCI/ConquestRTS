@@ -50,7 +50,7 @@ public class World{
 	private final Octree octree;
 	private final OctreeTask renderTask;
 	private final OctreeTask unloadChunksTask;
-	private final ArrayList<ChunkPainter> toRemove = new ArrayList();
+	private final ArrayList<ChunkPainter> toRemove = new ArrayList(50);
 	public World(WorldNoiseMachine machine, Camera camera){
 		ibo = GL15.glGenBuffers();
 		generateIndexBuffer();
@@ -69,12 +69,14 @@ public class World{
 		shader.setUniform1I(0, 0);
 		chunkLoader.updateLocation(Algorithms.groupLocation((int)camera.x, 16),
 			Algorithms.groupLocation((int)camera.y, 16), Algorithms.groupLocation((int)camera.z, 16));
-		octree = new Octree();
+		octree = new Octree(machine);
 		renderTask = new OctreeTask(octree){
 			@Override
 			public void run(VoxelChunk chunk){
 				if(chunk instanceof ChunkPainter)
 					((ChunkPainter)chunk).render();
+				else if(chunk instanceof VoxelBiome)
+					((VoxelBiome)chunk).bind();
 			}
 			@Override
 			public boolean shouldRun(VoxelChunk voxel){

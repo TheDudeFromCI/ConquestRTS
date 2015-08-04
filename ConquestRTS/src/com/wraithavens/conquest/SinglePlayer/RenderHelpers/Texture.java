@@ -53,23 +53,11 @@ public class Texture{
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
 		if(mipmapLevel>0){
-			// Quality levels: (Lowest to highest.)
-			// GL_NEAREST_MIPMAP_NEAREST Choose the nearest mipmap, and nearest
-			// pixel on that mipmap.
-			// GL_LINEAR_MIPMAP_NEAREST Interpolate mipmap, and nearest pixel on
-			// that mipmap.
-			// GL_NEAREST_MIPMAP_LINEAR Choose the nearest mipmap, and
-			// interpolate pixel on that mipmap.
-			// GL_LINEAR_MIPMAP_LINEAR Interpolate mipmap, and interpolate pixel
-			// on that mipmap.
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_MAX_LEVEL, mipmapLevel-1);
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, GL11.GL_TRUE);
 		}else{
-			// Quality levels: (Lowest to highest.)
-			// GL_NEAREST Get nearest pixel.
-			// GL_LINEAR Interpolate pixels.
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
 		}
@@ -87,11 +75,10 @@ public class Texture{
 		textures.add(this);
 		this.file = file.getName();
 	}
-	// TODO Remove unused code found by UCDetector
-	// public void bind(){
-	// GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
-	// }
-	private void dispose(){
+	public void bind(){
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
+	}
+	public void dispose(){
 		if(GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D)==textureId)
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		GL11.glDeleteTextures(textureId);
