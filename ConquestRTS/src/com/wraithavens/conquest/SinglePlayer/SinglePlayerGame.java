@@ -76,10 +76,13 @@ public class SinglePlayerGame implements Driver{
 				shift = false;
 		}else if(key==GLFW.GLFW_KEY_1){
 			if(action==GLFW.GLFW_PRESS){
-				if(wireframeMode)
+				if(wireframeMode){
 					GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
-				else
+					GL11.glEnable(GL11.GL_CULL_FACE);
+				}else{
 					GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+					GL11.glDisable(GL11.GL_CULL_FACE);
+				}
 				wireframeMode = !wireframeMode;
 			}
 		}else if(key==GLFW.GLFW_KEY_2){

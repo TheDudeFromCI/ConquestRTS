@@ -14,12 +14,11 @@ public class WraithavensConquest extends EmptyLoop{
 		assetFolder = programFolder+File.separatorChar+"Assets";
 		saveFolder = programFolder+File.separatorChar+"Saves";
 		chunkLoadFolder = programFolder+File.separatorChar+"ChunkLoad";
+		saveFolder = "C:/Documents and Settings/TheDudeFromCI/Desktop/Talantra Save Data";
 		// ---
 		// TODO Remove this later, once game saving and loading is in.
 		// ---
-		// currentGameUUID = "Pre-Alpha";
-		// saveFolder += File.separatorChar+currentGameUUID;
-		saveFolder = "C:/Documents and Settings/TheDudeFromCI/Desktop/Talantra Saves";
+		currentGameFolder = saveFolder+File.separatorChar+"Pre-Alpha";
 		WindowInitalizerBuilder builder = new WindowInitalizerBuilder();
 		new WraithavensConquest(builder.build());
 		System.exit(0);
@@ -43,6 +42,7 @@ public class WraithavensConquest extends EmptyLoop{
 	static String programFolder;
 	public static String assetFolder;
 	public static String chunkLoadFolder;
+	public static String currentGameFolder;
 	// TODO Remove unused code found by UCDetector
 	// public static String loadingScreenImagesFolder;
 	// TODO Remove unused code found by UCDetector

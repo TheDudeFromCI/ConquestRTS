@@ -84,7 +84,8 @@ class HeightmapGenerator{
 		System.out.println("Heightmap generated.");
 	}
 	void getHeightmap(int x, int z, FloatBuffer vertexData){
-		File file = new File(WraithavensConquest.saveFolder+File.separatorChar+"Heightmaps", x+","+z+".dat");
+		File file =
+			new File(WraithavensConquest.currentGameFolder+File.separatorChar+"Heightmaps", x+","+z+".dat");
 		// ---
 		// Check to see if the file exists, and contains data. If yes, load it.
 		// Otherwise generate a new one, and save it.

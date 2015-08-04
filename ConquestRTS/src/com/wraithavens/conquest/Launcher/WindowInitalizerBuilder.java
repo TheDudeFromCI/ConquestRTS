@@ -127,7 +127,7 @@ class WindowInitalizerBuilder extends JFrame{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	private void loadSettings(){
-		File file = new File(WraithavensConquest.programFolder, "Settings.dat");
+		File file = new File(WraithavensConquest.saveFolder, "Settings.dat");
 		if(file.exists()&&file.length()>0){
 			BinaryFile bin = new BinaryFile(file);
 			int id = bin.getByte();
@@ -145,7 +145,7 @@ class WindowInitalizerBuilder extends JFrame{
 		bin.addByte((byte)((ResolutionSize)comboBox.getSelectedItem()).id);
 		bin.addBoolean(fullScreen.isSelected());
 		bin.addBoolean(vSync.isSelected());
-		bin.compile(new File(WraithavensConquest.programFolder, "Settings.dat"));
+		bin.compile(new File(WraithavensConquest.saveFolder, "Settings.dat"));
 	}
 	WindowInitalizer build(){
 		for(int i = 0; i<10000; i++){

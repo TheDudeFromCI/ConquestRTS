@@ -6,6 +6,10 @@ import com.wraithavens.conquest.SinglePlayer.Blocks.Octree.Octree;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
 class ChunkLoader{
+	// ---
+	// TODO Make multiple chunks save to a single file, so that we don't have as
+	// many files which seems to be causing many issues.
+	// ---
 	private static RawChunk load(File file, int x, int y, int z){
 		RawChunk rawChunk = new RawChunk(x, y, z);
 		BinaryFile bin = new BinaryFile(file);
@@ -65,7 +69,8 @@ class ChunkLoader{
 		int z = cellSorter.getZ()+this.z;
 		if(chunks.containsChunk(x, y, z))
 			return null;
-		File file = new File(WraithavensConquest.saveFolder+File.separatorChar+"Chunks", x+","+y+","+z+".dat");
+		File file =
+			new File(WraithavensConquest.currentGameFolder+File.separatorChar+"Chunks", x+","+y+","+z+".dat");
 		if(file.exists()&&file.length()>0)
 			return load(file, x, y, z);
 		RawChunk raw = generator.generateRawChunk(x, y, z);
