@@ -5,17 +5,11 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL15;
 import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.Math.Vector4f;
 import com.wraithavens.conquest.SinglePlayer.Noise.CloudNoise;
 
 public class SkyboxClouds{
-	private static void prepareRender(int vbo, int ibo){
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
-		GL11.glVertexPointer(3, GL11.GL_FLOAT, 12, 0);
-		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
-	}
 	public static final int TextureSize = 512;
 	private static final Vector4f temp = new Vector4f();
 	private static final Vector3f temp2 = new Vector3f();
@@ -117,17 +111,8 @@ public class SkyboxClouds{
 		for(int i = 0; i<6; i++)
 			makeSide(i, data);
 	}
-	void render(int vbo, int ibo){
-		GL11.glPushMatrix();
-		// ---
-		// Load vbo for batch calling.
-		// ---
-		prepareRender(vbo, ibo);
-		// ---
-		// Render side 3
-		// ---
+	void render(){
 		GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, textureId);
 		GL11.glDrawElements(GL11.GL_QUADS, 24, GL11.GL_UNSIGNED_BYTE, 0);
-		GL11.glPopMatrix();
 	}
 }

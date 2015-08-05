@@ -50,17 +50,20 @@ public class SkyBox{
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
 			/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 0.001f, 5f);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
+		GL11.glVertexPointer(3, GL11.GL_FLOAT, 12, 0);
+		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, iboId);
 		// ---
 		// Now render each layer in order.
 		// TODO Make mountains render to sky box as a "layer 3".
 		// ---
 		shader.bind();
 		if(layer0!=null)
-			layer0.render(vboId, iboId);
+			layer0.render();
 		if(layer1!=null)
 			layer1.render();
 		if(layer2!=null)
-			layer2.render(vboId, iboId);
+			layer2.render();
 		if(layer3!=null){
 			if(layer3.isDrawing()){
 				GL11.glEnable(GL11.GL_DEPTH_TEST);
