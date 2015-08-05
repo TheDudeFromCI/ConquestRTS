@@ -8,6 +8,9 @@ import com.wraithavens.conquest.SinglePlayer.Blocks.World;
 import com.wraithavens.conquest.SinglePlayer.Heightmap.WorldHeightmaps;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
+import com.wraithavens.conquest.SinglePlayer.Skybox.SkyBox;
+import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxBuilder;
+import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxClouds;
 
 public class SinglePlayerGame implements Driver{
 	private WorldHeightmaps heightMaps;
@@ -18,6 +21,7 @@ public class SinglePlayerGame implements Driver{
 	private final Camera camera = new Camera();
 	private double frameDelta;
 	private World world;
+	private SkyBox skybox;
 	public void dispose(){
 		if(heightMaps!=null)
 			heightMaps.dispose();
@@ -31,12 +35,24 @@ public class SinglePlayerGame implements Driver{
 		WorldNoiseMachine machine = WorldNoiseMachine.generate(seeds);
 		camera.cameraMoveSpeed = 10.0f;
 		camera.goalY = camera.y = (float)machine.getWorldHeight(0, 0)+6;
-		camera.goalX = 8192;
-		camera.goalZ = 8192;
+		camera.goalX = 0;
+		camera.goalZ = 0;
 		world = new World(machine, camera);
 		heightMaps = new WorldHeightmaps(machine);
-		GL11.glClearColor(0.4f, 0.6f, 0.9f, 1);
+		GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		SkyboxClouds noise = null;
+		{
+			SkyboxBuilder builder = new SkyboxBuilder();
+			builder.setBackdrop(true);
+			builder.setSeed(0);
+			builder.setSmoothness(50);
+			builder.setDetail(3);
+			builder.setFunction(SkyboxBuilder.Cerp);
+			builder.setColorFunction(SkyboxBuilder.Cerp);
+			noise = builder.build();
+		}
+		skybox = new SkyBox(noise, null, null);
 	}
 	public void onKey(int key, int action){
 		if(key==GLFW.GLFW_KEY_W){
@@ -132,9 +148,15 @@ public class SinglePlayerGame implements Driver{
 	public void render(){
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glPushMatrix();
+		{
+			camera.goalX = camera.x = 0;
+			camera.goalY = camera.y = 0;
+			camera.goalZ = camera.z = 0;
+		}
 		updateCamera(frameDelta);
-		heightMaps.render();
-		world.render();
+		skybox.render();
+		// heightMaps.render();
+		// world.render();
 		GL11.glPopMatrix();
 	}
 	public void update(double delta, double time){

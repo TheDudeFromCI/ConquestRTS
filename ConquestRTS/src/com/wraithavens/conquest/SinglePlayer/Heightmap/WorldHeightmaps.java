@@ -30,9 +30,6 @@ public class WorldHeightmaps{
 		heightmap.dispose();
 	}
 	public void render(){
-		// ---
-		// Do nothing if we don't have anything to draw.
-		// ---
 		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
 			/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 1, 4000000);
 		// ---
