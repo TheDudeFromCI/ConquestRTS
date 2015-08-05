@@ -18,7 +18,7 @@ public class MountainSkybox{
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 	}
 	private static final int TextureSize = 1024;
-	private static final int FramesPerSide = 4;
+	private static final int FramesPerSide = 5;
 	private final int colorTexture;
 	private final int frameBuffer;
 	private final int renderBuffer;
@@ -118,15 +118,6 @@ public class MountainSkybox{
 	}
 	void update(){
 		if(redrawFrame>-1){
-			// ---
-			// The 4 here makes it so that one side takes 4 frames to
-			// render. Because we have 5 renderable sides, (skipping up), it
-			// takes 4*5 frames to redraw the height map. In other words,
-			// the mountains skybox do anything when the camera is not
-			// moving for about half a second. (Depending on your Fps.)
-			// Slower computers might not get as much of an advantage from
-			// skyboxes, unless their Fps is closer to 30 or 40.
-			// ---
 			int rows = (int)Math.ceil((HeightMap.VertexCount-1.0f)/FramesPerSide);
 			int rowOffset = rows*step;
 			rows = Math.min(rows, HeightMap.VertexCount-1-rowOffset);
@@ -137,8 +128,6 @@ public class MountainSkybox{
 			step++;
 			if(step==FramesPerSide){
 				redrawFrame--;
-				if(redrawFrame==2)
-					redrawFrame--;
 				step = 0;
 			}
 		}else if(redrawPending){
