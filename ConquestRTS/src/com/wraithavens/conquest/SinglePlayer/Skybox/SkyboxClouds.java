@@ -16,7 +16,7 @@ public class SkyboxClouds{
 		GL11.glVertexPointer(3, GL11.GL_FLOAT, 12, 0);
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 	}
-	public static final int TextureSize = 128;
+	public static final int TextureSize = 512;
 	private static final Vector4f temp = new Vector4f();
 	private static final Vector3f temp2 = new Vector3f();
 	private final CloudNoise noise;
@@ -103,7 +103,7 @@ public class SkyboxClouds{
 	private void placeColor(float x, float y, float z, FloatBuffer data){
 		temp2.set(x-TextureSize/2, y-TextureSize/2, z-TextureSize/2);
 		temp2.normalize();
-		temp2.scale(TextureSize*2);
+		temp2.scale(TextureSize);
 		noise.noise(temp2.x, temp2.y, temp2.z, temp);
 		blendOver();
 		data.put(temp.x);
