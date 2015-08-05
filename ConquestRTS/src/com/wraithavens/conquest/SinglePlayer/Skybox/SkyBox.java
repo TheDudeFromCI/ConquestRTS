@@ -70,6 +70,7 @@ public class SkyBox{
 				GL11.glEnable(GL11.GL_CULL_FACE);
 				GL11.glPopMatrix();
 				layer3.renderMesh();
+				GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 			}else{
 				layer3.render(vboId, iboId);
 				GL11.glEnable(GL11.GL_DEPTH_TEST);

@@ -200,14 +200,14 @@ public class SinglePlayerGame implements Driver{
 		GL11.glPushMatrix();
 		updateCamera(frameDelta);
 		skybox.render(camera.x, camera.y, camera.z);
-		// world.render();
+		world.render();
 		GL11.glPopMatrix();
 		frameEffects.end();
 	}
 	public void update(double delta, double time){
 		frameDelta = delta;
 		move(delta);
-		// world.update();
+		world.update();
 		skybox.update(time);
 	}
 	private void move(double delta){

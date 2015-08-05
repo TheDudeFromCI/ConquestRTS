@@ -41,7 +41,6 @@ public class EffectRenderer{
 	public void end(){
 		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
 		GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, 0);
-		GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		shader.bind();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
@@ -50,7 +49,6 @@ public class EffectRenderer{
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, iboId);
 		GL11.glDrawElements(GL11.GL_TRIANGLES, 6, GL11.GL_UNSIGNED_BYTE, 0);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		GL11.glEnable(GL11.GL_CULL_FACE);
 	}
 	private void build(){
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
@@ -58,8 +56,8 @@ public class EffectRenderer{
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, WraithavensConquest.INSTANCE.getScreenWidth(),
-			WraithavensConquest.INSTANCE.getScreenHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE,
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB8, WraithavensConquest.INSTANCE.getScreenWidth(),
+			WraithavensConquest.INSTANCE.getScreenHeight(), 0, GL11.GL_RGB, GL11.GL_UNSIGNED_BYTE,
 			(ByteBuffer)null);
 		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, frameBufferId);
 		GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0, GL11.GL_TEXTURE_2D,
@@ -76,9 +74,9 @@ public class EffectRenderer{
 		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
 		GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, 0);
 		FloatBuffer vertexData = BufferUtils.createFloatBuffer(8);
-		vertexData.put(-1.0f).put(-1.0f);
-		vertexData.put(-1.0f).put(1.0f);
 		vertexData.put(1.0f).put(1.0f);
+		vertexData.put(-1.0f).put(1.0f);
+		vertexData.put(-1.0f).put(-1.0f);
 		vertexData.put(1.0f).put(-1.0f);
 		vertexData.flip();
 		ByteBuffer indexData = BufferUtils.createByteBuffer(6);
