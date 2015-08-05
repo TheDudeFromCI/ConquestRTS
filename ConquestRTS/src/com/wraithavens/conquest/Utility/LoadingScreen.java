@@ -1,6 +1,6 @@
 package com.wraithavens.conquest.Utility;
 
-
+public class LoadingScreen{}
 // TODO Remove unused code found by UCDetector
 // public class LoadingScreen implements Driver{
 // private static final float SPINNER_SPEED = 2f;

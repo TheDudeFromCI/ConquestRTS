@@ -1,6 +1,8 @@
 package com.wraithavens.conquest.Launcher;
 
 import java.io.File;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileSystemView;
 import org.lwjgl.Sys;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
@@ -14,7 +16,7 @@ public class WraithavensConquest extends EmptyLoop{
 		assetFolder = programFolder+File.separatorChar+"Assets";
 		saveFolder = programFolder+File.separatorChar+"Saves";
 		chunkLoadFolder = programFolder+File.separatorChar+"ChunkLoad";
-		saveFolder = "C:/Documents and Settings/TheDudeFromCI/Desktop/Talantra Save Data";
+		saveFolder = defaultDirectory()+File.separatorChar+"Talantra Save Data";
 		// ---
 		// TODO Remove this later, once game saving and loading is in.
 		// ---
@@ -22,6 +24,11 @@ public class WraithavensConquest extends EmptyLoop{
 		WindowInitalizerBuilder builder = new WindowInitalizerBuilder();
 		new WraithavensConquest(builder.build());
 		System.exit(0);
+	}
+	private static String defaultDirectory(){
+		JFileChooser fr = new JFileChooser();
+		FileSystemView fw = fr.getFileSystemView();
+		return fw.getDefaultDirectory().getAbsolutePath();
 	}
 	private static void printContextInfo(){
 		System.out.println("Version info:");
