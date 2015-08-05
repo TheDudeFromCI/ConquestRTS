@@ -17,6 +17,8 @@ public class SkyboxClouds{
 	private final Vector3f skyColor;
 	private final int textureId;
 	private final boolean backdrop;
+	private float spinSpeed = 0.0f;
+	private float angle = 0.0f;
 	SkyboxClouds(CloudNoise noise, boolean backdrop){
 		this.noise = noise;
 		this.backdrop = backdrop;
@@ -25,7 +27,12 @@ public class SkyboxClouds{
 		createTexture();
 		randomize();
 	}
+	public void setSpinSpeed(float spinSpeed){
+		this.spinSpeed = spinSpeed;
+	}
 	private void blendOver(){
+		if(!backdrop)
+			return;
 		if(temp.w>=1.0f){
 			temp.set(temp.x, temp.y, temp.z, 1.0f);
 			return;
@@ -48,7 +55,7 @@ public class SkyboxClouds{
 		else
 			i = GL13.GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
 		GL11.glTexImage2D(i, 0, backdrop?GL11.GL_RGB8:GL11.GL_RGBA8, TextureSize, TextureSize, 0, backdrop
-			?GL11.GL_RGB:GL11.GL_RGB, GL11.GL_FLOAT, data);
+			?GL11.GL_RGB:GL11.GL_RGBA, GL11.GL_FLOAT, data);
 	}
 	private void createTexture(){
 		GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, textureId);
@@ -113,6 +120,12 @@ public class SkyboxClouds{
 	}
 	void render(){
 		GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, textureId);
+		GL11.glPushMatrix();
+		GL11.glRotatef(angle, 0, 1, 0);
 		GL11.glDrawElements(GL11.GL_QUADS, 24, GL11.GL_UNSIGNED_BYTE, 0);
+		GL11.glPopMatrix();
+	}
+	void update(double time){
+		angle = (float)(time*spinSpeed);
 	}
 }

@@ -82,7 +82,11 @@ public class SkyBox{
 			GL11.glPopMatrix();
 		}
 	}
-	public void update(){
+	public void update(double time){
+		if(layer0!=null)
+			layer0.update(time);
+		if(layer2!=null)
+			layer2.update(time);
 		if(layer3!=null)
 			layer3.update();
 	}

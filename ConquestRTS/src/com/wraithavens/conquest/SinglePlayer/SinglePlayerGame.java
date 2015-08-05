@@ -4,6 +4,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import com.wraithavens.conquest.Launcher.Driver;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
+import com.wraithavens.conquest.Math.Vector4f;
 import com.wraithavens.conquest.SinglePlayer.Blocks.World;
 import com.wraithavens.conquest.SinglePlayer.Heightmap.WorldHeightmaps;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
@@ -45,6 +46,7 @@ public class SinglePlayerGame implements Driver{
 		GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		SkyboxClouds noise = null;
+		SkyboxClouds noise2 = null;
 		MountainSkybox mountains = null;
 		{
 			SkyboxBuilder builder = new SkyboxBuilder();
@@ -56,7 +58,22 @@ public class SinglePlayerGame implements Driver{
 			PowerInterpolation Perp2 = new PowerInterpolation(2);
 			builder.setColorFunction(Perp2);
 			builder.setMaxColorWeight(2);
+			builder.setMaxColor(new Vector4f(1.0f, 1.0f, 1.0f, 0.8f));
 			noise = builder.build();
+			noise.setSpinSpeed(0.1f);
+		}
+		{
+			SkyboxBuilder builder = new SkyboxBuilder();
+			builder.setBackdrop(false);
+			builder.setSeed(1);
+			builder.setSmoothness(70);
+			builder.setDetail(4);
+			builder.setFunction(SkyboxBuilder.Cerp);
+			builder.setColorFunction(SkyboxBuilder.Lerp);
+			builder.setMaxColorWeight(2);
+			builder.setMaxColor(new Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
+			noise2 = builder.build();
+			noise2.setSpinSpeed(1.0f);
 		}
 		{
 			mountains = new MountainSkybox(new MountainRenderer(){
@@ -80,7 +97,7 @@ public class SinglePlayerGame implements Driver{
 				}
 			});
 		}
-		skybox = new SkyBox(noise, null, null, mountains);
+		skybox = new SkyBox(noise, null, noise2, mountains);
 		skybox.redrawMountains();
 	}
 	public void onKey(int key, int action){
@@ -186,7 +203,7 @@ public class SinglePlayerGame implements Driver{
 		frameDelta = delta;
 		move(delta);
 		// world.update();
-		skybox.update();
+		skybox.update(time);
 	}
 	private void move(double delta){
 		delta *= cameraSpeed;
