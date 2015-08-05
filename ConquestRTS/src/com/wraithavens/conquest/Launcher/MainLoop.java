@@ -8,7 +8,6 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
 import org.lwjgl.glfw.GLFWScrollCallback;
-import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import org.lwjgl.glfw.GLFWvidmode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
@@ -20,7 +19,6 @@ class MainLoop{
 	private GLFWErrorCallback errorCallback;
 	private GLFWKeyCallback keyCallback;
 	private GLFWMouseButtonCallback mouseButtonCallback;
-	private GLFWWindowSizeCallback windowSizeCallback;
 	private WindowInitalizer recreateInitalizer;
 	private GLFWScrollCallback scrollCallback;
 	private long variableYieldTime, lastTime;
@@ -32,7 +30,7 @@ class MainLoop{
 			throw new IllegalStateException("Unable to initialize GLFW");
 		GLFW.glfwDefaultWindowHints();
 		GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GL11.GL_FALSE);
-		GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GL11.GL_TRUE);
+		GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GL11.GL_FALSE);
 		window =
 			GLFW.glfwCreateWindow(windowInitalizer.width, windowInitalizer.height, "Wraithaven's Conquest",
 				windowInitalizer.fullscreen?GLFW.glfwGetPrimaryMonitor():MemoryUtil.NULL, MemoryUtil.NULL);
@@ -60,17 +58,6 @@ class MainLoop{
 			@Override
 			public void invoke(long window, double xoffset, double yoffset){
 				windowInitalizer.loopObjective.mouseWheel(window, xoffset, yoffset);
-			}
-		});
-		GLFW.glfwSetWindowSizeCallback(window, windowSizeCallback = new GLFWWindowSizeCallback(){
-			@Override
-			public void invoke(long window, int width, int height){
-				if(WraithavensConquest.INSTANCE!=null){
-					System.out.println("Window resized. W="+width+", H="+height);
-					GL11.glViewport(0, 0, width, height);
-					WraithavensConquest.INSTANCE.init.width = width;
-					WraithavensConquest.INSTANCE.init.height = height;
-				}
 			}
 		});
 		ByteBuffer vidmode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
@@ -113,7 +100,6 @@ class MainLoop{
 			mouseButtonCallback.release();
 			cursorPosCallback.release();
 			scrollCallback.release();
-			windowSizeCallback.release();
 		}catch(Exception exception){
 			exception.printStackTrace();
 		}finally{

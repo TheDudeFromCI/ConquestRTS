@@ -17,7 +17,7 @@ public class MountainSkybox{
 		GL11.glVertexPointer(3, GL11.GL_FLOAT, 12, 0);
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 	}
-	private static final int TextureSize = 1024;
+	private static int TextureSize;
 	private static final int FramesPerSide = 5;
 	private final int colorTexture;
 	private final int frameBuffer;
@@ -28,6 +28,9 @@ public class MountainSkybox{
 	private int redrawFrame = -1;
 	private int step;
 	public MountainSkybox(MountainRenderer renderer){
+		TextureSize =
+			Math.max(WraithavensConquest.INSTANCE.getScreenHeight(),
+				WraithavensConquest.INSTANCE.getScreenWidth());
 		this.renderer = renderer;
 		colorTexture = GL11.glGenTextures();
 		frameBuffer = GL30.glGenFramebuffers();
