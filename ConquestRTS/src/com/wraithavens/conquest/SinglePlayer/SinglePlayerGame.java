@@ -42,7 +42,7 @@ public class SinglePlayerGame implements Driver{
 		camera.goalZ = 8192;
 		world = new World(machine, camera);
 		heightMaps = new WorldHeightmaps(machine);
-		GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		SkyboxClouds noise = null;
 		MountainSkybox mountains = null;
@@ -69,13 +69,19 @@ public class SinglePlayerGame implements Driver{
 				public float getCameraZ(){
 					return camera.z;
 				}
-				public void render(){
-					heightMaps.render();
+				public WorldHeightmaps getHeightmap(){
+					return heightMaps;
+				}
+				public void renderMesh(){
+					heightMaps.render(false);
+				}
+				public void renderSkybox(){
+					heightMaps.render(true);
 				}
 			});
-			mountains.redraw();
 		}
 		skybox = new SkyBox(noise, null, null, mountains);
+		skybox.redrawMountains();
 	}
 	public void onKey(int key, int action){
 		if(key==GLFW.GLFW_KEY_W){
@@ -169,20 +175,18 @@ public class SinglePlayerGame implements Driver{
 	}
 	public void onMouseWheel(double x, double y){}
 	public void render(){
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
+		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glPushMatrix();
 		updateCamera(frameDelta);
-		GL11.glPushMatrix();
-		GL11.glTranslatef(camera.x, camera.y, camera.z);
-		skybox.render();
-		GL11.glPopMatrix();
-		world.render();
+		skybox.render(camera.x, camera.y, camera.z);
+		// world.render();
 		GL11.glPopMatrix();
 	}
 	public void update(double delta, double time){
 		frameDelta = delta;
 		move(delta);
-		world.update();
+		// world.update();
+		skybox.update();
 	}
 	private void move(double delta){
 		delta *= cameraSpeed;

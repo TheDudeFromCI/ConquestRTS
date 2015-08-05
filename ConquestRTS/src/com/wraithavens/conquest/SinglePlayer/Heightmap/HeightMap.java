@@ -7,12 +7,12 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 
-class HeightMap{
-	static final int VertexCount = 1024;
+public class HeightMap{
+	public static final int VertexCount = 1024;
 	static final int ViewDistance = 16384;
 	static final int Vertices = VertexCount*VertexCount;
 	private static final int VertexSize = 9;
-	private static final int indexCount = (VertexCount*2+2)*(VertexCount-1)-2;
+	public static final int IndexCount = (VertexCount*2+2)*(VertexCount-1)-2;
 	private int posX;
 	private int posZ;
 	private final HeightmapGenerator generator;
@@ -32,7 +32,7 @@ class HeightMap{
 		return posZ;
 	}
 	private void buildIndexData(){
-		IntBuffer indexData = BufferUtils.createIntBuffer(indexCount);
+		IntBuffer indexData = BufferUtils.createIntBuffer(IndexCount);
 		final int TriangleRows = VertexCount-1;
 		final int VerticesPerRow = VertexCount*2;
 		int x, y;
@@ -85,12 +85,15 @@ class HeightMap{
 		GL15.glDeleteBuffers(ibo);
 	}
 	void render(){
+		render(IndexCount, 0);
+	}
+	void render(int indices, int offset){
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 		GL11.glVertexPointer(3, GL11.GL_FLOAT, 36, 0);
 		GL11.glColorPointer(3, GL11.GL_FLOAT, 36, 12);
 		GL11.glNormalPointer(GL11.GL_FLOAT, 36, 24);
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
-		GL11.glDrawElements(GL11.GL_TRIANGLE_STRIP, indexCount, GL11.GL_UNSIGNED_INT, 0);
+		GL11.glDrawElements(GL11.GL_TRIANGLE_STRIP, indices, GL11.GL_UNSIGNED_INT, offset);
 	}
 	void update(int x, int z){
 		posX = x;

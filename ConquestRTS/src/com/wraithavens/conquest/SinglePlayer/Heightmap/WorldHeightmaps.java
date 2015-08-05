@@ -11,6 +11,8 @@ import com.wraithavens.conquest.Utility.Algorithms;
 public class WorldHeightmaps{
 	private final HeightMap heightmap;
 	private final ShaderProgram shader;
+	private int indices;
+	private int offset;
 	public WorldHeightmaps(WorldNoiseMachine machine){
 		// ---
 		// Prepare the mesh.
@@ -28,8 +30,9 @@ public class WorldHeightmaps{
 		shader.dispose();
 		heightmap.dispose();
 	}
-	public void render(){
-		MatrixUtils.setupPerspective(90, 1, 1, 4000000);
+	public void render(boolean skybox){
+		MatrixUtils.setupPerspective(skybox?90:70, skybox?1:WraithavensConquest.INSTANCE.getScreenWidth()
+			/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 1, 4000000);
 		// ---
 		// Prepare the shader.
 		// ---
@@ -37,12 +40,14 @@ public class WorldHeightmaps{
 		// ---
 		// Finally, render the heightmap mesh. :)
 		// ---
-		heightmap.render();
-		// ---
-		// Clear the depth buffer, so the rest of the game looks like it's
-		// fading out into the mountains, rather then clipping into them.
-		// ---
-		// GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+		if(skybox)
+			heightmap.render(indices, offset);
+		else
+			heightmap.render();
+	}
+	public void setOffset(int indices, int offset){
+		this.indices = indices;
+		this.offset = offset;
 	}
 	public void update(float x, float z){
 		if(isSafeView(x, z))

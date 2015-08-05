@@ -14,7 +14,7 @@ public class SkyBox{
 	private final SkyboxClouds layer0;
 	private final Sunbox layer1;
 	private final SkyboxClouds layer2;
-	private MountainSkybox layer3;
+	private final MountainSkybox layer3;
 	private final ShaderProgram shader;
 	private final int vboId;
 	private final int iboId;
@@ -37,13 +37,15 @@ public class SkyBox{
 		if(layer3!=null)
 			layer3.redraw();
 	}
-	public void render(){
+	public void render(float cameraX, float cameraY, float cameraZ){
 		// ---
 		// First we disable depth testing. This way, we can make the sky boxes
 		// look infinitly far away without having to scale them and lose detail,
 		// or having to clear the depth buffer have each pass. Then update the
 		// projection matrix.
 		// ---
+		GL11.glPushMatrix();
+		GL11.glTranslatef(cameraX, cameraY, cameraZ);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
@@ -59,13 +61,27 @@ public class SkyBox{
 			layer1.render();
 		if(layer2!=null)
 			layer2.render(vboId, iboId);
+		if(layer3!=null){
+			if(layer3.isDrawing()){
+				GL11.glEnable(GL11.GL_DEPTH_TEST);
+				GL11.glEnable(GL11.GL_CULL_FACE);
+				GL11.glPopMatrix();
+				layer3.renderMesh();
+			}else{
+				layer3.render(vboId, iboId);
+				GL11.glEnable(GL11.GL_DEPTH_TEST);
+				GL11.glEnable(GL11.GL_CULL_FACE);
+				GL11.glPopMatrix();
+			}
+		}else{
+			GL11.glEnable(GL11.GL_DEPTH_TEST);
+			GL11.glEnable(GL11.GL_CULL_FACE);
+			GL11.glPopMatrix();
+		}
+	}
+	public void update(){
 		if(layer3!=null)
-			layer3.render(vboId, iboId);
-		// ---
-		// Now reable this for rendering with the rest of the game.
-		// ---
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		GL11.glEnable(GL11.GL_CULL_FACE);
+			layer3.update();
 	}
 	private void buildVbo(){
 		ByteBuffer indexData = BufferUtils.createByteBuffer(24);
