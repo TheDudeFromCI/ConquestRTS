@@ -36,8 +36,8 @@ public class SinglePlayerGame implements Driver{
 		WorldNoiseMachine machine = WorldNoiseMachine.generate(seeds);
 		camera.cameraMoveSpeed = 10.0f;
 		camera.goalY = camera.y = (float)machine.getWorldHeight(0, 0)+6;
-		camera.goalX = 0;
-		camera.goalZ = 0;
+		camera.goalX = 8192;
+		camera.goalZ = 8192;
 		world = new World(machine, camera);
 		heightMaps = new WorldHeightmaps(machine);
 		GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -151,15 +151,13 @@ public class SinglePlayerGame implements Driver{
 	public void render(){
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glPushMatrix();
-		{
-			camera.goalX = camera.x = 0;
-			camera.goalY = camera.y = 0;
-			camera.goalZ = camera.z = 0;
-		}
 		updateCamera(frameDelta);
+		GL11.glPushMatrix();
+		GL11.glTranslatef(camera.x, camera.y, camera.z);
 		skybox.render();
-		// heightMaps.render();
-		// world.render();
+		GL11.glPopMatrix();
+		heightMaps.render();
+		world.render();
 		GL11.glPopMatrix();
 	}
 	public void update(double delta, double time){
