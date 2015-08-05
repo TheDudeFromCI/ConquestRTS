@@ -18,6 +18,7 @@ public class SkyboxClouds{
 	}
 	public static final int TextureSize = 128;
 	private static final Vector4f temp = new Vector4f();
+	private static final Vector3f temp2 = new Vector3f();
 	private final CloudNoise noise;
 	private final Vector3f skyColor;
 	private final int textureId;
@@ -100,7 +101,10 @@ public class SkyboxClouds{
 		compile(side, data);
 	}
 	private void placeColor(float x, float y, float z, FloatBuffer data){
-		noise.noise(x, y, z, temp);
+		temp2.set(x-TextureSize/2, y-TextureSize/2, z-TextureSize/2);
+		temp2.normalize();
+		temp2.scale(TextureSize*2);
+		noise.noise(temp2.x, temp2.y, temp2.z, temp);
 		blendOver();
 		data.put(temp.x);
 		data.put(temp.y);
