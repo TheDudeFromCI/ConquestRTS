@@ -9,6 +9,7 @@ import com.wraithavens.conquest.SinglePlayer.Blocks.World;
 import com.wraithavens.conquest.SinglePlayer.Heightmap.WorldHeightmaps;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
+import com.wraithavens.conquest.SinglePlayer.ScreenEffects.EffectRenderer;
 import com.wraithavens.conquest.SinglePlayer.Skybox.MountainRenderer;
 import com.wraithavens.conquest.SinglePlayer.Skybox.MountainSkybox;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyBox;
@@ -26,6 +27,7 @@ public class SinglePlayerGame implements Driver{
 	private double frameDelta;
 	private World world;
 	private SkyBox skybox;
+	private EffectRenderer frameEffects;
 	public void dispose(){
 		if(heightMaps!=null)
 			heightMaps.dispose();
@@ -48,6 +50,7 @@ public class SinglePlayerGame implements Driver{
 		SkyboxClouds noise = null;
 		SkyboxClouds noise2 = null;
 		MountainSkybox mountains = null;
+		frameEffects = new EffectRenderer();
 		{
 			SkyboxBuilder builder = new SkyboxBuilder();
 			builder.setBackdrop(true);
@@ -192,12 +195,14 @@ public class SinglePlayerGame implements Driver{
 	}
 	public void onMouseWheel(double x, double y){}
 	public void render(){
+		frameEffects.begin();
 		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glPushMatrix();
 		updateCamera(frameDelta);
 		skybox.render(camera.x, camera.y, camera.z);
 		// world.render();
 		GL11.glPopMatrix();
+		frameEffects.end();
 	}
 	public void update(double delta, double time){
 		frameDelta = delta;
