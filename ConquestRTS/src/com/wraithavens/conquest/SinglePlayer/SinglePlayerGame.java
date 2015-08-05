@@ -11,6 +11,7 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyBox;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxBuilder;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxClouds;
+import com.wraithavens.conquest.Utility.PowerInterpolation;
 
 public class SinglePlayerGame implements Driver{
 	private WorldHeightmaps heightMaps;
@@ -49,7 +50,9 @@ public class SinglePlayerGame implements Driver{
 			builder.setSmoothness(50);
 			builder.setDetail(3);
 			builder.setFunction(SkyboxBuilder.Cerp);
-			builder.setColorFunction(SkyboxBuilder.Cerp);
+			PowerInterpolation Perp2 = new PowerInterpolation(2);
+			builder.setColorFunction(Perp2);
+			builder.setMaxColorWeight(2);
 			noise = builder.build();
 		}
 		skybox = new SkyBox(noise, null, null);

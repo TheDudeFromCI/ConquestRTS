@@ -26,7 +26,7 @@ public class SkyboxClouds{
 	SkyboxClouds(CloudNoise noise, boolean backdrop){
 		this.noise = noise;
 		this.backdrop = backdrop;
-		skyColor = new Vector3f(0.1f, 0.1f, 0.1f);
+		skyColor = new Vector3f(0.4f, 0.6f, 0.9f);
 		textureId = GL11.glGenTextures();
 		createTexture();
 		randomize();
