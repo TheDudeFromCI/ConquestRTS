@@ -1,7 +1,6 @@
 package com.wraithavens.conquest.SinglePlayer.Heightmap;
 
 import java.io.File;
-import org.lwjgl.opengl.GL11;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.MatrixUtils;
 import com.wraithavens.conquest.Math.Vector3f;
@@ -30,8 +29,7 @@ public class WorldHeightmaps{
 		heightmap.dispose();
 	}
 	public void render(){
-		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
-			/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 1, 4000000);
+		MatrixUtils.setupPerspective(90, 1, 1, 4000000);
 		// ---
 		// Prepare the shader.
 		// ---
@@ -44,7 +42,7 @@ public class WorldHeightmaps{
 		// Clear the depth buffer, so the rest of the game looks like it's
 		// fading out into the mountains, rather then clipping into them.
 		// ---
-		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+		// GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 	}
 	public void update(float x, float z){
 		if(isSafeView(x, z))

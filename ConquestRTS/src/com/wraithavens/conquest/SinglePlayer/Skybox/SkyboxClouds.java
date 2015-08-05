@@ -53,7 +53,7 @@ public class SkyboxClouds{
 			i = GL13.GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
 		else
 			i = GL13.GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
-		GL11.glTexImage2D(i, 0, backdrop?GL11.GL_RGB16:GL11.GL_RGBA16, TextureSize, TextureSize, 0, backdrop
+		GL11.glTexImage2D(i, 0, backdrop?GL11.GL_RGB8:GL11.GL_RGBA8, TextureSize, TextureSize, 0, backdrop
 			?GL11.GL_RGB:GL11.GL_RGB, GL11.GL_FLOAT, data);
 	}
 	private void createTexture(){

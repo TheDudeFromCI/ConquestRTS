@@ -8,6 +8,8 @@ import com.wraithavens.conquest.SinglePlayer.Blocks.World;
 import com.wraithavens.conquest.SinglePlayer.Heightmap.WorldHeightmaps;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
+import com.wraithavens.conquest.SinglePlayer.Skybox.MountainRenderer;
+import com.wraithavens.conquest.SinglePlayer.Skybox.MountainSkybox;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyBox;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxBuilder;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxClouds;
@@ -43,6 +45,7 @@ public class SinglePlayerGame implements Driver{
 		GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		SkyboxClouds noise = null;
+		MountainSkybox mountains = null;
 		{
 			SkyboxBuilder builder = new SkyboxBuilder();
 			builder.setBackdrop(true);
@@ -55,7 +58,24 @@ public class SinglePlayerGame implements Driver{
 			builder.setMaxColorWeight(2);
 			noise = builder.build();
 		}
-		skybox = new SkyBox(noise, null, null);
+		{
+			mountains = new MountainSkybox(new MountainRenderer(){
+				public float getCameraX(){
+					return camera.x;
+				}
+				public float getCameraY(){
+					return camera.y;
+				}
+				public float getCameraZ(){
+					return camera.z;
+				}
+				public void render(){
+					heightMaps.render();
+				}
+			});
+			mountains.redraw();
+		}
+		skybox = new SkyBox(noise, null, null, mountains);
 	}
 	public void onKey(int key, int action){
 		if(key==GLFW.GLFW_KEY_W){
@@ -156,7 +176,6 @@ public class SinglePlayerGame implements Driver{
 		GL11.glTranslatef(camera.x, camera.y, camera.z);
 		skybox.render();
 		GL11.glPopMatrix();
-		heightMaps.render();
 		world.render();
 		GL11.glPopMatrix();
 	}
@@ -199,9 +218,12 @@ public class SinglePlayerGame implements Driver{
 	}
 	private void updateCamera(double delta){
 		float x = camera.x;
+		float y = camera.y;
 		float z = camera.z;
 		camera.update(delta);
 		if(camera.x!=x||camera.z!=z)
 			heightMaps.update(camera.x, camera.z);
+		if(camera.x!=x||camera.y!=y||camera.z!=z)
+			skybox.redrawMountains();
 	}
 }

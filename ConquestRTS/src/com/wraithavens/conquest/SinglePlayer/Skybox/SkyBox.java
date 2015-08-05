@@ -14,13 +14,15 @@ public class SkyBox{
 	private final SkyboxClouds layer0;
 	private final Sunbox layer1;
 	private final SkyboxClouds layer2;
+	private MountainSkybox layer3;
 	private final ShaderProgram shader;
 	private final int vboId;
 	private final int iboId;
-	public SkyBox(SkyboxClouds layer0, Sunbox layer1, SkyboxClouds layer2){
+	public SkyBox(SkyboxClouds layer0, Sunbox layer1, SkyboxClouds layer2, MountainSkybox layer3){
 		this.layer0 = layer0;
 		this.layer1 = layer1;
 		this.layer2 = layer2;
+		this.layer3 = layer3;
 		shader =
 			new ShaderProgram(new File(WraithavensConquest.assetFolder, "SkyboxShader.vert"), null, new File(
 				WraithavensConquest.assetFolder, "SkyboxShader.frag"));
@@ -30,6 +32,10 @@ public class SkyBox{
 		vboId = GL15.glGenBuffers();
 		iboId = GL15.glGenBuffers();
 		buildVbo();
+	}
+	public void redrawMountains(){
+		if(layer3!=null)
+			layer3.redraw();
 	}
 	public void render(){
 		// ---
@@ -53,6 +59,8 @@ public class SkyBox{
 			layer1.render();
 		if(layer2!=null)
 			layer2.render(vboId, iboId);
+		if(layer3!=null)
+			layer3.render(vboId, iboId);
 		// ---
 		// Now reable this for rendering with the rest of the game.
 		// ---
