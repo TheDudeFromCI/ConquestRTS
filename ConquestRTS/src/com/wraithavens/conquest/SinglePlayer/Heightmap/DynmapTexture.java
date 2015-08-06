@@ -25,14 +25,16 @@ public class DynmapTexture{
 			+z7-z0-2.0f*z1-z2));
 		out.normalize();
 	}
-	private static final int TextureDetail = 1024;
+	private static final int TextureDetail = 4096;
 	private final int textureId;
 	public DynmapTexture(WorldNoiseMachine machine, int x, int z, int size){
 		textureId = GL11.glGenTextures();
 		build(machine, x, z, size);
 	}
 	private void build(WorldNoiseMachine machine, int x, int z, int size){
-		File file = new File(WraithavensConquest.currentGameFolder, x+","+z+","+size+".dat");
+		File file =
+			new File(WraithavensConquest.currentGameFolder+File.separatorChar+"Heightmaps", x+","+z+","+size
+				+".dat");
 		if(file.exists()&&file.length()>0)
 			load(file);
 		else
@@ -42,8 +44,8 @@ public class DynmapTexture{
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL30.GL_RGBA32F, TextureDetail, TextureDetail, 0, GL11.GL_RGBA,
 			GL11.GL_FLOAT, data);
 	}
