@@ -1,6 +1,7 @@
 package com.wraithavens.conquest.SinglePlayer.Heightmap;
 
 import java.nio.IntBuffer;
+import java.util.Arrays;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
@@ -68,10 +69,16 @@ public class DynmapChunk{
 		}
 		return null;
 	}
-	private static void tri(IntBuffer data, QuadTree tree, int p1, int p2, int p3){
-		data.put(getIndex(tree, p1));
-		data.put(getIndex(tree, p2));
-		data.put(getIndex(tree, p3));
+	private static void placeTriangleIndex(int iboId, int index){
+		if(triangleIndexLocation+1==triangleIndices[iboId].length)
+			triangleIndices[iboId] = Arrays.copyOf(triangleIndices[iboId], triangleIndices[iboId].length+100);
+		triangleIndices[iboId][triangleIndexLocation] = index;
+		triangleIndexLocation++;
+	}
+	private static void tri(int iboId, QuadTree tree, int p1, int p2, int p3){
+		placeTriangleIndex(iboId, getIndex(tree, p1));
+		placeTriangleIndex(iboId, getIndex(tree, p2));
+		placeTriangleIndex(iboId, getIndex(tree, p3));
 	}
 	private static final int TextureDepth = 1;
 	private static final int TextureCount;
@@ -94,7 +101,10 @@ public class DynmapChunk{
 				j++;
 			}
 		}
+		triangleIndices = new int[TextureCount][100];
 	}
+	private static int[][] triangleIndices;
+	private static int triangleIndexLocation;
 	private final int ibo;
 	private final int[] indexCounts;
 	private final int[] indexOffset;
@@ -116,11 +126,10 @@ public class DynmapChunk{
 	}
 	private void countIndices(int iboId){
 		indexCounts[iboId] = 0;
+		triangleIndexLocation = 0;
 		countIndices(tree, iboId);
 	}
 	private void countIndices(QuadTree tree, int iboId){
-		if(!CatchQuadTreeSizes[iboId]&&tree.size<QuadTreeSizes[iboId])
-			return;
 		int i = 0;
 		if(tree.size==QuadTreeSizes[iboId]||CatchQuadTreeSizes[iboId]&&tree.size<=QuadTreeSizes[iboId]){
 			if(tree.children[0]!=null)
@@ -133,247 +142,169 @@ public class DynmapChunk{
 				i |= 8;
 			switch(i){
 				case 0:
-					indexCounts[iboId] += countNeededIndices(tree);
+					indexCounts[iboId] += placeRawTriangles(tree, iboId);
 					break;
 				case 1:
 					indexCounts[iboId] += 12;
+					tri(iboId, tree, 1, 5, 4);
+					tri(iboId, tree, 4, 3, 1);
+					tri(iboId, tree, 4, 2, 3);
+					tri(iboId, tree, 4, 8, 2);
 					break;
 				case 2:
 					indexCounts[iboId] += 12;
+					tri(iboId, tree, 4, 5, 4);
+					tri(iboId, tree, 2, 4, 0);
+					tri(iboId, tree, 3, 4, 2);
+					tri(iboId, tree, 6, 4, 3);
 					break;
 				case 3:
 					indexCounts[iboId] += 9;
+					tri(iboId, tree, 4, 8, 2);
+					tri(iboId, tree, 3, 4, 2);
+					tri(iboId, tree, 6, 4, 3);
 					break;
 				case 4:
 					indexCounts[iboId] += 12;
+					tri(iboId, tree, 8, 0, 4);
+					tri(iboId, tree, 0, 1, 4);
+					tri(iboId, tree, 1, 3, 4);
+					tri(iboId, tree, 3, 7, 4);
 					break;
 				case 5:
 					indexCounts[iboId] += 9;
+					tri(iboId, tree, 4, 1, 5);
+					tri(iboId, tree, 4, 3, 6);
+					tri(iboId, tree, 4, 7, 3);
 					break;
 				case 6:
 					indexCounts[iboId] += 12;
+					tri(iboId, tree, 4, 5, 0);
+					tri(iboId, tree, 4, 0, 8);
+					tri(iboId, tree, 3, 6, 4);
+					tri(iboId, tree, 4, 7, 3);
 					break;
 				case 7:
 					indexCounts[iboId] += 6;
+					tri(iboId, tree, 3, 6, 4);
+					tri(iboId, tree, 7, 3, 4);
 					break;
 				case 8:
 					indexCounts[iboId] += 12;
+					tri(iboId, tree, 4, 1, 0);
+					tri(iboId, tree, 4, 0, 2);
+					tri(iboId, tree, 6, 1, 4);
+					tri(iboId, tree, 4, 2, 7);
 					break;
 				case 9:
 					indexCounts[iboId] += 12;
+					tri(iboId, tree, 4, 1, 5);
+					tri(iboId, tree, 4, 6, 1);
+					tri(iboId, tree, 4, 2, 7);
+					tri(iboId, tree, 4, 8, 2);
 					break;
 				case 10:
 					indexCounts[iboId] += 9;
+					tri(iboId, tree, 4, 5, 0);
+					tri(iboId, tree, 4, 0, 2);
+					tri(iboId, tree, 4, 2, 7);
 					break;
 				case 11:
 					indexCounts[iboId] += 6;
+					tri(iboId, tree, 4, 8, 2);
+					tri(iboId, tree, 4, 2, 7);
 					break;
 				case 12:
 					indexCounts[iboId] += 9;
+					tri(iboId, tree, 4, 0, 8);
+					tri(iboId, tree, 4, 1, 0);
+					tri(iboId, tree, 4, 6, 1);
 					break;
 				case 13:
 					indexCounts[iboId] += 6;
+					tri(iboId, tree, 4, 1, 5);
+					tri(iboId, tree, 4, 6, 1);
 					break;
 				case 14:
 					indexCounts[iboId] += 6;
+					tri(iboId, tree, 4, 5, 0);
+					tri(iboId, tree, 4, 0, 8);
 					break;
 				case 15:
 					break;
 			}
 		}
+		if(!CatchQuadTreeSizes[iboId]&&tree.size/2<QuadTreeSizes[iboId])
+			return;
 		for(i = 0; i<4; i++)
 			if(tree.children[i]!=null)
 				countIndices(tree.children[i], iboId);
 	}
-	private int countNeededIndices(QuadTree tree){
-		if(tree.parent==null)
-			return 12;
-		int i = 12;
-		QuadTree t;
-		t = getUpQuad(tree);
-		if(t!=null)
-			if(t.children[2]!=null||t.children[3]!=null)
-				i += 3;
-		t = getDownQuad(tree);
-		if(t!=null)
-			if(t.children[0]!=null||t.children[1]!=null)
-				i += 3;
-		t = getLeftQuad(tree);
-		if(t!=null)
-			if(t.children[1]!=null||t.children[3]!=null)
-				i += 3;
-		t = getRightQuad(tree);
-		if(t!=null)
-			if(t.children[0]!=null||t.children[2]!=null)
-				i += 3;
-		return i;
-	}
 	private QuadTree getDownQuad(QuadTree tree){
-		return getQuadTree(tree.x, tree.z+tree.size, tree.size);
+		return getQuadTree(this.tree, tree.x, tree.z+tree.size, tree.size);
 	}
 	private QuadTree getLeftQuad(QuadTree tree){
-		return getQuadTree(tree.x-tree.size, tree.z, tree.size);
-	}
-	private QuadTree getQuadTree(int x, int z, int size){
-		if(x<0)
-			return null;
-		if(z<0)
-			return null;
-		if(x>=Dynmap.VertexCount)
-			return null;
-		if(z>=Dynmap.VertexCount)
-			return null;
-		return getQuadTree(tree, x, z, size);
+		return getQuadTree(this.tree, tree.x-tree.size, tree.z, tree.size);
 	}
 	private QuadTree getRightQuad(QuadTree tree){
-		return getQuadTree(tree.x+tree.size, tree.z, tree.size);
+		return getQuadTree(this.tree, tree.x+tree.size, tree.z, tree.size);
 	}
 	private QuadTree getUpQuad(QuadTree tree){
-		return getQuadTree(tree.x, tree.z-tree.size, tree.size);
+		return getQuadTree(this.tree, tree.x, tree.z-tree.size, tree.size);
 	}
-	private void placeRawTriangles(QuadTree tree, IntBuffer data){
+	private int placeRawTriangles(QuadTree tree, int iboId){
+		int i = 12;
 		int state = 0;
 		QuadTree t;
 		t = getUpQuad(tree);
 		if(t!=null)
-			if(t.children[2]!=null||t.children[3]!=null)
+			if(t.children[2]!=null||t.children[3]!=null){
 				state |= 1;
+				i += 3;
+			}
 		t = getRightQuad(tree);
 		if(t!=null)
-			if(t.children[0]!=null||t.children[2]!=null)
+			if(t.children[0]!=null||t.children[2]!=null){
 				state |= 2;
+				i += 3;
+			}
 		t = getDownQuad(tree);
 		if(t!=null)
-			if(t.children[0]!=null||t.children[1]!=null)
+			if(t.children[0]!=null||t.children[1]!=null){
 				state |= 4;
+				i += 3;
+			}
 		t = getLeftQuad(tree);
 		if(t!=null)
-			if(t.children[1]!=null||t.children[3]!=null)
+			if(t.children[1]!=null||t.children[3]!=null){
 				state |= 8;
+				i += 3;
+			}
 		if((state&1)==1){
-			tri(data, tree, 4, 1, 5);
-			tri(data, tree, 4, 5, 0);
+			tri(iboId, tree, 4, 1, 5);
+			tri(iboId, tree, 4, 5, 0);
 		}else{
-			tri(data, tree, 4, 1, 0);
+			tri(iboId, tree, 4, 1, 0);
 		}
 		if((state&2)==2){
-			tri(data, tree, 4, 3, 6);
-			tri(data, tree, 4, 6, 1);
+			tri(iboId, tree, 4, 3, 6);
+			tri(iboId, tree, 4, 6, 1);
 		}else{
-			tri(data, tree, 4, 3, 1);
+			tri(iboId, tree, 4, 3, 1);
 		}
 		if((state&4)==4){
-			tri(data, tree, 4, 2, 7);
-			tri(data, tree, 4, 7, 3);
+			tri(iboId, tree, 4, 2, 7);
+			tri(iboId, tree, 4, 7, 3);
 		}else{
-			tri(data, tree, 4, 2, 3);
+			tri(iboId, tree, 4, 2, 3);
 		}
 		if((state&8)==8){
-			tri(data, tree, 4, 0, 8);
-			tri(data, tree, 4, 8, 2);
+			tri(iboId, tree, 4, 0, 8);
+			tri(iboId, tree, 4, 8, 2);
 		}else{
-			tri(data, tree, 4, 0, 2);
+			tri(iboId, tree, 4, 0, 2);
 		}
-	}
-	private void placeTriangles(QuadTree tree, IntBuffer data, int iboId){
-		if(!CatchQuadTreeSizes[iboId]&&tree.size<QuadTreeSizes[iboId])
-			return;
-		int i = 0;
-		if(tree.size==QuadTreeSizes[iboId]||CatchQuadTreeSizes[iboId]&&tree.size<=QuadTreeSizes[iboId]){
-			if(tree.children[0]!=null)
-				i = i|1;
-			if(tree.children[1]!=null)
-				i = i|2;
-			if(tree.children[2]!=null)
-				i = i|4;
-			if(tree.children[3]!=null)
-				i = i|8;
-			placeTrianglesState(tree, data, i);
-		}
-		for(i = 0; i<4; i++)
-			if(tree.children[i]!=null)
-				placeTriangles(tree.children[i], data, iboId);
-	}
-	private void placeTrianglesState(QuadTree tree, IntBuffer data, int state){
-		switch(state){
-			case 0:
-				placeRawTriangles(tree, data);
-				break;
-			case 1:
-				tri(data, tree, 1, 5, 4);
-				tri(data, tree, 4, 3, 1);
-				tri(data, tree, 4, 2, 3);
-				tri(data, tree, 4, 8, 2);
-				break;
-			case 2:
-				tri(data, tree, 4, 5, 4);
-				tri(data, tree, 2, 4, 0);
-				tri(data, tree, 3, 4, 2);
-				tri(data, tree, 6, 4, 3);
-				break;
-			case 3:
-				tri(data, tree, 4, 8, 2);
-				tri(data, tree, 3, 4, 2);
-				tri(data, tree, 6, 4, 3);
-				break;
-			case 4:
-				tri(data, tree, 8, 0, 4);
-				tri(data, tree, 0, 1, 4);
-				tri(data, tree, 1, 3, 4);
-				tri(data, tree, 3, 7, 4);
-				break;
-			case 5:
-				tri(data, tree, 4, 1, 5);
-				tri(data, tree, 4, 3, 6);
-				tri(data, tree, 4, 7, 3);
-				break;
-			case 6:
-				tri(data, tree, 4, 5, 0);
-				tri(data, tree, 4, 0, 8);
-				tri(data, tree, 3, 6, 4);
-				tri(data, tree, 4, 7, 3);
-				break;
-			case 7:
-				tri(data, tree, 3, 6, 4);
-				tri(data, tree, 7, 3, 4);
-				break;
-			case 8:
-				tri(data, tree, 4, 1, 0);
-				tri(data, tree, 4, 0, 2);
-				tri(data, tree, 6, 1, 4);
-				tri(data, tree, 4, 2, 7);
-				break;
-			case 9:
-				tri(data, tree, 4, 1, 5);
-				tri(data, tree, 4, 6, 1);
-				tri(data, tree, 4, 2, 7);
-				tri(data, tree, 4, 8, 2);
-				break;
-			case 10:
-				tri(data, tree, 4, 5, 0);
-				tri(data, tree, 4, 0, 2);
-				tri(data, tree, 4, 2, 7);
-				break;
-			case 11:
-				tri(data, tree, 4, 8, 2);
-				tri(data, tree, 4, 2, 7);
-				break;
-			case 12:
-				tri(data, tree, 4, 0, 8);
-				tri(data, tree, 4, 1, 0);
-				tri(data, tree, 4, 6, 1);
-				break;
-			case 13:
-				tri(data, tree, 4, 1, 5);
-				tri(data, tree, 4, 6, 1);
-				break;
-			case 14:
-				tri(data, tree, 4, 5, 0);
-				tri(data, tree, 4, 0, 8);
-				break;
-			case 15:
-				break;
-		}
+		return i;
 	}
 	void render(){
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
@@ -394,7 +325,7 @@ public class DynmapChunk{
 		}
 		IntBuffer indexData = BufferUtils.createIntBuffer(totalSize);
 		for(i = 0; i<TextureCount; i++)
-			placeTriangles(tree, indexData, i);
+			indexData.put(triangleIndices[i], 0, indexCounts[i]);
 		indexData.flip();
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_DYNAMIC_DRAW);
