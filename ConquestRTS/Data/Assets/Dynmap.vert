@@ -1,11 +1,9 @@
+uniform sampler2D texture;
 uniform vec2 shift;
-uniform float time;
-uniform vec2 center;
-out float percent;
+uniform vec2 size;
 
 void main(){
-	float dis = distance(gl_Vertex.xy, center);
-	float y = sin((time+dis)*0.01f)*100.0f;
-	gl_Position = gl_ModelViewProjectionMatrix*vec4(gl_Vertex.x+shift.x, y, gl_Vertex.y+shift.y, 1.0f);
-	percent = (y+100.0f)/200.0f;
+	vec2 uv = gl_Vertex.xy/size;
+	float height = 0.0f;
+	gl_Position = gl_ModelViewProjectionMatrix*vec4(gl_Vertex.x+shift.x, height, gl_Vertex.y+shift.y, 1.0f);
 }

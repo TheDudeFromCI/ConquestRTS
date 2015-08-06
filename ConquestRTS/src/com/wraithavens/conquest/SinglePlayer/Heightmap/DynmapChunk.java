@@ -4,7 +4,6 @@ import java.nio.IntBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
-import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 
 public class DynmapChunk{
 	private static void breakDown(QuadTree t, float x, float y, float z, int depth){
@@ -343,8 +342,7 @@ public class DynmapChunk{
 				break;
 		}
 	}
-	void render(ShaderProgram shader){
-		shader.setUniform2f(0, x*Dynmap.BlocksPerChunk, z*Dynmap.BlocksPerChunk);
+	void render(){
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 		GL11.glDrawElements(GL11.GL_TRIANGLES, indexCount, GL11.GL_UNSIGNED_INT, 0);
 	}

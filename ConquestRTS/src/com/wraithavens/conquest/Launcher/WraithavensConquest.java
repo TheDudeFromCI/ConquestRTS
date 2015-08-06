@@ -44,6 +44,7 @@ public class WraithavensConquest extends EmptyLoop{
 		System.out.println("  GLSL version: "+GL11.glGetString(GL20.GL_SHADING_LANGUAGE_VERSION));
 		int glslVersions = GL11.glGetInteger(GL43.GL_NUM_SHADING_LANGUAGE_VERSIONS);
 		System.out.println("  Other supported GLSL versions: "+glslVersions);
+		System.out.println("  Maximum Texture Size: "+GL11.glGetInteger(GL11.GL_MAX_TEXTURE_SIZE));
 		System.out.println("End of version info.");
 	}
 	static String programFolder;
