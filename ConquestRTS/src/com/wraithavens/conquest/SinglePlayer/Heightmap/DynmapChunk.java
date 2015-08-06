@@ -73,14 +73,39 @@ public class DynmapChunk{
 		data.put(getIndex(tree, p2));
 		data.put(getIndex(tree, p3));
 	}
+	private static final int TextureDepth = 1;
+	private static final int TextureCount;
+	private static final int[] QuadTreeSizes;
+	private static final boolean[] CatchQuadTreeSizes;
+	static{
+		int total = 0;
+		for(int i = 0; i<=TextureDepth; i++)
+			total += (int)Math.pow(4, i);
+		TextureCount = total;
+		QuadTreeSizes = new int[TextureCount];
+		CatchQuadTreeSizes = new boolean[TextureCount];
+		int p, x;
+		int j = 0;
+		for(int i = 0; i<=TextureDepth; i++){
+			p = (int)Math.pow(4, i);
+			for(x = 0; x<p; x++){
+				QuadTreeSizes[j] = Dynmap.VertexCount-1>>i;
+				CatchQuadTreeSizes[j] = i==TextureDepth;
+				j++;
+			}
+		}
+	}
 	private final int ibo;
+	private final int[] indexCounts;
+	private final int[] indexOffset;
 	private final int x;
 	private final int z;
-	private int indexCount;
 	private final QuadTree tree;
 	DynmapChunk(int x, int z){
 		this.x = x;
 		this.z = z;
+		indexCounts = new int[TextureCount];
+		indexOffset = new int[TextureCount];
 		ibo = GL15.glGenBuffers();
 		tree = new QuadTree(0, 0, Dynmap.VertexCount-1, null);
 		updateIndices();
@@ -89,72 +114,76 @@ public class DynmapChunk{
 		breakDown(tree, x-this.x, z-this.z, 0);
 		updateIndices();
 	}
-	private void countIndices(){
-		indexCount = 0;
-		countIndices(tree);
+	private void countIndices(int iboId){
+		indexCounts[iboId] = 0;
+		countIndices(tree, iboId);
 	}
-	private void countIndices(QuadTree tree){
+	private void countIndices(QuadTree tree, int iboId){
+		if(!CatchQuadTreeSizes[iboId]&&tree.size<QuadTreeSizes[iboId])
+			return;
 		int i = 0;
-		if(tree.children[0]!=null)
-			i = i|1;
-		if(tree.children[1]!=null)
-			i = i|2;
-		if(tree.children[2]!=null)
-			i = i|4;
-		if(tree.children[3]!=null)
-			i = i|8;
-		switch(i){
-			case 0:
-				indexCount += countNeededIndices(tree);
-				break;
-			case 1:
-				indexCount += 12;
-				break;
-			case 2:
-				indexCount += 12;
-				break;
-			case 3:
-				indexCount += 9;
-				break;
-			case 4:
-				indexCount += 12;
-				break;
-			case 5:
-				indexCount += 9;
-				break;
-			case 6:
-				indexCount += 12;
-				break;
-			case 7:
-				indexCount += 6;
-				break;
-			case 8:
-				indexCount += 12;
-				break;
-			case 9:
-				indexCount += 12;
-				break;
-			case 10:
-				indexCount += 9;
-				break;
-			case 11:
-				indexCount += 6;
-				break;
-			case 12:
-				indexCount += 9;
-				break;
-			case 13:
-				indexCount += 6;
-				break;
-			case 14:
-				indexCount += 6;
-				break;
-			case 15:
-				break;
+		if(tree.size==QuadTreeSizes[iboId]||CatchQuadTreeSizes[iboId]&&tree.size<=QuadTreeSizes[iboId]){
+			if(tree.children[0]!=null)
+				i |= 1;
+			if(tree.children[1]!=null)
+				i |= 2;
+			if(tree.children[2]!=null)
+				i |= 4;
+			if(tree.children[3]!=null)
+				i |= 8;
+			switch(i){
+				case 0:
+					indexCounts[iboId] += countNeededIndices(tree);
+					break;
+				case 1:
+					indexCounts[iboId] += 12;
+					break;
+				case 2:
+					indexCounts[iboId] += 12;
+					break;
+				case 3:
+					indexCounts[iboId] += 9;
+					break;
+				case 4:
+					indexCounts[iboId] += 12;
+					break;
+				case 5:
+					indexCounts[iboId] += 9;
+					break;
+				case 6:
+					indexCounts[iboId] += 12;
+					break;
+				case 7:
+					indexCounts[iboId] += 6;
+					break;
+				case 8:
+					indexCounts[iboId] += 12;
+					break;
+				case 9:
+					indexCounts[iboId] += 12;
+					break;
+				case 10:
+					indexCounts[iboId] += 9;
+					break;
+				case 11:
+					indexCounts[iboId] += 6;
+					break;
+				case 12:
+					indexCounts[iboId] += 9;
+					break;
+				case 13:
+					indexCounts[iboId] += 6;
+					break;
+				case 14:
+					indexCounts[iboId] += 6;
+					break;
+				case 15:
+					break;
+			}
 		}
 		for(i = 0; i<4; i++)
 			if(tree.children[i]!=null)
-				countIndices(tree.children[i]);
+				countIndices(tree.children[i], iboId);
 	}
 	private int countNeededIndices(QuadTree tree){
 		if(tree.parent==null)
@@ -246,22 +275,26 @@ public class DynmapChunk{
 			tri(data, tree, 4, 0, 2);
 		}
 	}
-	private void placeTriangles(QuadTree tree, IntBuffer data){
+	private void placeTriangles(QuadTree tree, IntBuffer data, int iboId){
+		if(!CatchQuadTreeSizes[iboId]&&tree.size<QuadTreeSizes[iboId])
+			return;
 		int i = 0;
-		if(tree.children[0]!=null)
-			i = i|1;
-		if(tree.children[1]!=null)
-			i = i|2;
-		if(tree.children[2]!=null)
-			i = i|4;
-		if(tree.children[3]!=null)
-			i = i|8;
-		placeTriangles(tree, data, i);
+		if(tree.size==QuadTreeSizes[iboId]||CatchQuadTreeSizes[iboId]&&tree.size<=QuadTreeSizes[iboId]){
+			if(tree.children[0]!=null)
+				i = i|1;
+			if(tree.children[1]!=null)
+				i = i|2;
+			if(tree.children[2]!=null)
+				i = i|4;
+			if(tree.children[3]!=null)
+				i = i|8;
+			placeTrianglesState(tree, data, i);
+		}
 		for(i = 0; i<4; i++)
 			if(tree.children[i]!=null)
-				placeTriangles(tree.children[i], data);
+				placeTriangles(tree.children[i], data, iboId);
 	}
-	private void placeTriangles(QuadTree tree, IntBuffer data, int state){
+	private void placeTrianglesState(QuadTree tree, IntBuffer data, int state){
 		switch(state){
 			case 0:
 				placeRawTriangles(tree, data);
@@ -344,12 +377,24 @@ public class DynmapChunk{
 	}
 	void render(){
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
-		GL11.glDrawElements(GL11.GL_TRIANGLES, indexCount, GL11.GL_UNSIGNED_INT, 0);
+		for(int i = 0; i<TextureCount; i++){
+			// ---
+			// TODO Bind texture here!
+			// ---
+			GL11.glDrawElements(GL11.GL_TRIANGLES, indexCounts[i], GL11.GL_UNSIGNED_INT, indexOffset[i]*4);
+		}
 	}
 	void updateIndices(){
-		countIndices();
-		IntBuffer indexData = BufferUtils.createIntBuffer(indexCount);
-		placeTriangles(tree, indexData);
+		int i;
+		int totalSize = 0;
+		for(i = 0; i<TextureCount; i++){
+			countIndices(i);
+			indexOffset[i] = totalSize;
+			totalSize += indexCounts[i];
+		}
+		IntBuffer indexData = BufferUtils.createIntBuffer(totalSize);
+		for(i = 0; i<TextureCount; i++)
+			placeTriangles(tree, indexData, i);
 		indexData.flip();
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_DYNAMIC_DRAW);
