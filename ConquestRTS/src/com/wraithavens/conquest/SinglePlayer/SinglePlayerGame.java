@@ -136,7 +136,7 @@ public class SinglePlayerGame implements Driver{
 			if(mountains!=null)
 				skybox.redrawMountains();
 		}
-		dynmap = new Dynmap();
+		dynmap = new Dynmap(machine);
 	}
 	public void onKey(int key, int action){
 		if(key==GLFW.GLFW_KEY_W){
@@ -327,15 +327,16 @@ public class SinglePlayerGame implements Driver{
 		camera.update(delta);
 		if(!processMoveEvents)
 			return;
-		if(camera.x!=x||camera.z!=z)
+		if(camera.x!=x||camera.z!=z){
+			if(dynmap!=null)
+				dynmap.update(camera.x, camera.z);
 			if(processHeightmap)
 				if(heightMaps!=null)
 					heightMaps.update(camera.x, camera.z);
+		}
 		if(camera.x!=x||camera.y!=y||camera.z!=z){
 			if(skybox!=null)
 				skybox.redrawMountains();
-			if(dynmap!=null)
-				dynmap.update(camera.x, camera.y, camera.z);
 		}
 	}
 }

@@ -6,20 +6,20 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
 public class DynmapChunk{
-	private static void breakDown(QuadTree t, float x, float y, float z, int depth){
-		double d = distance(t, x, y, z);
+	private static void breakDown(QuadTree t, float x, float z, int depth){
+		double d = distance(t, x, z);
 		t.clearChildren();
 		if(getDepth(d)<=depth)
 			return;
 		for(int i = 0; i<4; i++)
-			breakDown(t.addChild(i), x, y, z, depth+1);
+			breakDown(t.addChild(i), x, z, depth+1);
 	}
-	private static double distance(QuadTree t, float x, float y, float z){
+	private static double distance(QuadTree t, float x, float z){
 		float nx = t.x+t.size/2;
 		float nz = t.z+t.size/2;
 		nx = nx/Dynmap.VertexCount*Dynmap.BlocksPerChunk;
 		nz = nz/Dynmap.VertexCount*Dynmap.BlocksPerChunk;
-		return (nx-x)*(nx-x)+y*y+(nz-z)*(nz-z);
+		return (nx-x)*(nx-x)+(nz-z)*(nz-z);
 	}
 	private static int getDepth(double d){
 		float m = Dynmap.BlocksPerChunk*8;
@@ -85,8 +85,8 @@ public class DynmapChunk{
 		tree = new QuadTree(0, 0, Dynmap.VertexCount-1, null);
 		updateIndices();
 	}
-	public void update(float x, float y, float z){
-		breakDown(tree, x-this.x, y, z-this.z, 0);
+	public void update(float x, float z){
+		breakDown(tree, x-this.x, z-this.z, 0);
 		updateIndices();
 	}
 	private void countIndices(){

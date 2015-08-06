@@ -7,6 +7,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.MatrixUtils;
+import com.wraithavens.conquest.Math.Vector3f;
+import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 
 public class Dynmap{
@@ -16,30 +18,39 @@ public class Dynmap{
 	private final int vbo;
 	private final DynmapChunk chunk;
 	private final ShaderProgram shader;
-	public Dynmap(){
+	private final DynmapTexture texture;
+	public Dynmap(WorldNoiseMachine machine){
 		vbo = GL15.glGenBuffers();
 		loadVbo();
 		shader =
 			new ShaderProgram(new File(WraithavensConquest.assetFolder, "Dynmap.vert"), null, new File(
 				WraithavensConquest.assetFolder, "Dynmap.frag"));
-		shader.loadUniforms("texture", "shift", "size");
-		shader.bind();
-		shader.setUniform1I(0, 0);
-		shader.setUniform2f(1, 0, 0);
-		shader.setUniform2f(2, BlocksPerChunk, BlocksPerChunk);
+		shader.loadUniforms("texture", "shift", "size", "sunDirection");
+		{
+			shader.bind();
+			shader.setUniform1I(0, 0);
+			shader.setUniform2f(1, 0, 0);
+			shader.setUniform2f(2, BlocksPerChunk, BlocksPerChunk);
+			Vector3f sunDirection = new Vector3f(1, 2, 0.5f);
+			double mag = Math.sqrt(sunDirection.lengthSquared());
+			shader.setUniform3f(3, (float)(sunDirection.x/mag), (float)(sunDirection.y/mag),
+				(float)(sunDirection.z/mag));
+		}
+		texture = new DynmapTexture(machine, 0, 0, BlocksPerChunk);
 		chunk = new DynmapChunk(0, 0);
 	}
 	public void render(){
 		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
 			/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 1, 4000000);
 		shader.bind();
+		texture.bind();
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 		GL11.glVertexPointer(2, GL11.GL_FLOAT, 8, 0);
 		chunk.render();
 	}
-	public void update(float x, float y, float z){
+	public void update(float x, float z){
 		shader.bind();
-		chunk.update(x, y, z);
+		chunk.update(x, z);
 	}
 	private void loadVbo(){
 		FloatBuffer vertexData = BufferUtils.createFloatBuffer(VertexCount*VertexCount*3);
