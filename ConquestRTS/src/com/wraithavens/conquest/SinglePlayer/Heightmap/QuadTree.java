@@ -28,4 +28,10 @@ class QuadTree{
 		children[index] = new QuadTree(nx, nz, s);
 		return children[index];
 	}
+	void clearChildren(){
+		children[0] = null;
+		children[1] = null;
+		children[2] = null;
+		children[3] = null;
+	}
 }

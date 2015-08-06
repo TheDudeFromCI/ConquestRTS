@@ -323,8 +323,11 @@ public class SinglePlayerGame implements Driver{
 			if(processHeightmap)
 				if(heightMaps!=null)
 					heightMaps.update(camera.x, camera.z);
-		if(camera.x!=x||camera.y!=y||camera.z!=z)
+		if(camera.x!=x||camera.y!=y||camera.z!=z){
 			if(skybox!=null)
 				skybox.redrawMountains();
+			if(dynmap!=null)
+				dynmap.getChunk().update(camera.x, camera.y, camera.z);
+		}
 	}
 }

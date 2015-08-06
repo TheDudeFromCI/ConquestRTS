@@ -12,6 +12,7 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 public class Dynmap{
 	static final int VertexCount = 1025;
 	static final int BlocksPerChunk = 16384;
+	static final int MaxDepth = Integer.numberOfTrailingZeros(VertexCount-1)-1;
 	private final int vbo;
 	private final DynmapChunk chunk;
 	private final ShaderProgram shader;
@@ -23,6 +24,9 @@ public class Dynmap{
 				WraithavensConquest.assetFolder, "Dynmap.frag"));
 		shader.loadUniforms("shift");
 		chunk = new DynmapChunk(0, 0);
+	}
+	public DynmapChunk getChunk(){
+		return chunk;
 	}
 	public void render(){
 		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
