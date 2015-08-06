@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
+import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 
 public class DynmapChunk{
 	private static void breakDown(QuadTree t, float x, float z, int depth){
@@ -23,7 +24,7 @@ public class DynmapChunk{
 		return (nx-x)*(nx-x)+(nz-z)*(nz-z);
 	}
 	private static int getDepth(double d){
-		float m = Dynmap.BlocksPerChunk*8;
+		float m = Dynmap.BlocksPerChunk*MountainResolution;
 		int i;
 		for(i = 0; i<Dynmap.MaxDepth; i++){
 			if(d>=m*m)
@@ -80,44 +81,26 @@ public class DynmapChunk{
 		placeTriangleIndex(iboId, getIndex(tree, p2));
 		placeTriangleIndex(iboId, getIndex(tree, p3));
 	}
-	private static final int TextureDepth = 1;
-	private static final int TextureCount;
-	private static final int[] QuadTreeSizes;
-	private static final boolean[] CatchQuadTreeSizes;
-	static{
-		int total = 0;
-		for(int i = 0; i<=TextureDepth; i++)
-			total += (int)Math.pow(4, i);
-		TextureCount = total;
-		QuadTreeSizes = new int[TextureCount];
-		CatchQuadTreeSizes = new boolean[TextureCount];
-		int p, x;
-		int j = 0;
-		for(int i = 0; i<=TextureDepth; i++){
-			p = (int)Math.pow(4, i);
-			for(x = 0; x<p; x++){
-				QuadTreeSizes[j] = Dynmap.VertexCount-1>>i;
-				CatchQuadTreeSizes[j] = i==TextureDepth;
-				j++;
-			}
-		}
-		triangleIndices = new int[TextureCount][100];
-	}
-	private static int[][] triangleIndices;
+	private static int MountainResolution = 5;
+	private static final int TextureCount = 1;
+	private static int[][] triangleIndices = new int[TextureCount][100];
 	private static int triangleIndexLocation;
 	private final int ibo;
 	private final int[] indexCounts;
 	private final int[] indexOffset;
+	private final DynmapTexture[] textures;
 	private final int x;
 	private final int z;
 	private final QuadTree tree;
-	DynmapChunk(int x, int z){
+	DynmapChunk(WorldNoiseMachine machine, int x, int z){
 		this.x = x;
 		this.z = z;
 		indexCounts = new int[TextureCount];
 		indexOffset = new int[TextureCount];
 		ibo = GL15.glGenBuffers();
 		tree = new QuadTree(0, 0, Dynmap.VertexCount-1, null);
+		textures = new DynmapTexture[TextureCount];
+		placeTextures(machine, x, z, Dynmap.BlocksPerChunk);
 		updateIndices();
 	}
 	public void update(float x, float z){
@@ -131,111 +114,107 @@ public class DynmapChunk{
 	}
 	private void countIndices(QuadTree tree, int iboId){
 		int i = 0;
-		if(tree.size==QuadTreeSizes[iboId]||CatchQuadTreeSizes[iboId]&&tree.size<=QuadTreeSizes[iboId]){
-			if(tree.children[0]!=null)
-				i |= 1;
-			if(tree.children[1]!=null)
-				i |= 2;
-			if(tree.children[2]!=null)
-				i |= 4;
-			if(tree.children[3]!=null)
-				i |= 8;
-			switch(i){
-				case 0:
-					indexCounts[iboId] += placeRawTriangles(tree, iboId);
-					break;
-				case 1:
-					indexCounts[iboId] += 12;
-					tri(iboId, tree, 1, 5, 4);
-					tri(iboId, tree, 4, 3, 1);
-					tri(iboId, tree, 4, 2, 3);
-					tri(iboId, tree, 4, 8, 2);
-					break;
-				case 2:
-					indexCounts[iboId] += 12;
-					tri(iboId, tree, 4, 5, 4);
-					tri(iboId, tree, 2, 4, 0);
-					tri(iboId, tree, 3, 4, 2);
-					tri(iboId, tree, 6, 4, 3);
-					break;
-				case 3:
-					indexCounts[iboId] += 9;
-					tri(iboId, tree, 4, 8, 2);
-					tri(iboId, tree, 3, 4, 2);
-					tri(iboId, tree, 6, 4, 3);
-					break;
-				case 4:
-					indexCounts[iboId] += 12;
-					tri(iboId, tree, 8, 0, 4);
-					tri(iboId, tree, 0, 1, 4);
-					tri(iboId, tree, 1, 3, 4);
-					tri(iboId, tree, 3, 7, 4);
-					break;
-				case 5:
-					indexCounts[iboId] += 9;
-					tri(iboId, tree, 4, 1, 5);
-					tri(iboId, tree, 4, 3, 6);
-					tri(iboId, tree, 4, 7, 3);
-					break;
-				case 6:
-					indexCounts[iboId] += 12;
-					tri(iboId, tree, 4, 5, 0);
-					tri(iboId, tree, 4, 0, 8);
-					tri(iboId, tree, 3, 6, 4);
-					tri(iboId, tree, 4, 7, 3);
-					break;
-				case 7:
-					indexCounts[iboId] += 6;
-					tri(iboId, tree, 3, 6, 4);
-					tri(iboId, tree, 7, 3, 4);
-					break;
-				case 8:
-					indexCounts[iboId] += 12;
-					tri(iboId, tree, 4, 1, 0);
-					tri(iboId, tree, 4, 0, 2);
-					tri(iboId, tree, 6, 1, 4);
-					tri(iboId, tree, 4, 2, 7);
-					break;
-				case 9:
-					indexCounts[iboId] += 12;
-					tri(iboId, tree, 4, 1, 5);
-					tri(iboId, tree, 4, 6, 1);
-					tri(iboId, tree, 4, 2, 7);
-					tri(iboId, tree, 4, 8, 2);
-					break;
-				case 10:
-					indexCounts[iboId] += 9;
-					tri(iboId, tree, 4, 5, 0);
-					tri(iboId, tree, 4, 0, 2);
-					tri(iboId, tree, 4, 2, 7);
-					break;
-				case 11:
-					indexCounts[iboId] += 6;
-					tri(iboId, tree, 4, 8, 2);
-					tri(iboId, tree, 4, 2, 7);
-					break;
-				case 12:
-					indexCounts[iboId] += 9;
-					tri(iboId, tree, 4, 0, 8);
-					tri(iboId, tree, 4, 1, 0);
-					tri(iboId, tree, 4, 6, 1);
-					break;
-				case 13:
-					indexCounts[iboId] += 6;
-					tri(iboId, tree, 4, 1, 5);
-					tri(iboId, tree, 4, 6, 1);
-					break;
-				case 14:
-					indexCounts[iboId] += 6;
-					tri(iboId, tree, 4, 5, 0);
-					tri(iboId, tree, 4, 0, 8);
-					break;
-				case 15:
-					break;
-			}
+		if(tree.children[0]!=null)
+			i |= 1;
+		if(tree.children[1]!=null)
+			i |= 2;
+		if(tree.children[2]!=null)
+			i |= 4;
+		if(tree.children[3]!=null)
+			i |= 8;
+		switch(i){
+			case 0:
+				indexCounts[iboId] += placeRawTriangles(tree, iboId);
+				break;
+			case 1:
+				indexCounts[iboId] += 12;
+				tri(iboId, tree, 1, 5, 4);
+				tri(iboId, tree, 4, 3, 1);
+				tri(iboId, tree, 4, 2, 3);
+				tri(iboId, tree, 4, 8, 2);
+				break;
+			case 2:
+				indexCounts[iboId] += 12;
+				tri(iboId, tree, 4, 5, 4);
+				tri(iboId, tree, 2, 4, 0);
+				tri(iboId, tree, 3, 4, 2);
+				tri(iboId, tree, 6, 4, 3);
+				break;
+			case 3:
+				indexCounts[iboId] += 9;
+				tri(iboId, tree, 4, 8, 2);
+				tri(iboId, tree, 3, 4, 2);
+				tri(iboId, tree, 6, 4, 3);
+				break;
+			case 4:
+				indexCounts[iboId] += 12;
+				tri(iboId, tree, 8, 0, 4);
+				tri(iboId, tree, 0, 1, 4);
+				tri(iboId, tree, 1, 3, 4);
+				tri(iboId, tree, 3, 7, 4);
+				break;
+			case 5:
+				indexCounts[iboId] += 9;
+				tri(iboId, tree, 4, 1, 5);
+				tri(iboId, tree, 4, 3, 6);
+				tri(iboId, tree, 4, 7, 3);
+				break;
+			case 6:
+				indexCounts[iboId] += 12;
+				tri(iboId, tree, 4, 5, 0);
+				tri(iboId, tree, 4, 0, 8);
+				tri(iboId, tree, 3, 6, 4);
+				tri(iboId, tree, 4, 7, 3);
+				break;
+			case 7:
+				indexCounts[iboId] += 6;
+				tri(iboId, tree, 3, 6, 4);
+				tri(iboId, tree, 7, 3, 4);
+				break;
+			case 8:
+				indexCounts[iboId] += 12;
+				tri(iboId, tree, 4, 1, 0);
+				tri(iboId, tree, 4, 0, 2);
+				tri(iboId, tree, 6, 1, 4);
+				tri(iboId, tree, 4, 2, 7);
+				break;
+			case 9:
+				indexCounts[iboId] += 12;
+				tri(iboId, tree, 4, 1, 5);
+				tri(iboId, tree, 4, 6, 1);
+				tri(iboId, tree, 4, 2, 7);
+				tri(iboId, tree, 4, 8, 2);
+				break;
+			case 10:
+				indexCounts[iboId] += 9;
+				tri(iboId, tree, 4, 5, 0);
+				tri(iboId, tree, 4, 0, 2);
+				tri(iboId, tree, 4, 2, 7);
+				break;
+			case 11:
+				indexCounts[iboId] += 6;
+				tri(iboId, tree, 4, 8, 2);
+				tri(iboId, tree, 4, 2, 7);
+				break;
+			case 12:
+				indexCounts[iboId] += 9;
+				tri(iboId, tree, 4, 0, 8);
+				tri(iboId, tree, 4, 1, 0);
+				tri(iboId, tree, 4, 6, 1);
+				break;
+			case 13:
+				indexCounts[iboId] += 6;
+				tri(iboId, tree, 4, 1, 5);
+				tri(iboId, tree, 4, 6, 1);
+				break;
+			case 14:
+				indexCounts[iboId] += 6;
+				tri(iboId, tree, 4, 5, 0);
+				tri(iboId, tree, 4, 0, 8);
+				break;
+			case 15:
+				break;
 		}
-		if(!CatchQuadTreeSizes[iboId]&&tree.size/2<QuadTreeSizes[iboId])
-			return;
 		for(i = 0; i<4; i++)
 			if(tree.children[i]!=null)
 				countIndices(tree.children[i], iboId);
@@ -306,12 +285,13 @@ public class DynmapChunk{
 		}
 		return i;
 	}
+	private void placeTextures(WorldNoiseMachine machine, int x, int z, int size){
+		textures[0] = new DynmapTexture(machine, x, z, size);
+	}
 	void render(){
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 		for(int i = 0; i<TextureCount; i++){
-			// ---
-			// TODO Bind texture here!
-			// ---
+			textures[i].bind();
 			GL11.glDrawElements(GL11.GL_TRIANGLES, indexCounts[i], GL11.GL_UNSIGNED_INT, indexOffset[i]*4);
 		}
 	}

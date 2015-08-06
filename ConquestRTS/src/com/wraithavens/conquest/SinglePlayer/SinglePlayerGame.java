@@ -37,6 +37,7 @@ public class SinglePlayerGame implements Driver{
 	private World world;
 	private SkyBox skybox;
 	private Dynmap dynmap;
+	private WorldNoiseMachine machine;
 	public void dispose(){
 		if(heightMaps!=null)
 			heightMaps.dispose();
@@ -47,7 +48,7 @@ public class SinglePlayerGame implements Driver{
 		long[] seeds = new long[]{
 			0, 1, 2, 3
 		};
-		WorldNoiseMachine machine = WorldNoiseMachine.generate(seeds);
+		machine = WorldNoiseMachine.generate(seeds);
 		// ---
 		// Setup the camera.
 		// ---
@@ -317,8 +318,7 @@ public class SinglePlayerGame implements Driver{
 		if(shift)
 			camera.goalY -= delta;
 		if(cameraMoved&&fly)
-			if(world!=null)
-				camera.goalY = world.getHeightAt((int)camera.goalX, (int)camera.goalZ)+6;
+			camera.goalY = (float)(machine.getWorldHeight(camera.goalX, camera.goalZ)+6);
 	}
 	private void updateCamera(double delta){
 		float x = camera.x;

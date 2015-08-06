@@ -12,13 +12,12 @@ import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 
 public class Dynmap{
-	static final int VertexCount = 2048+1;
+	static final int VertexCount = 4096+1;
 	static final int BlocksPerChunk = 16384;
 	static final int MaxDepth = Integer.numberOfTrailingZeros(VertexCount-1)-1;
 	private final int vbo;
 	private final DynmapChunk chunk;
 	private final ShaderProgram shader;
-	private final DynmapTexture texture;
 	public Dynmap(WorldNoiseMachine machine){
 		vbo = GL15.glGenBuffers();
 		loadVbo();
@@ -36,14 +35,12 @@ public class Dynmap{
 			shader.setUniform3f(3, (float)(sunDirection.x/mag), (float)(sunDirection.y/mag),
 				(float)(sunDirection.z/mag));
 		}
-		texture = new DynmapTexture(machine, 0, 0, BlocksPerChunk);
-		chunk = new DynmapChunk(0, 0);
+		chunk = new DynmapChunk(machine, 0, 0);
 	}
 	public void render(){
 		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
 			/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 1, 4000000);
 		shader.bind();
-		texture.bind();
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 		GL11.glVertexPointer(2, GL11.GL_FLOAT, 8, 0);
 		chunk.render();
