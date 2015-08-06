@@ -9,9 +9,7 @@ import com.wraithavens.conquest.SinglePlayer.Heightmap.Dynmap;
 import com.wraithavens.conquest.SinglePlayer.Heightmap.WorldHeightmaps;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
-import com.wraithavens.conquest.SinglePlayer.Skybox.MountainSkybox;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyBox;
-import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxClouds;
 
 public class SinglePlayerGame implements Driver{
 	private WorldHeightmaps heightMaps;
@@ -37,20 +35,29 @@ public class SinglePlayerGame implements Driver{
 			0, 1, 2, 3
 		};
 		WorldNoiseMachine machine = WorldNoiseMachine.generate(seeds);
+		// ---
+		// Setup the camera.
+		// ---
 		camera.cameraMoveSpeed = 10.0f;
 		camera.goalY = camera.y = (float)machine.getWorldHeight(0, 0)+6;
 		camera.goalX = 8192;
 		camera.goalZ = 8192;
-		world = new World(machine, camera);
-		heightMaps = new WorldHeightmaps(machine);
+		// ---
+		// Properties for rendering.
+		// ---
 		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0.0f);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		// ---
-		// Load the skyboxes.
+		// Load the landscape.
 		// ---
-		SkyboxClouds noise = null;
-		SkyboxClouds noise2 = null;
-		MountainSkybox mountains = null;
+		// world = new World(machine, camera);
+		// heightMaps = new WorldHeightmaps(machine);
+		// // ---
+		// // Load the skyboxes.
+		// // ---
+		// SkyboxClouds noise = null;
+		// SkyboxClouds noise2 = null;
+		// MountainSkybox mountains = null;
 		// {
 		// // ---
 		// // Load the backdrop sky.
@@ -111,8 +118,8 @@ public class SinglePlayerGame implements Driver{
 		// });
 		// }
 		// }
-		skybox = new SkyBox(noise, null, noise2, mountains);
-		skybox.redrawMountains();
+		// skybox = new SkyBox(noise, null, noise2, mountains);
+		// skybox.redrawMountains();
 		dynmap = new Dynmap();
 	}
 	public void onKey(int key, int action){
@@ -231,12 +238,15 @@ public class SinglePlayerGame implements Driver{
 		updateCamera(frameDelta);
 		if(wireframeMode){
 			if(processHeightmap)
-				heightMaps.render(false);
-		}else
+				if(heightMaps!=null)
+					heightMaps.render(false);
+		}else if(skybox!=null)
 			skybox.render(camera.x, camera.y, camera.z);
 		if(processBlocks)
-			world.render();
-		dynmap.render();
+			if(world!=null)
+				world.render();
+		if(dynmap!=null)
+			dynmap.render();
 		GL11.glPopMatrix();
 	}
 	public void update(double delta, double time){
@@ -247,12 +257,14 @@ public class SinglePlayerGame implements Driver{
 		// accoringly.
 		// ---
 		if(processBlocks)
-			world.update();
+			if(world!=null)
+				world.update();
 		// ---
 		// Skybox isn't visible in wireframe mode, so no need to update it.
 		// ---
 		if(!wireframeMode)
-			skybox.update(time);
+			if(skybox!=null)
+				skybox.update(time);
 	}
 	private void move(double delta){
 		delta *= cameraSpeed;
@@ -284,7 +296,8 @@ public class SinglePlayerGame implements Driver{
 		if(shift)
 			camera.goalY -= delta;
 		if(cameraMoved&&fly)
-			camera.goalY = world.getHeightAt((int)camera.goalX, (int)camera.goalZ)+6;
+			if(world!=null)
+				camera.goalY = world.getHeightAt((int)camera.goalX, (int)camera.goalZ)+6;
 	}
 	private void updateCamera(double delta){
 		float x = camera.x;
@@ -293,8 +306,10 @@ public class SinglePlayerGame implements Driver{
 		camera.update(delta);
 		if(camera.x!=x||camera.z!=z)
 			if(processHeightmap)
-				heightMaps.update(camera.x, camera.z);
+				if(heightMaps!=null)
+					heightMaps.update(camera.x, camera.z);
 		if(camera.x!=x||camera.y!=y||camera.z!=z)
-			skybox.redrawMountains();
+			if(skybox!=null)
+				skybox.redrawMountains();
 	}
 }

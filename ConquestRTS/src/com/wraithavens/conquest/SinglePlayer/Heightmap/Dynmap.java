@@ -6,11 +6,12 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
+import com.wraithavens.conquest.Math.MatrixUtils;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 
 public class Dynmap{
-	static final int VertexCount = 9;
-	static final int BlocksPerChunk = 64;
+	static final int VertexCount = 1025;
+	static final int BlocksPerChunk = 16384;
 	private final int vbo;
 	private final DynmapChunk chunk;
 	private final ShaderProgram shader;
@@ -21,9 +22,11 @@ public class Dynmap{
 			new ShaderProgram(new File(WraithavensConquest.assetFolder, "Dynmap.vert"), null, new File(
 				WraithavensConquest.assetFolder, "Dynmap.frag"));
 		shader.loadUniforms("shift");
-		chunk = new DynmapChunk(8192/BlocksPerChunk, 8192/BlocksPerChunk);
+		chunk = new DynmapChunk(0, 0);
 	}
 	public void render(){
+		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
+			/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 1, 4000000);
 		shader.bind();
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 		GL11.glVertexPointer(2, GL11.GL_FLOAT, 8, 0);
