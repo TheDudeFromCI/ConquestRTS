@@ -335,7 +335,7 @@ public class SinglePlayerGame implements Driver{
 			if(skybox!=null)
 				skybox.redrawMountains();
 			if(dynmap!=null)
-				dynmap.getChunk().update(camera.x, camera.y, camera.z);
+				dynmap.update(camera.x, camera.y, camera.z);
 		}
 	}
 }

@@ -23,7 +23,7 @@ public class DynmapChunk{
 		return (nx-x)*(nx-x)+y*y+(nz-z)*(nz-z);
 	}
 	private static int getDepth(double d){
-		int m = Dynmap.BlocksPerChunk*2;
+		float m = Dynmap.BlocksPerChunk*8;
 		int i;
 		for(i = 0; i<Dynmap.MaxDepth; i++){
 			if(d>=m*m)
@@ -55,13 +55,217 @@ public class DynmapChunk{
 		}
 		return -1;
 	}
-	private static void placeTriangles(QuadTree tree, IntBuffer data, int state){
+	private static QuadTree getQuadTree(QuadTree parent, int x, int z, int size){
+		if(parent==null||parent.size<size||x<parent.x||z<parent.z||x>=parent.x+parent.size
+			||z>=parent.z+parent.size)
+			return null;
+		if(parent.x==x&&parent.z==z&&parent.size==size)
+			return parent;
+		QuadTree q;
+		for(int i = 0; i<4; i++){
+			q = getQuadTree(parent.children[i], x, z, size);
+			if(q!=null)
+				return q;
+		}
+		return null;
+	}
+	private static void tri(IntBuffer data, QuadTree tree, int p1, int p2, int p3){
+		data.put(getIndex(tree, p1));
+		data.put(getIndex(tree, p2));
+		data.put(getIndex(tree, p3));
+	}
+	private final int ibo;
+	private final int x;
+	private final int z;
+	private int indexCount;
+	private final QuadTree tree;
+	DynmapChunk(int x, int z){
+		this.x = x;
+		this.z = z;
+		ibo = GL15.glGenBuffers();
+		tree = new QuadTree(0, 0, Dynmap.VertexCount-1, null);
+		updateIndices();
+	}
+	public void update(float x, float y, float z){
+		breakDown(tree, x-this.x, y, z-this.z, 0);
+		updateIndices();
+	}
+	private void countIndices(){
+		indexCount = 0;
+		countIndices(tree);
+	}
+	private void countIndices(QuadTree tree){
+		int i = 0;
+		if(tree.children[0]!=null)
+			i = i|1;
+		if(tree.children[1]!=null)
+			i = i|2;
+		if(tree.children[2]!=null)
+			i = i|4;
+		if(tree.children[3]!=null)
+			i = i|8;
+		switch(i){
+			case 0:
+				indexCount += countNeededIndices(tree);
+				break;
+			case 1:
+				indexCount += 12;
+				break;
+			case 2:
+				indexCount += 12;
+				break;
+			case 3:
+				indexCount += 9;
+				break;
+			case 4:
+				indexCount += 12;
+				break;
+			case 5:
+				indexCount += 9;
+				break;
+			case 6:
+				indexCount += 12;
+				break;
+			case 7:
+				indexCount += 6;
+				break;
+			case 8:
+				indexCount += 12;
+				break;
+			case 9:
+				indexCount += 12;
+				break;
+			case 10:
+				indexCount += 9;
+				break;
+			case 11:
+				indexCount += 6;
+				break;
+			case 12:
+				indexCount += 9;
+				break;
+			case 13:
+				indexCount += 6;
+				break;
+			case 14:
+				indexCount += 6;
+				break;
+			case 15:
+				break;
+		}
+		for(i = 0; i<4; i++)
+			if(tree.children[i]!=null)
+				countIndices(tree.children[i]);
+	}
+	private int countNeededIndices(QuadTree tree){
+		if(tree.parent==null)
+			return 12;
+		int i = 12;
+		QuadTree t;
+		t = getUpQuad(tree);
+		if(t!=null)
+			if(t.children[2]!=null||t.children[3]!=null)
+				i += 3;
+		t = getDownQuad(tree);
+		if(t!=null)
+			if(t.children[0]!=null||t.children[1]!=null)
+				i += 3;
+		t = getLeftQuad(tree);
+		if(t!=null)
+			if(t.children[1]!=null||t.children[3]!=null)
+				i += 3;
+		t = getRightQuad(tree);
+		if(t!=null)
+			if(t.children[0]!=null||t.children[2]!=null)
+				i += 3;
+		return i;
+	}
+	private QuadTree getDownQuad(QuadTree tree){
+		return getQuadTree(tree.x, tree.z+tree.size, tree.size);
+	}
+	private QuadTree getLeftQuad(QuadTree tree){
+		return getQuadTree(tree.x-tree.size, tree.z, tree.size);
+	}
+	private QuadTree getQuadTree(int x, int z, int size){
+		if(x<0)
+			return null;
+		if(z<0)
+			return null;
+		if(x>=Dynmap.VertexCount)
+			return null;
+		if(z>=Dynmap.VertexCount)
+			return null;
+		return getQuadTree(tree, x, z, size);
+	}
+	private QuadTree getRightQuad(QuadTree tree){
+		return getQuadTree(tree.x+tree.size, tree.z, tree.size);
+	}
+	private QuadTree getUpQuad(QuadTree tree){
+		return getQuadTree(tree.x, tree.z-tree.size, tree.size);
+	}
+	private void placeRawTriangles(QuadTree tree, IntBuffer data){
+		int state = 0;
+		QuadTree t;
+		t = getUpQuad(tree);
+		if(t!=null)
+			if(t.children[2]!=null||t.children[3]!=null)
+				state |= 1;
+		t = getRightQuad(tree);
+		if(t!=null)
+			if(t.children[0]!=null||t.children[2]!=null)
+				state |= 2;
+		t = getDownQuad(tree);
+		if(t!=null)
+			if(t.children[0]!=null||t.children[1]!=null)
+				state |= 4;
+		t = getLeftQuad(tree);
+		if(t!=null)
+			if(t.children[1]!=null||t.children[3]!=null)
+				state |= 8;
+		if((state&1)==1){
+			tri(data, tree, 4, 1, 5);
+			tri(data, tree, 4, 5, 0);
+		}else{
+			tri(data, tree, 4, 1, 0);
+		}
+		if((state&2)==2){
+			tri(data, tree, 4, 3, 6);
+			tri(data, tree, 4, 6, 1);
+		}else{
+			tri(data, tree, 4, 3, 1);
+		}
+		if((state&4)==4){
+			tri(data, tree, 4, 2, 7);
+			tri(data, tree, 4, 7, 3);
+		}else{
+			tri(data, tree, 4, 2, 3);
+		}
+		if((state&8)==8){
+			tri(data, tree, 4, 0, 8);
+			tri(data, tree, 4, 8, 2);
+		}else{
+			tri(data, tree, 4, 0, 2);
+		}
+	}
+	private void placeTriangles(QuadTree tree, IntBuffer data){
+		int i = 0;
+		if(tree.children[0]!=null)
+			i = i|1;
+		if(tree.children[1]!=null)
+			i = i|2;
+		if(tree.children[2]!=null)
+			i = i|4;
+		if(tree.children[3]!=null)
+			i = i|8;
+		placeTriangles(tree, data, i);
+		for(i = 0; i<4; i++)
+			if(tree.children[i]!=null)
+				placeTriangles(tree.children[i], data);
+	}
+	private void placeTriangles(QuadTree tree, IntBuffer data, int state){
 		switch(state){
 			case 0:
-				tri(data, tree, 4, 1, 0);
-				tri(data, tree, 4, 3, 1);
-				tri(data, tree, 4, 2, 3);
-				tri(data, tree, 4, 0, 2);
+				placeRawTriangles(tree, data);
 				break;
 			case 1:
 				tri(data, tree, 1, 5, 4);
@@ -138,109 +342,6 @@ public class DynmapChunk{
 			case 15:
 				break;
 		}
-	}
-	private static void tri(IntBuffer data, QuadTree tree, int p1, int p2, int p3){
-		data.put(getIndex(tree, p1));
-		data.put(getIndex(tree, p2));
-		data.put(getIndex(tree, p3));
-	}
-	private final int ibo;
-	private final int x;
-	private final int z;
-	private int indexCount;
-	private final QuadTree tree;
-	DynmapChunk(int x, int z){
-		this.x = x;
-		this.z = z;
-		ibo = GL15.glGenBuffers();
-		tree = new QuadTree(0, 0, Dynmap.VertexCount-1);
-		updateIndices();
-	}
-	public void update(float x, float y, float z){
-		breakDown(tree, x-this.x, y, z-this.z, 0);
-		updateIndices();
-	}
-	private void countIndices(){
-		indexCount = 0;
-		countIndices(tree);
-	}
-	private void countIndices(QuadTree tree){
-		int i = 0;
-		if(tree.children[0]!=null)
-			i = i|1;
-		if(tree.children[1]!=null)
-			i = i|2;
-		if(tree.children[2]!=null)
-			i = i|4;
-		if(tree.children[3]!=null)
-			i = i|8;
-		switch(i){
-			case 0:
-				indexCount += 12;
-				break;
-			case 1:
-				indexCount += 12;
-				break;
-			case 2:
-				indexCount += 12;
-				break;
-			case 3:
-				indexCount += 9;
-				break;
-			case 4:
-				indexCount += 12;
-				break;
-			case 5:
-				indexCount += 9;
-				break;
-			case 6:
-				indexCount += 12;
-				break;
-			case 7:
-				indexCount += 6;
-				break;
-			case 8:
-				indexCount += 12;
-				break;
-			case 9:
-				indexCount += 12;
-				break;
-			case 10:
-				indexCount += 9;
-				break;
-			case 11:
-				indexCount += 6;
-				break;
-			case 12:
-				indexCount += 9;
-				break;
-			case 13:
-				indexCount += 6;
-				break;
-			case 14:
-				indexCount += 6;
-				break;
-			case 15:
-				break;
-		}
-		for(i = 0; i<4; i++)
-			if(tree.children[i]!=null)
-				countIndices(tree.children[i]);
-	}
-	private void placeTriangles(QuadTree tree, IntBuffer data){
-		int i = 0;
-		if(tree.children[0]!=null)
-			i = i|1;
-		if(tree.children[1]!=null)
-			i = i|2;
-		if(tree.children[2]!=null)
-			i = i|4;
-		if(tree.children[3]!=null)
-			i = i|8;
-		placeTriangles(tree, data, i);
-		for(i = 0; i<4; i++)
-			if(tree.children[i]!=null)
-				placeTriangles(tree.children[i], data);
 	}
 	void render(ShaderProgram shader){
 		shader.setUniform2f(0, x*Dynmap.BlocksPerChunk, z*Dynmap.BlocksPerChunk);

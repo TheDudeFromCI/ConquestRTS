@@ -98,6 +98,9 @@ public class ShaderProgram{
 			i++;
 		}
 	}
+	public void setUniform1f(int index, float v1){
+		GL20.glUniform1f(uniforms[index], v1);
+	}
 	public void setUniform1I(int index, int value){
 		GL20.glUniform1i(uniforms[index], value);
 	}

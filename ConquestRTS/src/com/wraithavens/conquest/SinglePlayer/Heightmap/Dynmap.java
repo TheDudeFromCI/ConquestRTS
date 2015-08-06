@@ -3,6 +3,7 @@ package com.wraithavens.conquest.SinglePlayer.Heightmap;
 import java.io.File;
 import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
@@ -10,7 +11,7 @@ import com.wraithavens.conquest.Math.MatrixUtils;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 
 public class Dynmap{
-	static final int VertexCount = 2048+1;
+	static final int VertexCount = 4096+1;
 	static final int BlocksPerChunk = 16384;
 	static final int MaxDepth = Integer.numberOfTrailingZeros(VertexCount-1)-1;
 	private final int vbo;
@@ -22,19 +23,22 @@ public class Dynmap{
 		shader =
 			new ShaderProgram(new File(WraithavensConquest.assetFolder, "Dynmap.vert"), null, new File(
 				WraithavensConquest.assetFolder, "Dynmap.frag"));
-		shader.loadUniforms("shift");
+		shader.loadUniforms("shift", "time", "center");
 		chunk = new DynmapChunk(0, 0);
-	}
-	public DynmapChunk getChunk(){
-		return chunk;
 	}
 	public void render(){
 		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
 			/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 1, 4000000);
 		shader.bind();
+		shader.setUniform1f(1, (float)GLFW.glfwGetTime()*100);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 		GL11.glVertexPointer(2, GL11.GL_FLOAT, 8, 0);
 		chunk.render(shader);
+	}
+	public void update(float x, float y, float z){
+		shader.bind();
+		shader.setUniform2f(2, x, z);
+		chunk.update(x, y, z);
 	}
 	private void loadVbo(){
 		FloatBuffer vertexData = BufferUtils.createFloatBuffer(VertexCount*VertexCount*3);

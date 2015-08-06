@@ -5,10 +5,12 @@ class QuadTree{
 	final int z;
 	final int size;
 	final QuadTree[] children;
-	QuadTree(int x, int z, int size){
+	final QuadTree parent;
+	QuadTree(int x, int z, int size, QuadTree parent){
 		this.x = x;
 		this.z = z;
 		this.size = size;
+		this.parent = parent;
 		children = new QuadTree[4];
 	}
 	QuadTree addChild(int index){
@@ -25,7 +27,7 @@ class QuadTree{
 			nx += s;
 			nz += s;
 		}
-		children[index] = new QuadTree(nx, nz, s);
+		children[index] = new QuadTree(nx, nz, s, this);
 		return children[index];
 	}
 	void clearChildren(){
@@ -33,5 +35,11 @@ class QuadTree{
 		children[1] = null;
 		children[2] = null;
 		children[3] = null;
+	}
+	int indexOf(QuadTree t){
+		for(int i = 0; i<4; i++)
+			if(children[i]==t)
+				return i;
+		return -1;
 	}
 }
