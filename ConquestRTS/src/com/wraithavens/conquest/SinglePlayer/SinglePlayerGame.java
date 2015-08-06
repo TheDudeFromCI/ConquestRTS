@@ -43,7 +43,7 @@ public class SinglePlayerGame implements Driver{
 		camera.goalZ = 8192;
 		world = new World(machine, camera);
 		heightMaps = new WorldHeightmaps(machine);
-		GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0.0f);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		SkyboxClouds noise = null;
 		SkyboxClouds noise2 = null;
@@ -192,10 +192,16 @@ public class SinglePlayerGame implements Driver{
 	}
 	public void onMouseWheel(double x, double y){}
 	public void render(){
-		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+		if(wireframeMode)
+			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
+		else
+			GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glPushMatrix();
 		updateCamera(frameDelta);
-		skybox.render(camera.x, camera.y, camera.z);
+		if(wireframeMode)
+			heightMaps.render(false);
+		else
+			skybox.render(camera.x, camera.y, camera.z);
 		world.render();
 		GL11.glPopMatrix();
 	}
@@ -203,7 +209,11 @@ public class SinglePlayerGame implements Driver{
 		frameDelta = delta;
 		move(delta);
 		world.update();
-		skybox.update(time);
+		// ---
+		// Skybox isn't visible in wireframe mode, so no need to update it.
+		// ---
+		if(!wireframeMode)
+			skybox.update(time);
 	}
 	private void move(double delta){
 		delta *= cameraSpeed;
