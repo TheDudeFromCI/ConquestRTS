@@ -4,28 +4,28 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import com.wraithavens.conquest.Launcher.Driver;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
-import com.wraithavens.conquest.Math.Vector4f;
 import com.wraithavens.conquest.SinglePlayer.Blocks.World;
+import com.wraithavens.conquest.SinglePlayer.Heightmap.Dynmap;
 import com.wraithavens.conquest.SinglePlayer.Heightmap.WorldHeightmaps;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
-import com.wraithavens.conquest.SinglePlayer.Skybox.MountainRenderer;
 import com.wraithavens.conquest.SinglePlayer.Skybox.MountainSkybox;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyBox;
-import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxBuilder;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxClouds;
-import com.wraithavens.conquest.Utility.PowerInterpolation;
 
 public class SinglePlayerGame implements Driver{
 	private WorldHeightmaps heightMaps;
 	private boolean w, a, s, d, shift, space, fly, lockedMouse, walkLock, e;
 	private boolean wireframeMode;
+	private boolean processBlocks = true;
+	private boolean processHeightmap = true;
 	private final float cameraSpeed = 40f;
 	private final float mouseSpeed = 0.2f;
 	private final Camera camera = new Camera();
 	private double frameDelta;
 	private World world;
 	private SkyBox skybox;
+	private Dynmap dynmap;
 	public void dispose(){
 		if(heightMaps!=null)
 			heightMaps.dispose();
@@ -45,60 +45,75 @@ public class SinglePlayerGame implements Driver{
 		heightMaps = new WorldHeightmaps(machine);
 		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0.0f);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		// ---
+		// Load the skyboxes.
+		// ---
 		SkyboxClouds noise = null;
 		SkyboxClouds noise2 = null;
 		MountainSkybox mountains = null;
-		{
-			SkyboxBuilder builder = new SkyboxBuilder();
-			builder.setBackdrop(true);
-			builder.setSeed(0);
-			builder.setSmoothness(50);
-			builder.setDetail(3);
-			builder.setFunction(SkyboxBuilder.Cerp);
-			PowerInterpolation Perp2 = new PowerInterpolation(2);
-			builder.setColorFunction(Perp2);
-			builder.setMaxColorWeight(2);
-			builder.setMaxColor(new Vector4f(1.0f, 1.0f, 1.0f, 0.8f));
-			noise = builder.build();
-			noise.setSpinSpeed(0.1f);
-		}
-		{
-			SkyboxBuilder builder = new SkyboxBuilder();
-			builder.setBackdrop(false);
-			builder.setSeed(1);
-			builder.setSmoothness(70);
-			builder.setDetail(4);
-			builder.setFunction(SkyboxBuilder.Cerp);
-			builder.setColorFunction(SkyboxBuilder.Lerp);
-			builder.setMaxColorWeight(2);
-			builder.setMaxColor(new Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
-			noise2 = builder.build();
-			noise2.setSpinSpeed(1.0f);
-		}
-		{
-			mountains = new MountainSkybox(new MountainRenderer(){
-				public float getCameraX(){
-					return camera.x;
-				}
-				public float getCameraY(){
-					return camera.y;
-				}
-				public float getCameraZ(){
-					return camera.z;
-				}
-				public WorldHeightmaps getHeightmap(){
-					return heightMaps;
-				}
-				public void renderMesh(){
-					heightMaps.render(false);
-				}
-				public void renderSkybox(){
-					heightMaps.render(true);
-				}
-			});
-		}
+		// {
+		// // ---
+		// // Load the backdrop sky.
+		// // ---
+		// {
+		// SkyboxBuilder builder = new SkyboxBuilder();
+		// builder.setBackdrop(true);
+		// builder.setSeed(0);
+		// builder.setSmoothness(50);
+		// builder.setDetail(3);
+		// builder.setFunction(SkyboxBuilder.Cerp);
+		// PowerInterpolation Perp2 = new PowerInterpolation(2);
+		// builder.setColorFunction(Perp2);
+		// builder.setMaxColorWeight(2);
+		// builder.setMaxColor(new Vector4f(1.0f, 1.0f, 1.0f, 0.8f));
+		// noise = builder.build();
+		// noise.setSpinSpeed(0.1f);
+		// }
+		// // ---
+		// // Load the forground clouds.
+		// // ---
+		// {
+		// SkyboxBuilder builder = new SkyboxBuilder();
+		// builder.setBackdrop(false);
+		// builder.setSeed(1);
+		// builder.setSmoothness(70);
+		// builder.setDetail(4);
+		// builder.setFunction(SkyboxBuilder.Cerp);
+		// builder.setColorFunction(SkyboxBuilder.Lerp);
+		// builder.setMaxColorWeight(2);
+		// builder.setMaxColor(new Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
+		// noise2 = builder.build();
+		// noise2.setSpinSpeed(1.0f);
+		// }
+		// // ---
+		// // Load the mountain skybox renderer.
+		// // ---
+		// {
+		// mountains = new MountainSkybox(new MountainRenderer(){
+		// public float getCameraX(){
+		// return camera.x;
+		// }
+		// public float getCameraY(){
+		// return camera.y;
+		// }
+		// public float getCameraZ(){
+		// return camera.z;
+		// }
+		// public WorldHeightmaps getHeightmap(){
+		// return heightMaps;
+		// }
+		// public void renderMesh(){
+		// heightMaps.render(false);
+		// }
+		// public void renderSkybox(){
+		// heightMaps.render(true);
+		// }
+		// });
+		// }
+		// }
 		skybox = new SkyBox(noise, null, noise2, mountains);
 		skybox.redrawMountains();
+		dynmap = new Dynmap();
 	}
 	public void onKey(int key, int action){
 		if(key==GLFW.GLFW_KEY_W){
@@ -146,20 +161,36 @@ public class SinglePlayerGame implements Driver{
 					GL11.glDisable(GL11.GL_CULL_FACE);
 				}
 				wireframeMode = !wireframeMode;
+				System.out.println("Wireframe mode now set to "+wireframeMode+".");
 			}
 		}else if(key==GLFW.GLFW_KEY_2){
 			if(action==GLFW.GLFW_PRESS){
 				fly = !fly;
+				System.out.println("Fly mode now set to "+fly+".");
 			}
 		}else if(key==GLFW.GLFW_KEY_ESCAPE){
 			if(action==GLFW.GLFW_PRESS)
 				GLFW.glfwSetWindowShouldClose(WraithavensConquest.INSTANCE.getWindow(), GL11.GL_TRUE);
 		}else if(key==GLFW.GLFW_KEY_3){
-			if(action==GLFW.GLFW_PRESS)
+			if(action==GLFW.GLFW_PRESS){
 				walkLock = !walkLock;
+				System.out.println("Walklock now set to "+walkLock+".");
+			}
 		}else if(key==GLFW.GLFW_KEY_4){
-			if(action==GLFW.GLFW_PRESS)
+			if(action==GLFW.GLFW_PRESS){
 				world.unloadAllChunks();
+				System.out.println("All chunks unloaded.");
+			}
+		}else if(key==GLFW.GLFW_KEY_5){
+			if(action==GLFW.GLFW_PRESS){
+				processBlocks = !processBlocks;
+				System.out.println("Block processing now set to "+processBlocks+".");
+			}
+		}else if(key==GLFW.GLFW_KEY_6){
+			if(action==GLFW.GLFW_PRESS){
+				processHeightmap = !processHeightmap;
+				System.out.println("Heightmap processing now set to "+processHeightmap+".");
+			}
 		}
 	}
 	public void onMouse(int button, int action){
@@ -198,17 +229,25 @@ public class SinglePlayerGame implements Driver{
 			GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glPushMatrix();
 		updateCamera(frameDelta);
-		if(wireframeMode)
-			heightMaps.render(false);
-		else
+		if(wireframeMode){
+			if(processHeightmap)
+				heightMaps.render(false);
+		}else
 			skybox.render(camera.x, camera.y, camera.z);
-		world.render();
+		if(processBlocks)
+			world.render();
+		dynmap.render();
 		GL11.glPopMatrix();
 	}
 	public void update(double delta, double time){
 		frameDelta = delta;
 		move(delta);
-		world.update();
+		// ---
+		// Check to see if we should or should not update the world. Then act
+		// accoringly.
+		// ---
+		if(processBlocks)
+			world.update();
 		// ---
 		// Skybox isn't visible in wireframe mode, so no need to update it.
 		// ---
@@ -253,7 +292,8 @@ public class SinglePlayerGame implements Driver{
 		float z = camera.z;
 		camera.update(delta);
 		if(camera.x!=x||camera.z!=z)
-			heightMaps.update(camera.x, camera.z);
+			if(processHeightmap)
+				heightMaps.update(camera.x, camera.z);
 		if(camera.x!=x||camera.y!=y||camera.z!=z)
 			skybox.redrawMountains();
 	}
