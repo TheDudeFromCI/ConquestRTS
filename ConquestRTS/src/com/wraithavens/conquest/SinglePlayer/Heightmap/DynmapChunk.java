@@ -33,27 +33,27 @@ public class DynmapChunk{
 	private static void placeTriangles(QuadTree tree, IntBuffer data, int state){
 		switch(state){
 			case 0:
-				tri(data, tree, 0, 1, 4);
-				tri(data, tree, 1, 3, 4);
-				tri(data, tree, 3, 2, 4);
-				tri(data, tree, 2, 0, 4);
+				tri(data, tree, 4, 1, 0);
+				tri(data, tree, 4, 3, 1);
+				tri(data, tree, 4, 2, 3);
+				tri(data, tree, 4, 0, 2);
 				break;
 			case 1:
-				tri(data, tree, 4, 5, 1);
-				tri(data, tree, 1, 3, 4);
-				tri(data, tree, 3, 2, 4);
-				tri(data, tree, 2, 8, 4);
+				tri(data, tree, 1, 5, 4);
+				tri(data, tree, 4, 3, 1);
+				tri(data, tree, 4, 2, 3);
+				tri(data, tree, 4, 8, 2);
 				break;
 			case 2:
-				tri(data, tree, 0, 5, 4);
-				tri(data, tree, 0, 4, 2);
-				tri(data, tree, 2, 4, 3);
-				tri(data, tree, 3, 4, 6);
+				tri(data, tree, 4, 5, 4);
+				tri(data, tree, 2, 4, 0);
+				tri(data, tree, 3, 4, 2);
+				tri(data, tree, 6, 4, 3);
 				break;
 			case 3:
-				tri(data, tree, 2, 8, 4);
-				tri(data, tree, 2, 4, 3);
-				tri(data, tree, 3, 4, 6);
+				tri(data, tree, 4, 8, 2);
+				tri(data, tree, 3, 4, 2);
+				tri(data, tree, 6, 4, 3);
 				break;
 			case 4:
 				tri(data, tree, 8, 0, 4);
@@ -62,53 +62,53 @@ public class DynmapChunk{
 				tri(data, tree, 3, 7, 4);
 				break;
 			case 5:
-				tri(data, tree, 5, 1, 4);
-				tri(data, tree, 1, 3, 4);
-				tri(data, tree, 3, 7, 4);
+				tri(data, tree, 4, 1, 5);
+				tri(data, tree, 4, 3, 6);
+				tri(data, tree, 4, 7, 3);
 				break;
 			case 6:
-				tri(data, tree, 0, 5, 4);
-				tri(data, tree, 8, 0, 4);
-				tri(data, tree, 4, 6, 3);
-				tri(data, tree, 3, 7, 4);
+				tri(data, tree, 4, 5, 0);
+				tri(data, tree, 4, 0, 8);
+				tri(data, tree, 3, 6, 4);
+				tri(data, tree, 4, 7, 3);
 				break;
 			case 7:
-				tri(data, tree, 4, 6, 3);
-				tri(data, tree, 4, 3, 7);
+				tri(data, tree, 3, 6, 4);
+				tri(data, tree, 7, 3, 4);
 				break;
 			case 8:
-				tri(data, tree, 0, 1, 4);
-				tri(data, tree, 2, 0, 4);
-				tri(data, tree, 4, 1, 6);
-				tri(data, tree, 7, 2, 4);
+				tri(data, tree, 4, 1, 0);
+				tri(data, tree, 4, 0, 2);
+				tri(data, tree, 6, 1, 4);
+				tri(data, tree, 4, 2, 7);
 				break;
 			case 9:
-				tri(data, tree, 5, 1, 4);
-				tri(data, tree, 1, 6, 4);
-				tri(data, tree, 7, 2, 4);
-				tri(data, tree, 2, 8, 4);
+				tri(data, tree, 4, 1, 5);
+				tri(data, tree, 4, 6, 1);
+				tri(data, tree, 4, 2, 7);
+				tri(data, tree, 4, 8, 2);
 				break;
 			case 10:
-				tri(data, tree, 0, 5, 4);
-				tri(data, tree, 2, 0, 4);
-				tri(data, tree, 7, 2, 4);
+				tri(data, tree, 4, 5, 0);
+				tri(data, tree, 4, 0, 2);
+				tri(data, tree, 4, 2, 7);
 				break;
 			case 11:
-				tri(data, tree, 2, 8, 4);
-				tri(data, tree, 7, 2, 4);
+				tri(data, tree, 4, 8, 2);
+				tri(data, tree, 4, 2, 7);
 				break;
 			case 12:
-				tri(data, tree, 8, 0, 4);
-				tri(data, tree, 0, 1, 4);
-				tri(data, tree, 1, 6, 4);
+				tri(data, tree, 4, 0, 8);
+				tri(data, tree, 4, 1, 0);
+				tri(data, tree, 4, 6, 1);
 				break;
 			case 13:
-				tri(data, tree, 5, 1, 4);
-				tri(data, tree, 1, 6, 4);
+				tri(data, tree, 4, 1, 5);
+				tri(data, tree, 4, 6, 1);
 				break;
 			case 14:
-				tri(data, tree, 0, 5, 4);
-				tri(data, tree, 8, 0, 4);
+				tri(data, tree, 4, 5, 0);
+				tri(data, tree, 4, 0, 8);
 				break;
 			case 15:
 				break;
