@@ -29,6 +29,7 @@ public class SinglePlayerGame implements Driver{
 	private boolean wireframeMode;
 	private boolean processBlocks = true;
 	private boolean processHeightmap = true;
+	private boolean processMoveEvents = true;
 	private final float cameraSpeed = 40f;
 	private final float mouseSpeed = 0.2f;
 	private final Camera camera = new Camera();
@@ -213,6 +214,11 @@ public class SinglePlayerGame implements Driver{
 				processHeightmap = !processHeightmap;
 				System.out.println("Heightmap processing now set to "+processHeightmap+".");
 			}
+		}else if(key==GLFW.GLFW_KEY_7){
+			if(action==GLFW.GLFW_PRESS){
+				processMoveEvents = !processMoveEvents;
+				System.out.println("Move event processing now set to "+processMoveEvents+".");
+			}
 		}
 	}
 	public void onMouse(int button, int action){
@@ -319,6 +325,8 @@ public class SinglePlayerGame implements Driver{
 		float y = camera.y;
 		float z = camera.z;
 		camera.update(delta);
+		if(!processMoveEvents)
+			return;
 		if(camera.x!=x||camera.z!=z)
 			if(processHeightmap)
 				if(heightMaps!=null)

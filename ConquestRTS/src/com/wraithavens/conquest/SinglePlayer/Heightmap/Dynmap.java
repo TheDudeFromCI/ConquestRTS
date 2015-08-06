@@ -10,7 +10,7 @@ import com.wraithavens.conquest.Math.MatrixUtils;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 
 public class Dynmap{
-	static final int VertexCount = 1025;
+	static final int VertexCount = 2048+1;
 	static final int BlocksPerChunk = 16384;
 	static final int MaxDepth = Integer.numberOfTrailingZeros(VertexCount-1)-1;
 	private final int vbo;

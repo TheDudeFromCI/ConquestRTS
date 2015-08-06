@@ -23,7 +23,7 @@ public class DynmapChunk{
 		return (nx-x)*(nx-x)+y*y+(nz-z)*(nz-z);
 	}
 	private static int getDepth(double d){
-		int m = Dynmap.BlocksPerChunk;
+		int m = Dynmap.BlocksPerChunk*2;
 		int i;
 		for(i = 0; i<Dynmap.MaxDepth; i++){
 			if(d>=m*m)
