@@ -40,10 +40,9 @@ public class EntityMesh{
 				vertexData.flip();
 				GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 				GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertexData, GL15.GL_STATIC_DRAW);
-				// dataType =
-				// vertexCount/9<256?GL11.GL_UNSIGNED_BYTE:vertexCount/9<65536?GL11.GL_UNSIGNED_SHORT
-				// :GL11.GL_UNSIGNED_INT;
-				dataType = GL11.GL_UNSIGNED_INT;
+				dataType =
+					vertexCount/9<256?GL11.GL_UNSIGNED_BYTE:vertexCount/9<65536?GL11.GL_UNSIGNED_SHORT
+						:GL11.GL_UNSIGNED_INT;
 			}
 			{
 				indexCount = bin.getInt();
@@ -72,7 +71,10 @@ public class EntityMesh{
 			}
 			System.out.println("Loaded entity: "+type.fileName+".");
 			System.out.println("  Vertex Count: "+vertexCount);
-			System.out.println("  Index Count: "+indexCount+"  ("+indexCount/3+" tris)");
+			System.out
+				.println("  Index Count: "+indexCount+"  ("+indexCount/3+" tris) (Storage: "
+					+(dataType==GL11.GL_UNSIGNED_BYTE?"Byte":dataType==GL11.GL_UNSIGNED_SHORT?"Short":"Integer")
+					+")");
 		}
 	}
 	private void dispose(){
@@ -92,9 +94,7 @@ public class EntityMesh{
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 	}
 	void drawStatic(){
-		GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glDrawElements(GL11.GL_TRIANGLES, indexCount, dataType, 0);
-		GL11.glEnable(GL11.GL_CULL_FACE);
 	}
 	int getId(){
 		return type.ordinal();
