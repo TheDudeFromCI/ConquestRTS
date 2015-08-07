@@ -243,7 +243,7 @@ public class SinglePlayerGame implements Driver{
 				}
 				StaticEntity e = new StaticEntity(EntityType.Grass);
 				entityDatabase.addEntity(e);
-				e.transform.translate(camera.x, camera.y, camera.z);
+				e.position.set(camera.x, camera.y, camera.z);
 				System.out.println("Spawned grass entity at ("+camera.x+", "+camera.y+", "+camera.z+").");
 			}
 		}else if(key==GLFW.GLFW_KEY_9){

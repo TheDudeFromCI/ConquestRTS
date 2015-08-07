@@ -32,36 +32,43 @@ public class EntityMesh{
 			// ---
 			bin.getBoolean();
 			int vertexCount = bin.getInt();
-			FloatBuffer vertexData = BufferUtils.createFloatBuffer(vertexCount*36);
-			vertexCount *= 9;
-			for(int i = 0; i<vertexCount; i++)
-				vertexData.put(bin.getFloat());
-			vertexData.flip();
-			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
-			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertexData, GL15.GL_STATIC_DRAW);
-			indexCount = bin.getInt();
-			dataType =
-				vertexCount/9<256?GL11.GL_UNSIGNED_BYTE:vertexCount/9<65536?GL11.GL_UNSIGNED_SHORT
-					:GL11.GL_UNSIGNED_INT;
-			GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
-			if(dataType==GL11.GL_UNSIGNED_BYTE){
-				ByteBuffer indexData = BufferUtils.createByteBuffer(indexCount);
-				for(int i = 0; i<indexCount; i++)
-					indexData.put((byte)bin.getInt());
-				indexData.flip();
-				GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_STATIC_DRAW);
-			}else if(dataType==GL11.GL_UNSIGNED_SHORT){
-				ShortBuffer indexData = BufferUtils.createShortBuffer(indexCount);
-				for(int i = 0; i<indexCount; i++)
-					indexData.put((short)bin.getInt());
-				indexData.flip();
-				GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_STATIC_DRAW);
-			}else{
-				IntBuffer indexData = BufferUtils.createIntBuffer(indexCount);
-				for(int i = 0; i<indexCount; i++)
-					indexData.put(bin.getInt());
-				indexData.flip();
-				GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_STATIC_DRAW);
+			{
+				FloatBuffer vertexData = BufferUtils.createFloatBuffer(vertexCount*36);
+				vertexCount *= 9;
+				for(int i = 0; i<vertexCount; i++)
+					vertexData.put(bin.getFloat());
+				vertexData.flip();
+				GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
+				GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertexData, GL15.GL_STATIC_DRAW);
+				// dataType =
+				// vertexCount/9<256?GL11.GL_UNSIGNED_BYTE:vertexCount/9<65536?GL11.GL_UNSIGNED_SHORT
+				// :GL11.GL_UNSIGNED_INT;
+				dataType = GL11.GL_UNSIGNED_INT;
+			}
+			{
+				indexCount = bin.getInt();
+				if(dataType==GL11.GL_UNSIGNED_BYTE){
+					ByteBuffer indexData = BufferUtils.createByteBuffer(indexCount);
+					for(int i = 0; i<indexCount; i++)
+						indexData.put((byte)bin.getInt());
+					indexData.flip();
+					GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
+					GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_STATIC_DRAW);
+				}else if(dataType==GL11.GL_UNSIGNED_SHORT){
+					ShortBuffer indexData = BufferUtils.createShortBuffer(indexCount);
+					for(int i = 0; i<indexCount; i++)
+						indexData.put((short)bin.getInt());
+					indexData.flip();
+					GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
+					GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_STATIC_DRAW);
+				}else{
+					IntBuffer indexData = BufferUtils.createIntBuffer(indexCount);
+					for(int i = 0; i<indexCount; i++)
+						indexData.put(bin.getInt());
+					indexData.flip();
+					GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
+					GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_STATIC_DRAW);
+				}
 			}
 			System.out.println("Loaded entity: "+type.fileName+".");
 			System.out.println("  Vertex Count: "+vertexCount);
