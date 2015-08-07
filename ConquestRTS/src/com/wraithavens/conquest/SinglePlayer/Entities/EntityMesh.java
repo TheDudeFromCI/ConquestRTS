@@ -8,6 +8,7 @@ import java.nio.ShortBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
@@ -33,15 +34,15 @@ public class EntityMesh{
 			bin.getBoolean();
 			int vertexCount = bin.getInt();
 			{
-				FloatBuffer vertexData = BufferUtils.createFloatBuffer(vertexCount*36);
-				vertexCount *= 9;
-				for(int i = 0; i<vertexCount; i++)
+				FloatBuffer vertexData = BufferUtils.createFloatBuffer(vertexCount*28);
+				int vertexFloats = vertexCount*7;
+				for(int i = 0; i<vertexFloats; i++)
 					vertexData.put(bin.getFloat());
 				vertexData.flip();
 				GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 				GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertexData, GL15.GL_STATIC_DRAW);
 				dataType =
-					vertexCount/9<256?GL11.GL_UNSIGNED_BYTE:vertexCount/9<65536?GL11.GL_UNSIGNED_SHORT
+					vertexCount<256?GL11.GL_UNSIGNED_BYTE:vertexCount<65536?GL11.GL_UNSIGNED_SHORT
 						:GL11.GL_UNSIGNED_INT;
 			}
 			{
@@ -72,9 +73,9 @@ public class EntityMesh{
 			System.out.println("Loaded entity: "+type.fileName+".");
 			System.out.println("  Vertex Count: "+vertexCount);
 			System.out
-				.println("  Index Count: "+indexCount+"  ("+indexCount/3+" tris) (Storage: "
-					+(dataType==GL11.GL_UNSIGNED_BYTE?"Byte":dataType==GL11.GL_UNSIGNED_SHORT?"Short":"Integer")
-					+")");
+			.println("  Index Count: "+indexCount+"  ("+indexCount/3+" tris) (Storage: "
+				+(dataType==GL11.GL_UNSIGNED_BYTE?"Byte":dataType==GL11.GL_UNSIGNED_SHORT?"Short":"Integer")
+				+")");
 		}
 	}
 	private void dispose(){
@@ -88,9 +89,9 @@ public class EntityMesh{
 	}
 	void bind(){
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
-		GL11.glVertexPointer(3, GL11.GL_FLOAT, 36, 0);
-		GL11.glNormalPointer(GL11.GL_FLOAT, 36, 12);
-		GL11.glColorPointer(3, GL11.GL_FLOAT, 36, 24);
+		GL11.glVertexPointer(3, GL11.GL_FLOAT, 28, 0);
+		GL20.glVertexAttribPointer(EntityDatabase.ShaderLocation, 1, GL11.GL_FLOAT, false, 28, 12);
+		GL11.glColorPointer(3, GL11.GL_FLOAT, 28, 16);
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 	}
 	void drawStatic(){

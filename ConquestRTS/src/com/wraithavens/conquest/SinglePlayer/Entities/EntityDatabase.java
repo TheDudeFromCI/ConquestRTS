@@ -3,10 +3,12 @@ package com.wraithavens.conquest.SinglePlayer.Entities;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
+import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 
 public class EntityDatabase{
+	static int ShaderLocation;
 	private final ArrayList<Entity> entities = new ArrayList();
 	private final Comparator entitySorter = new Comparator<Entity>(){
 		public int compare(Entity a, Entity b){
@@ -18,6 +20,9 @@ public class EntityDatabase{
 		shader =
 			new ShaderProgram(new File(WraithavensConquest.assetFolder, "ModelShader.vert"), null, new File(
 				WraithavensConquest.assetFolder, "ModelShader.frag"));
+		shader.bind();
+		ShaderLocation = shader.getAttributeLocation("shade");
+		GL20.glEnableVertexAttribArray(ShaderLocation);
 	}
 	public void addEntity(Entity e){
 		entities.add(e);
