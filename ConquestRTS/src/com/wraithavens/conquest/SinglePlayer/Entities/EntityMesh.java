@@ -86,6 +86,9 @@ public class EntityMesh{
 	void drawStatic(){
 		GL11.glDrawElements(GL11.GL_TRIANGLES, indexCount, dataType, 0);
 	}
+	int getId(){
+		return type.ordinal();
+	}
 	void removeReference(){
 		references--;
 		System.out.println("Removed reference to entity: '"+type.fileName+"'. References: "+references);

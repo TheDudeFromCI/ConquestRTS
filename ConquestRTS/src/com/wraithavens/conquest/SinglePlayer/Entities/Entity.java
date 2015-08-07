@@ -8,5 +8,8 @@ public abstract class Entity{
 	public void dispose(){
 		mesh.removeReference();
 	}
+	public EntityMesh getMesh(){
+		return mesh;
+	}
 	public abstract void render();
 }
