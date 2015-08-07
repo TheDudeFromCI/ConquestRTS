@@ -92,6 +92,11 @@ public class BinaryFile{
 	public float getFloat(){
 		return Float.intBitsToFloat(getInt());
 	}
+	public int getInt(){
+		int i = binary[pos]&0xFF|(binary[pos+1]&0xFF)<<8|(binary[pos+2]&0xFF)<<16|(binary[pos+3]&0xFF)<<24;
+		pos += 4;
+		return i;
+	}
 	public int size(){
 		return binary.length;
 	}
@@ -101,10 +106,5 @@ public class BinaryFile{
 		binary[pos+2] = (byte)(n>>16&0xFF);
 		binary[pos+3] = (byte)(n>>24&0xFF);
 		pos += 4;
-	}
-	private int getInt(){
-		int i = binary[pos]&0xFF|(binary[pos+1]&0xFF)<<8|(binary[pos+2]&0xFF)<<16|(binary[pos+3]&0xFF)<<24;
-		pos += 4;
-		return i;
 	}
 }
