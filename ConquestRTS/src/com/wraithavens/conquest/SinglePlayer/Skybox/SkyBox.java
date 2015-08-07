@@ -33,6 +33,17 @@ public class SkyBox{
 		iboId = GL15.glGenBuffers();
 		buildVbo();
 	}
+	public void dispose(){
+		shader.dispose();
+		if(layer0!=null)
+			layer0.dispose();
+		if(layer1!=null)
+			layer1.dispose();
+		if(layer2!=null)
+			layer2.dispose();
+		if(layer2!=null)
+			layer3.dispose();
+	}
 	public void redrawMountains(){
 		if(layer3!=null)
 			layer3.redraw();

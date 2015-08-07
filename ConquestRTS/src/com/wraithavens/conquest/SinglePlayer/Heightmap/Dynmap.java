@@ -37,6 +37,11 @@ public class Dynmap{
 		}
 		chunk = new DynmapChunk(machine, 0, 0);
 	}
+	public void dispose(){
+		GL15.glDeleteBuffers(vbo);
+		chunk.dispose();
+		shader.dispose();
+	}
 	public void render(){
 		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
 			/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 1, 4000000);

@@ -105,6 +105,11 @@ public class MountainSkybox{
 		GL11.glViewport(0, 0, WraithavensConquest.INSTANCE.getScreenWidth(),
 			WraithavensConquest.INSTANCE.getScreenHeight());
 	}
+	void dispose(){
+		GL11.glDeleteTextures(colorTexture);
+		GL30.glDeleteFramebuffers(frameBuffer);
+		GL30.glDeleteRenderbuffers(renderBuffer);
+	}
 	boolean isDrawing(){
 		return redrawFrame>-1||redrawPending;
 	}

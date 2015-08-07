@@ -288,6 +288,11 @@ public class DynmapChunk{
 	private void placeTextures(WorldNoiseMachine machine, int x, int z, int size){
 		textures[0] = new DynmapTexture(machine, x, z, size);
 	}
+	void dispose(){
+		GL15.glDeleteBuffers(ibo);
+		for(DynmapTexture t : textures)
+			t.dispose();
+	}
 	void render(){
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 		for(int i = 0; i<TextureCount; i++){

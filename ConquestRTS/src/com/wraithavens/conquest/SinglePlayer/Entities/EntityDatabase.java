@@ -1,7 +1,10 @@
 package com.wraithavens.conquest.SinglePlayer.Entities;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
+import com.wraithavens.conquest.Launcher.WraithavensConquest;
+import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 
 public class EntityDatabase{
 	private final ArrayList<Entity> entities = new ArrayList();
@@ -10,6 +13,12 @@ public class EntityDatabase{
 			return a.mesh==b.mesh?0:a.mesh.getId()>b.mesh.getId()?1:-1;
 		}
 	};
+	private final ShaderProgram shader;
+	public EntityDatabase(){
+		shader =
+			new ShaderProgram(new File(WraithavensConquest.assetFolder, "ModelShader.vert"), null, new File(
+				WraithavensConquest.assetFolder, "ModelShader.frag"));
+	}
 	public void addEntity(Entity e){
 		entities.add(e);
 		// ---
@@ -19,12 +28,17 @@ public class EntityDatabase{
 		// ---
 		entities.sort(entitySorter);
 	}
-	public void dispose(){
+	public void clear(){
 		for(Entity e : entities)
 			e.dispose();
 		entities.clear();
 	}
+	public void dispose(){
+		clear();
+		shader.dispose();
+	}
 	public void render(){
+		shader.bind();
 		// ---
 		// Render all entities. Switching mesh types as nessicary.
 		// ---

@@ -94,4 +94,7 @@ public class DynmapTexture{
 	void bind(){
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
 	}
+	void dispose(){
+		GL11.glDeleteTextures(textureId);
+	}
 }

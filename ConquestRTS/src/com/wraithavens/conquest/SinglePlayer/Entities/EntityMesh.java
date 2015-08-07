@@ -31,8 +31,9 @@ public class EntityMesh{
 			// can just ignore this values.
 			// ---
 			bin.getBoolean();
-			int vertexCount = bin.getInt()*36;
-			FloatBuffer vertexData = BufferUtils.createFloatBuffer(vertexCount);
+			int vertexCount = bin.getInt();
+			FloatBuffer vertexData = BufferUtils.createFloatBuffer(vertexCount*36);
+			vertexCount *= 9;
 			for(int i = 0; i<vertexCount; i++)
 				vertexData.put(bin.getFloat());
 			vertexData.flip();
@@ -40,7 +41,7 @@ public class EntityMesh{
 			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertexData, GL15.GL_STATIC_DRAW);
 			indexCount = bin.getInt();
 			dataType =
-				vertexCount/36<256?GL11.GL_UNSIGNED_BYTE:vertexCount/36<65536?GL11.GL_UNSIGNED_SHORT
+				vertexCount/9<256?GL11.GL_UNSIGNED_BYTE:vertexCount/9<65536?GL11.GL_UNSIGNED_SHORT
 					:GL11.GL_UNSIGNED_INT;
 			GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 			if(dataType==GL11.GL_UNSIGNED_BYTE){
@@ -84,7 +85,9 @@ public class EntityMesh{
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 	}
 	void drawStatic(){
+		GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glDrawElements(GL11.GL_TRIANGLES, indexCount, dataType, 0);
+		GL11.glEnable(GL11.GL_CULL_FACE);
 	}
 	int getId(){
 		return type.ordinal();

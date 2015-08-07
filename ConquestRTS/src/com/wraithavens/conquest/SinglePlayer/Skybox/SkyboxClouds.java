@@ -113,6 +113,9 @@ public class SkyboxClouds{
 		if(!backdrop)
 			data.put(temp.w);
 	}
+	void dispose(){
+		GL11.glDeleteTextures(textureId);
+	}
 	void randomize(){
 		FloatBuffer data = BufferUtils.createFloatBuffer(TextureSize*TextureSize*(backdrop?3:4));
 		for(int i = 0; i<6; i++)

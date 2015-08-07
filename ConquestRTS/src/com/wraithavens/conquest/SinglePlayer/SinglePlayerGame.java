@@ -49,6 +49,12 @@ public class SinglePlayerGame implements Driver{
 			heightMaps.dispose();
 		if(world!=null)
 			world.dispose();
+		if(entityDatabase!=null)
+			entityDatabase.dispose();
+		if(dynmap!=null)
+			dynmap.dispose();
+		if(skybox!=null)
+			skybox.dispose();
 	}
 	public void initalize(double time){
 		long[] seeds = new long[]{
@@ -246,7 +252,7 @@ public class SinglePlayerGame implements Driver{
 					System.out.println("Entity database not created. Could not clear entities.");
 					return;
 				}
-				entityDatabase.dispose();
+				entityDatabase.clear();
 				System.out.println("Entity database cleared.");
 				System.out.println("Testing entity mesh references:");
 				for(EntityType e : EntityType.values()){
