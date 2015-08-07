@@ -29,6 +29,7 @@ public class SinglePlayerGame implements Driver{
 	private static final boolean LoadMountainSkybox = false;
 	private static final boolean LoadDynmap = false;
 	private static final boolean LoadEntityDatabase = true;
+	private static final boolean SpawnInitalBulkGrass = true;
 	private WorldHeightmaps heightMaps;
 	private boolean w, a, s, d, shift, space, fly, lockedMouse, walkLock, e;
 	private boolean wireframeMode;
@@ -149,8 +150,23 @@ public class SinglePlayerGame implements Driver{
 			if(mountains!=null)
 				skybox.redrawMountains();
 		}
-		if(LoadEntityDatabase)
+		if(LoadEntityDatabase){
 			entityDatabase = new EntityDatabase();
+			if(SpawnInitalBulkGrass&&world!=null){
+				int x, z;
+				int minX = (int)(camera.goalX-100);
+				int minZ = (int)(camera.goalZ-100);
+				int maxX = (int)(camera.goalX+100);
+				int maxZ = (int)(camera.goalZ+100);
+				for(x = minX; x<=maxX; x++)
+					for(z = minZ; z<=maxZ; z++)
+						if(Math.random()<0.05){
+							StaticEntity e = new StaticEntity(EntityType.Grass);
+							entityDatabase.addEntity(e);
+							e.position.set(x+0.5f, world.getHeightAt(x, z)+1, z+0.5f);
+						}
+			}
+		}
 		if(LoadDynmap)
 			dynmap = new Dynmap(machine);
 	}
