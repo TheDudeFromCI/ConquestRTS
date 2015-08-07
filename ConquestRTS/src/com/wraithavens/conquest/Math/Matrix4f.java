@@ -16,7 +16,8 @@ public class Matrix4f{
 		return data.get(col*4+row);
 	}
 	public FloatBuffer read(){
-		data.flip();
+		if(data.position()!=0)
+			data.flip();
 		return data;
 	}
 	public void scale(float x, float y, float z){

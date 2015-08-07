@@ -21,7 +21,7 @@ import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxClouds;
 import com.wraithavens.conquest.Utility.PowerInterpolation;
 
 public class SinglePlayerGame implements Driver{
-	private static final boolean LoadWorld = false;
+	private static final boolean LoadWorld = true;
 	private static final boolean LoadHeightmap = false;
 	private static final boolean LoadSkyboxes = false;
 	private static final boolean LoadCloudBackdrop = true;

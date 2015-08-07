@@ -13,6 +13,7 @@ public enum EntityType{
 			return mesh;
 		}
 		mesh = new EntityMesh(this);
+		mesh.addReference();
 		return mesh;
 	}
 	public int getMeshRenferences(){
