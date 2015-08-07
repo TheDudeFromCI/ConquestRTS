@@ -36,6 +36,7 @@ public class SinglePlayerGame implements Driver{
 	private boolean processBlocks = true;
 	private boolean processHeightmap = true;
 	private boolean processMoveEvents = true;
+	private boolean chunkLoading = true;
 	private final float cameraSpeed = 40f;
 	private final float mouseSpeed = 0.2f;
 	private final Camera camera = new Camera();
@@ -160,7 +161,7 @@ public class SinglePlayerGame implements Driver{
 				int maxZ = (int)(camera.goalZ+100);
 				for(x = minX; x<=maxX; x++)
 					for(z = minZ; z<=maxZ; z++)
-						if(Math.random()<0.05){
+						if(Math.random()<0.3){
 							StaticEntity e = new StaticEntity(EntityType.Grass);
 							entityDatabase.addEntity(e);
 							e.moveTo(x+0.5f, world.getHeightAt(x, z)+1, z+0.5f);
@@ -280,6 +281,11 @@ public class SinglePlayerGame implements Driver{
 					}
 				}
 			}
+		}else if(key==GLFW.GLFW_KEY_0){
+			if(action==GLFW.GLFW_PRESS){
+				chunkLoading = !chunkLoading;
+				System.out.println("Chunk loading now set to "+chunkLoading+".");
+			}
 		}
 	}
 	public void onMouse(int button, int action){
@@ -340,15 +346,13 @@ public class SinglePlayerGame implements Driver{
 		// Check to see if we should or should not update the world. Then act
 		// accoringly.
 		// ---
-		if(processBlocks)
-			if(world!=null)
-				world.update();
+		if(processBlocks&&chunkLoading&&world!=null)
+			world.update();
 		// ---
 		// Skybox isn't visible in wireframe mode, so no need to update it.
 		// ---
-		if(!wireframeMode)
-			if(skybox!=null)
-				skybox.update(time);
+		if(!wireframeMode&&skybox!=null)
+			skybox.update(time);
 	}
 	private void move(double delta){
 		delta *= cameraSpeed;
