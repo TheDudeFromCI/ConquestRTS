@@ -6,6 +6,9 @@ import com.wraithavens.conquest.Launcher.Driver;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.Vector4f;
 import com.wraithavens.conquest.SinglePlayer.Blocks.World;
+import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
+import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
+import com.wraithavens.conquest.SinglePlayer.Entities.StaticEntity;
 import com.wraithavens.conquest.SinglePlayer.Heightmap.Dynmap;
 import com.wraithavens.conquest.SinglePlayer.Heightmap.WorldHeightmaps;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
@@ -24,6 +27,8 @@ public class SinglePlayerGame implements Driver{
 	private static final boolean LoadCloudBackdrop = true;
 	private static final boolean LoadCloudForeground = true;
 	private static final boolean LoadMountainSkybox = false;
+	private static final boolean LoadDynmap = false;
+	private static final boolean LoadEntityDatabase = true;
 	private WorldHeightmaps heightMaps;
 	private boolean w, a, s, d, shift, space, fly, lockedMouse, walkLock, e;
 	private boolean wireframeMode;
@@ -38,6 +43,7 @@ public class SinglePlayerGame implements Driver{
 	private SkyBox skybox;
 	private Dynmap dynmap;
 	private WorldNoiseMachine machine;
+	private EntityDatabase entityDatabase;
 	public void dispose(){
 		if(heightMaps!=null)
 			heightMaps.dispose();
@@ -137,7 +143,10 @@ public class SinglePlayerGame implements Driver{
 			if(mountains!=null)
 				skybox.redrawMountains();
 		}
-		dynmap = new Dynmap(machine);
+		if(LoadEntityDatabase)
+			entityDatabase = new EntityDatabase();
+		if(LoadDynmap)
+			dynmap = new Dynmap(machine);
 	}
 	public void onKey(int key, int action){
 		if(key==GLFW.GLFW_KEY_W){
@@ -220,6 +229,34 @@ public class SinglePlayerGame implements Driver{
 				processMoveEvents = !processMoveEvents;
 				System.out.println("Move event processing now set to "+processMoveEvents+".");
 			}
+		}else if(key==GLFW.GLFW_KEY_8){
+			if(action==GLFW.GLFW_PRESS){
+				if(entityDatabase==null){
+					System.out.println("Entity database not created. Could not place entity.");
+					return;
+				}
+				StaticEntity e = new StaticEntity(EntityType.Grass);
+				entityDatabase.addEntity(e);
+				System.out.println("Spawned grass entity.");
+			}
+		}else if(key==GLFW.GLFW_KEY_9){
+			if(action==GLFW.GLFW_PRESS){
+				if(entityDatabase==null){
+					System.out.println("Entity database not created. Could not clear entities.");
+					return;
+				}
+				entityDatabase.dispose();
+				System.out.println("Entity database cleared.");
+				System.out.println("Testing entity mesh references:");
+				for(EntityType e : EntityType.values()){
+					if(e.getMeshRenferences()==-1)
+						System.out.println("  "+e.fileName+" = No References");
+					else{
+						System.out.println(">>>Reference found for "+e.fileName+"!");
+						System.out.println("  -Reference count: "+e.getMeshRenferences());
+					}
+				}
+			}
 		}
 	}
 	public void onMouse(int button, int action){
@@ -269,6 +306,8 @@ public class SinglePlayerGame implements Driver{
 				world.render();
 		if(dynmap!=null)
 			dynmap.render();
+		if(entityDatabase!=null)
+			entityDatabase.render();
 		GL11.glPopMatrix();
 	}
 	public void update(double delta, double time){
