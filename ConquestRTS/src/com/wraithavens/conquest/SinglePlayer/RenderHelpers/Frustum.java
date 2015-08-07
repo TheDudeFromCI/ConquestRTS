@@ -7,12 +7,12 @@ import org.lwjgl.opengl.GL11;
 public class Frustum{
 	private static void normalizePlane(float[][] frustum, int side){
 		float magnitude =
-			(float)Math.sqrt(frustum[side][Frustum.A]*frustum[side][Frustum.A]+frustum[side][Frustum.B]
-				*frustum[side][Frustum.B]+frustum[side][Frustum.C]*frustum[side][Frustum.C]);
-		frustum[side][Frustum.A] /= magnitude;
-		frustum[side][Frustum.B] /= magnitude;
-		frustum[side][Frustum.C] /= magnitude;
-		frustum[side][Frustum.D] /= magnitude;
+			(float)Math.sqrt(frustum[side][A]*frustum[side][A]+frustum[side][B]*frustum[side][B]
+				+frustum[side][C]*frustum[side][C]);
+		frustum[side][A] /= magnitude;
+		frustum[side][B] /= magnitude;
+		frustum[side][C] /= magnitude;
+		frustum[side][D] /= magnitude;
 	}
 	private static final int A = 0;
 	private static final int B = 1;
@@ -36,29 +36,21 @@ public class Frustum{
 	}
 	public boolean cubeInFrustum(float x, float y, float z, float size){
 		for(int i = 0; i<6; i++){
-			if(frustum[i][Frustum.A]*(x-size)+frustum[i][Frustum.B]*(y-size)+frustum[i][Frustum.C]*(z-size)
-				+frustum[i][Frustum.D]>0)
+			if(frustum[i][A]*(x-size)+frustum[i][B]*(y-size)+frustum[i][C]*(z-size)+frustum[i][D]>0)
 				continue;
-			if(frustum[i][Frustum.A]*(x+size)+frustum[i][Frustum.B]*(y-size)+frustum[i][Frustum.C]*(z-size)
-				+frustum[i][Frustum.D]>0)
+			if(frustum[i][A]*(x+size)+frustum[i][B]*(y-size)+frustum[i][C]*(z-size)+frustum[i][D]>0)
 				continue;
-			if(frustum[i][Frustum.A]*(x-size)+frustum[i][Frustum.B]*(y+size)+frustum[i][Frustum.C]*(z-size)
-				+frustum[i][Frustum.D]>0)
+			if(frustum[i][A]*(x-size)+frustum[i][B]*(y+size)+frustum[i][C]*(z-size)+frustum[i][D]>0)
 				continue;
-			if(frustum[i][Frustum.A]*(x+size)+frustum[i][Frustum.B]*(y+size)+frustum[i][Frustum.C]*(z-size)
-				+frustum[i][Frustum.D]>0)
+			if(frustum[i][A]*(x+size)+frustum[i][B]*(y+size)+frustum[i][C]*(z-size)+frustum[i][D]>0)
 				continue;
-			if(frustum[i][Frustum.A]*(x-size)+frustum[i][Frustum.B]*(y-size)+frustum[i][Frustum.C]*(z+size)
-				+frustum[i][Frustum.D]>0)
+			if(frustum[i][A]*(x-size)+frustum[i][B]*(y-size)+frustum[i][C]*(z+size)+frustum[i][D]>0)
 				continue;
-			if(frustum[i][Frustum.A]*(x+size)+frustum[i][Frustum.B]*(y-size)+frustum[i][Frustum.C]*(z+size)
-				+frustum[i][Frustum.D]>0)
+			if(frustum[i][A]*(x+size)+frustum[i][B]*(y-size)+frustum[i][C]*(z+size)+frustum[i][D]>0)
 				continue;
-			if(frustum[i][Frustum.A]*(x-size)+frustum[i][Frustum.B]*(y+size)+frustum[i][Frustum.C]*(z+size)
-				+frustum[i][Frustum.D]>0)
+			if(frustum[i][A]*(x-size)+frustum[i][B]*(y+size)+frustum[i][C]*(z+size)+frustum[i][D]>0)
 				continue;
-			if(frustum[i][Frustum.A]*(x+size)+frustum[i][Frustum.B]*(y+size)+frustum[i][Frustum.C]*(z+size)
-				+frustum[i][Frustum.D]>0)
+			if(frustum[i][A]*(x+size)+frustum[i][B]*(y+size)+frustum[i][C]*(z+size)+frustum[i][D]>0)
 				continue;
 			return false;
 		}
@@ -126,35 +118,35 @@ public class Frustum{
 		clipMatrix[15] =
 			modelMatrix[12]*projectionMatrix[3]+modelMatrix[13]*projectionMatrix[7]+modelMatrix[14]
 				*projectionMatrix[11]+modelMatrix[15]*projectionMatrix[15];
-		frustum[Frustum.LEFT][Frustum.A] = clipMatrix[3]+clipMatrix[0];
-		frustum[Frustum.LEFT][Frustum.B] = clipMatrix[7]+clipMatrix[4];
-		frustum[Frustum.LEFT][Frustum.C] = clipMatrix[11]+clipMatrix[8];
-		frustum[Frustum.LEFT][Frustum.D] = clipMatrix[15]+clipMatrix[12];
-		Frustum.normalizePlane(frustum, Frustum.LEFT);
-		frustum[Frustum.RIGHT][Frustum.A] = clipMatrix[3]-clipMatrix[0];
-		frustum[Frustum.RIGHT][Frustum.B] = clipMatrix[7]-clipMatrix[4];
-		frustum[Frustum.RIGHT][Frustum.C] = clipMatrix[11]-clipMatrix[8];
-		frustum[Frustum.RIGHT][Frustum.D] = clipMatrix[15]-clipMatrix[12];
-		Frustum.normalizePlane(frustum, Frustum.RIGHT);
-		frustum[Frustum.BOTTOM][Frustum.A] = clipMatrix[3]+clipMatrix[1];
-		frustum[Frustum.BOTTOM][Frustum.B] = clipMatrix[7]+clipMatrix[5];
-		frustum[Frustum.BOTTOM][Frustum.C] = clipMatrix[11]+clipMatrix[9];
-		frustum[Frustum.BOTTOM][Frustum.D] = clipMatrix[15]+clipMatrix[13];
-		Frustum.normalizePlane(frustum, Frustum.BOTTOM);
-		frustum[Frustum.TOP][Frustum.A] = clipMatrix[3]-clipMatrix[1];
-		frustum[Frustum.TOP][Frustum.B] = clipMatrix[7]-clipMatrix[5];
-		frustum[Frustum.TOP][Frustum.C] = clipMatrix[11]-clipMatrix[9];
-		frustum[Frustum.TOP][Frustum.D] = clipMatrix[15]-clipMatrix[13];
-		Frustum.normalizePlane(frustum, Frustum.TOP);
-		frustum[Frustum.FRONT][Frustum.A] = clipMatrix[3]+clipMatrix[2];
-		frustum[Frustum.FRONT][Frustum.B] = clipMatrix[7]+clipMatrix[6];
-		frustum[Frustum.FRONT][Frustum.C] = clipMatrix[11]+clipMatrix[10];
-		frustum[Frustum.FRONT][Frustum.D] = clipMatrix[15]+clipMatrix[14];
-		Frustum.normalizePlane(frustum, Frustum.FRONT);
-		frustum[Frustum.BACK][Frustum.A] = clipMatrix[3]-clipMatrix[2];
-		frustum[Frustum.BACK][Frustum.B] = clipMatrix[7]-clipMatrix[6];
-		frustum[Frustum.BACK][Frustum.C] = clipMatrix[11]-clipMatrix[10];
-		frustum[Frustum.BACK][Frustum.D] = clipMatrix[15]-clipMatrix[14];
-		Frustum.normalizePlane(frustum, Frustum.BACK);
+		frustum[LEFT][A] = clipMatrix[3]+clipMatrix[0];
+		frustum[LEFT][B] = clipMatrix[7]+clipMatrix[4];
+		frustum[LEFT][C] = clipMatrix[11]+clipMatrix[8];
+		frustum[LEFT][D] = clipMatrix[15]+clipMatrix[12];
+		normalizePlane(frustum, LEFT);
+		frustum[RIGHT][A] = clipMatrix[3]-clipMatrix[0];
+		frustum[RIGHT][B] = clipMatrix[7]-clipMatrix[4];
+		frustum[RIGHT][C] = clipMatrix[11]-clipMatrix[8];
+		frustum[RIGHT][D] = clipMatrix[15]-clipMatrix[12];
+		normalizePlane(frustum, RIGHT);
+		frustum[BOTTOM][A] = clipMatrix[3]+clipMatrix[1];
+		frustum[BOTTOM][B] = clipMatrix[7]+clipMatrix[5];
+		frustum[BOTTOM][C] = clipMatrix[11]+clipMatrix[9];
+		frustum[BOTTOM][D] = clipMatrix[15]+clipMatrix[13];
+		normalizePlane(frustum, BOTTOM);
+		frustum[TOP][A] = clipMatrix[3]-clipMatrix[1];
+		frustum[TOP][B] = clipMatrix[7]-clipMatrix[5];
+		frustum[TOP][C] = clipMatrix[11]-clipMatrix[9];
+		frustum[TOP][D] = clipMatrix[15]-clipMatrix[13];
+		normalizePlane(frustum, TOP);
+		frustum[FRONT][A] = clipMatrix[3]+clipMatrix[2];
+		frustum[FRONT][B] = clipMatrix[7]+clipMatrix[6];
+		frustum[FRONT][C] = clipMatrix[11]+clipMatrix[10];
+		frustum[FRONT][D] = clipMatrix[15]+clipMatrix[14];
+		normalizePlane(frustum, FRONT);
+		frustum[BACK][A] = clipMatrix[3]-clipMatrix[2];
+		frustum[BACK][B] = clipMatrix[7]-clipMatrix[6];
+		frustum[BACK][C] = clipMatrix[11]-clipMatrix[10];
+		frustum[BACK][D] = clipMatrix[15]-clipMatrix[14];
+		normalizePlane(frustum, BACK);
 	}
 }

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
+import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 
 public class EntityDatabase{
@@ -42,7 +43,7 @@ public class EntityDatabase{
 		clear();
 		shader.dispose();
 	}
-	public void render(){
+	public void render(Camera camera){
 		shader.bind();
 		// ---
 		// Render all entities. Switching mesh types as nessicary.
@@ -53,7 +54,7 @@ public class EntityDatabase{
 				mesh = e.getMesh();
 				mesh.bind();
 			}
-			e.render();
+			e.render(camera);
 		}
 	}
 }

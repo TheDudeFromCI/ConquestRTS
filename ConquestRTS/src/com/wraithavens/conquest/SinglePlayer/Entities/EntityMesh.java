@@ -19,6 +19,7 @@ public class EntityMesh{
 	private final int ibo;
 	private final int indexCount;
 	private final int dataType;
+	private final float aabbSize;
 	EntityMesh(EntityType type){
 		this.type = type;
 		vbo = GL15.glGenBuffers();
@@ -70,12 +71,13 @@ public class EntityMesh{
 					GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_STATIC_DRAW);
 				}
 			}
+			aabbSize = bin.getFloat();
 			System.out.println("Loaded entity: "+type.fileName+".");
 			System.out.println("  Vertex Count: "+vertexCount);
 			System.out
-			.println("  Index Count: "+indexCount+"  ("+indexCount/3+" tris) (Storage: "
-				+(dataType==GL11.GL_UNSIGNED_BYTE?"Byte":dataType==GL11.GL_UNSIGNED_SHORT?"Short":"Integer")
-				+")");
+				.println("  Index Count: "+indexCount+"  ("+indexCount/3+" tris) (Storage: "
+					+(dataType==GL11.GL_UNSIGNED_BYTE?"Byte":dataType==GL11.GL_UNSIGNED_SHORT?"Short":"Integer")
+					+")");
 		}
 	}
 	private void dispose(){
@@ -99,6 +101,9 @@ public class EntityMesh{
 	}
 	int getId(){
 		return type.ordinal();
+	}
+	float getSize(){
+		return aabbSize;
 	}
 	void removeReference(){
 		references--;

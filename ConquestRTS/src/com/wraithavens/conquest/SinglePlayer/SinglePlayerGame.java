@@ -163,7 +163,7 @@ public class SinglePlayerGame implements Driver{
 						if(Math.random()<0.05){
 							StaticEntity e = new StaticEntity(EntityType.Grass);
 							entityDatabase.addEntity(e);
-							e.position.set(x+0.5f, world.getHeightAt(x, z)+1, z+0.5f);
+							e.moveTo(x+0.5f, world.getHeightAt(x, z)+1, z+0.5f);
 						}
 			}
 		}
@@ -259,7 +259,7 @@ public class SinglePlayerGame implements Driver{
 				}
 				StaticEntity e = new StaticEntity(EntityType.Grass);
 				entityDatabase.addEntity(e);
-				e.position.set(camera.x, camera.y, camera.z);
+				e.moveTo(camera.x, camera.y, camera.z);
 				System.out.println("Spawned grass entity at ("+camera.x+", "+camera.y+", "+camera.z+").");
 			}
 		}else if(key==GLFW.GLFW_KEY_9){
@@ -330,7 +330,7 @@ public class SinglePlayerGame implements Driver{
 		if(dynmap!=null)
 			dynmap.render();
 		if(entityDatabase!=null)
-			entityDatabase.render();
+			entityDatabase.render(camera);
 		GL11.glPopMatrix();
 	}
 	public void update(double delta, double time){
