@@ -2,7 +2,6 @@ package com.wraithavens.conquest.SinglePlayer.Entities;
 
 import java.io.File;
 import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import org.lwjgl.BufferUtils;
@@ -35,10 +34,17 @@ public class EntityMesh{
 			bin.getBoolean();
 			int vertexCount = bin.getInt();
 			{
-				FloatBuffer vertexData = BufferUtils.createFloatBuffer(vertexCount*28);
-				int vertexFloats = vertexCount*7;
-				for(int i = 0; i<vertexFloats; i++)
-					vertexData.put(bin.getFloat());
+				ByteBuffer vertexData = BufferUtils.createByteBuffer(vertexCount*16);
+				int vertexFloats = vertexCount*16;
+				for(int i = 0; i<vertexFloats; i += 7){
+					vertexData.putFloat(bin.getFloat());
+					vertexData.putFloat(bin.getFloat());
+					vertexData.putFloat(bin.getFloat());
+					vertexData.put(bin.getByte());
+					vertexData.put(bin.getByte());
+					vertexData.put(bin.getByte());
+					vertexData.put(bin.getByte());
+				}
 				vertexData.flip();
 				GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 				GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertexData, GL15.GL_STATIC_DRAW);
@@ -91,9 +97,9 @@ public class EntityMesh{
 	}
 	void bind(){
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
-		GL11.glVertexPointer(3, GL11.GL_FLOAT, 28, 0);
-		GL20.glVertexAttribPointer(EntityDatabase.ShaderLocation, 1, GL11.GL_FLOAT, false, 28, 12);
-		GL11.glColorPointer(3, GL11.GL_FLOAT, 28, 16);
+		GL11.glVertexPointer(3, GL11.GL_FLOAT, 16, 0);
+		GL20.glVertexAttribPointer(EntityDatabase.ShaderLocation, 1, GL11.GL_UNSIGNED_BYTE, true, 16, 12);
+		GL11.glColorPointer(3, GL11.GL_UNSIGNED_BYTE, 16, 13);
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 	}
 	void drawStatic(){

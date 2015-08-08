@@ -1,7 +1,7 @@
 package com.wraithavens.conquest.SinglePlayer.Entities;
 
 import java.io.File;
-import java.nio.FloatBuffer;
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import org.lwjgl.BufferUtils;
@@ -11,6 +11,7 @@ import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
+import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class EntityBatch extends Entity{
@@ -22,6 +23,7 @@ public class EntityBatch extends Entity{
 		super(null);
 		vbo = GL15.glGenBuffers();
 		ibo = GL15.glGenBuffers();
+		GlError.dumpError();
 		aabb = new AABB();
 		{
 			File file = new File(WraithavensConquest.modelFolder, type.fileName);
@@ -44,37 +46,45 @@ public class EntityBatch extends Entity{
 				// Load all vertices, relative to their new location.
 				// ---
 				vertexCount = bin.getInt();
-				FloatBuffer vertexData = BufferUtils.createFloatBuffer(vertexCount*28*positions.size());
+				ByteBuffer vertexData = BufferUtils.createByteBuffer(vertexCount*16*positions.size());
 				float[] tempData = new float[vertexCount*7];
 				int i, j;
 				float f;
-				for(i = 0; i<tempData.length; i++)
-					tempData[i] = bin.getFloat();
+				for(i = 0; i<tempData.length; i += 7){
+					tempData[i+0] = bin.getFloat();
+					tempData[i+1] = bin.getFloat();
+					tempData[i+2] = bin.getFloat();
+					tempData[i+3] = bin.getByte();
+					tempData[i+4] = bin.getByte();
+					tempData[i+5] = bin.getByte();
+					tempData[i+6] = bin.getByte();
+				}
 				for(i = 0; i<positions.size(); i++)
 					for(j = 0; j<tempData.length; j += 7){
-						vertexData.put(f = tempData[j]/20f+positions.get(i).x);
+						vertexData.putFloat(f = tempData[j+0]/20f+positions.get(i).x);
 						if(f<minX)
 							minX = f;
 						if(f>maxX)
 							maxX = f;
-						vertexData.put(f = tempData[j+1]/20f+positions.get(i).y);
+						vertexData.putFloat(f = tempData[j+1]/20f+positions.get(i).y);
 						if(f<minY)
 							minY = f;
 						if(f>maxY)
 							maxY = f;
-						vertexData.put(f = tempData[j+2]/20f+positions.get(i).z);
+						vertexData.putFloat(f = tempData[j+2]/20f+positions.get(i).z);
 						if(f<minZ)
 							minZ = f;
 						if(f>maxZ)
 							maxZ = f;
-						vertexData.put(tempData[j+3]);
-						vertexData.put(tempData[j+4]);
-						vertexData.put(tempData[j+5]);
-						vertexData.put(tempData[j+6]);
+						vertexData.put((byte)tempData[j+3]);
+						vertexData.put((byte)tempData[j+4]);
+						vertexData.put((byte)tempData[j+5]);
+						vertexData.put((byte)tempData[j+6]);
 					}
 				vertexData.flip();
 				GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 				GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertexData, GL15.GL_STATIC_DRAW);
+				GlError.dumpError();
 			}
 			{
 				// ---
@@ -96,6 +106,7 @@ public class EntityBatch extends Entity{
 				indexData.flip();
 				GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 				GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_STATIC_DRAW);
+				GlError.dumpError();
 				this.indexCount = indexCount*positions.size();
 			}
 			{
@@ -117,16 +128,19 @@ public class EntityBatch extends Entity{
 	public void dispose(){
 		GL15.glDeleteBuffers(vbo);
 		GL15.glDeleteBuffers(ibo);
+		GlError.dumpError();
 	}
 	@Override
 	public void render(Camera camera){
 		if(!aabb.visible(camera))
 			return;
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
-		GL11.glVertexPointer(3, GL11.GL_FLOAT, 28, 0);
-		GL20.glVertexAttribPointer(EntityDatabase.ShaderLocation, 1, GL11.GL_FLOAT, false, 28, 12);
-		GL11.glColorPointer(3, GL11.GL_FLOAT, 28, 16);
+		GL11.glVertexPointer(3, GL11.GL_FLOAT, 16, 0);
+		GL20.glVertexAttribPointer(EntityDatabase.ShaderLocation, 1, GL11.GL_UNSIGNED_BYTE, true, 16, 12);
+		GL11.glColorPointer(3, GL11.GL_UNSIGNED_BYTE, 16, 13);
+		GlError.dumpError();
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 		GL11.glDrawElements(GL11.GL_TRIANGLES, indexCount, GL11.GL_UNSIGNED_INT, 0);
+		GlError.dumpError();
 	}
 }

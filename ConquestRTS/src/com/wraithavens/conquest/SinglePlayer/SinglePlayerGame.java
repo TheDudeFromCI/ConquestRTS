@@ -15,21 +15,22 @@ import com.wraithavens.conquest.SinglePlayer.Heightmap.Dynmap;
 import com.wraithavens.conquest.SinglePlayer.Heightmap.WorldHeightmaps;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
+import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.SinglePlayer.Skybox.MountainRenderer;
 import com.wraithavens.conquest.SinglePlayer.Skybox.MountainSkybox;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyBox;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxClouds;
 
 public class SinglePlayerGame implements Driver{
-	private static final boolean LoadWorld = true;
+	private static final boolean LoadWorld = false;
 	private static final boolean LoadHeightmap = false;
 	private static final boolean LoadSkyboxes = true;
 	private static final boolean LoadCloudBackdrop = true;
 	private static final boolean LoadCloudForeground = true;
 	private static final boolean LoadMountainSkybox = false;
-	private static final boolean LoadDynmap = true;
-	private static final boolean LoadEntityDatabase = true;
-	private static final boolean SpawnInitalBulkGrass = true;
+	private static final boolean LoadDynmap = false;
+	private static final boolean LoadEntityDatabase = false;
+	private static final boolean SpawnInitalBulkGrass = false;
 	private WorldHeightmaps heightMaps;
 	private boolean w, a, s, d, shift, space, fly, lockedMouse, walkLock, e;
 	private boolean wireframeMode;
@@ -47,6 +48,7 @@ public class SinglePlayerGame implements Driver{
 	private WorldNoiseMachine machine;
 	private EntityDatabase entityDatabase;
 	public void dispose(){
+		GlError.dumpError();
 		if(heightMaps!=null)
 			heightMaps.dispose();
 		if(world!=null)
@@ -57,6 +59,7 @@ public class SinglePlayerGame implements Driver{
 			dynmap.dispose();
 		if(skybox!=null)
 			skybox.dispose();
+		GlError.dumpError();
 	}
 	public void initalize(double time){
 		long[] seeds = new long[]{

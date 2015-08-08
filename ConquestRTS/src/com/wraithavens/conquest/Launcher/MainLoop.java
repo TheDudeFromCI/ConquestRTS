@@ -12,9 +12,11 @@ import org.lwjgl.glfw.GLFWvidmode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
 import org.lwjgl.system.MemoryUtil;
+import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 
-class MainLoop{
+public class MainLoop{
 	static boolean FPS_SYNC = true;
+	public static boolean Debug = true;
 	private GLFWCursorPosCallback cursorPosCallback;
 	private GLFWErrorCallback errorCallback;
 	private GLFWKeyCallback keyCallback;
@@ -70,12 +72,14 @@ class MainLoop{
 	}
 	private void loop(){
 		GLContext.createFromCurrent();
+		GlError.dumpError();
 		double lastTime = 0;
 		double currentTime;
 		double delta;
 		windowInitalizer.loopObjective.preLoop();
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		while(GLFW.glfwWindowShouldClose(window)==GL11.GL_FALSE){
+			GlError.dumpError();
 			currentTime = GLFW.glfwGetTime();
 			delta = currentTime-lastTime;
 			lastTime = currentTime;
@@ -83,11 +87,14 @@ class MainLoop{
 			windowInitalizer.loopObjective.update(delta, currentTime);
 			windowInitalizer.loopObjective.render();
 			GL11.glPopMatrix();
+			GlError.dumpError();
 			GLFW.glfwSwapBuffers(window);
 			GLFW.glfwPollEvents();
 			if(MainLoop.FPS_SYNC)
 				sync();
+			GlError.dumpError();
 		}
+		GlError.dumpError();
 	}
 	private void runLoop(WindowInitalizer windowInitalizer){
 		this.windowInitalizer = windowInitalizer;
@@ -95,17 +102,20 @@ class MainLoop{
 		try{
 			init();
 			loop();
-			GLFW.glfwDestroyWindow(window);
+			GlError.dumpError();
 			keyCallback.release();
 			mouseButtonCallback.release();
 			cursorPosCallback.release();
 			scrollCallback.release();
+			GlError.dumpError();
 		}catch(Exception exception){
 			exception.printStackTrace();
 		}finally{
+			GlError.dumpError();
 			windowInitalizer.loopObjective.cleanUp();
-			GLFW.glfwTerminate();
 			errorCallback.release();
+			GLFW.glfwDestroyWindow(window);
+			GLFW.glfwTerminate();
 			System.exit(0);
 		}
 	}

@@ -7,7 +7,7 @@ import org.lwjgl.Sys;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
-import org.lwjgl.opengl.GL43;
+import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.TitleScreen.TitleScreen;
 
 public class WraithavensConquest extends EmptyLoop{
@@ -32,21 +32,26 @@ public class WraithavensConquest extends EmptyLoop{
 		return fw.getDefaultDirectory().getAbsolutePath();
 	}
 	private static void printContextInfo(){
+		GlError.dumpError();
 		System.out.println("Version info:");
 		System.out.println("  OpenGL version: "+GL11.glGetString(GL11.GL_VERSION));
 		System.out.println("  LWJGL version: "+Sys.VERSION_MAJOR+"."+Sys.VERSION_MINOR);
 		System.out.println("  LWJGL revision: "+Sys.VERSION_REVISION);
 		System.out.println("  JNI: "+Sys.JNI_LIBRARY_NAME);
 		System.out.println("  GPU: "+GL11.glGetString(GL11.GL_RENDERER));
+		GlError.dumpError();
 		int extentions = GL11.glGetInteger(GL30.GL_NUM_EXTENSIONS);
 		System.out.println("  Extensions: "+extentions);
 		for(int i = 0; i<extentions; i++)
 			System.out.println("    "+GL30.glGetStringi(GL11.GL_EXTENSIONS, i));
+		GlError.dumpError();
 		System.out.println("  GLSL version: "+GL11.glGetString(GL20.GL_SHADING_LANGUAGE_VERSION));
-		int glslVersions = GL11.glGetInteger(GL43.GL_NUM_SHADING_LANGUAGE_VERSIONS);
-		System.out.println("  Other supported GLSL versions: "+glslVersions);
+		// int glslVersions =
+		// GL11.glGetInteger(GL43.GL_NUM_SHADING_LANGUAGE_VERSIONS);
+		// System.out.println("  Other supported GLSL versions: "+glslVersions);
 		System.out.println("  Maximum Texture Size: "+GL11.glGetInteger(GL11.GL_MAX_TEXTURE_SIZE));
 		System.out.println("End of version info.");
+		GlError.dumpError();
 	}
 	static String programFolder;
 	public static String assetFolder;
@@ -67,6 +72,7 @@ public class WraithavensConquest extends EmptyLoop{
 	public void cleanUp(){
 		if(driver!=null)
 			driver.dispose();
+		GlError.dumpError();
 	}
 	public int getScreenHeight(){
 		return init.height;
@@ -81,21 +87,25 @@ public class WraithavensConquest extends EmptyLoop{
 	public void key(long window, int key, int action){
 		if(driver!=null)
 			driver.onKey(key, action);
+		GlError.dumpError();
 	}
 	@Override
 	public void mouse(long window, int button, int action){
 		if(driver!=null)
 			driver.onMouse(button, action);
+		GlError.dumpError();
 	}
 	@Override
 	public void mouseMove(long window, double xpos, double ypos){
 		if(driver!=null)
 			driver.onMouseMove(xpos, ypos);
+		GlError.dumpError();
 	}
 	@Override
 	public void mouseWheel(long window, double xPos, double yPos){
 		if(driver!=null)
 			driver.onMouseWheel(xPos, yPos);
+		GlError.dumpError();
 	}
 	@Override
 	public void preLoop(){
@@ -104,6 +114,7 @@ public class WraithavensConquest extends EmptyLoop{
 		super.preLoop();
 		WraithavensConquest.INSTANCE = this;
 		setDriver(new TitleScreen());
+		GlError.dumpError();
 	}
 	public void render(){
 		if(driver!=null)
@@ -115,6 +126,7 @@ public class WraithavensConquest extends EmptyLoop{
 			newDriver = null;
 			driver.initalize(currentTime);
 		}
+		GlError.dumpError();
 	}
 	public void setDriver(Driver driver){
 		newDriver = driver;
@@ -125,5 +137,6 @@ public class WraithavensConquest extends EmptyLoop{
 		if(driver!=null)
 			driver.update(delta, time);
 		currentTime = time;
+		GlError.dumpError();
 	}
 }

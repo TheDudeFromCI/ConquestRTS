@@ -6,8 +6,8 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL14;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
+import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class SkyboxClouds{
@@ -27,6 +27,7 @@ public class SkyboxClouds{
 			i = GL13.GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
 		GL11.glTexImage2D(i, 0, backdrop?GL11.GL_RGB8:GL11.GL_RGBA8, TextureSize, TextureSize, 0, backdrop
 			?GL11.GL_RGB:GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, data);
+		GlError.dumpError();
 	}
 	static void load(boolean backdrop){
 		int skyId = (int)(Math.random()*CloudCombinationCount);
@@ -57,19 +58,21 @@ public class SkyboxClouds{
 		textureId = GL11.glGenTextures();
 		createTexture();
 		load(backdrop);
+		GlError.dumpError();
 	}
 	private void createTexture(){
+		GlError.dumpError();
 		GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, textureId);
 		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL12.GL_TEXTURE_WRAP_R, GL12.GL_CLAMP_TO_EDGE);
 		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
 		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
-		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
-		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
-		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL12.GL_TEXTURE_MAX_LEVEL, 5);
-		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL14.GL_GENERATE_MIPMAP, GL11.GL_TRUE);
+		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+		GlError.dumpError();
 	}
 	void dispose(){
 		GL11.glDeleteTextures(textureId);
+		GlError.dumpError();
 	}
 	void render(){
 		GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, textureId);
@@ -77,6 +80,7 @@ public class SkyboxClouds{
 		GL11.glRotatef(angle, 0, 1, 0);
 		GL11.glDrawElements(GL11.GL_QUADS, 24, GL11.GL_UNSIGNED_BYTE, 0);
 		GL11.glPopMatrix();
+		GlError.dumpError();
 	}
 	void update(double time){
 		angle = (float)(time*spinSpeed);
