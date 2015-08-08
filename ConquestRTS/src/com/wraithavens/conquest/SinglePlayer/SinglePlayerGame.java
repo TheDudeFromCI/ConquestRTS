@@ -86,12 +86,12 @@ public class SinglePlayerGame implements Driver{
 		// // Load the skyboxes.
 		// // ---
 		if(LoadSkyboxes){
-			SkyboxClouds noise = LoadCloudBackdrop?new SkyboxClouds(true, 0.1f):null;
+			SkyboxClouds noise = LoadCloudBackdrop?new SkyboxClouds(true, 0.5f):null;
 			SkyboxClouds[] noise2 = null;
 			if(LoadCloudForeground){
 				noise2 = new SkyboxClouds[SkyboxClouds.LayerCount];
 				for(int i = 0; i<SkyboxClouds.LayerCount; i++)
-					noise2[i] = new SkyboxClouds(false, i+1*0.1f);
+					noise2[i] = new SkyboxClouds(false, (float)Math.random()*2);
 			}
 			MountainSkybox mountains = null;
 			// ---
