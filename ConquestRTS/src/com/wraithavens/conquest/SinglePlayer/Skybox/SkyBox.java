@@ -77,24 +77,9 @@ public class SkyBox{
 		if(layer2!=null)
 			for(SkyboxClouds s : layer2)
 				s.render();
-		if(layer3!=null){
-			if(layer3.isDrawing()){
-				GL11.glEnable(GL11.GL_DEPTH_TEST);
-				GL11.glEnable(GL11.GL_CULL_FACE);
-				GL11.glPopMatrix();
-				layer3.renderMesh();
-				GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
-			}else{
-				layer3.render(vboId, iboId);
-				GL11.glEnable(GL11.GL_DEPTH_TEST);
-				GL11.glEnable(GL11.GL_CULL_FACE);
-				GL11.glPopMatrix();
-			}
-		}else{
-			GL11.glEnable(GL11.GL_DEPTH_TEST);
-			GL11.glEnable(GL11.GL_CULL_FACE);
-			GL11.glPopMatrix();
-		}
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glPopMatrix();
 	}
 	public void update(double time){
 		if(layer0!=null)

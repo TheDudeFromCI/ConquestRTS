@@ -44,7 +44,7 @@ public class Dynmap{
 	}
 	public void render(){
 		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
-			/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 1, 4000000);
+			/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 0.5f, 16384);
 		shader.bind();
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 		GL11.glVertexPointer(2, GL11.GL_FLOAT, 8, 0);
