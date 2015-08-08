@@ -37,8 +37,7 @@ public class EntityMesh{
 			int vertexCount = bin.getInt();
 			{
 				ByteBuffer vertexData = BufferUtils.createByteBuffer(vertexCount*16);
-				int vertexFloats = vertexCount*16;
-				for(int i = 0; i<vertexFloats; i += 7){
+				for(int i = 0; i<vertexCount; i++){
 					vertexData.putFloat(bin.getFloat());
 					vertexData.putFloat(bin.getFloat());
 					vertexData.putFloat(bin.getFloat());
