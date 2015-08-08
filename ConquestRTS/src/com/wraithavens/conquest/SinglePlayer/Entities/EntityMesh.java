@@ -20,8 +20,8 @@ public class EntityMesh{
 	private final int indexCount;
 	private final int dataType;
 	private final float aabbSize;
-	private final int[] lodSizes = new int[5];
-	private final int[] lodCounts = new int[5];
+	private final int[] lodSizes = new int[6];
+	private final int[] lodCounts = new int[6];
 	EntityMesh(EntityType type){
 		this.type = type;
 		vbo = GL15.glGenBuffers();
@@ -63,16 +63,19 @@ public class EntityMesh{
 				lodSizes[2] = bin.getInt();
 				lodSizes[3] = bin.getInt();
 				lodSizes[4] = bin.getInt();
+				lodSizes[5] = bin.getInt();
 				lodCounts[0] = lodSizes[1]-lodSizes[0];
 				lodCounts[1] = lodSizes[2]-lodSizes[1];
 				lodCounts[2] = lodSizes[3]-lodSizes[2];
 				lodCounts[3] = lodSizes[4]-lodSizes[3];
-				lodCounts[4] = indexCount-lodSizes[4];
+				lodCounts[4] = lodSizes[5]-lodSizes[4];
+				lodCounts[5] = indexCount-lodSizes[5];
 				lodSizes[0] *= dataType==GL11.GL_UNSIGNED_BYTE?1:dataType==GL11.GL_UNSIGNED_SHORT?2:4;
 				lodSizes[1] *= dataType==GL11.GL_UNSIGNED_BYTE?1:dataType==GL11.GL_UNSIGNED_SHORT?2:4;
 				lodSizes[2] *= dataType==GL11.GL_UNSIGNED_BYTE?1:dataType==GL11.GL_UNSIGNED_SHORT?2:4;
 				lodSizes[3] *= dataType==GL11.GL_UNSIGNED_BYTE?1:dataType==GL11.GL_UNSIGNED_SHORT?2:4;
 				lodSizes[4] *= dataType==GL11.GL_UNSIGNED_BYTE?1:dataType==GL11.GL_UNSIGNED_SHORT?2:4;
+				lodSizes[5] *= dataType==GL11.GL_UNSIGNED_BYTE?1:dataType==GL11.GL_UNSIGNED_SHORT?2:4;
 				if(dataType==GL11.GL_UNSIGNED_BYTE){
 					ByteBuffer indexData = BufferUtils.createByteBuffer(indexCount);
 					for(int i = 0; i<indexCount; i++)
@@ -101,9 +104,9 @@ public class EntityMesh{
 			GlError.out("Loaded entity: "+type.fileName+".");
 			GlError.out("  Vertex Count: "+vertexCount);
 			GlError
-			.out("  Index Count: "+indexCount+"  ("+indexCount/3+" tris) (Storage: "
-					+(dataType==GL11.GL_UNSIGNED_BYTE?"Byte":dataType==GL11.GL_UNSIGNED_SHORT?"Short":"Integer")
-					+")");
+				.out("  Index Count: "+indexCount+"  ("+indexCount/3+" tris) (Storage: "
+				+(dataType==GL11.GL_UNSIGNED_BYTE?"Byte":dataType==GL11.GL_UNSIGNED_SHORT?"Short":"Integer")
+				+")");
 		}
 	}
 	private void dispose(){

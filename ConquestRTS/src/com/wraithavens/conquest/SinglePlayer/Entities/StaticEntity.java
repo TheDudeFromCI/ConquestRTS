@@ -36,14 +36,16 @@ public class StaticEntity extends Entity{
 	private int getLod(Camera camera){
 		double d =
 			Math.pow(camera.x-position.x, 2)+Math.pow(camera.y-position.y, 2)+Math.pow(camera.z-position.z, 2);
-		if(d<75*75)
+		if(d<50*50)
 			return 0;
-		if(d<100*100)
+		if(d<75*75)
 			return 1;
-		if(d<120*120)
+		if(d<100*100)
 			return 2;
-		if(d<130*130)
+		if(d<125*125)
 			return 3;
-		return 4;
+		if(d<150*150)
+			return 4;
+		return 5;
 	}
 }
