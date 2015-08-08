@@ -2,6 +2,7 @@ package com.wraithavens.conquest.SinglePlayer.Blocks;
 
 import java.io.File;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
+import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
 class CellSorter{
@@ -23,9 +24,9 @@ class CellSorter{
 	public void next(){
 		pos++;
 		if(!hasNext())
-			System.out.println("All chunks loaded.");
+			GlError.out("All chunks loaded.");
 		else if(pos>0&&pos%750==0)
-			System.out.println(pos+"/"+cells.length/3+" chunks loaded.");
+			GlError.out(pos+"/"+cells.length/3+" chunks loaded.");
 	}
 	public void reset(){
 		pos = -1;

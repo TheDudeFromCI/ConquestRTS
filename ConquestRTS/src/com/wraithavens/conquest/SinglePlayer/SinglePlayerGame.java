@@ -22,7 +22,7 @@ import com.wraithavens.conquest.SinglePlayer.Skybox.SkyBox;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxClouds;
 
 public class SinglePlayerGame implements Driver{
-	private static final boolean LoadWorld = false;
+	private static final boolean LoadWorld = true;
 	private static final boolean LoadHeightmap = false;
 	private static final boolean LoadSkyboxes = true;
 	private static final boolean LoadCloudBackdrop = true;
@@ -32,7 +32,7 @@ public class SinglePlayerGame implements Driver{
 	private static final boolean LoadEntityDatabase = false;
 	private static final boolean SpawnInitalBulkGrass = false;
 	private WorldHeightmaps heightMaps;
-	private boolean w, a, s, d, shift, space, fly, lockedMouse, walkLock, e;
+	private boolean w, a, s, d, shift, space, grounded = true, lockedMouse, walkLock, e;
 	private boolean wireframeMode;
 	private boolean processBlocks = true;
 	private boolean processHeightmap = true;
@@ -193,12 +193,12 @@ public class SinglePlayerGame implements Driver{
 					GL11.glDisable(GL11.GL_CULL_FACE);
 				}
 				wireframeMode = !wireframeMode;
-				System.out.println("Wireframe mode now set to "+wireframeMode+".");
+				GlError.out("Wireframe mode now set to "+wireframeMode+".");
 			}
 		}else if(key==GLFW.GLFW_KEY_2){
 			if(action==GLFW.GLFW_PRESS){
-				fly = !fly;
-				System.out.println("Fly mode now set to "+fly+".");
+				grounded = !grounded;
+				GlError.out("Ground mode now set to "+grounded+".");
 			}
 		}else if(key==GLFW.GLFW_KEY_ESCAPE){
 			if(action==GLFW.GLFW_PRESS)
@@ -206,61 +206,61 @@ public class SinglePlayerGame implements Driver{
 		}else if(key==GLFW.GLFW_KEY_3){
 			if(action==GLFW.GLFW_PRESS){
 				walkLock = !walkLock;
-				System.out.println("Walklock now set to "+walkLock+".");
+				GlError.out("Walklock now set to "+walkLock+".");
 			}
 		}else if(key==GLFW.GLFW_KEY_4){
 			if(action==GLFW.GLFW_PRESS){
 				world.unloadAllChunks();
-				System.out.println("All chunks unloaded.");
+				GlError.out("All chunks unloaded.");
 			}
 		}else if(key==GLFW.GLFW_KEY_5){
 			if(action==GLFW.GLFW_PRESS){
 				processBlocks = !processBlocks;
-				System.out.println("Block processing now set to "+processBlocks+".");
+				GlError.out("Block processing now set to "+processBlocks+".");
 			}
 		}else if(key==GLFW.GLFW_KEY_6){
 			if(action==GLFW.GLFW_PRESS){
 				processHeightmap = !processHeightmap;
-				System.out.println("Heightmap processing now set to "+processHeightmap+".");
+				GlError.out("Heightmap processing now set to "+processHeightmap+".");
 			}
 		}else if(key==GLFW.GLFW_KEY_7){
 			if(action==GLFW.GLFW_PRESS){
 				processMoveEvents = !processMoveEvents;
-				System.out.println("Move event processing now set to "+processMoveEvents+".");
+				GlError.out("Move event processing now set to "+processMoveEvents+".");
 			}
 		}else if(key==GLFW.GLFW_KEY_8){
 			if(action==GLFW.GLFW_PRESS){
 				if(entityDatabase==null){
-					System.out.println("Entity database not created. Could not place entity.");
+					GlError.out("Entity database not created. Could not place entity.");
 					return;
 				}
 				StaticEntity e = new StaticEntity(EntityType.Grass);
 				entityDatabase.addEntity(e);
 				e.moveTo(camera.x, camera.y, camera.z);
-				System.out.println("Spawned grass entity at ("+camera.x+", "+camera.y+", "+camera.z+").");
+				GlError.out("Spawned grass entity at ("+camera.x+", "+camera.y+", "+camera.z+").");
 			}
 		}else if(key==GLFW.GLFW_KEY_9){
 			if(action==GLFW.GLFW_PRESS){
 				if(entityDatabase==null){
-					System.out.println("Entity database not created. Could not clear entities.");
+					GlError.out("Entity database not created. Could not clear entities.");
 					return;
 				}
 				entityDatabase.clear();
-				System.out.println("Entity database cleared.");
-				System.out.println("Testing entity mesh references:");
+				GlError.out("Entity database cleared.");
+				GlError.out("Testing entity mesh references:");
 				for(EntityType e : EntityType.values()){
 					if(e.getMeshRenferences()==-1)
-						System.out.println("  "+e.fileName+" = No References");
+						GlError.out("  "+e.fileName+" = No References");
 					else{
-						System.out.println(">>>Reference found for "+e.fileName+"!");
-						System.out.println("  -Reference count: "+e.getMeshRenferences());
+						GlError.out(">>>Reference found for "+e.fileName+"!");
+						GlError.out("  -Reference count: "+e.getMeshRenferences());
 					}
 				}
 			}
 		}else if(key==GLFW.GLFW_KEY_0){
 			if(action==GLFW.GLFW_PRESS){
 				chunkLoading = !chunkLoading;
-				System.out.println("Chunk loading now set to "+chunkLoading+".");
+				GlError.out("Chunk loading now set to "+chunkLoading+".");
 			}
 		}
 	}
@@ -361,7 +361,7 @@ public class SinglePlayerGame implements Driver{
 			camera.goalY += delta;
 		if(shift)
 			camera.goalY -= delta;
-		if(cameraMoved&&fly)
+		if(cameraMoved&&grounded)
 			camera.goalY = (float)(machine.getWorldHeight(camera.goalX, camera.goalZ)+6);
 	}
 	private void updateCamera(double delta){

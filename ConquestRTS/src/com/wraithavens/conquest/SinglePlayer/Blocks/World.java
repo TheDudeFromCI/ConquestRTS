@@ -11,6 +11,7 @@ import com.wraithavens.conquest.SinglePlayer.Blocks.Octree.Octree;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Octree.OctreeTask;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
+import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 import com.wraithavens.conquest.Utility.Algorithms;
 
@@ -51,21 +52,26 @@ public class World{
 	private final OctreeTask unloadChunksTask;
 	private final ArrayList<ChunkPainter> toRemove = new ArrayList(50);
 	public World(WorldNoiseMachine machine, Camera camera){
+		GlError.out("Building world.");
 		ibo = GL15.glGenBuffers();
 		generateIndexBuffer();
 		this.camera = camera;
 		generator = new ChunkGenerator(machine);
 		chunkLoader = new ChunkLoader(generator, ViewDistance);
+		GlError.dumpError();
 		shader =
 			new ShaderProgram(new File(WraithavensConquest.assetFolder, "Basic Shader.vert"), null, new File(
 				WraithavensConquest.assetFolder, "Basic Shader.frag"));
 		SHADER_LOCATION = shader.getAttributeLocation("shade");
 		SHADER_LOCATION_2 = shader.getAttributeLocation("isGrass");
+		GlError.dumpError();
 		GL20.glEnableVertexAttribArray(SHADER_LOCATION);
 		GL20.glEnableVertexAttribArray(SHADER_LOCATION_2);
+		GlError.dumpError();
 		shader.bind();
 		shader.loadUniforms("grassShade");
 		shader.setUniform1I(0, 0);
+		GlError.dumpError();
 		chunkLoader.updateLocation(Algorithms.groupLocation((int)camera.x, 16),
 			Algorithms.groupLocation((int)camera.y, 16), Algorithms.groupLocation((int)camera.z, 16));
 		octree = new Octree(machine);
@@ -96,14 +102,17 @@ public class World{
 				return shouldUnload(voxel)<2;
 			}
 		};
+		GlError.out("World built.");
 	}
 	public void dispose(){
+		GlError.out("Disposing world.");
 		for(int i = 0; i<vbos.size(); i++)
 			vbos.get(i).dispose();
 		vbos.clear();
 		octree.clear();
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
 		GL15.glDeleteBuffers(ibo);
+		GlError.dumpError();
 	}
 	public int getHeightAt(int x, int z){
 		return generator.getHeightAt(x, z);
@@ -118,8 +127,10 @@ public class World{
 		// And finally, preform the renders.
 		// ---
 		renderTask.runTask();
+		GlError.dumpError();
 	}
 	public void unloadAllChunks(){
+		GlError.out("Unloading all chunks.");
 		octree.clear();
 		// ---
 		// This part just resets the chunk loader, so new chunks will start
@@ -127,6 +138,7 @@ public class World{
 		// ---
 		chunkLoader.updateLocation(Algorithms.groupLocation((int)camera.x, 16),
 			Algorithms.groupLocation((int)camera.y, 16), Algorithms.groupLocation((int)camera.z, 16));
+		GlError.dumpError();
 	}
 	public void update(){
 		int x = Algorithms.groupLocation((int)camera.x, 16);
@@ -143,6 +155,7 @@ public class World{
 				break;
 			octree.addVoxel(new ChunkPainter(this, raw));
 		}
+		GlError.dumpError();
 	}
 	private void clearEmpties(){
 		unloadChunksTask.runTask();
@@ -151,11 +164,13 @@ public class World{
 				chunk.dispose();
 				octree.removeVoxel(chunk);
 			}
-			System.out.println("Unloaded "+toRemove.size()+" chunks.");
+			GlError.out("Unloaded "+toRemove.size()+" chunks.");
 			toRemove.clear();
 		}
+		GlError.dumpError();
 	}
 	private void generateIndexBuffer(){
+		GlError.out("Generating index buffer.");
 		int maxQuads = 16*16*16/2*6;
 		ShortBuffer indexData = BufferUtils.createShortBuffer(maxQuads*6);
 		short e = 0;
@@ -167,6 +182,7 @@ public class World{
 		indexData.flip();
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_STATIC_DRAW);
+		GlError.dumpError();
 	}
 	private int shouldUnload(VoxelChunk voxel){
 		// ---
@@ -196,6 +212,7 @@ public class World{
 		int vbo = GL15.glGenBuffers();
 		ChunkVBO v = new ChunkVBO(vbo, 0);
 		vbos.add(v);
+		GlError.dumpError();
 		return v;
 	}
 }
