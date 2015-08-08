@@ -29,7 +29,7 @@ public class SinglePlayerGame implements Driver{
 	private static final boolean LoadCloudForeground = true;
 	private static final boolean LoadMountainSkybox = false;
 	private static final boolean LoadDynmap = true;
-	private static final boolean LoadEntityDatabase = false;
+	private static final boolean LoadEntityDatabase = true;
 	private static final boolean SpawnInitalBulkGrass = false;
 	private WorldHeightmaps heightMaps;
 	private boolean w, a, s, d, shift, space, grounded = true, lockedMouse, walkLock, e;
@@ -125,7 +125,7 @@ public class SinglePlayerGame implements Driver{
 		}
 		if(LoadEntityDatabase){
 			entityDatabase = new EntityDatabase();
-			if(SpawnInitalBulkGrass&&world!=null){
+			if(world!=null&&SpawnInitalBulkGrass){
 				long grassGenerationStart = System.currentTimeMillis();
 				ArrayList<Vector3f> grassList = new ArrayList();
 				int x, z;

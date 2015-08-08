@@ -9,6 +9,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
+import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class EntityMesh{
@@ -23,6 +24,7 @@ public class EntityMesh{
 		this.type = type;
 		vbo = GL15.glGenBuffers();
 		ibo = GL15.glGenBuffers();
+		GlError.dumpError();
 		{
 			File file = new File(WraithavensConquest.modelFolder, type.fileName);
 			BinaryFile bin = new BinaryFile(file);
@@ -51,6 +53,7 @@ public class EntityMesh{
 				dataType =
 					vertexCount<256?GL11.GL_UNSIGNED_BYTE:vertexCount<65536?GL11.GL_UNSIGNED_SHORT
 						:GL11.GL_UNSIGNED_INT;
+				GlError.dumpError();
 			}
 			{
 				indexCount = bin.getInt();
@@ -76,12 +79,13 @@ public class EntityMesh{
 					GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 					GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_STATIC_DRAW);
 				}
+				GlError.dumpError();
 			}
 			aabbSize = bin.getFloat();
-			System.out.println("Loaded entity: "+type.fileName+".");
-			System.out.println("  Vertex Count: "+vertexCount);
-			System.out
-				.println("  Index Count: "+indexCount+"  ("+indexCount/3+" tris) (Storage: "
+			GlError.out("Loaded entity: "+type.fileName+".");
+			GlError.out("  Vertex Count: "+vertexCount);
+			GlError
+			.out("  Index Count: "+indexCount+"  ("+indexCount/3+" tris) (Storage: "
 					+(dataType==GL11.GL_UNSIGNED_BYTE?"Byte":dataType==GL11.GL_UNSIGNED_SHORT?"Short":"Integer")
 					+")");
 		}
@@ -89,11 +93,11 @@ public class EntityMesh{
 	private void dispose(){
 		GL15.glDeleteBuffers(vbo);
 		GL15.glDeleteBuffers(ibo);
-		System.out.println(type.fileName+" disposed.");
+		GlError.out(type.fileName+" disposed.");
 	}
 	void addReference(){
 		references++;
-		System.out.println("Added reference to entity: '"+type.fileName+"'. References: "+references);
+		GlError.out("Added reference to entity: '"+type.fileName+"'. References: "+references);
 	}
 	void bind(){
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
@@ -101,9 +105,11 @@ public class EntityMesh{
 		GL20.glVertexAttribPointer(EntityDatabase.ShaderLocation, 1, GL11.GL_UNSIGNED_BYTE, true, 16, 12);
 		GL11.glColorPointer(3, GL11.GL_UNSIGNED_BYTE, 16, 13);
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
+		GlError.dumpError();
 	}
 	void drawStatic(){
 		GL11.glDrawElements(GL11.GL_TRIANGLES, indexCount, dataType, 0);
+		GlError.dumpError();
 	}
 	int getId(){
 		return type.ordinal();
@@ -113,10 +119,11 @@ public class EntityMesh{
 	}
 	void removeReference(){
 		references--;
-		System.out.println("Removed reference to entity: '"+type.fileName+"'. References: "+references);
+		GlError.out("Removed reference to entity: '"+type.fileName+"'. References: "+references);
 		if(references==0){
 			dispose();
 			type.mesh = null;
 		}
+		GlError.dumpError();
 	}
 }

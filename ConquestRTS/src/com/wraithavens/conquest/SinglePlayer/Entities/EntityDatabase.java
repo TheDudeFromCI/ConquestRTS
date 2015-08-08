@@ -6,6 +6,7 @@ import java.util.Comparator;
 import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
+import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 
 public class EntityDatabase{
@@ -24,14 +25,17 @@ public class EntityDatabase{
 	};
 	private final ShaderProgram shader;
 	public EntityDatabase(){
+		GlError.out("Creating entity database.");
 		shader =
 			new ShaderProgram(new File(WraithavensConquest.assetFolder, "ModelShader.vert"), null, new File(
 				WraithavensConquest.assetFolder, "ModelShader.frag"));
 		shader.bind();
 		ShaderLocation = shader.getAttributeLocation("shade");
 		GL20.glEnableVertexAttribArray(ShaderLocation);
+		GlError.dumpError();
 	}
 	public void addEntity(Entity e){
+		GlError.out("Added entity to database.");
 		entities.add(e);
 		// ---
 		// Let's sort them so that entities of the same type render together.
@@ -39,11 +43,14 @@ public class EntityDatabase{
 		// VBOs multiple times per frame.
 		// ---
 		entities.sort(entitySorter);
+		GlError.dumpError();
 	}
 	public void clear(){
+		GlError.out("Clearing entity database.");
 		for(Entity e : entities)
 			e.dispose();
 		entities.clear();
+		GlError.dumpError();
 	}
 	public void dispose(){
 		clear();
@@ -63,5 +70,6 @@ public class EntityDatabase{
 			}
 			e.render(camera);
 		}
+		GlError.dumpError();
 	}
 }
