@@ -99,7 +99,7 @@ public class EntityBatch extends Entity{
 					tempData[i] = bin.getInt();
 				int indexOffset;
 				for(i = 0; i<positions.size(); i++){
-					indexOffset = i*vertexCount*7;
+					indexOffset = i*vertexCount;
 					for(j = 0; j<tempData.length; j++)
 						indexData.put(tempData[j]+indexOffset);
 				}
@@ -138,7 +138,6 @@ public class EntityBatch extends Entity{
 		GL11.glVertexPointer(3, GL11.GL_FLOAT, 16, 0);
 		GL20.glVertexAttribPointer(EntityDatabase.ShaderLocation, 1, GL11.GL_UNSIGNED_BYTE, true, 16, 12);
 		GL11.glColorPointer(3, GL11.GL_UNSIGNED_BYTE, 16, 13);
-		GlError.dumpError();
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 		GL11.glDrawElements(GL11.GL_TRIANGLES, indexCount, GL11.GL_UNSIGNED_INT, 0);
 		GlError.dumpError();

@@ -30,7 +30,7 @@ public class SinglePlayerGame implements Driver{
 	private static final boolean LoadMountainSkybox = false;
 	private static final boolean LoadDynmap = true;
 	private static final boolean LoadEntityDatabase = true;
-	private static final boolean SpawnInitalBulkGrass = false;
+	private static final boolean SpawnInitalBulkGrass = true;
 	private WorldHeightmaps heightMaps;
 	private boolean w, a, s, d, shift, space, grounded = true, lockedMouse, walkLock, e;
 	private boolean wireframeMode;
@@ -137,10 +137,10 @@ public class SinglePlayerGame implements Driver{
 					for(z = minZ; z<=maxZ; z++)
 						if(Math.random()<0.01)
 							grassList.add(new Vector3f(x+0.5f, world.getHeightAt(x, z)+1, z+0.5f));
-				System.out.println("Attempting to load "+grassList.size()+" entities of grass.");
+				GlError.out("Attempting to load "+grassList.size()+" entities of grass.");
 				EntityBatch e = new EntityBatch(EntityType.Grass, grassList);
 				entityDatabase.addEntity(e);
-				System.out.println("Created bulk patch of grass. (Took "
+				GlError.out("Created bulk patch of grass. (Took "
 					+(System.currentTimeMillis()-grassGenerationStart)+" ms.)");
 			}
 		}
