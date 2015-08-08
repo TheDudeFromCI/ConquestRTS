@@ -7,6 +7,7 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 
 abstract class EmptyLoop implements LoopObjective{
 	private static void setupOGL(){
+		GlError.out("Setting up OpenGL parameters.");
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glCullFace(GL11.GL_BACK);
@@ -19,6 +20,8 @@ abstract class EmptyLoop implements LoopObjective{
 		GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT, GL11.GL_NICEST);
 		GL11.glShadeModel(GL11.GL_SMOOTH);
 		GL11.glEnable(GL32.GL_TEXTURE_CUBE_MAP_SEAMLESS);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0.0f);
 		GlError.dumpError();
 	}
 	protected final MainLoop mainLoop;
@@ -48,7 +51,7 @@ abstract class EmptyLoop implements LoopObjective{
 		frames++;
 		double timePassed = time-lastFpsDumpTime;
 		if(timePassed>=1){
-			System.out.println("Render MS: "+NumberFormat.getInstance().format(timePassed/frames*1000.0));
+			GlError.out("Render MS: "+NumberFormat.getInstance().format(timePassed/frames*1000.0));
 			lastFpsDumpTime = time;
 			frames = 0;
 		}

@@ -41,9 +41,12 @@ public class GlError{
 	}
 	public static void err(String msg){
 		System.err.println(msg);
+		dumpError();
 	}
 	public static void out(String msg){
-		if(MainLoop.Debug)
+		if(MainLoop.Debug){
 			System.out.println(msg);
+			dumpError();
+		}
 	}
 }

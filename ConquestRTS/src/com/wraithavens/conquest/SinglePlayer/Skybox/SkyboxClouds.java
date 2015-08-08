@@ -33,7 +33,7 @@ public class SkyboxClouds{
 		int skyId = (int)(Math.random()*CloudCombinationCount);
 		File file =
 			new File(WraithavensConquest.assetFolder+File.separatorChar+"Sky", skyId+(backdrop?"b":"")+".dat");
-		System.out.println("Loading skybox: "+file.getName());
+		GlError.out("Loading skybox: "+file.getName());
 		long time = System.currentTimeMillis();
 		BinaryFile bin = new BinaryFile(file);
 		ByteBuffer data = BufferUtils.createByteBuffer(TextureSize*TextureSize*(backdrop?3:4));
@@ -45,7 +45,7 @@ public class SkyboxClouds{
 			data.flip();
 			compile(i, data, backdrop);
 		}
-		System.out.println("Loaded in "+(System.currentTimeMillis()-time)+" ms.");
+		GlError.out("Loaded in "+(System.currentTimeMillis()-time)+" ms.");
 	}
 	public static final int TextureSize = 512;
 	public static final int CloudCombinationCount = 5;

@@ -48,6 +48,7 @@ public class SinglePlayerGame implements Driver{
 	private WorldNoiseMachine machine;
 	private EntityDatabase entityDatabase;
 	public void dispose(){
+		GlError.out("Disposing single player driver.");
 		GlError.dumpError();
 		if(heightMaps!=null)
 			heightMaps.dispose();
@@ -62,6 +63,7 @@ public class SinglePlayerGame implements Driver{
 		GlError.dumpError();
 	}
 	public void initalize(double time){
+		GlError.out("Initalizing single player driver.");
 		long[] seeds = new long[]{
 			0, 1, 2, 3
 		};
@@ -69,15 +71,11 @@ public class SinglePlayerGame implements Driver{
 		// ---
 		// Setup the camera.
 		// ---
+		GlError.out("Preparing camera.");
 		camera.cameraMoveSpeed = 10.0f;
 		camera.goalY = camera.y = (float)machine.getWorldHeight(0, 0)+6;
 		camera.goalX = 8192;
 		camera.goalZ = 8192;
-		// ---
-		// Properties for rendering.
-		// ---
-		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0.0f);
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		// ---
 		// Load the landscape.
 		// ---

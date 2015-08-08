@@ -1,6 +1,7 @@
 package com.wraithavens.conquest.SinglePlayer.Noise;
 
 import com.wraithavens.conquest.Math.Vector3f;
+import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.Utility.CosineInterpolation;
 import com.wraithavens.conquest.Utility.LinearInterpolation;
 
@@ -17,6 +18,7 @@ public class WorldNoiseMachine{
 	 *         requested conditions.
 	 */
 	public static WorldNoiseMachine generate(long[] seeds){
+		GlError.out("Making world noise machine.");
 		// ---
 		// This will be the main control over how the world is generated. Based
 		// on the seeds given, of course.

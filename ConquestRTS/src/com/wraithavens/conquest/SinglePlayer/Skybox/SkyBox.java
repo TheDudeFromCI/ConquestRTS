@@ -30,6 +30,7 @@ public class SkyBox{
 		shader.bind();
 		shader.loadUniforms("texture");
 		shader.setUniform1I(0, 0);
+		GlError.dumpError();
 		vboId = GL15.glGenBuffers();
 		iboId = GL15.glGenBuffers();
 		buildVbo();

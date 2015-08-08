@@ -12,6 +12,7 @@ import com.wraithavens.conquest.TitleScreen.TitleScreen;
 
 public class WraithavensConquest extends EmptyLoop{
 	public static void main(String[] args){
+		GlError.out("Locating up game folders.");
 		programFolder = System.getProperty("user.dir")+File.separatorChar+"Data";
 		assetFolder = programFolder+File.separatorChar+"Assets";
 		saveFolder = programFolder+File.separatorChar+"Saves";
@@ -32,25 +33,24 @@ public class WraithavensConquest extends EmptyLoop{
 		return fw.getDefaultDirectory().getAbsolutePath();
 	}
 	private static void printContextInfo(){
+		if(!MainLoop.Debug)
+			return;
 		GlError.dumpError();
-		System.out.println("Version info:");
-		System.out.println("  OpenGL version: "+GL11.glGetString(GL11.GL_VERSION));
-		System.out.println("  LWJGL version: "+Sys.VERSION_MAJOR+"."+Sys.VERSION_MINOR);
-		System.out.println("  LWJGL revision: "+Sys.VERSION_REVISION);
-		System.out.println("  JNI: "+Sys.JNI_LIBRARY_NAME);
-		System.out.println("  GPU: "+GL11.glGetString(GL11.GL_RENDERER));
+		GlError.out("Version info:");
+		GlError.out("  OpenGL version: "+GL11.glGetString(GL11.GL_VERSION));
+		GlError.out("  LWJGL version: "+Sys.VERSION_MAJOR+"."+Sys.VERSION_MINOR);
+		GlError.out("  LWJGL revision: "+Sys.VERSION_REVISION);
+		GlError.out("  JNI: "+Sys.JNI_LIBRARY_NAME);
+		GlError.out("  GPU: "+GL11.glGetString(GL11.GL_RENDERER));
 		GlError.dumpError();
 		int extentions = GL11.glGetInteger(GL30.GL_NUM_EXTENSIONS);
-		System.out.println("  Extensions: "+extentions);
+		GlError.out("  Extensions: "+extentions);
 		for(int i = 0; i<extentions; i++)
-			System.out.println("    "+GL30.glGetStringi(GL11.GL_EXTENSIONS, i));
+			GlError.out("    "+GL30.glGetStringi(GL11.GL_EXTENSIONS, i));
 		GlError.dumpError();
-		System.out.println("  GLSL version: "+GL11.glGetString(GL20.GL_SHADING_LANGUAGE_VERSION));
-		// int glslVersions =
-		// GL11.glGetInteger(GL43.GL_NUM_SHADING_LANGUAGE_VERSIONS);
-		// System.out.println("  Other supported GLSL versions: "+glslVersions);
-		System.out.println("  Maximum Texture Size: "+GL11.glGetInteger(GL11.GL_MAX_TEXTURE_SIZE));
-		System.out.println("End of version info.");
+		GlError.out("  GLSL version: "+GL11.glGetString(GL20.GL_SHADING_LANGUAGE_VERSION));
+		GlError.out("  Maximum Texture Size: "+GL11.glGetInteger(GL11.GL_MAX_TEXTURE_SIZE));
+		GlError.out("End of version info.");
 		GlError.dumpError();
 	}
 	static String programFolder;
@@ -70,6 +70,7 @@ public class WraithavensConquest extends EmptyLoop{
 	}
 	@Override
 	public void cleanUp(){
+		GlError.out("Disposing drivers.");
 		if(driver!=null)
 			driver.dispose();
 		GlError.dumpError();
@@ -109,7 +110,7 @@ public class WraithavensConquest extends EmptyLoop{
 	}
 	@Override
 	public void preLoop(){
-		System.out.println("Started OpenGL program.");
+		GlError.out("Started OpenGL program.");
 		WraithavensConquest.printContextInfo();
 		super.preLoop();
 		WraithavensConquest.INSTANCE = this;
