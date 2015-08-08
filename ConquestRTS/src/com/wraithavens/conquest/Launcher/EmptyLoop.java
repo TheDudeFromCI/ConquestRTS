@@ -2,6 +2,7 @@ package com.wraithavens.conquest.Launcher;
 
 import java.text.NumberFormat;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL32;
 
 abstract class EmptyLoop implements LoopObjective{
 	private static void setupOGL(){
@@ -16,6 +17,7 @@ abstract class EmptyLoop implements LoopObjective{
 		GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
 		GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT, GL11.GL_NICEST);
 		GL11.glShadeModel(GL11.GL_SMOOTH);
+		GL11.glEnable(GL32.GL_TEXTURE_CUBE_MAP_SEAMLESS);
 	}
 	protected final MainLoop mainLoop;
 	protected final WindowInitalizer init;

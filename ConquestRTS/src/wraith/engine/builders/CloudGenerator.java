@@ -105,11 +105,11 @@ public class CloudGenerator{
 		noise.noise(temp2.x, temp2.y, temp2.z, temp);
 		if(backdrop)
 			blendOver();
-		bin.addFloat(temp.x);
-		bin.addFloat(temp.y);
-		bin.addFloat(temp.z);
+		bin.addByte((byte)(temp.x*255));
+		bin.addByte((byte)(temp.y*255));
+		bin.addByte((byte)(temp.z*255));
 		if(!backdrop)
-			bin.addFloat(temp.w);
+			bin.addByte((byte)(temp.w*255));
 	}
 	private static final Vector3f skyColor = new Vector3f(0.4f, 0.6f, 0.9f);
 	private static CloudNoise noise;

@@ -1,16 +1,17 @@
 package com.wraithavens.conquest.SinglePlayer.Skybox;
 
 import java.io.File;
-import java.nio.FloatBuffer;
+import java.nio.ByteBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL30;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class SkyboxClouds{
-	private static void compile(int side, FloatBuffer data, boolean backdrop){
+	private static void compile(int side, ByteBuffer data, boolean backdrop){
 		int i;
 		if(side==0)
 			i = GL13.GL_TEXTURE_CUBE_MAP_POSITIVE_X;
@@ -25,7 +26,7 @@ public class SkyboxClouds{
 		else
 			i = GL13.GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
 		GL11.glTexImage2D(i, 0, backdrop?GL11.GL_RGB8:GL11.GL_RGBA8, TextureSize, TextureSize, 0, backdrop
-			?GL11.GL_RGB:GL11.GL_RGBA, GL11.GL_FLOAT, data);
+			?GL11.GL_RGB:GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, data);
 	}
 	static void load(boolean backdrop){
 		int skyId = (int)(Math.random()*CloudCombinationCount);
@@ -34,19 +35,19 @@ public class SkyboxClouds{
 		System.out.println("Loading skybox: "+file.getName());
 		long time = System.currentTimeMillis();
 		BinaryFile bin = new BinaryFile(file);
-		FloatBuffer data = BufferUtils.createFloatBuffer(TextureSize*TextureSize*(backdrop?3:4));
+		ByteBuffer data = BufferUtils.createByteBuffer(TextureSize*TextureSize*(backdrop?3:4));
 		int floats = TextureSize*TextureSize*(backdrop?3:4);
 		int i, j;
 		for(i = 0; i<6; i++){
 			for(j = 0; j<floats; j++)
-				data.put(bin.getFloat());
+				data.put(bin.getByte());
 			data.flip();
 			compile(i, data, backdrop);
 		}
 		System.out.println("Loaded in "+(System.currentTimeMillis()-time)+" ms.");
 	}
 	public static final int TextureSize = 512;
-	public static final int CloudCombinationCount = 30;
+	public static final int CloudCombinationCount = 5;
 	public static final int LayerCount = 4;
 	private final int textureId;
 	private float spinSpeed = 0.0f;
@@ -59,11 +60,12 @@ public class SkyboxClouds{
 	}
 	private void createTexture(){
 		GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, textureId);
-		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
 		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL12.GL_TEXTURE_WRAP_R, GL12.GL_CLAMP_TO_EDGE);
 		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
 		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
 		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+		GL30.glGenerateMipmap(GL13.GL_TEXTURE_CUBE_MAP);
 	}
 	void dispose(){
 		GL11.glDeleteTextures(textureId);
