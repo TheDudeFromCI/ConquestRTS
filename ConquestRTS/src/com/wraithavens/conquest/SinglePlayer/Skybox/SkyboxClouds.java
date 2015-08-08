@@ -1,16 +1,20 @@
 package com.wraithavens.conquest.SinglePlayer.Skybox;
 
+import java.io.File;
 import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
+import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.Math.Vector4f;
 import com.wraithavens.conquest.SinglePlayer.Noise.CloudNoise;
+import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class SkyboxClouds{
 	public static final int TextureSize = 512;
+	private static final int CloudCombinationCount = 10;
 	private static final Vector4f temp = new Vector4f();
 	private static final Vector3f temp2 = new Vector3f();
 	private final CloudNoise noise;
@@ -25,7 +29,7 @@ public class SkyboxClouds{
 		skyColor = new Vector3f(0.4f, 0.6f, 0.9f);
 		textureId = GL11.glGenTextures();
 		createTexture();
-		randomize();
+		load();
 	}
 	public void setSpinSpeed(float spinSpeed){
 		this.spinSpeed = spinSpeed;
@@ -65,43 +69,43 @@ public class SkyboxClouds{
 		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
 		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
 	}
-	private void makeSide(int side, FloatBuffer data){
+	private void makeSide(int side, FloatBuffer data, BinaryFile bin){
 		int x, y, z;
 		if(side==0){
 			x = TextureSize-1;
 			for(y = TextureSize-1; y>=0; y--)
 				for(z = TextureSize-1; z>=0; z--)
-					placeColor(x, y, z, data);
+					placeColor(x, y, z, data, bin);
 		}else if(side==1){
 			x = 0;
 			for(y = TextureSize-1; y>=0; y--)
 				for(z = 0; z<TextureSize; z++)
-					placeColor(x, y, z, data);
+					placeColor(x, y, z, data, bin);
 		}else if(side==2){
 			y = TextureSize-1;
 			for(z = 0; z<TextureSize; z++)
 				for(x = 0; x<TextureSize; x++)
-					placeColor(x, y, z, data);
+					placeColor(x, y, z, data, bin);
 		}else if(side==3){
 			y = 0;
 			for(z = TextureSize-1; z>=0; z--)
 				for(x = 0; x<TextureSize; x++)
-					placeColor(x, y, z, data);
+					placeColor(x, y, z, data, bin);
 		}else if(side==4){
 			z = TextureSize-1;
 			for(y = TextureSize-1; y>=0; y--)
 				for(x = 0; x<TextureSize; x++)
-					placeColor(x, y, z, data);
+					placeColor(x, y, z, data, bin);
 		}else{
 			z = 0;
 			for(y = TextureSize-1; y>=0; y--)
 				for(x = TextureSize-1; x>=0; x--)
-					placeColor(x, y, z, data);
+					placeColor(x, y, z, data, bin);
 		}
 		data.flip();
 		compile(side, data);
 	}
-	private void placeColor(float x, float y, float z, FloatBuffer data){
+	private void placeColor(float x, float y, float z, FloatBuffer data, BinaryFile bin){
 		temp2.set(x-TextureSize/2, y-TextureSize/2, z-TextureSize/2);
 		temp2.normalize();
 		temp2.scale(TextureSize);
@@ -110,16 +114,51 @@ public class SkyboxClouds{
 		data.put(temp.x);
 		data.put(temp.y);
 		data.put(temp.z);
-		if(!backdrop)
+		bin.addFloat(temp.x);
+		bin.addFloat(temp.y);
+		bin.addFloat(temp.z);
+		if(!backdrop){
 			data.put(temp.w);
+			bin.addFloat(temp.w);
+		}
 	}
 	void dispose(){
 		GL11.glDeleteTextures(textureId);
 	}
-	void randomize(){
+	void load(){
+		int skyId = (int)(Math.random()*CloudCombinationCount);
+		File file =
+			new File(WraithavensConquest.currentGameFolder+File.separatorChar+"Sky", skyId+(backdrop?"b":"")
+				+".dat");
+		if(file.exists()&&file.length()>0)
+			load(file);
+		else
+			randomize(file);
+	}
+	void load(File file){
+		System.out.println("Loading skybox: "+file.getName());
+		long time = System.currentTimeMillis();
+		BinaryFile bin = new BinaryFile(file);
 		FloatBuffer data = BufferUtils.createFloatBuffer(TextureSize*TextureSize*(backdrop?3:4));
+		int floats = TextureSize*TextureSize*(backdrop?3:4);
+		int i, j;
+		for(i = 0; i<6; i++){
+			for(j = 0; j<floats; j++)
+				data.put(bin.getFloat());
+			data.flip();
+			compile(i, data);
+		}
+		System.out.println("Loaded in "+(System.currentTimeMillis()-time)+" ms.");
+	}
+	void randomize(File file){
+		System.out.println("Generating skybox: "+file.getName());
+		long time = System.currentTimeMillis();
+		FloatBuffer data = BufferUtils.createFloatBuffer(TextureSize*TextureSize*(backdrop?3:4));
+		BinaryFile bin = new BinaryFile(TextureSize*TextureSize*(backdrop?3:4)*6*4);
 		for(int i = 0; i<6; i++)
-			makeSide(i, data);
+			makeSide(i, data, bin);
+		bin.compile(file);
+		System.out.println("Generated in "+(System.currentTimeMillis()-time)+" ms.");
 	}
 	void render(){
 		GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, textureId);
