@@ -17,10 +17,12 @@ public class EntityBatch extends Entity{
 	private final int vbo;
 	private final int ibo;
 	private final int indexCount;
+	private final AABB aabb;
 	public EntityBatch(EntityType type, ArrayList<Vector3f> positions){
 		super(null);
 		vbo = GL15.glGenBuffers();
 		ibo = GL15.glGenBuffers();
+		aabb = new AABB();
 		{
 			File file = new File(WraithavensConquest.modelFolder, type.fileName);
 			BinaryFile bin = new BinaryFile(file);
@@ -31,6 +33,12 @@ public class EntityBatch extends Entity{
 			// ---
 			bin.getBoolean();
 			int vertexCount = 0;
+			float minX = Integer.MAX_VALUE;
+			float maxX = Integer.MIN_VALUE;
+			float minY = Integer.MAX_VALUE;
+			float maxY = Integer.MIN_VALUE;
+			float minZ = Integer.MAX_VALUE;
+			float maxZ = Integer.MIN_VALUE;
 			{
 				// ---
 				// Load all vertices, relative to their new location.
@@ -39,13 +47,26 @@ public class EntityBatch extends Entity{
 				FloatBuffer vertexData = BufferUtils.createFloatBuffer(vertexCount*28*positions.size());
 				float[] tempData = new float[vertexCount*7];
 				int i, j;
+				float f;
 				for(i = 0; i<tempData.length; i++)
 					tempData[i] = bin.getFloat();
 				for(i = 0; i<positions.size(); i++)
 					for(j = 0; j<tempData.length; j += 7){
-						vertexData.put(tempData[j]/20f+positions.get(i).x);
-						vertexData.put(tempData[j+1]/20f+positions.get(i).y);
-						vertexData.put(tempData[j+2]/20f+positions.get(i).z);
+						vertexData.put(f = tempData[j]/20f+positions.get(i).x);
+						if(f<minX)
+							minX = f;
+						if(f>maxX)
+							maxX = f;
+						vertexData.put(f = tempData[j+1]/20f+positions.get(i).y);
+						if(f<minY)
+							minY = f;
+						if(f>maxY)
+							maxY = f;
+						vertexData.put(f = tempData[j+2]/20f+positions.get(i).z);
+						if(f<minZ)
+							minZ = f;
+						if(f>maxZ)
+							maxZ = f;
 						vertexData.put(tempData[j+3]);
 						vertexData.put(tempData[j+4]);
 						vertexData.put(tempData[j+5]);
@@ -77,6 +98,19 @@ public class EntityBatch extends Entity{
 				GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_STATIC_DRAW);
 				this.indexCount = indexCount*positions.size();
 			}
+			{
+				// ---
+				// Create the AABB.
+				// ---
+				float sizeX = maxX-minX;
+				float sizeY = maxY-minY;
+				float sizeZ = maxZ-minZ;
+				float size = Math.max(Math.max(sizeX, sizeY), sizeZ);
+				float centerX = sizeX/2+minX;
+				float centerY = sizeY/2+minY;
+				float centerZ = sizeZ/2+minZ;
+				aabb.calculate(centerX, centerY, centerZ, size);
+			}
 		}
 	}
 	@Override
@@ -86,8 +120,8 @@ public class EntityBatch extends Entity{
 	}
 	@Override
 	public void render(Camera camera){
-		// TODO Make entity database sort these batches so they go at the
-		// bottom, in their own category.
+		if(!aabb.visible(camera))
+			return;
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 		GL11.glVertexPointer(3, GL11.GL_FLOAT, 28, 0);
 		GL20.glVertexAttribPointer(EntityDatabase.ShaderLocation, 1, GL11.GL_FLOAT, false, 28, 12);
