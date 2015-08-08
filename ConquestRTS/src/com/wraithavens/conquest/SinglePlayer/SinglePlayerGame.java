@@ -156,6 +156,7 @@ public class SinglePlayerGame implements Driver{
 		if(LoadEntityDatabase){
 			entityDatabase = new EntityDatabase();
 			if(SpawnInitalBulkGrass&&world!=null){
+				long grassGenerationStart = System.currentTimeMillis();
 				ArrayList<Vector3f> grassList = new ArrayList();
 				int x, z;
 				int minX = (int)(camera.goalX-100);
@@ -169,7 +170,8 @@ public class SinglePlayerGame implements Driver{
 				System.out.println("Attempting to load "+grassList.size()+" entities of grass.");
 				EntityBatch e = new EntityBatch(EntityType.Grass, grassList);
 				entityDatabase.addEntity(e);
-				System.out.println("Created bulk patch of grass.");
+				System.out.println("Created bulk patch of grass. (Took "
+					+(System.currentTimeMillis()-grassGenerationStart)+" ms.)");
 			}
 		}
 		if(LoadDynmap)
