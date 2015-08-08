@@ -6,7 +6,6 @@ import org.lwjgl.opengl.GL11;
 import com.wraithavens.conquest.Launcher.Driver;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.Vector3f;
-import com.wraithavens.conquest.Math.Vector4f;
 import com.wraithavens.conquest.SinglePlayer.Blocks.World;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityBatch;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
@@ -19,9 +18,7 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.Skybox.MountainRenderer;
 import com.wraithavens.conquest.SinglePlayer.Skybox.MountainSkybox;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyBox;
-import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxBuilder;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxClouds;
-import com.wraithavens.conquest.Utility.PowerInterpolation;
 
 public class SinglePlayerGame implements Driver{
 	private static final boolean LoadWorld = true;
@@ -89,42 +86,9 @@ public class SinglePlayerGame implements Driver{
 		// // Load the skyboxes.
 		// // ---
 		if(LoadSkyboxes){
-			SkyboxClouds noise = null;
-			SkyboxClouds noise2 = null;
+			SkyboxClouds noise = LoadCloudBackdrop?new SkyboxClouds(true):null;
+			SkyboxClouds noise2 = LoadCloudForeground?new SkyboxClouds(false):null;
 			MountainSkybox mountains = null;
-			// ---
-			// Load the backdrop sky.
-			// ---
-			if(LoadCloudBackdrop){
-				SkyboxBuilder builder = new SkyboxBuilder();
-				builder.setBackdrop(true);
-				builder.setSeed(0);
-				builder.setSmoothness(50);
-				builder.setDetail(3);
-				builder.setFunction(SkyboxBuilder.Cerp);
-				PowerInterpolation Perp2 = new PowerInterpolation(2);
-				builder.setColorFunction(Perp2);
-				builder.setMaxColorWeight(2);
-				builder.setMaxColor(new Vector4f(1.0f, 1.0f, 1.0f, 0.8f));
-				noise = builder.build();
-				noise.setSpinSpeed(0.1f);
-			}
-			// ---
-			// Load the forground clouds.
-			// ---
-			if(LoadCloudForeground){
-				SkyboxBuilder builder = new SkyboxBuilder();
-				builder.setBackdrop(false);
-				builder.setSeed(1);
-				builder.setSmoothness(70);
-				builder.setDetail(4);
-				builder.setFunction(SkyboxBuilder.Cerp);
-				builder.setColorFunction(SkyboxBuilder.Lerp);
-				builder.setMaxColorWeight(2);
-				builder.setMaxColor(new Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
-				noise2 = builder.build();
-				noise2.setSpinSpeed(1.0f);
-			}
 			// ---
 			// Load the mountain skybox renderer.
 			// ---

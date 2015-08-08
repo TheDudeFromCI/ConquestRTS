@@ -7,44 +7,10 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
-import com.wraithavens.conquest.Math.Vector3f;
-import com.wraithavens.conquest.Math.Vector4f;
-import com.wraithavens.conquest.SinglePlayer.Noise.CloudNoise;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class SkyboxClouds{
-	public static final int TextureSize = 512;
-	private static final int CloudCombinationCount = 10;
-	private static final Vector4f temp = new Vector4f();
-	private static final Vector3f temp2 = new Vector3f();
-	private final CloudNoise noise;
-	private final Vector3f skyColor;
-	private final int textureId;
-	private final boolean backdrop;
-	private float spinSpeed = 0.0f;
-	private float angle = 0.0f;
-	SkyboxClouds(CloudNoise noise, boolean backdrop){
-		this.noise = noise;
-		this.backdrop = backdrop;
-		skyColor = new Vector3f(0.4f, 0.6f, 0.9f);
-		textureId = GL11.glGenTextures();
-		createTexture();
-		load();
-	}
-	public void setSpinSpeed(float spinSpeed){
-		this.spinSpeed = spinSpeed;
-	}
-	private void blendOver(){
-		if(!backdrop)
-			return;
-		if(temp.w>=1.0f){
-			temp.set(temp.x, temp.y, temp.z, 1.0f);
-			return;
-		}
-		temp.set(temp.x*temp.w+skyColor.x*(1.0f-temp.w), temp.y*temp.w+skyColor.y*(1.0f-temp.w), temp.z*temp.w
-			+skyColor.z*(1.0f-temp.w), 1.0f);
-	}
-	private void compile(int side, FloatBuffer data){
+	private static void compile(int side, FloatBuffer data, boolean backdrop){
 		int i;
 		if(side==0)
 			i = GL13.GL_TEXTURE_CUBE_MAP_POSITIVE_X;
@@ -61,81 +27,10 @@ public class SkyboxClouds{
 		GL11.glTexImage2D(i, 0, backdrop?GL11.GL_RGB8:GL11.GL_RGBA8, TextureSize, TextureSize, 0, backdrop
 			?GL11.GL_RGB:GL11.GL_RGBA, GL11.GL_FLOAT, data);
 	}
-	private void createTexture(){
-		GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, textureId);
-		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL12.GL_TEXTURE_WRAP_R, GL12.GL_CLAMP_TO_EDGE);
-		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
-		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
-		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
-	}
-	private void makeSide(int side, FloatBuffer data, BinaryFile bin){
-		int x, y, z;
-		if(side==0){
-			x = TextureSize-1;
-			for(y = TextureSize-1; y>=0; y--)
-				for(z = TextureSize-1; z>=0; z--)
-					placeColor(x, y, z, data, bin);
-		}else if(side==1){
-			x = 0;
-			for(y = TextureSize-1; y>=0; y--)
-				for(z = 0; z<TextureSize; z++)
-					placeColor(x, y, z, data, bin);
-		}else if(side==2){
-			y = TextureSize-1;
-			for(z = 0; z<TextureSize; z++)
-				for(x = 0; x<TextureSize; x++)
-					placeColor(x, y, z, data, bin);
-		}else if(side==3){
-			y = 0;
-			for(z = TextureSize-1; z>=0; z--)
-				for(x = 0; x<TextureSize; x++)
-					placeColor(x, y, z, data, bin);
-		}else if(side==4){
-			z = TextureSize-1;
-			for(y = TextureSize-1; y>=0; y--)
-				for(x = 0; x<TextureSize; x++)
-					placeColor(x, y, z, data, bin);
-		}else{
-			z = 0;
-			for(y = TextureSize-1; y>=0; y--)
-				for(x = TextureSize-1; x>=0; x--)
-					placeColor(x, y, z, data, bin);
-		}
-		data.flip();
-		compile(side, data);
-	}
-	private void placeColor(float x, float y, float z, FloatBuffer data, BinaryFile bin){
-		temp2.set(x-TextureSize/2, y-TextureSize/2, z-TextureSize/2);
-		temp2.normalize();
-		temp2.scale(TextureSize);
-		noise.noise(temp2.x, temp2.y, temp2.z, temp);
-		blendOver();
-		data.put(temp.x);
-		data.put(temp.y);
-		data.put(temp.z);
-		bin.addFloat(temp.x);
-		bin.addFloat(temp.y);
-		bin.addFloat(temp.z);
-		if(!backdrop){
-			data.put(temp.w);
-			bin.addFloat(temp.w);
-		}
-	}
-	void dispose(){
-		GL11.glDeleteTextures(textureId);
-	}
-	void load(){
+	static void load(boolean backdrop){
 		int skyId = (int)(Math.random()*CloudCombinationCount);
 		File file =
-			new File(WraithavensConquest.currentGameFolder+File.separatorChar+"Sky", skyId+(backdrop?"b":"")
-				+".dat");
-		if(file.exists()&&file.length()>0)
-			load(file);
-		else
-			randomize(file);
-	}
-	void load(File file){
+			new File(WraithavensConquest.assetFolder+File.separatorChar+"Sky", skyId+(backdrop?"b":"")+".dat");
 		System.out.println("Loading skybox: "+file.getName());
 		long time = System.currentTimeMillis();
 		BinaryFile bin = new BinaryFile(file);
@@ -146,19 +41,37 @@ public class SkyboxClouds{
 			for(j = 0; j<floats; j++)
 				data.put(bin.getFloat());
 			data.flip();
-			compile(i, data);
+			compile(i, data, backdrop);
 		}
 		System.out.println("Loaded in "+(System.currentTimeMillis()-time)+" ms.");
 	}
-	void randomize(File file){
-		System.out.println("Generating skybox: "+file.getName());
-		long time = System.currentTimeMillis();
-		FloatBuffer data = BufferUtils.createFloatBuffer(TextureSize*TextureSize*(backdrop?3:4));
-		BinaryFile bin = new BinaryFile(TextureSize*TextureSize*(backdrop?3:4)*6*4);
-		for(int i = 0; i<6; i++)
-			makeSide(i, data, bin);
-		bin.compile(file);
-		System.out.println("Generated in "+(System.currentTimeMillis()-time)+" ms.");
+	public static final int TextureSize = 512;
+	public static final int CloudCombinationCount = 1;
+	private final int textureId;
+	private float spinSpeed = 0.0f;
+	private float angle = 0.0f;
+	public SkyboxClouds(boolean backdrop){
+		if(backdrop)
+			spinSpeed = 1.0f;
+		else
+			spinSpeed = 2.0f;
+		textureId = GL11.glGenTextures();
+		createTexture();
+		load(backdrop);
+	}
+	public void setSpinSpeed(float spinSpeed){
+		this.spinSpeed = spinSpeed;
+	}
+	private void createTexture(){
+		GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, textureId);
+		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL12.GL_TEXTURE_WRAP_R, GL12.GL_CLAMP_TO_EDGE);
+		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
+		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
+		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+	}
+	void dispose(){
+		GL11.glDeleteTextures(textureId);
 	}
 	void render(){
 		GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, textureId);

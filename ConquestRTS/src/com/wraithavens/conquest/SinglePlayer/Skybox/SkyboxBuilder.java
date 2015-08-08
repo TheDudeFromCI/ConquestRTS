@@ -29,9 +29,9 @@ public class SkyboxBuilder{
 	public SkyboxBuilder(){
 		newSubNoise();
 	}
-	public SkyboxClouds build(){
+	public CloudNoise buildNoise(){
 		addPart();
-		return new SkyboxClouds(noise, backdrop);
+		return noise;
 	}
 	public void newSubNoise(){
 		addPart();
