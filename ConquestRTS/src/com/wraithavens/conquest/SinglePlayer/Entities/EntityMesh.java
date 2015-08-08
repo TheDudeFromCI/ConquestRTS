@@ -20,6 +20,8 @@ public class EntityMesh{
 	private final int indexCount;
 	private final int dataType;
 	private final float aabbSize;
+	private final int[] lodSizes = new int[5];
+	private final int[] lodCounts = new int[5];
 	EntityMesh(EntityType type){
 		this.type = type;
 		vbo = GL15.glGenBuffers();
@@ -56,6 +58,21 @@ public class EntityMesh{
 			}
 			{
 				indexCount = bin.getInt();
+				lodSizes[0] = bin.getInt();
+				lodSizes[1] = bin.getInt();
+				lodSizes[2] = bin.getInt();
+				lodSizes[3] = bin.getInt();
+				lodSizes[4] = bin.getInt();
+				lodCounts[0] = lodSizes[1]-lodSizes[0];
+				lodCounts[1] = lodSizes[2]-lodSizes[1];
+				lodCounts[2] = lodSizes[3]-lodSizes[2];
+				lodCounts[3] = lodSizes[4]-lodSizes[3];
+				lodCounts[4] = indexCount-lodSizes[4];
+				lodSizes[0] *= dataType==GL11.GL_UNSIGNED_BYTE?1:dataType==GL11.GL_UNSIGNED_SHORT?2:4;
+				lodSizes[1] *= dataType==GL11.GL_UNSIGNED_BYTE?1:dataType==GL11.GL_UNSIGNED_SHORT?2:4;
+				lodSizes[2] *= dataType==GL11.GL_UNSIGNED_BYTE?1:dataType==GL11.GL_UNSIGNED_SHORT?2:4;
+				lodSizes[3] *= dataType==GL11.GL_UNSIGNED_BYTE?1:dataType==GL11.GL_UNSIGNED_SHORT?2:4;
+				lodSizes[4] *= dataType==GL11.GL_UNSIGNED_BYTE?1:dataType==GL11.GL_UNSIGNED_SHORT?2:4;
 				if(dataType==GL11.GL_UNSIGNED_BYTE){
 					ByteBuffer indexData = BufferUtils.createByteBuffer(indexCount);
 					for(int i = 0; i<indexCount; i++)
@@ -106,8 +123,8 @@ public class EntityMesh{
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 		GlError.dumpError();
 	}
-	void drawStatic(){
-		GL11.glDrawElements(GL11.GL_TRIANGLES, indexCount, dataType, 0);
+	void drawStatic(int lod){
+		GL11.glDrawElements(GL11.GL_TRIANGLES, lodCounts[lod], dataType, lodSizes[lod]);
 		GlError.dumpError();
 	}
 	int getId(){

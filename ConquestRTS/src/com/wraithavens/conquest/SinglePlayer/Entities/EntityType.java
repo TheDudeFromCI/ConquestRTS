@@ -1,7 +1,8 @@
 package com.wraithavens.conquest.SinglePlayer.Entities;
 
 public enum EntityType{
-	Grass("Grass.tal");
+	Grass("Grass.tal"),
+	Catgirl("Catgirl.tal");
 	EntityMesh mesh;
 	public final String fileName;
 	private EntityType(String fileName){

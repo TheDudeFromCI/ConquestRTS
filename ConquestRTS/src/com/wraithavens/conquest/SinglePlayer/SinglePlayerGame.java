@@ -30,7 +30,7 @@ public class SinglePlayerGame implements Driver{
 	private static final boolean LoadMountainSkybox = false;
 	private static final boolean LoadDynmap = true;
 	private static final boolean LoadEntityDatabase = true;
-	private static final boolean SpawnInitalBulkGrass = true;
+	private static final boolean SpawnInitalBulkGrass = false;
 	private WorldHeightmaps heightMaps;
 	private boolean w, a, s, d, shift, space, grounded = true, lockedMouse, walkLock, e;
 	private boolean wireframeMode;
@@ -234,10 +234,12 @@ public class SinglePlayerGame implements Driver{
 					GlError.out("Entity database not created. Could not place entity.");
 					return;
 				}
-				StaticEntity e = new StaticEntity(EntityType.Grass);
+				StaticEntity e = new StaticEntity(EntityType.Catgirl);
 				entityDatabase.addEntity(e);
-				e.moveTo(camera.x, camera.y, camera.z);
-				GlError.out("Spawned grass entity at ("+camera.x+", "+camera.y+", "+camera.z+").");
+				e.moveTo(camera.goalX, camera.goalY-5, camera.goalZ);
+				e.scaleTo(0.25f);
+				GlError.out("Spawned grass entity at ("+camera.goalX+", "+(camera.goalY-5)+", "+camera.goalZ
+					+").");
 			}
 		}else if(key==GLFW.GLFW_KEY_9){
 			if(action==GLFW.GLFW_PRESS){
