@@ -16,7 +16,6 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 
 public class MainLoop{
 	static boolean FPS_SYNC = true;
-	public static boolean Debug = false;
 	private GLFWCursorPosCallback cursorPosCallback;
 	private GLFWErrorCallback errorCallback;
 	private GLFWKeyCallback keyCallback;

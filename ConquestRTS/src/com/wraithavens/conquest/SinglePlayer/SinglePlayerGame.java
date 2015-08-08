@@ -28,7 +28,7 @@ public class SinglePlayerGame implements Driver{
 	private static final boolean LoadCloudBackdrop = true;
 	private static final boolean LoadCloudForeground = true;
 	private static final boolean LoadMountainSkybox = false;
-	private static final boolean LoadDynmap = false;
+	private static final boolean LoadDynmap = true;
 	private static final boolean LoadEntityDatabase = false;
 	private static final boolean SpawnInitalBulkGrass = false;
 	private WorldHeightmaps heightMaps;

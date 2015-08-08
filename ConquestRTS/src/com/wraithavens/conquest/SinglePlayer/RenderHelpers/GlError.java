@@ -2,11 +2,10 @@ package com.wraithavens.conquest.SinglePlayer.RenderHelpers;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
-import com.wraithavens.conquest.Launcher.MainLoop;
 
 public class GlError{
 	public static void dumpError(){
-		if(!MainLoop.Debug)
+		if(!Debug)
 			return;
 		int i = GL11.glGetError();
 		if(i!=GL11.GL_NO_ERROR){
@@ -44,9 +43,10 @@ public class GlError{
 		dumpError();
 	}
 	public static void out(String msg){
-		if(MainLoop.Debug){
+		if(Debug){
 			System.out.println(msg);
 			dumpError();
 		}
 	}
+	private static final boolean Debug = false;
 }

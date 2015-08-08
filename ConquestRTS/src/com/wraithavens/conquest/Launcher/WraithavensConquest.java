@@ -33,8 +33,6 @@ public class WraithavensConquest extends EmptyLoop{
 		return fw.getDefaultDirectory().getAbsolutePath();
 	}
 	private static void printContextInfo(){
-		if(!MainLoop.Debug)
-			return;
 		GlError.dumpError();
 		GlError.out("Version info:");
 		GlError.out("  OpenGL version: "+GL11.glGetString(GL11.GL_VERSION));
