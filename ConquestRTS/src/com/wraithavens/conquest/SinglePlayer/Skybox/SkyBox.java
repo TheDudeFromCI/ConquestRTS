@@ -13,12 +13,12 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 public class SkyBox{
 	private final SkyboxClouds layer0;
 	private final Sunbox layer1;
-	private final SkyboxClouds layer2;
+	private final SkyboxClouds[] layer2;
 	private final MountainSkybox layer3;
 	private final ShaderProgram shader;
 	private final int vboId;
 	private final int iboId;
-	public SkyBox(SkyboxClouds layer0, Sunbox layer1, SkyboxClouds layer2, MountainSkybox layer3){
+	public SkyBox(SkyboxClouds layer0, Sunbox layer1, SkyboxClouds[] layer2, MountainSkybox layer3){
 		this.layer0 = layer0;
 		this.layer1 = layer1;
 		this.layer2 = layer2;
@@ -40,7 +40,8 @@ public class SkyBox{
 		if(layer1!=null)
 			layer1.dispose();
 		if(layer2!=null)
-			layer2.dispose();
+			for(SkyboxClouds s : layer2)
+				s.dispose();
 		if(layer3!=null)
 			layer3.dispose();
 	}
@@ -74,7 +75,8 @@ public class SkyBox{
 		if(layer1!=null)
 			layer1.render();
 		if(layer2!=null)
-			layer2.render();
+			for(SkyboxClouds s : layer2)
+				s.render();
 		if(layer3!=null){
 			if(layer3.isDrawing()){
 				GL11.glEnable(GL11.GL_DEPTH_TEST);
@@ -98,7 +100,8 @@ public class SkyBox{
 		if(layer0!=null)
 			layer0.update(time);
 		if(layer2!=null)
-			layer2.update(time);
+			for(SkyboxClouds s : layer2)
+				s.update(time);
 		if(layer3!=null)
 			layer3.update();
 	}

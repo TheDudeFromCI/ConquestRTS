@@ -25,7 +25,6 @@ public class SkyboxBuilder{
 	public static final CosineInterpolation Cerp = new CosineInterpolation();
 	private final CloudNoise noise = new CloudNoise();
 	private SubNoisePart part;
-	private boolean backdrop;
 	public SkyboxBuilder(){
 		newSubNoise();
 	}
@@ -44,9 +43,6 @@ public class SkyboxBuilder{
 	}
 	public void setAmplitude(float amplitude){
 		part.amplitude = amplitude;
-	}
-	public void setBackdrop(boolean backdrop){
-		this.backdrop = backdrop;
 	}
 	public void setColorFunction(InterpolationFunction colorFunction){
 		part.colorFunction = colorFunction;

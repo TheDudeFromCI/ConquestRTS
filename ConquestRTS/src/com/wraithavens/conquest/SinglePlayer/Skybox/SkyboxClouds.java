@@ -46,21 +46,16 @@ public class SkyboxClouds{
 		System.out.println("Loaded in "+(System.currentTimeMillis()-time)+" ms.");
 	}
 	public static final int TextureSize = 512;
-	public static final int CloudCombinationCount = 1;
+	public static final int CloudCombinationCount = 30;
+	public static final int LayerCount = 4;
 	private final int textureId;
 	private float spinSpeed = 0.0f;
 	private float angle = 0.0f;
-	public SkyboxClouds(boolean backdrop){
-		if(backdrop)
-			spinSpeed = 1.0f;
-		else
-			spinSpeed = 2.0f;
+	public SkyboxClouds(boolean backdrop, float spinSpeed){
+		this.spinSpeed = spinSpeed;
 		textureId = GL11.glGenTextures();
 		createTexture();
 		load(backdrop);
-	}
-	public void setSpinSpeed(float spinSpeed){
-		this.spinSpeed = spinSpeed;
 	}
 	private void createTexture(){
 		GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, textureId);

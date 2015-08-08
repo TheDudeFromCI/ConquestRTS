@@ -43,7 +43,6 @@ public class CloudGenerator{
 	private static void generateCloudNoise(boolean backdrop){
 		if(backdrop){
 			SkyboxBuilder builder = new SkyboxBuilder();
-			builder.setBackdrop(true);
 			builder.setSeed((long)(Math.random()*Long.MAX_VALUE));
 			builder.setSmoothness(50);
 			builder.setDetail(3);
@@ -55,7 +54,6 @@ public class CloudGenerator{
 			noise = builder.buildNoise();
 		}else{
 			SkyboxBuilder builder = new SkyboxBuilder();
-			builder.setBackdrop(false);
 			builder.setSeed((long)(Math.random()*Long.MAX_VALUE));
 			builder.setSmoothness(70);
 			builder.setDetail(4);
