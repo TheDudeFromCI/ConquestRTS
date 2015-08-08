@@ -12,7 +12,6 @@ import com.wraithavens.conquest.TitleScreen.TitleScreen;
 
 public class WraithavensConquest extends EmptyLoop{
 	public static void main(String[] args){
-		GlError.out("Locating up game folders.");
 		programFolder = System.getProperty("user.dir")+File.separatorChar+"Data";
 		assetFolder = programFolder+File.separatorChar+"Assets";
 		saveFolder = programFolder+File.separatorChar+"Saves";

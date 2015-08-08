@@ -48,5 +48,5 @@ public class GlError{
 			dumpError();
 		}
 	}
-	private static final boolean Debug = false;
+	private static final boolean Debug = true;
 }
