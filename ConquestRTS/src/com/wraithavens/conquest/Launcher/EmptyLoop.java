@@ -1,5 +1,6 @@
 package com.wraithavens.conquest.Launcher;
 
+import java.text.NumberFormat;
 import org.lwjgl.opengl.GL11;
 
 abstract class EmptyLoop implements LoopObjective{
@@ -37,14 +38,13 @@ abstract class EmptyLoop implements LoopObjective{
 	@Override
 	public void preLoop(){
 		EmptyLoop.setupOGL();
-		MainLoop.FPS_SYNC = true;
 	}
 	@Override
 	public void update(double delta, double time){
 		frames++;
 		double timePassed = time-lastFpsDumpTime;
 		if(timePassed>=1){
-			System.out.println("Fps: "+Math.round(frames/timePassed));
+			System.out.println("Render MS: "+NumberFormat.getInstance().format(timePassed/frames*1000.0));
 			lastFpsDumpTime = time;
 			frames = 0;
 		}

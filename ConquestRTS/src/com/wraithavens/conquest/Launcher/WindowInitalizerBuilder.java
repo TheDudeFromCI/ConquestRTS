@@ -25,6 +25,7 @@ class WindowInitalizerBuilder extends JFrame{
 	private boolean done;
 	private JButton btnAccept;
 	private JButton btnExit;
+	private JCheckBox fpsSync;
 	public WindowInitalizerBuilder(){
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run(){
@@ -43,7 +44,7 @@ class WindowInitalizerBuilder extends JFrame{
 			200, 20, 20, 0, 20, 0
 		};
 		gridBagLayout.columnWeights = new double[]{
-			0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE
+			0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE
 		};
 		gridBagLayout.rowWeights = new double[]{
 			0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE
@@ -59,7 +60,7 @@ class WindowInitalizerBuilder extends JFrame{
 		ImagePanel imagePanel = new ImagePanel(splashImage);
 		GridBagConstraints gbc_imagePanel = new GridBagConstraints();
 		gbc_imagePanel.gridwidth = 5;
-		gbc_imagePanel.insets = new Insets(5, 5, 5, 5);
+		gbc_imagePanel.insets = new Insets(5, 5, 5, 0);
 		gbc_imagePanel.fill = GridBagConstraints.BOTH;
 		gbc_imagePanel.gridx = 0;
 		gbc_imagePanel.gridy = 0;
@@ -76,7 +77,7 @@ class WindowInitalizerBuilder extends JFrame{
 		comboBox.setModel(new DefaultComboBoxModel(ResolutionSize.generateSizes()));
 		GridBagConstraints gbc_comboBox = new GridBagConstraints();
 		gbc_comboBox.gridwidth = 4;
-		gbc_comboBox.insets = new Insets(5, 5, 5, 5);
+		gbc_comboBox.insets = new Insets(5, 5, 5, 0);
 		gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
 		gbc_comboBox.gridx = 1;
 		gbc_comboBox.gridy = 1;
@@ -94,6 +95,12 @@ class WindowInitalizerBuilder extends JFrame{
 		gbc_chckbxVsync.gridx = 1;
 		gbc_chckbxVsync.gridy = 2;
 		getContentPane().add(vSync, gbc_chckbxVsync);
+		fpsSync = new JCheckBox("Fps Sync");
+		GridBagConstraints gbc_chckbxFpsSync = new GridBagConstraints();
+		gbc_chckbxFpsSync.insets = new Insets(5, 5, 5, 5);
+		gbc_chckbxFpsSync.gridx = 2;
+		gbc_chckbxFpsSync.gridy = 2;
+		getContentPane().add(fpsSync, gbc_chckbxFpsSync);
 		btnAccept = new JButton("Accept");
 		btnAccept.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
@@ -103,7 +110,7 @@ class WindowInitalizerBuilder extends JFrame{
 		});
 		GridBagConstraints gbc_btnAccept = new GridBagConstraints();
 		gbc_btnAccept.insets = new Insets(5, 5, 5, 5);
-		gbc_btnAccept.gridx = 3;
+		gbc_btnAccept.gridx = 2;
 		gbc_btnAccept.gridy = 4;
 		getContentPane().add(btnAccept, gbc_btnAccept);
 		btnExit = new JButton("Exit");
@@ -114,7 +121,7 @@ class WindowInitalizerBuilder extends JFrame{
 		});
 		GridBagConstraints gbc_btnExit = new GridBagConstraints();
 		gbc_btnExit.insets = new Insets(5, 5, 5, 5);
-		gbc_btnExit.gridx = 4;
+		gbc_btnExit.gridx = 3;
 		gbc_btnExit.gridy = 4;
 		getContentPane().add(btnExit, gbc_btnExit);
 		loadSettings();
@@ -138,17 +145,19 @@ class WindowInitalizerBuilder extends JFrame{
 				}
 			fullScreen.setSelected(bin.getBoolean());
 			vSync.setSelected(bin.getBoolean());
+			fpsSync.setSelected(bin.getBoolean());
 		}
 	}
 	private void saveSettings(){
-		BinaryFile bin = new BinaryFile(3);
+		BinaryFile bin = new BinaryFile(4);
 		bin.addByte((byte)((ResolutionSize)comboBox.getSelectedItem()).id);
 		bin.addBoolean(fullScreen.isSelected());
 		bin.addBoolean(vSync.isSelected());
+		bin.addBoolean(fpsSync.isSelected());
 		bin.compile(new File(WraithavensConquest.saveFolder, "Settings.dat"));
 	}
 	WindowInitalizer build(){
-		for(int i = 0; i<10000; i++){
+		for(int i = 0; i<3000; i++){
 			if(done){
 				saveSettings();
 				WindowInitalizer init = new WindowInitalizer();
@@ -157,10 +166,11 @@ class WindowInitalizerBuilder extends JFrame{
 				init.height = resolution.height;
 				init.fullscreen = fullScreen.isSelected();
 				init.vSync = vSync.isSelected();
+				MainLoop.FPS_SYNC = fpsSync.isSelected();
 				return init;
 			}
 			if(isVisible())
-				i = 0; // Break loop if frame is not visible for 10 seconds.
+				i = 0; // Break loop if frame is not visible for 3 seconds.
 			try{
 				Thread.sleep(1);
 			}catch(Exception exception){}
