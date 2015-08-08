@@ -13,6 +13,12 @@ public class EntityDatabase{
 	private final ArrayList<Entity> entities = new ArrayList();
 	private final Comparator entitySorter = new Comparator<Entity>(){
 		public int compare(Entity a, Entity b){
+			if(a.mesh==null&&b.mesh==null)
+				return 0;
+			if(a.mesh==null)
+				return 1;
+			if(b.mesh==null)
+				return -1;
 			return a.mesh==b.mesh?0:a.mesh.getId()>b.mesh.getId()?1:-1;
 		}
 	};
@@ -52,7 +58,8 @@ public class EntityDatabase{
 		for(Entity e : entities){
 			if(mesh==null||e.getMesh()!=mesh){
 				mesh = e.getMesh();
-				mesh.bind();
+				if(mesh!=null)
+					mesh.bind();
 			}
 			e.render(camera);
 		}

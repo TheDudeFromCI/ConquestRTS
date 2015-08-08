@@ -41,7 +41,7 @@ public class SkyBox{
 			layer1.dispose();
 		if(layer2!=null)
 			layer2.dispose();
-		if(layer2!=null)
+		if(layer3!=null)
 			layer3.dispose();
 	}
 	public void redrawMountains(){

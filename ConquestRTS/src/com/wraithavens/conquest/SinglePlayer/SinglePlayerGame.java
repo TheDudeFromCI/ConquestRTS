@@ -1,11 +1,14 @@
 package com.wraithavens.conquest.SinglePlayer;
 
+import java.util.ArrayList;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import com.wraithavens.conquest.Launcher.Driver;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
+import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.Math.Vector4f;
 import com.wraithavens.conquest.SinglePlayer.Blocks.World;
+import com.wraithavens.conquest.SinglePlayer.Entities.EntityBatch;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.Entities.StaticEntity;
@@ -23,11 +26,11 @@ import com.wraithavens.conquest.Utility.PowerInterpolation;
 public class SinglePlayerGame implements Driver{
 	private static final boolean LoadWorld = true;
 	private static final boolean LoadHeightmap = false;
-	private static final boolean LoadSkyboxes = false;
+	private static final boolean LoadSkyboxes = true;
 	private static final boolean LoadCloudBackdrop = true;
 	private static final boolean LoadCloudForeground = true;
 	private static final boolean LoadMountainSkybox = false;
-	private static final boolean LoadDynmap = false;
+	private static final boolean LoadDynmap = true;
 	private static final boolean LoadEntityDatabase = true;
 	private static final boolean SpawnInitalBulkGrass = true;
 	private WorldHeightmaps heightMaps;
@@ -148,12 +151,12 @@ public class SinglePlayerGame implements Driver{
 				});
 			}
 			skybox = new SkyBox(noise, null, noise2, mountains);
-			if(mountains!=null)
-				skybox.redrawMountains();
+			skybox.redrawMountains();
 		}
 		if(LoadEntityDatabase){
 			entityDatabase = new EntityDatabase();
 			if(SpawnInitalBulkGrass&&world!=null){
+				ArrayList<Vector3f> grassList = new ArrayList();
 				int x, z;
 				int minX = (int)(camera.goalX-100);
 				int minZ = (int)(camera.goalZ-100);
@@ -161,11 +164,12 @@ public class SinglePlayerGame implements Driver{
 				int maxZ = (int)(camera.goalZ+100);
 				for(x = minX; x<=maxX; x++)
 					for(z = minZ; z<=maxZ; z++)
-						if(Math.random()<0.3){
-							StaticEntity e = new StaticEntity(EntityType.Grass);
-							entityDatabase.addEntity(e);
-							e.moveTo(x+0.5f, world.getHeightAt(x, z)+1, z+0.5f);
-						}
+						if(Math.random()<0.01)
+							grassList.add(new Vector3f(x+0.5f, world.getHeightAt(x, z)+1, z+0.5f));
+				System.out.println("Attempting to load "+grassList.size()+" entities of grass.");
+				EntityBatch e = new EntityBatch(EntityType.Grass, grassList);
+				entityDatabase.addEntity(e);
+				System.out.println("Created bulk patch of grass.");
 			}
 		}
 		if(LoadDynmap)
@@ -330,11 +334,13 @@ public class SinglePlayerGame implements Driver{
 					heightMaps.render(false);
 		}else if(skybox!=null)
 			skybox.render(camera.x, camera.y, camera.z);
+		if(dynmap!=null){
+			dynmap.render();
+			GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+		}
 		if(processBlocks)
 			if(world!=null)
 				world.render();
-		if(dynmap!=null)
-			dynmap.render();
 		if(entityDatabase!=null)
 			entityDatabase.render(camera);
 		GL11.glPopMatrix();
