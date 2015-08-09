@@ -104,9 +104,9 @@ public class EntityMesh{
 			GlError.out("Loaded entity: "+type.fileName+".");
 			GlError.out("  Vertex Count: "+vertexCount);
 			GlError
-				.out("  Index Count: "+indexCount+"  ("+indexCount/3+" tris) (Storage: "
-				+(dataType==GL11.GL_UNSIGNED_BYTE?"Byte":dataType==GL11.GL_UNSIGNED_SHORT?"Short":"Integer")
-				+")");
+			.out("  Index Count: "+indexCount+"  ("+indexCount/3+" tris) (Storage: "
+					+(dataType==GL11.GL_UNSIGNED_BYTE?"Byte":dataType==GL11.GL_UNSIGNED_SHORT?"Short":"Integer")
+					+")");
 		}
 	}
 	private void dispose(){
@@ -127,6 +127,8 @@ public class EntityMesh{
 		GlError.dumpError();
 	}
 	void drawStatic(int lod){
+		if(lodCounts[lod]==0)
+			return;
 		GL11.glDrawElements(GL11.GL_TRIANGLES, lodCounts[lod], dataType, lodSizes[lod]);
 		GlError.dumpError();
 	}

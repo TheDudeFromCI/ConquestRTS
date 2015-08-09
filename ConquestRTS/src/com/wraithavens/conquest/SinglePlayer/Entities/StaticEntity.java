@@ -22,10 +22,13 @@ public class StaticEntity extends Entity{
 	public void render(Camera camera){
 		if(!aabb.visible(camera))
 			return;
+		int lod = getLod(camera);
+		if(lod==-1)
+			return;
 		GL11.glPushMatrix();
 		GL11.glTranslatef(position.x, position.y, position.z);
 		GL11.glScalef(scale, scale, scale);
-		mesh.drawStatic(getLod(camera));
+		mesh.drawStatic(lod);
 		GL11.glPopMatrix();
 		GlError.dumpError();
 	}
@@ -36,16 +39,18 @@ public class StaticEntity extends Entity{
 	private int getLod(Camera camera){
 		double d =
 			Math.pow(camera.x-position.x, 2)+Math.pow(camera.y-position.y, 2)+Math.pow(camera.z-position.z, 2);
-		if(d<50*50)
-			return 0;
-		if(d<75*75)
-			return 1;
 		if(d<100*100)
-			return 2;
-		if(d<125*125)
-			return 3;
+			return 0;
 		if(d<150*150)
+			return 1;
+		if(d<300*300)
+			return 2;
+		if(d<450*450)
+			return 3;
+		if(d<600*600)
 			return 4;
-		return 5;
+		if(d<1000*1000)
+			return 5;
+		return -1;
 	}
 }
