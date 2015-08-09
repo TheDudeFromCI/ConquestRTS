@@ -1,13 +1,10 @@
 package com.wraithavens.conquest.SinglePlayer;
 
-import java.util.ArrayList;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import com.wraithavens.conquest.Launcher.Driver;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
-import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.Blocks.World;
-import com.wraithavens.conquest.SinglePlayer.Entities.EntityBatch;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.Entities.StaticEntity;
@@ -126,50 +123,30 @@ public class SinglePlayerGame implements Driver{
 		if(LoadEntityDatabase){
 			entityDatabase = new EntityDatabase();
 			if(world!=null&&SpawnInitalBulkGrass){
-				boolean single = true;
-				if(single){
-					long grassGenerationStart = System.currentTimeMillis();
-					int x, z;
-					int minX = (int)(camera.goalX-100);
-					int minZ = (int)(camera.goalZ-100);
-					int maxX = (int)(camera.goalX+100);
-					int maxZ = (int)(camera.goalZ+100);
-					int count = 0;
-					for(x = minX; x<=maxX; x++)
-						for(z = minZ; z<=maxZ; z++)
-							if(Math.random()<0.3){
-								int i = (int)(Math.random()*3);
-								StaticEntity e;
-								if(i==0)
-									e = new StaticEntity(EntityType.Grass1);
-								else if(i==1)
-									e = new StaticEntity(EntityType.Grass2);
-								else
-									e = new StaticEntity(EntityType.Grass3);
-								e.moveTo(x+0.5f, world.getHeightAt(x, z)+1, z+0.5f);
-								entityDatabase.addEntity(e);
-								count++;
-							}
-					GlError.out("Created bulk patch of ("+count+") grass. (Took "
-						+(System.currentTimeMillis()-grassGenerationStart)+" ms.)");
-				}else{
-					long grassGenerationStart = System.currentTimeMillis();
-					ArrayList<Vector3f> grassList = new ArrayList();
-					int x, z;
-					int minX = (int)(camera.goalX-100);
-					int minZ = (int)(camera.goalZ-100);
-					int maxX = (int)(camera.goalX+100);
-					int maxZ = (int)(camera.goalZ+100);
-					for(x = minX; x<=maxX; x++)
-						for(z = minZ; z<=maxZ; z++)
-							if(Math.random()<0.01)
-								grassList.add(new Vector3f(x+0.5f, world.getHeightAt(x, z)+1, z+0.5f));
-					GlError.out("Attempting to load "+grassList.size()+" entities of grass.");
-					EntityBatch e = new EntityBatch(EntityType.Grass1, grassList);
-					entityDatabase.addEntity(e);
-					GlError.out("Created bulk patch of grass. (Took "
-						+(System.currentTimeMillis()-grassGenerationStart)+" ms.)");
-				}
+				long grassGenerationStart = System.currentTimeMillis();
+				int x, z;
+				int minX = (int)(camera.goalX-100);
+				int minZ = (int)(camera.goalZ-100);
+				int maxX = (int)(camera.goalX+100);
+				int maxZ = (int)(camera.goalZ+100);
+				int count = 0;
+				for(x = minX; x<=maxX; x++)
+					for(z = minZ; z<=maxZ; z++)
+						if(Math.random()<0.3){
+							int i = (int)(Math.random()*3);
+							StaticEntity e;
+							if(i==0)
+								e = new StaticEntity(EntityType.Grass1);
+							else if(i==1)
+								e = new StaticEntity(EntityType.Grass2);
+							else
+								e = new StaticEntity(EntityType.Grass3);
+							e.moveTo(x+0.5f, world.getHeightAt(x, z)+1, z+0.5f);
+							entityDatabase.addEntity(e);
+							count++;
+						}
+				GlError.out("Created bulk patch of ("+count+") grass. (Took "
+					+(System.currentTimeMillis()-grassGenerationStart)+" ms.)");
 			}
 		}
 		if(LoadDynmap)
