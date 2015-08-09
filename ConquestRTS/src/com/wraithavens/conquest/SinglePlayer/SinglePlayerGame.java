@@ -70,7 +70,7 @@ public class SinglePlayerGame implements Driver{
 		// ---
 		GlError.out("Preparing camera.");
 		camera.cameraMoveSpeed = 10.0f;
-		camera.goalY = camera.y = (float)machine.getWorldHeight(0, 0)+6;
+		camera.goalY = camera.y = (float)machine.getWorldHeight(8192, 8192)+6;
 		camera.goalX = 8192;
 		camera.goalZ = 8192;
 		// ---
