@@ -10,9 +10,15 @@ public class LandscapeWorld{
 	public LandscapeWorld(WorldNoiseMachine machine){
 		this.machine = machine;
 	}
+	public void dispose(){
+		// TODO
+	}
 	public void render(Camera camera){
 		for(LandscapeChunk c : chunks)
 			if(camera.getFrustum().cubeInFrustum(c.getX(), c.getY(), c.getZ(), LandscapeChunk.LandscapeSize))
 				c.render();
+	}
+	public void update(Camera camera){
+		// TODO
 	}
 }

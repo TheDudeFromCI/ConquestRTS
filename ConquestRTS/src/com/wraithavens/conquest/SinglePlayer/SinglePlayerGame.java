@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL11;
 import com.wraithavens.conquest.Launcher.Driver;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.SinglePlayer.Blocks.World;
+import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.Entities.StaticEntity;
@@ -16,13 +17,14 @@ import com.wraithavens.conquest.SinglePlayer.Skybox.SkyBox;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxClouds;
 
 public class SinglePlayerGame implements Driver{
-	private static final boolean LoadWorld = true;
+	private static final boolean LoadWorld = false;
 	private static final boolean LoadSkyboxes = true;
 	private static final boolean LoadCloudBackdrop = true;
 	private static final boolean LoadCloudForeground = true;
 	private static final boolean LoadDynmap = true;
 	private static final boolean LoadEntityDatabase = true;
 	private static final boolean SpawnInitalBulkGrass = true;
+	private static final boolean LoadLandscape = true;
 	private boolean w, a, s, d, shift, space, grounded = true, lockedMouse, walkLock, e;
 	private boolean wireframeMode;
 	private boolean processBlocks = true;
@@ -38,6 +40,7 @@ public class SinglePlayerGame implements Driver{
 	private Dynmap dynmap;
 	private WorldNoiseMachine machine;
 	private EntityDatabase entityDatabase;
+	private LandscapeWorld landscape;
 	public void dispose(){
 		GlError.out("Disposing single player driver.");
 		GlError.dumpError();
@@ -49,6 +52,8 @@ public class SinglePlayerGame implements Driver{
 			dynmap.dispose();
 		if(skybox!=null)
 			skybox.dispose();
+		if(landscape!=null)
+			landscape.dispose();
 		GlError.dumpError();
 	}
 	public void initalize(double time){
@@ -70,6 +75,8 @@ public class SinglePlayerGame implements Driver{
 		// ---
 		if(LoadWorld)
 			world = new World(machine, camera);
+		if(LoadLandscape)
+			landscape = new LandscapeWorld(machine);
 		// // ---
 		// // Load the skyboxes.
 		// // ---
@@ -279,9 +286,12 @@ public class SinglePlayerGame implements Driver{
 			dynmap.render();
 			GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 		}
-		if(processBlocks)
+		if(processBlocks){
 			if(world!=null)
 				world.render();
+			if(landscape!=null)
+				landscape.render(camera);
+		}
 		if(entityDatabase!=null)
 			entityDatabase.render(camera);
 		GL11.glPopMatrix();
@@ -293,8 +303,12 @@ public class SinglePlayerGame implements Driver{
 		// Check to see if we should or should not update the world. Then act
 		// accoringly.
 		// ---
-		if(processBlocks&&chunkLoading&&world!=null)
-			world.update();
+		if(processBlocks&&chunkLoading){
+			if(world!=null)
+				world.update();
+			if(landscape!=null)
+				landscape.update(camera);
+		}
 		// ---
 		// Skybox isn't visible in wireframe mode, so no need to update it.
 		// ---
