@@ -2,6 +2,7 @@ package com.wraithavens.conquest.SinglePlayer.Blocks.Landscape;
 
 import java.io.File;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL15;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
@@ -30,9 +31,21 @@ public class LandscapeChunk{
 				new File(WraithavensConquest.currentGameFolder+File.separatorChar+"Chunks", x+","+y+","+z+".dat");
 			if(file.exists()&&file.length()>0){
 				BinaryFile bin = new BinaryFile(file);
-				int vertexCount = bin.getInt();
+				int vertexCount = bin.getInt()*9;
 				int indexCount = bin.getInt();
-				FloatBuffer vertexData = BufferUtils.createFloatBuffer(vertexCount*9);
+				FloatBuffer vertexData = BufferUtils.createFloatBuffer(vertexCount);
+				IntBuffer indexData = BufferUtils.createIntBuffer(indexCount);
+				int i;
+				for(i = 0; i<vertexCount; i++)
+					vertexData.put(bin.getFloat());
+				for(i = 0; i<indexCount; i++)
+					indexData.put(bin.getInt());
+				vertexData.flip();
+				indexData.flip();
+				GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
+				GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertexData, GL15.GL_STATIC_DRAW);
+				GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
+				GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_STATIC_DRAW);
 			}else{
 				// TODO
 			}
