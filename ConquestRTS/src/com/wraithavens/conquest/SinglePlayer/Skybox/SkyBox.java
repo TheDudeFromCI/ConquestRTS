@@ -15,15 +15,13 @@ public class SkyBox{
 	private final SkyboxClouds layer0;
 	private final Sunbox layer1;
 	private final SkyboxClouds[] layer2;
-	private final MountainSkybox layer3;
 	private final ShaderProgram shader;
 	private final int vboId;
 	private final int iboId;
-	public SkyBox(SkyboxClouds layer0, Sunbox layer1, SkyboxClouds[] layer2, MountainSkybox layer3){
+	public SkyBox(SkyboxClouds layer0, Sunbox layer1, SkyboxClouds[] layer2){
 		this.layer0 = layer0;
 		this.layer1 = layer1;
 		this.layer2 = layer2;
-		this.layer3 = layer3;
 		shader =
 			new ShaderProgram(new File(WraithavensConquest.assetFolder, "SkyboxShader.vert"), null, new File(
 				WraithavensConquest.assetFolder, "SkyboxShader.frag"));
@@ -45,13 +43,6 @@ public class SkyBox{
 		if(layer2!=null)
 			for(SkyboxClouds s : layer2)
 				s.dispose();
-		if(layer3!=null)
-			layer3.dispose();
-	}
-	public void redrawMountains(){
-		if(layer3!=null)
-			layer3.redraw();
-		GlError.dumpError();
 	}
 	public void render(float cameraX, float cameraY, float cameraZ){
 		// ---
@@ -72,7 +63,6 @@ public class SkyBox{
 		GlError.dumpError();
 		// ---
 		// Now render each layer in order.
-		// TODO Make mountains render to sky box as a "layer 3".
 		// ---
 		shader.bind();
 		if(layer0!=null)
@@ -93,8 +83,6 @@ public class SkyBox{
 		if(layer2!=null)
 			for(SkyboxClouds s : layer2)
 				s.update(time);
-		if(layer3!=null)
-			layer3.update();
 		GlError.dumpError();
 	}
 	private void buildVbo(){

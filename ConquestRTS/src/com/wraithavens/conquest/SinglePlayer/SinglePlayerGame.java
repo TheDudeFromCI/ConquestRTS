@@ -9,26 +9,20 @@ import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.Entities.StaticEntity;
 import com.wraithavens.conquest.SinglePlayer.Heightmap.Dynmap;
-import com.wraithavens.conquest.SinglePlayer.Heightmap.WorldHeightmaps;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
-import com.wraithavens.conquest.SinglePlayer.Skybox.MountainRenderer;
-import com.wraithavens.conquest.SinglePlayer.Skybox.MountainSkybox;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyBox;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxClouds;
 
 public class SinglePlayerGame implements Driver{
 	private static final boolean LoadWorld = true;
-	private static final boolean LoadHeightmap = false;
 	private static final boolean LoadSkyboxes = true;
 	private static final boolean LoadCloudBackdrop = true;
 	private static final boolean LoadCloudForeground = true;
-	private static final boolean LoadMountainSkybox = false;
 	private static final boolean LoadDynmap = true;
 	private static final boolean LoadEntityDatabase = true;
 	private static final boolean SpawnInitalBulkGrass = true;
-	private WorldHeightmaps heightMaps;
 	private boolean w, a, s, d, shift, space, grounded = true, lockedMouse, walkLock, e;
 	private boolean wireframeMode;
 	private boolean processBlocks = true;
@@ -47,8 +41,6 @@ public class SinglePlayerGame implements Driver{
 	public void dispose(){
 		GlError.out("Disposing single player driver.");
 		GlError.dumpError();
-		if(heightMaps!=null)
-			heightMaps.dispose();
 		if(world!=null)
 			world.dispose();
 		if(entityDatabase!=null)
@@ -78,8 +70,6 @@ public class SinglePlayerGame implements Driver{
 		// ---
 		if(LoadWorld)
 			world = new World(machine, camera);
-		if(LoadHeightmap)
-			heightMaps = new WorldHeightmaps(machine);
 		// // ---
 		// // Load the skyboxes.
 		// // ---
@@ -91,34 +81,10 @@ public class SinglePlayerGame implements Driver{
 				for(int i = 0; i<SkyboxClouds.LayerCount; i++)
 					noise2[i] = new SkyboxClouds(false, (float)Math.random()*2);
 			}
-			MountainSkybox mountains = null;
 			// ---
 			// Load the mountain skybox renderer.
 			// ---
-			if(LoadMountainSkybox){
-				mountains = new MountainSkybox(new MountainRenderer(){
-					public float getCameraX(){
-						return camera.x;
-					}
-					public float getCameraY(){
-						return camera.y;
-					}
-					public float getCameraZ(){
-						return camera.z;
-					}
-					public WorldHeightmaps getHeightmap(){
-						return heightMaps;
-					}
-					public void renderMesh(){
-						heightMaps.render(false);
-					}
-					public void renderSkybox(){
-						heightMaps.render(true);
-					}
-				});
-			}
-			skybox = new SkyBox(noise, null, noise2, mountains);
-			skybox.redrawMountains();
+			skybox = new SkyBox(noise, null, noise2);
 		}
 		if(LoadEntityDatabase){
 			entityDatabase = new EntityDatabase();
@@ -132,7 +98,7 @@ public class SinglePlayerGame implements Driver{
 				int count = 0;
 				for(x = minX; x<=maxX; x++)
 					for(z = minZ; z<=maxZ; z++)
-						if(Math.random()<0.3){
+						if(Math.random()<0.01){
 							int i = (int)(Math.random()*3);
 							StaticEntity e;
 							if(i==0)
@@ -307,11 +273,7 @@ public class SinglePlayerGame implements Driver{
 			GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glPushMatrix();
 		updateCamera(frameDelta);
-		if(wireframeMode){
-			if(processHeightmap)
-				if(heightMaps!=null)
-					heightMaps.render(false);
-		}else if(skybox!=null)
+		if(skybox!=null&&!wireframeMode)
 			skybox.render(camera.x, camera.y, camera.z);
 		if(dynmap!=null){
 			dynmap.render();
@@ -373,7 +335,6 @@ public class SinglePlayerGame implements Driver{
 	}
 	private void updateCamera(double delta){
 		float x = camera.x;
-		float y = camera.y;
 		float z = camera.z;
 		camera.update(delta);
 		if(!processMoveEvents)
@@ -381,13 +342,6 @@ public class SinglePlayerGame implements Driver{
 		if(camera.x!=x||camera.z!=z){
 			if(dynmap!=null)
 				dynmap.update(camera.x, camera.z);
-			if(processHeightmap)
-				if(heightMaps!=null)
-					heightMaps.update(camera.x, camera.z);
-		}
-		if(camera.x!=x||camera.y!=y||camera.z!=z){
-			if(skybox!=null)
-				skybox.redrawMountains();
 		}
 	}
 }
