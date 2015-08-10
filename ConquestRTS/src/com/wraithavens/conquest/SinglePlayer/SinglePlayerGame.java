@@ -1,13 +1,18 @@
 package com.wraithavens.conquest.SinglePlayer;
 
+import java.util.ArrayList;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import com.wraithavens.conquest.Launcher.Driver;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
+import com.wraithavens.conquest.Math.Matrix4f;
+import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.Blocks.World;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
+import com.wraithavens.conquest.SinglePlayer.Entities.EntityBatch;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
+import com.wraithavens.conquest.SinglePlayer.Entities.LodRadius;
 import com.wraithavens.conquest.SinglePlayer.Entities.StaticEntity;
 import com.wraithavens.conquest.SinglePlayer.Heightmap.Dynmap;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
@@ -17,14 +22,14 @@ import com.wraithavens.conquest.SinglePlayer.Skybox.SkyBox;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxClouds;
 
 public class SinglePlayerGame implements Driver{
-	private static final boolean LoadWorld = false;
+	private static final boolean LoadWorld = true;
 	private static final boolean LoadSkyboxes = true;
 	private static final boolean LoadCloudBackdrop = true;
 	private static final boolean LoadCloudForeground = true;
 	private static final boolean LoadDynmap = true;
 	private static final boolean LoadEntityDatabase = true;
 	private static final boolean SpawnInitalBulkGrass = true;
-	private static final boolean LoadLandscape = true;
+	private static final boolean LoadLandscape = false;
 	private boolean w, a, s, d, shift, space, grounded = true, lockedMouse, walkLock, e;
 	private boolean wireframeMode;
 	private boolean processBlocks = true;
@@ -103,21 +108,32 @@ public class SinglePlayerGame implements Driver{
 				int maxX = (int)(camera.goalX+100);
 				int maxZ = (int)(camera.goalZ+100);
 				int count = 0;
+				ArrayList<Matrix4f> g1 = new ArrayList();
+				ArrayList<Matrix4f> g2 = new ArrayList();
+				ArrayList<Matrix4f> g3 = new ArrayList();
 				for(x = minX; x<=maxX; x++)
 					for(z = minZ; z<=maxZ; z++)
-						if(Math.random()<0.01){
+						if(Math.random()<0.3){
 							int i = (int)(Math.random()*3);
-							StaticEntity e;
+							Matrix4f mat = new Matrix4f();
+							mat.translate(x+0.5f, world.getHeightAt(x, z)+1, z+0.5f);
+							mat.scale(1/20f, 1/20f, 1/20f);
 							if(i==0)
-								e = new StaticEntity(EntityType.Grass1);
+								g1.add(mat);
 							else if(i==1)
-								e = new StaticEntity(EntityType.Grass2);
+								g2.add(mat);
 							else
-								e = new StaticEntity(EntityType.Grass3);
-							e.moveTo(x+0.5f, world.getHeightAt(x, z)+1, z+0.5f);
-							entityDatabase.addEntity(e);
+								g3.add(mat);
 							count++;
 						}
+				LodRadius lodRadius = new LodRadius(100, 200, 400, 800, 1600, 3200);
+				Vector3f center = new Vector3f(camera.goalX, camera.goalY, camera.goalZ);
+				EntityBatch e1 = new EntityBatch(EntityType.Grass1, g1, center, lodRadius);
+				EntityBatch e2 = new EntityBatch(EntityType.Grass2, g2, center, lodRadius);
+				EntityBatch e3 = new EntityBatch(EntityType.Grass3, g3, center, lodRadius);
+				entityDatabase.addEntity(e1);
+				entityDatabase.addEntity(e2);
+				entityDatabase.addEntity(e3);
 				GlError.out("Created bulk patch of ("+count+") grass. (Took "
 					+(System.currentTimeMillis()-grassGenerationStart)+" ms.)");
 			}
@@ -241,6 +257,30 @@ public class SinglePlayerGame implements Driver{
 			if(action==GLFW.GLFW_PRESS){
 				chunkLoading = !chunkLoading;
 				GlError.out("Chunk loading now set to "+chunkLoading+".");
+			}
+		}else if(key==GLFW.GLFW_KEY_P){
+			if(action==GLFW.GLFW_PRESS){
+				if(entityDatabase==null){
+					GlError.out("Entity database not created. Could not place entity.");
+					return;
+				}
+				ArrayList<Matrix4f> locs = new ArrayList();
+				float points = 20;
+				float height = 0.1f;
+				float disScale = 0.1f;
+				for(int i = 0; i<1000; i++){
+					Matrix4f mat = new Matrix4f();
+					float cos = (float)Math.cos(i/(points+i*0.1f)*Math.PI*2);
+					float sin = (float)Math.sin(i/(points+i*0.1f)*Math.PI*2);
+					mat.translate(camera.x+cos*disScale*i, (int)(camera.y-5)+height*i, camera.z+sin*disScale*i);
+					mat.scale(0.25f, 0.25f, 0.25f);
+					locs.add(mat);
+				}
+				EntityBatch e =
+					new EntityBatch(EntityType.Catgirl, locs, new Vector3f(camera.x, camera.y, camera.z),
+						new LodRadius(10000, 200, 400, 800, 1600, 3200));
+				entityDatabase.addEntity(e);
+				GlError.out("Spawned batch entity at ("+camera.x+", "+(camera.y-5)+", "+camera.z+").");
 			}
 		}
 	}

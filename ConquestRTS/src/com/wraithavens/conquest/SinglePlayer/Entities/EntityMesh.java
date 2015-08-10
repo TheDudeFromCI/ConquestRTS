@@ -8,6 +8,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL31;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.Utility.BinaryFile;
@@ -104,9 +105,9 @@ public class EntityMesh{
 			GlError.out("Loaded entity: "+type.fileName+".");
 			GlError.out("  Vertex Count: "+vertexCount);
 			GlError
-			.out("  Index Count: "+indexCount+"  ("+indexCount/3+" tris) (Storage: "
-					+(dataType==GL11.GL_UNSIGNED_BYTE?"Byte":dataType==GL11.GL_UNSIGNED_SHORT?"Short":"Integer")
-					+")");
+				.out("  Index Count: "+indexCount+"  ("+indexCount/3+" tris) (Storage: "
+				+(dataType==GL11.GL_UNSIGNED_BYTE?"Byte":dataType==GL11.GL_UNSIGNED_SHORT?"Short":"Integer")
+				+")");
 		}
 	}
 	private void dispose(){
@@ -118,10 +119,12 @@ public class EntityMesh{
 		references++;
 		GlError.out("Added reference to entity: '"+type.fileName+"'. References: "+references);
 	}
-	void bind(){
+	void bind(boolean singular){
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 		GL11.glVertexPointer(3, GL11.GL_FLOAT, 16, 0);
-		GL20.glVertexAttribPointer(EntityDatabase.ShaderLocation, 1, GL11.GL_UNSIGNED_BYTE, true, 16, 12);
+		GL20.glVertexAttribPointer(
+			singular?EntityDatabase.SingularShaderAttrib:EntityDatabase.BatchShaderAttrib, 1,
+			GL11.GL_UNSIGNED_BYTE, true, 16, 12);
 		GL11.glColorPointer(3, GL11.GL_UNSIGNED_BYTE, 16, 13);
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 		GlError.dumpError();
@@ -130,6 +133,12 @@ public class EntityMesh{
 		if(lodCounts[lod]==0)
 			return;
 		GL11.glDrawElements(GL11.GL_TRIANGLES, lodCounts[lod], dataType, lodSizes[lod]);
+		GlError.dumpError();
+	}
+	void drawStaticInstanced(int lod, int instances){
+		if(lodCounts[lod]==0)
+			return;
+		GL31.glDrawElementsInstanced(GL11.GL_TRIANGLES, lodCounts[lod], dataType, lodSizes[lod], instances);
 		GlError.dumpError();
 	}
 	int getId(){
