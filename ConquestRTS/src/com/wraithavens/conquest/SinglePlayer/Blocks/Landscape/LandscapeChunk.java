@@ -21,7 +21,7 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class LandscapeChunk{
-	static final int LandscapeSize = 64;
+	static final int LandscapeSize = 256;
 	private final int x;
 	private final int y;
 	private final int z;
@@ -95,8 +95,21 @@ public class LandscapeChunk{
 				// Combine the quads into their final form.
 				// ---
 				for(j = 0; j<6; j++){
+					if(j==3)
+						continue;
 					if(j==0||j==1){
-						// TODO
+						for(a = 0; a<LandscapeSize; a++){
+							for(b = 0; b<LandscapeSize; b++)
+								for(c = 0; c<LandscapeSize; c++)
+									quads[b][c] = heights[a+1][c+1]>=b+y&&heights[a+1+(j==0?1:-1)][c+1]<b+y;
+									q =
+										QuadOptimizer.optimize(storage, tempStorage, quads, LandscapeSize,
+											LandscapeSize, true);
+									if(q==0)
+										continue;
+									xCounter.setup(x, y, z, a, j, listener, Block.GRASS);
+									QuadOptimizer.countQuads(xCounter, storage, LandscapeSize, LandscapeSize, q);
+						}
 					}else if(j==2){
 						for(b = 0; b<LandscapeSize; b++){
 							for(a = 0; a<LandscapeSize; a++)
@@ -110,10 +123,19 @@ public class LandscapeChunk{
 							yCounter.setup(x, y, z, b, j, listener, Block.GRASS);
 							QuadOptimizer.countQuads(yCounter, storage, LandscapeSize, LandscapeSize, q);
 						}
-					}else if(j==3){
-						// TODO
 					}else{
-						// TODO
+						for(c = 0; c<LandscapeSize; c++){
+							for(a = 0; a<LandscapeSize; a++)
+								for(b = 0; b<LandscapeSize; b++)
+									quads[a][b] = heights[a+1][c+1]>=b+y&&heights[a+1][c+1+(j==4?1:-1)]<b+y;
+									q =
+										QuadOptimizer.optimize(storage, tempStorage, quads, LandscapeSize,
+											LandscapeSize, true);
+									if(q==0)
+										continue;
+									zCounter.setup(x, y, z, c, j, listener, Block.GRASS);
+									QuadOptimizer.countQuads(zCounter, storage, LandscapeSize, LandscapeSize, q);
+						}
 					}
 				}
 				// ---
@@ -124,7 +146,7 @@ public class LandscapeChunk{
 				int v0, v1, v2, v3;
 				byte shade;
 				for(Quad quad : quadList){
-					shade = (byte)(quad.side==2?255:quad.side==3?150:quad.side==0||quad.side==1?230:220);
+					shade = (byte)(quad.side==2?255:quad.side==3?130:quad.side==0||quad.side==1?200:180);
 					v0 = vertices.indexOf(quad.data.get(0), quad.data.get(1), quad.data.get(2), shade);
 					v1 = vertices.indexOf(quad.data.get(3), quad.data.get(4), quad.data.get(5), shade);
 					v2 = vertices.indexOf(quad.data.get(6), quad.data.get(7), quad.data.get(8), shade);
