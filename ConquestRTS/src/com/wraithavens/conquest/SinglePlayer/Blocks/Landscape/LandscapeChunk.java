@@ -124,7 +124,7 @@ public class LandscapeChunk{
 				int v0, v1, v2, v3;
 				byte shade;
 				for(Quad quad : quadList){
-					shade = (byte)(quad.side==2?256:quad.side==3?150:quad.side==0||quad.side==1?230:220);
+					shade = (byte)(quad.side==2?255:quad.side==3?150:quad.side==0||quad.side==1?230:220);
 					v0 = vertices.indexOf(quad.data.get(0), quad.data.get(1), quad.data.get(2), shade);
 					v1 = vertices.indexOf(quad.data.get(3), quad.data.get(4), quad.data.get(5), shade);
 					v2 = vertices.indexOf(quad.data.get(6), quad.data.get(7), quad.data.get(8), shade);
@@ -168,8 +168,8 @@ public class LandscapeChunk{
 				GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 				GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_STATIC_DRAW);
 				indexCount = indices.size();
-				GlError.out("Generated landmass.\n  Verts: "+vertices.size()+"\n  Tris: "+indices.size()/3
-					+"\n  Finished in "+(System.currentTimeMillis()-time)+" ms.");
+				GlError.out("Generated landmass.\n  Verts: "+vertices.size()+"\n  Tris: "+indices.size()/3+"("
+					+indices.size()+" Indices)\n  Finished in "+(System.currentTimeMillis()-time)+" ms.");
 			}
 		}
 		GlError.dumpError();

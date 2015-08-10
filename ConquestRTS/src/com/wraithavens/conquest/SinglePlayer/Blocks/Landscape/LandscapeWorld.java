@@ -37,7 +37,7 @@ public class LandscapeWorld{
 		y = Algorithms.groupLocation(y, LandscapeChunk.LandscapeSize);
 		z = Algorithms.groupLocation(z, LandscapeChunk.LandscapeSize);
 		for(LandscapeChunk c : chunks)
-			if(c.getX()==x&&c.getZ()==z)
+			if(c.getX()==x&&c.getY()==y&&c.getZ()==z)
 				return c;
 		if(!load)
 			return null;
