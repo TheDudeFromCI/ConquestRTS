@@ -22,14 +22,14 @@ import com.wraithavens.conquest.SinglePlayer.Skybox.SkyBox;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxClouds;
 
 public class SinglePlayerGame implements Driver{
-	private static final boolean LoadWorld = true;
+	private static final boolean LoadWorld = false;
 	private static final boolean LoadSkyboxes = true;
 	private static final boolean LoadCloudBackdrop = true;
 	private static final boolean LoadCloudForeground = true;
 	private static final boolean LoadDynmap = true;
 	private static final boolean LoadEntityDatabase = true;
-	private static final boolean SpawnInitalBulkGrass = true;
-	private static final boolean LoadLandscape = false;
+	private static final boolean SpawnInitalBulkGrass = false;
+	private static final boolean LoadLandscape = true;
 	private boolean w, a, s, d, shift, space, grounded = true, lockedMouse, walkLock, e;
 	private boolean wireframeMode;
 	private boolean processBlocks = true;
@@ -113,7 +113,7 @@ public class SinglePlayerGame implements Driver{
 				ArrayList<Matrix4f> g3 = new ArrayList();
 				for(x = minX; x<=maxX; x++)
 					for(z = minZ; z<=maxZ; z++)
-						if(Math.random()<0.3){
+						if(Math.random()<0.1){
 							int i = (int)(Math.random()*3);
 							Matrix4f mat = new Matrix4f();
 							mat.translate(x+0.5f, world.getHeightAt(x, z)+1, z+0.5f);
@@ -385,7 +385,7 @@ public class SinglePlayerGame implements Driver{
 		if(shift)
 			camera.goalY -= delta;
 		if(cameraMoved&&grounded)
-			camera.goalY = (float)(machine.getWorldHeight(camera.goalX, camera.goalZ)+6);
+			camera.goalY = (int)(machine.getWorldHeight(camera.goalX, camera.goalZ)+6);
 	}
 	private void updateCamera(double delta){
 		float x = camera.x;

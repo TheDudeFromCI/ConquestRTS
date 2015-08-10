@@ -66,6 +66,13 @@ public class BinaryFile{
 	public void addFloat(float n){
 		addInt(Float.floatToIntBits(n));
 	}
+	public void addInt(int n){
+		binary[pos] = (byte)(n&0xFF);
+		binary[pos+1] = (byte)(n>>8&0xFF);
+		binary[pos+2] = (byte)(n>>16&0xFF);
+		binary[pos+3] = (byte)(n>>24&0xFF);
+		pos += 4;
+	}
 	public void compile(File file){
 		if(!file.exists()){
 			try{
@@ -99,12 +106,5 @@ public class BinaryFile{
 	}
 	public int size(){
 		return binary.length;
-	}
-	private void addInt(int n){
-		binary[pos] = (byte)(n&0xFF);
-		binary[pos+1] = (byte)(n>>8&0xFF);
-		binary[pos+2] = (byte)(n>>16&0xFF);
-		binary[pos+3] = (byte)(n>>24&0xFF);
-		pos += 4;
 	}
 }
