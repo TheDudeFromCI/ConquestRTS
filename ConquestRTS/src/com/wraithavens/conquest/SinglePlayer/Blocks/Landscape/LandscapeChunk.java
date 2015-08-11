@@ -82,7 +82,7 @@ public class LandscapeChunk{
 				// ---
 				// Calculate the world heights.
 				// ---
-				int a, b, c, j, q, h;
+				int a, b, c, j, q;
 				for(a = 0; a<LandscapeSize+2; a++)
 					for(b = 0; b<LandscapeSize+2; b++)
 						heights[a][b] = (int)machine.getWorldHeight(a-1+x, b-1+z);

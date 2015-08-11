@@ -104,6 +104,9 @@ public class BinaryFile{
 		pos += 4;
 		return i;
 	}
+	public int length(){
+		return binary.length;
+	}
 	public int size(){
 		return binary.length;
 	}

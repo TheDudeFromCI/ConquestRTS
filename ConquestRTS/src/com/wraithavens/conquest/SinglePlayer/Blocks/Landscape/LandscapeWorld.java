@@ -16,13 +16,13 @@ public class LandscapeWorld{
 	private final WorldNoiseMachine machine;
 	private final ShaderProgram shader;
 	private final SpiralGridAlgorithm spiral;
+	private final ChunkHeightData chunkHeights;
 	private int chunkX;
 	private int chunkZ;
 	private int frame = 0;
 	public LandscapeWorld(WorldNoiseMachine machine){
 		GlError.out("Building landscape.");
 		this.machine = machine;
-		getContainingChunk(8192, 3000, 8192, true);
 		shader =
 			new ShaderProgram(new File(WraithavensConquest.assetFolder, "Landscape.vert"), null, new File(
 				WraithavensConquest.assetFolder, "Landscape.frag"));
@@ -31,6 +31,8 @@ public class LandscapeWorld{
 		GL20.glEnableVertexAttribArray(ShadeAttribLocation);
 		GlError.dumpError();
 		spiral = new SpiralGridAlgorithm();
+		spiral.setMaxDistance(3);
+		chunkHeights = new ChunkHeightData(machine);
 	}
 	public void dispose(){
 		GlError.out("Disposing landscape.");
@@ -75,10 +77,18 @@ public class LandscapeWorld{
 		// then 1 chunk, every ten frames.
 		// ---
 		frame++;
-		if(frame%10==0){
+		if(frame%1==0){
+			if(!spiral.hasNext())
+				return;
 			spiral.next();
-			loadChunks(spiral.getX()+chunkX, spiral.getY()+chunkZ);
+			loadChunks(spiral.getX()*LandscapeChunk.LandscapeSize+chunkX, spiral.getY()
+				*LandscapeChunk.LandscapeSize+chunkZ);
 		}
 	}
-	private void loadChunks(int x, int z){}
+	private void loadChunks(int x, int z){
+		int[] h = new int[2];
+		chunkHeights.getChunkHeight(x, z, h);
+		for(int i = 0; i<h[1]; i++)
+			getContainingChunk(x, i*LandscapeChunk.LandscapeSize+h[0], z, true);
+	}
 }
