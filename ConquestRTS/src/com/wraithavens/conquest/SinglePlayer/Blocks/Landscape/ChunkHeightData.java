@@ -3,9 +3,22 @@ package com.wraithavens.conquest.SinglePlayer.Blocks.Landscape;
 import com.wraithavens.conquest.SinglePlayer.Heightmap.Dynmap;
 
 public class ChunkHeightData{
-	private final int[][] heights = new int[(Dynmap.BlocksPerChunk<<1)/LandscapeChunk.LandscapeSize][2];
+	private static final int Size = Dynmap.BlocksPerChunk/LandscapeChunk.LandscapeSize;
+	private final int[][] heights = new int[Size*Size][2];
+	private int startX;
+	private int startZ;
+	public void load(int x, int z){
+		startX = x;
+		startZ = z;
+	}
 	private int[] getChunkHeight(int x, int z){
-		x = (x>>)&heights.length-1;
-		return heights[x];
+		// ---
+		// TODO Make this actually get some important data.
+		// ---
+		// x = Algorithms.groupLocation(x, LandscapeChunk.LandscapeSize);
+		// return heights[x];
+		return new int[]{
+			2944, 1
+		};
 	}
 }

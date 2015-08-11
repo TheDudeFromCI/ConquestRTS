@@ -13,6 +13,7 @@ import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Block;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.ChunkXQuadCounter;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.ChunkYQuadCounter;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.ChunkZQuadCounter;
+import com.wraithavens.conquest.SinglePlayer.BlockPopulators.ExtremeQuadOptimizer;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Quad;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.QuadListener;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.QuadOptimizer;
@@ -88,29 +89,33 @@ public class LandscapeChunk{
 				// ---
 				// Build the rest of the data, based on that information.
 				// ---
-				boolean[][] quads = new boolean[LandscapeSize][LandscapeSize];
+				int[][] quads = new int[LandscapeSize][LandscapeSize];
 				int[][] storage = new int[LandscapeSize][LandscapeSize];
 				int[][] tempStorage = new int[LandscapeSize][LandscapeSize];
 				// ---
 				// Combine the quads into their final form.
 				// ---
+				boolean hasBack;
+				boolean placeQuad;
 				for(j = 0; j<6; j++){
 					if(j==3)
 						continue;
 					if(j==0||j==1){
 						for(a = 0; a<LandscapeSize; a++){
-							h = 0;
 							for(b = 0; b<LandscapeSize; b++)
 								for(c = 0; c<LandscapeSize; c++){
-									quads[b][c] = heights[a+1][c+1]>=b+y&&heights[a+1+(j==0?1:-1)][c+1]<b+y;
-									if(quads[b][c])
-										h++;
+									hasBack = heights[a+1][c+1]>=b+y;
+									placeQuad = heights[a+1+(j==0?1:-1)][c+1]<b+y;
+									if(hasBack&&placeQuad)
+										quads[b][c] = 1;
+									else if(placeQuad)
+										quads[b][c] = -1;
+									else
+										quads[b][c] = 0;
 								}
-							if(h==0)
-								continue;
 							q =
-								QuadOptimizer.optimize(storage, tempStorage, quads, LandscapeSize,
-									LandscapeSize, true);
+								ExtremeQuadOptimizer.optimize(storage, tempStorage, quads, LandscapeSize,
+									LandscapeSize);
 							if(q==0)
 								continue;
 							xCounter.setup(x, y, z, a, j, listener, Block.GRASS);
@@ -118,18 +123,18 @@ public class LandscapeChunk{
 						}
 					}else if(j==2){
 						for(b = 0; b<LandscapeSize; b++){
-							h = 0;
 							for(a = 0; a<LandscapeSize; a++)
 								for(c = 0; c<LandscapeSize; c++){
-									quads[a][c] = heights[a+1][c+1]==b+y;
-									if(quads[a][b])
-										h++;
+									if(heights[a+1][c+1]==b+y)
+										quads[a][c] = 1;
+									else if(heights[a+1][c+1]<b+y)
+										quads[a][c] = -1;
+									else
+										quads[a][c] = 0;
 								}
-							if(h==0)
-								continue;
 							q =
-								QuadOptimizer.optimize(storage, tempStorage, quads, LandscapeSize,
-									LandscapeSize, true);
+								ExtremeQuadOptimizer.optimize(storage, tempStorage, quads, LandscapeSize,
+									LandscapeSize);
 							if(q==0)
 								continue;
 							yCounter.setup(x, y, z, b, j, listener, Block.GRASS);
@@ -137,18 +142,20 @@ public class LandscapeChunk{
 						}
 					}else{
 						for(c = 0; c<LandscapeSize; c++){
-							h = 0;
 							for(a = 0; a<LandscapeSize; a++)
 								for(b = 0; b<LandscapeSize; b++){
-									quads[a][b] = heights[a+1][c+1]>=b+y&&heights[a+1][c+1+(j==4?1:-1)]<b+y;
-									if(quads[a][b])
-										h++;
+									hasBack = heights[a+1][c+1]>=b+y;
+									placeQuad = heights[a+1][c+1+(j==4?1:-1)]<b+y;
+									if(hasBack&&placeQuad)
+										quads[a][b] = 1;
+									else if(placeQuad)
+										quads[a][b] = -1;
+									else
+										quads[a][b] = 0;
 								}
-							if(h==0)
-								continue;
 							q =
-								QuadOptimizer.optimize(storage, tempStorage, quads, LandscapeSize,
-									LandscapeSize, true);
+								ExtremeQuadOptimizer.optimize(storage, tempStorage, quads, LandscapeSize,
+									LandscapeSize);
 							if(q==0)
 								continue;
 							zCounter.setup(x, y, z, c, j, listener, Block.GRASS);
@@ -208,7 +215,7 @@ public class LandscapeChunk{
 				GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 				GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_STATIC_DRAW);
 				indexCount = indices.size();
-				GlError.out("Generated landmass.\n  Verts: "+vertices.size()+"\n  Tris: "+indices.size()/3+"("
+				GlError.out("Generated landmass.\n  Verts: "+vertices.size()+"\n  Tris: "+indices.size()/3+" ("
 					+indices.size()+" Indices)\n  Finished in "+(System.currentTimeMillis()-time)+" ms.");
 			}
 		}

@@ -23,14 +23,14 @@ import com.wraithavens.conquest.SinglePlayer.Skybox.SkyBox;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxClouds;
 
 public class SinglePlayerGame implements Driver{
-	private static final boolean LoadWorld = true;
+	private static final boolean LoadWorld = false;
 	private static final boolean LoadSkyboxes = true;
 	private static final boolean LoadCloudBackdrop = true;
 	private static final boolean LoadCloudForeground = true;
 	private static final boolean LoadDynmap = true;
 	private static final boolean LoadEntityDatabase = true;
-	private static final boolean SpawnInitalBulkGrass = false;
-	private static final boolean LoadLandscape = false;
+	private static final boolean SpawnInitalBulkGrass = true;
+	private static final boolean LoadLandscape = true;
 	private boolean w, a, s, d, shift, space, grounded = true, lockedMouse, walkLock, e;
 	private boolean wireframeMode;
 	private boolean processBlocks = true;
