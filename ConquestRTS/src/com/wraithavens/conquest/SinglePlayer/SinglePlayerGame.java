@@ -8,7 +8,6 @@ import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.Matrix4f;
 import com.wraithavens.conquest.Math.MatrixUtils;
 import com.wraithavens.conquest.Math.Vector3f;
-import com.wraithavens.conquest.SinglePlayer.Blocks.World;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityBatch;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
@@ -23,7 +22,6 @@ import com.wraithavens.conquest.SinglePlayer.Skybox.SkyBox;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxClouds;
 
 public class SinglePlayerGame implements Driver{
-	private static final boolean LoadWorld = false;
 	private static final boolean LoadSkyboxes = true;
 	private static final boolean LoadCloudBackdrop = true;
 	private static final boolean LoadCloudForeground = true;
@@ -41,7 +39,6 @@ public class SinglePlayerGame implements Driver{
 	private final float mouseSpeed = 0.2f;
 	private final Camera camera = new Camera();
 	private double frameDelta;
-	private World world;
 	private SkyBox skybox;
 	private Dynmap dynmap;
 	private WorldNoiseMachine machine;
@@ -50,8 +47,6 @@ public class SinglePlayerGame implements Driver{
 	public void dispose(){
 		GlError.out("Disposing single player driver.");
 		GlError.dumpError();
-		if(world!=null)
-			world.dispose();
 		if(entityDatabase!=null)
 			entityDatabase.dispose();
 		if(dynmap!=null)
@@ -81,8 +76,6 @@ public class SinglePlayerGame implements Driver{
 		// ---
 		// Load the landscape.
 		// ---
-		if(LoadWorld)
-			world = new World(machine, camera);
 		if(LoadLandscape)
 			landscape = new LandscapeWorld(machine);
 		// // ---
@@ -103,7 +96,7 @@ public class SinglePlayerGame implements Driver{
 		}
 		if(LoadEntityDatabase){
 			entityDatabase = new EntityDatabase();
-			if(world!=null&&SpawnInitalBulkGrass){
+			if(SpawnInitalBulkGrass){
 				long grassGenerationStart = System.currentTimeMillis();
 				int x, z;
 				int minX = (int)(camera.goalX-100);
@@ -119,7 +112,7 @@ public class SinglePlayerGame implements Driver{
 						if(Math.random()<0.1){
 							int i = (int)(Math.random()*3);
 							Matrix4f mat = new Matrix4f();
-							mat.translate(x+0.5f, world.getHeightAt(x, z)+1, z+0.5f);
+							mat.translate(x+0.5f, (int)machine.getWorldHeight(x, z)+1, z+0.5f);
 							mat.scale(1/20f, 1/20f, 1/20f);
 							if(i==0)
 								g1.add(mat);
@@ -204,11 +197,6 @@ public class SinglePlayerGame implements Driver{
 			if(action==GLFW.GLFW_PRESS){
 				walkLock = !walkLock;
 				GlError.out("Walklock now set to "+walkLock+".");
-			}
-		}else if(key==GLFW.GLFW_KEY_4){
-			if(action==GLFW.GLFW_PRESS){
-				world.unloadAllChunks();
-				GlError.out("All chunks unloaded.");
 			}
 		}else if(key==GLFW.GLFW_KEY_5){
 			if(action==GLFW.GLFW_PRESS){
@@ -330,8 +318,6 @@ public class SinglePlayerGame implements Driver{
 			GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 		}
 		if(processBlocks){
-			if(world!=null)
-				world.render();
 			if(landscape!=null)
 				landscape.render(camera);
 		}
@@ -347,8 +333,6 @@ public class SinglePlayerGame implements Driver{
 		// accoringly.
 		// ---
 		if(processBlocks&&chunkLoading){
-			if(world!=null)
-				world.update();
 			if(landscape!=null)
 				landscape.update(camera);
 		}
