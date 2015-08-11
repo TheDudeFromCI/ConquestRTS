@@ -6,6 +6,7 @@ import org.lwjgl.opengl.GL11;
 import com.wraithavens.conquest.Launcher.Driver;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.Matrix4f;
+import com.wraithavens.conquest.Math.MatrixUtils;
 import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.Blocks.World;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
@@ -22,14 +23,14 @@ import com.wraithavens.conquest.SinglePlayer.Skybox.SkyBox;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxClouds;
 
 public class SinglePlayerGame implements Driver{
-	private static final boolean LoadWorld = false;
+	private static final boolean LoadWorld = true;
 	private static final boolean LoadSkyboxes = true;
 	private static final boolean LoadCloudBackdrop = true;
 	private static final boolean LoadCloudForeground = true;
 	private static final boolean LoadDynmap = true;
 	private static final boolean LoadEntityDatabase = true;
 	private static final boolean SpawnInitalBulkGrass = false;
-	private static final boolean LoadLandscape = true;
+	private static final boolean LoadLandscape = false;
 	private boolean w, a, s, d, shift, space, grounded = true, lockedMouse, walkLock, e;
 	private boolean wireframeMode;
 	private boolean processBlocks = true;
@@ -75,6 +76,8 @@ public class SinglePlayerGame implements Driver{
 		camera.goalY = camera.y = (float)machine.getWorldHeight(8192, 8192)+6;
 		camera.goalX = 8192;
 		camera.goalZ = 8192;
+		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
+			/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 0.5f, 16384);
 		// ---
 		// Load the landscape.
 		// ---
@@ -278,7 +281,7 @@ public class SinglePlayerGame implements Driver{
 				}
 				EntityBatch e =
 					new EntityBatch(EntityType.Catgirl, locs, new Vector3f(camera.x, camera.y, camera.z),
-						new LodRadius(10000, 200, 400, 800, 1600, 3200));
+						new LodRadius(100, 200, 400, 800, 1600, 3200));
 				entityDatabase.addEntity(e);
 				GlError.out("Spawned batch entity at ("+camera.x+", "+(camera.y-5)+", "+camera.z+").");
 			}

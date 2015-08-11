@@ -5,10 +5,10 @@ import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
-class CellSorter{
+public class CellSorter{
 	private final byte[] cells;
 	private int pos = -1;
-	CellSorter(int viewDistance){
+	public CellSorter(int viewDistance){
 		BinaryFile bin = new BinaryFile(new File(WraithavensConquest.chunkLoadFolder, viewDistance+".dat"));
 		cells = bin.getBinary();
 	}

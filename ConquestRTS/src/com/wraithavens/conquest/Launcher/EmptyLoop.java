@@ -51,7 +51,8 @@ abstract class EmptyLoop implements LoopObjective{
 		frames++;
 		double timePassed = time-lastFpsDumpTime;
 		if(timePassed>=1){
-			GlError.out("Render MS: "+NumberFormat.getInstance().format(timePassed/frames*1000.0));
+			GlError.out("Render MS: "+NumberFormat.getInstance().format(timePassed/frames*1000.0)+"  (~"
+				+Math.round(frames/timePassed)+" Fps)");
 			lastFpsDumpTime = time;
 			frames = 0;
 		}
