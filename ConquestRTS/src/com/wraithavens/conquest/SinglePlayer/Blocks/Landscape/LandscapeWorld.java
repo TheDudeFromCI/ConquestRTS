@@ -15,7 +15,12 @@ public class LandscapeWorld{
 	private final ArrayList<LandscapeChunk> chunks = new ArrayList();
 	private final WorldNoiseMachine machine;
 	private final ShaderProgram shader;
+	private final SpiralGridAlgorithm spiral;
+	private int chunkX;
+	private int chunkZ;
+	private int frame = 0;
 	public LandscapeWorld(WorldNoiseMachine machine){
+		GlError.out("Building landscape.");
 		this.machine = machine;
 		getContainingChunk(8192, 3000, 8192, true);
 		shader =
@@ -25,8 +30,10 @@ public class LandscapeWorld{
 		ShadeAttribLocation = shader.getAttributeLocation("shade");
 		GL20.glEnableVertexAttribArray(ShadeAttribLocation);
 		GlError.dumpError();
+		spiral = new SpiralGridAlgorithm();
 	}
 	public void dispose(){
+		GlError.out("Disposing landscape.");
 		for(LandscapeChunk c : chunks)
 			c.dispose();
 		chunks.clear();
@@ -53,6 +60,25 @@ public class LandscapeWorld{
 		GlError.dumpError();
 	}
 	public void update(Camera camera){
-		// TODO
+		// ---
+		// First, make sure we are loading from the camera's location.
+		// ---
+		int x = Algorithms.groupLocation((int)camera.x, LandscapeChunk.LandscapeSize);
+		int z = Algorithms.groupLocation((int)camera.z, LandscapeChunk.LandscapeSize);
+		if(x!=chunkX||z!=chunkZ){
+			spiral.reset();
+			chunkX = x;
+			chunkZ = z;
+		}
+		// ---
+		// Next, load a chunk. Because of their size, I don't want to load more
+		// then 1 chunk, every ten frames.
+		// ---
+		frame++;
+		if(frame%10==0){
+			spiral.next();
+			loadChunks(spiral.getX()+chunkX, spiral.getY()+chunkZ);
+		}
 	}
+	private void loadChunks(int x, int z){}
 }

@@ -21,7 +21,7 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class LandscapeChunk{
-	static final int LandscapeSize = 256;
+	static final int LandscapeSize = 64;
 	private final int x;
 	private final int y;
 	private final int z;
@@ -81,7 +81,7 @@ public class LandscapeChunk{
 				// ---
 				// Calculate the world heights.
 				// ---
-				int a, b, c, j, q;
+				int a, b, c, j, q, h;
 				for(a = 0; a<LandscapeSize+2; a++)
 					for(b = 0; b<LandscapeSize+2; b++)
 						heights[a][b] = (int)machine.getWorldHeight(a-1+x, b-1+z);
@@ -99,22 +99,34 @@ public class LandscapeChunk{
 						continue;
 					if(j==0||j==1){
 						for(a = 0; a<LandscapeSize; a++){
+							h = 0;
 							for(b = 0; b<LandscapeSize; b++)
-								for(c = 0; c<LandscapeSize; c++)
+								for(c = 0; c<LandscapeSize; c++){
 									quads[b][c] = heights[a+1][c+1]>=b+y&&heights[a+1+(j==0?1:-1)][c+1]<b+y;
-									q =
-										QuadOptimizer.optimize(storage, tempStorage, quads, LandscapeSize,
-											LandscapeSize, true);
-									if(q==0)
-										continue;
-									xCounter.setup(x, y, z, a, j, listener, Block.GRASS);
-									QuadOptimizer.countQuads(xCounter, storage, LandscapeSize, LandscapeSize, q);
+									if(quads[b][c])
+										h++;
+								}
+							if(h==0)
+								continue;
+							q =
+								QuadOptimizer.optimize(storage, tempStorage, quads, LandscapeSize,
+									LandscapeSize, true);
+							if(q==0)
+								continue;
+							xCounter.setup(x, y, z, a, j, listener, Block.GRASS);
+							QuadOptimizer.countQuads(xCounter, storage, LandscapeSize, LandscapeSize, q);
 						}
 					}else if(j==2){
 						for(b = 0; b<LandscapeSize; b++){
+							h = 0;
 							for(a = 0; a<LandscapeSize; a++)
-								for(c = 0; c<LandscapeSize; c++)
+								for(c = 0; c<LandscapeSize; c++){
 									quads[a][c] = heights[a+1][c+1]==b+y;
+									if(quads[a][b])
+										h++;
+								}
+							if(h==0)
+								continue;
 							q =
 								QuadOptimizer.optimize(storage, tempStorage, quads, LandscapeSize,
 									LandscapeSize, true);
@@ -125,16 +137,22 @@ public class LandscapeChunk{
 						}
 					}else{
 						for(c = 0; c<LandscapeSize; c++){
+							h = 0;
 							for(a = 0; a<LandscapeSize; a++)
-								for(b = 0; b<LandscapeSize; b++)
+								for(b = 0; b<LandscapeSize; b++){
 									quads[a][b] = heights[a+1][c+1]>=b+y&&heights[a+1][c+1+(j==4?1:-1)]<b+y;
-									q =
-										QuadOptimizer.optimize(storage, tempStorage, quads, LandscapeSize,
-											LandscapeSize, true);
-									if(q==0)
-										continue;
-									zCounter.setup(x, y, z, c, j, listener, Block.GRASS);
-									QuadOptimizer.countQuads(zCounter, storage, LandscapeSize, LandscapeSize, q);
+									if(quads[a][b])
+										h++;
+								}
+							if(h==0)
+								continue;
+							q =
+								QuadOptimizer.optimize(storage, tempStorage, quads, LandscapeSize,
+									LandscapeSize, true);
+							if(q==0)
+								continue;
+							zCounter.setup(x, y, z, c, j, listener, Block.GRASS);
+							QuadOptimizer.countQuads(zCounter, storage, LandscapeSize, LandscapeSize, q);
 						}
 					}
 				}
