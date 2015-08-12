@@ -22,6 +22,8 @@ abstract class EmptyLoop implements LoopObjective{
 		GL11.glEnable(GL32.GL_TEXTURE_CUBE_MAP_SEAMLESS);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0.0f);
+		GL11.glEnable(GL11.GL_ALPHA_TEST);
+		GL11.glAlphaFunc(GL11.GL_GREATER, 0.0f);
 		GlError.dumpError();
 	}
 	protected final MainLoop mainLoop;

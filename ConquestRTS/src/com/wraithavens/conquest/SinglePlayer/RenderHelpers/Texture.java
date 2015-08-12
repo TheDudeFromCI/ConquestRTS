@@ -70,7 +70,7 @@ public class Texture{
 	private static final boolean[] TRANSPARENT_RETURN = new boolean[1];
 	private final String file;
 	private final int textureId;
-	private Texture(File file, int mipmapLevel){
+	public Texture(File file, int mipmapLevel){
 		textureId = Texture.loadTexture(Texture.loadImage(file), mipmapLevel);
 		textures.add(this);
 		this.file = file.getName();

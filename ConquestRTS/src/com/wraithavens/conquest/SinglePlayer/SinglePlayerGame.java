@@ -14,6 +14,8 @@ import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.Entities.LodRadius;
 import com.wraithavens.conquest.SinglePlayer.Entities.StaticEntity;
+import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassPatch;
+import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.SinglePlayer.Heightmap.Dynmap;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
@@ -43,6 +45,7 @@ public class SinglePlayerGame implements Driver{
 	private WorldNoiseMachine machine;
 	private EntityDatabase entityDatabase;
 	private LandscapeWorld landscape;
+	private Grasslands grassLands;
 	public void dispose(){
 		GlError.out("Disposing single player driver.");
 		GlError.dumpError();
@@ -97,6 +100,17 @@ public class SinglePlayerGame implements Driver{
 		}
 		if(LoadDynmap)
 			dynmap = new Dynmap(machine);
+		{
+			grassLands = new Grasslands();
+			ArrayList<Vector3f> locations = new ArrayList();
+			int x, z;
+			for(x = 0; x<16; x++)
+				for(z = 0; z<16; z++)
+					locations.add(new Vector3f((int)camera.x+x+0.5f, (int)machine.getWorldHeight((int)camera.x+x
+						+0.5f, (int)camera.z+z+0.5f)+1, (int)camera.z+z+0.5f));
+			GrassPatch patch = new GrassPatch(locations);
+			grassLands.addPatch(patch);
+		}
 	}
 	public void onKey(int key, int action){
 		if(key==GLFW.GLFW_KEY_W){
@@ -284,6 +298,7 @@ public class SinglePlayerGame implements Driver{
 		}
 		if(entityDatabase!=null)
 			entityDatabase.render(camera);
+		grassLands.render();
 		GL11.glPopMatrix();
 	}
 	public void update(double delta, double time){
