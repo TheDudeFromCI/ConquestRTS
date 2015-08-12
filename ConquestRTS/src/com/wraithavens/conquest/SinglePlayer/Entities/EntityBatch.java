@@ -12,7 +12,7 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 
 public class EntityBatch extends Entity{
-	private static final int TextureSize = 512; // 4096 Objects
+	private static final int TextureSize = 64; // 1024 Objects
 	public static final int MaxObjectCount = TextureSize*TextureSize/4;
 	private final int entityCount;
 	private final Vector3f center;
