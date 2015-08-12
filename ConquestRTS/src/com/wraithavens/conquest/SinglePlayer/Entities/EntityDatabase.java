@@ -39,7 +39,7 @@ public class EntityDatabase{
 				new File(WraithavensConquest.assetFolder, "ModelShader.frag"));
 		batchShader.bind();
 		BatchShaderAttrib = batchShader.getAttributeLocation("shade");
-		batchShader.loadUniforms("transform");
+		batchShader.loadUniforms("transform", "textureSize", "textureSizeHigh", "textureShrink");
 		batchShader.setUniform1I(0, 0);
 		GL20.glEnableVertexAttribArray(BatchShaderAttrib);
 		GlError.dumpError();
@@ -85,6 +85,11 @@ public class EntityDatabase{
 				mesh = e.getMesh();
 				if(mesh!=null)
 					mesh.bind(mode==1);
+			}
+			if(e instanceof EntityBatch){
+				batchShader.setUniform1I(1, ((EntityBatch)e).getTextureSize());
+				batchShader.setUniform1I(2, ((EntityBatch)e).getTextureSize()-1);
+				batchShader.setUniform1f(3, 1.0f/((EntityBatch)e).getTextureSize());
 			}
 			e.render(camera);
 		}
