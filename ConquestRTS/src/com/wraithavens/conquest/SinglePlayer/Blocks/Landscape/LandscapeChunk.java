@@ -37,10 +37,12 @@ public class LandscapeChunk{
 	private final int ibo;
 	private final int indexCount;
 	private final EntityBatch[] plantLife;
+	private final EntityDatabase entityDatabase;
 	LandscapeChunk(WorldNoiseMachine machine, EntityDatabase entityDatabase, int x, int y, int z){
 		this.x = x;
 		this.y = y;
 		this.z = z;
+		this.entityDatabase = entityDatabase;
 		vbo = GL15.glGenBuffers();
 		ibo = GL15.glGenBuffers();
 		HashMap<EntityType,ArrayList<Matrix4f>> plantLocations = new HashMap();
@@ -322,8 +324,10 @@ public class LandscapeChunk{
 		GL15.glDeleteBuffers(vbo);
 		GL15.glDeleteBuffers(ibo);
 		GlError.dumpError();
-		for(EntityBatch batch : plantLife)
+		for(EntityBatch batch : plantLife){
 			batch.dispose();
+			entityDatabase.removeEntity(batch);
+		}
 	}
 	int getX(){
 		return x;

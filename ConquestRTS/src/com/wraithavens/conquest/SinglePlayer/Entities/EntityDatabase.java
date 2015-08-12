@@ -65,6 +65,9 @@ public class EntityDatabase{
 		clear();
 		shader.dispose();
 	}
+	public void removeEntity(Entity e){
+		entities.remove(e);
+	}
 	public void render(Camera camera){
 		// ---
 		// Render all entities. Switching mesh types as nessicary.

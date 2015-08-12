@@ -46,14 +46,14 @@ public class SinglePlayerGame implements Driver{
 	public void dispose(){
 		GlError.out("Disposing single player driver.");
 		GlError.dumpError();
-		if(entityDatabase!=null)
-			entityDatabase.dispose();
 		if(dynmap!=null)
 			dynmap.dispose();
 		if(skybox!=null)
 			skybox.dispose();
 		if(landscape!=null)
 			landscape.dispose();
+		if(entityDatabase!=null)
+			entityDatabase.dispose();
 		GlError.dumpError();
 	}
 	public void initalize(double time){

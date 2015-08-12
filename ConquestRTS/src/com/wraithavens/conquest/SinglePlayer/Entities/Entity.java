@@ -5,14 +5,10 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 public abstract class Entity{
 	protected final EntityMesh mesh;
 	public Entity(EntityType type){
-		if(type==null)
-			mesh = null;
-		else
-			mesh = type.createReference();
+		mesh = type.createReference();
 	}
 	public void dispose(){
-		if(mesh!=null)
-			mesh.removeReference();
+		mesh.removeReference();
 	}
 	public EntityMesh getMesh(){
 		return mesh;
