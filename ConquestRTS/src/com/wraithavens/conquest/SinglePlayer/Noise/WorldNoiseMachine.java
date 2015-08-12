@@ -63,7 +63,7 @@ public class WorldNoiseMachine{
 		"static-method", "unused"
 	})
 	public EntityType randomPlant(int x, int y){
-		if(Math.random()<0.01){
+		if(Math.random()<0.1){
 			int i = (int)(Math.random()*3);
 			if(i==0)
 				return EntityType.Grass1;
