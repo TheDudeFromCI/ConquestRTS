@@ -4,11 +4,14 @@ import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
+import com.wraithavens.conquest.Math.Matrix4f;
+import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Block;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.ChunkXQuadCounter;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.ChunkYQuadCounter;
@@ -17,6 +20,10 @@ import com.wraithavens.conquest.SinglePlayer.BlockPopulators.ExtremeQuadOptimize
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Quad;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.QuadListener;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.QuadOptimizer;
+import com.wraithavens.conquest.SinglePlayer.Entities.EntityBatch;
+import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
+import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
+import com.wraithavens.conquest.SinglePlayer.Entities.LodRadius;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.Utility.BinaryFile;
@@ -29,12 +36,14 @@ public class LandscapeChunk{
 	private final int vbo;
 	private final int ibo;
 	private final int indexCount;
-	LandscapeChunk(WorldNoiseMachine machine, int x, int y, int z){
+	private final EntityBatch[] plantLife;
+	LandscapeChunk(WorldNoiseMachine machine, EntityDatabase entityDatabase, int x, int y, int z){
 		this.x = x;
 		this.y = y;
 		this.z = z;
 		vbo = GL15.glGenBuffers();
 		ibo = GL15.glGenBuffers();
+		HashMap<EntityType,ArrayList<Matrix4f>> plantLocations = new HashMap();
 		{
 			// ---
 			// Load this chunk, or generate if nessicary.
@@ -48,7 +57,7 @@ public class LandscapeChunk{
 				indexCount = bin.getInt();
 				ByteBuffer vertexData = BufferUtils.createByteBuffer(vertexCount*13);
 				IntBuffer indexData = BufferUtils.createIntBuffer(indexCount);
-				int i;
+				int i, a;
 				for(i = 0; i<vertexCount; i++){
 					vertexData.putFloat(bin.getFloat());
 					vertexData.putFloat(bin.getFloat());
@@ -63,6 +72,34 @@ public class LandscapeChunk{
 				GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertexData, GL15.GL_STATIC_DRAW);
 				GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 				GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_STATIC_DRAW);
+				int plantLifeTypes = bin.getInt();
+				int locationCount;
+				ArrayList<Matrix4f> locs;
+				Matrix4f mat;
+				for(i = 0; i<plantLifeTypes; i++){
+					plantLocations.put(EntityType.values()[bin.getInt()], locs = new ArrayList());
+					locationCount = bin.getInt();
+					for(a = 0; a<locationCount; a++){
+						mat = new Matrix4f();
+						mat.m00 = bin.getFloat();
+						mat.m01 = bin.getFloat();
+						mat.m02 = bin.getFloat();
+						mat.m03 = bin.getFloat();
+						mat.m10 = bin.getFloat();
+						mat.m11 = bin.getFloat();
+						mat.m12 = bin.getFloat();
+						mat.m13 = bin.getFloat();
+						mat.m20 = bin.getFloat();
+						mat.m21 = bin.getFloat();
+						mat.m22 = bin.getFloat();
+						mat.m23 = bin.getFloat();
+						mat.m30 = bin.getFloat();
+						mat.m31 = bin.getFloat();
+						mat.m32 = bin.getFloat();
+						mat.m33 = bin.getFloat();
+						locs.add(mat);
+					}
+				}
 			}else{
 				GlError.out("New landmass discovered. Generating now.");
 				long time = System.currentTimeMillis();
@@ -207,7 +244,6 @@ public class LandscapeChunk{
 					indexData.put(indices.get(i));
 					bin.addInt(indices.get(i));
 				}
-				bin.compile(file);
 				vertexData.flip();
 				indexData.flip();
 				GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
@@ -217,14 +253,77 @@ public class LandscapeChunk{
 				indexCount = indices.size();
 				GlError.out("Generated landmass.\n  Verts: "+vertices.size()+"\n  Tris: "+indices.size()/3+" ("
 					+indices.size()+" Indices)\n  Finished in "+(System.currentTimeMillis()-time)+" ms.");
+				int grassCount = 0;
+				EntityType entity;
+				for(a = 0; a<LandscapeSize; a++)
+					for(b = 0; b<LandscapeSize; b++){
+						entity = machine.randomPlant(a+x, b+z);
+						if(entity!=null){
+							Matrix4f mat = new Matrix4f();
+							mat.translate(a+x+0.5f, (int)machine.getWorldHeight(a+x+0.5f, b+z+0.5f)+1, b+z+0.5f);
+							mat.scale(1/20f, 1/20f, 1/20f);
+							if(plantLocations.containsKey(entity))
+								plantLocations.get(entity).add(mat);
+							else{
+								ArrayList<Matrix4f> locs = new ArrayList();
+								locs.add(mat);
+								plantLocations.put(entity, locs);
+							}
+						}
+					}
+				int bytes = 4;
+				for(EntityType type : plantLocations.keySet()){
+					bytes += 8;
+					bytes += plantLocations.get(type).size()*16*4;
+				}
+				bin.allocateMoreSpace(bytes);
+				bin.addInt(plantLocations.size());
+				for(EntityType type : plantLocations.keySet()){
+					bin.addInt(type.ordinal());
+					ArrayList<Matrix4f> locs = plantLocations.get(type);
+					bin.addInt(locs.size());
+					for(int i = 0; i<locs.size(); i++){
+						Matrix4f mat = locs.get(i);
+						bin.addFloat(mat.m00);
+						bin.addFloat(mat.m01);
+						bin.addFloat(mat.m02);
+						bin.addFloat(mat.m03);
+						bin.addFloat(mat.m10);
+						bin.addFloat(mat.m11);
+						bin.addFloat(mat.m12);
+						bin.addFloat(mat.m13);
+						bin.addFloat(mat.m20);
+						bin.addFloat(mat.m21);
+						bin.addFloat(mat.m22);
+						bin.addFloat(mat.m23);
+						bin.addFloat(mat.m30);
+						bin.addFloat(mat.m31);
+						bin.addFloat(mat.m32);
+						bin.addFloat(mat.m33);
+					}
+				}
+				bin.compile(file);
+				GlError.out("Generated plantlife.\n  Types: "+plantLocations.size()+"\n  Total Entitys: "
+					+grassCount);
 			}
 		}
 		GlError.dumpError();
+		plantLife = new EntityBatch[plantLocations.size()];
+		int i = 0;
+		Vector3f center = new Vector3f(x+LandscapeSize/2, y+LandscapeSize/2, z+LandscapeSize/2);
+		LodRadius lodRadius = new LodRadius(100, 200, 400, 800, 1600, 3200);
+		for(EntityType entity : plantLocations.keySet()){
+			plantLife[i] = new EntityBatch(entity, plantLocations.get(entity), center, lodRadius);
+			entityDatabase.addEntity(plantLife[i]);
+			i++;
+		}
 	}
 	void dispose(){
 		GL15.glDeleteBuffers(vbo);
 		GL15.glDeleteBuffers(ibo);
 		GlError.dumpError();
+		for(EntityBatch batch : plantLife)
+			batch.dispose();
 	}
 	int getX(){
 		return x;

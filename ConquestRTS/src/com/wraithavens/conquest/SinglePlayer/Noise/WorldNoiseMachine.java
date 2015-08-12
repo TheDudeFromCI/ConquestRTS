@@ -1,6 +1,7 @@
 package com.wraithavens.conquest.SinglePlayer.Noise;
 
 import com.wraithavens.conquest.Math.Vector3f;
+import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.Utility.CosineInterpolation;
 import com.wraithavens.conquest.Utility.LinearInterpolation;
@@ -57,5 +58,19 @@ public class WorldNoiseMachine{
 	}
 	public double getWorldHeight(float x, float y){
 		return worldHeight.noise(x, y);
+	}
+	@SuppressWarnings({
+		"static-method", "unused"
+	})
+	public EntityType randomPlant(int x, int y){
+		if(Math.random()<0.01){
+			int i = (int)(Math.random()*3);
+			if(i==0)
+				return EntityType.Grass1;
+			if(i==1)
+				return EntityType.Grass2;
+			return EntityType.Grass3;
+		}
+		return null;
 	}
 }

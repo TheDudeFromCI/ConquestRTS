@@ -3,10 +3,10 @@ package com.wraithavens.conquest.Math;
 import java.nio.FloatBuffer;
 
 public class Matrix4f{
-	private float m00, m10, m20, m30;
-	private float m01, m11, m21, m31;
-	private float m02, m12, m22, m32;
-	private float m03, m13, m23, m33;
+	public float m00, m10, m20, m30;
+	public float m01, m11, m21, m31;
+	public float m02, m12, m22, m32;
+	public float m03, m13, m23, m33;
 	public Matrix4f(){
 		setIdentity();
 	}

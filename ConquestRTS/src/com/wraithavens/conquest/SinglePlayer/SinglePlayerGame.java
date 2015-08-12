@@ -27,7 +27,6 @@ public class SinglePlayerGame implements Driver{
 	private static final boolean LoadCloudForeground = true;
 	private static final boolean LoadDynmap = true;
 	private static final boolean LoadEntityDatabase = true;
-	private static final boolean SpawnInitalBulkGrass = false;
 	private static final boolean LoadLandscape = true;
 	private boolean w, a, s, d, shift, space, grounded = true, lockedMouse, walkLock, e;
 	private boolean wireframeMode;
@@ -76,8 +75,10 @@ public class SinglePlayerGame implements Driver{
 		// ---
 		// Load the landscape.
 		// ---
+		if(LoadEntityDatabase)
+			entityDatabase = new EntityDatabase();
 		if(LoadLandscape)
-			landscape = new LandscapeWorld(machine, camera);
+			landscape = new LandscapeWorld(machine, entityDatabase, camera);
 		// // ---
 		// // Load the skyboxes.
 		// // ---
@@ -93,46 +94,6 @@ public class SinglePlayerGame implements Driver{
 			// Load the mountain skybox renderer.
 			// ---
 			skybox = new SkyBox(noise, null, noise2);
-		}
-		if(LoadEntityDatabase){
-			entityDatabase = new EntityDatabase();
-			if(SpawnInitalBulkGrass){
-				long grassGenerationStart = System.currentTimeMillis();
-				int x, z;
-				int minX = (int)(camera.goalX-100);
-				int minZ = (int)(camera.goalZ-100);
-				int maxX = (int)(camera.goalX+100);
-				int maxZ = (int)(camera.goalZ+100);
-				int count = 0;
-				ArrayList<Matrix4f> g1 = new ArrayList();
-				ArrayList<Matrix4f> g2 = new ArrayList();
-				ArrayList<Matrix4f> g3 = new ArrayList();
-				for(x = minX; x<=maxX; x++)
-					for(z = minZ; z<=maxZ; z++)
-						if(Math.random()<0.1){
-							int i = (int)(Math.random()*3);
-							Matrix4f mat = new Matrix4f();
-							mat.translate(x+0.5f, (int)machine.getWorldHeight(x, z)+1, z+0.5f);
-							mat.scale(1/20f, 1/20f, 1/20f);
-							if(i==0)
-								g1.add(mat);
-							else if(i==1)
-								g2.add(mat);
-							else
-								g3.add(mat);
-							count++;
-						}
-				LodRadius lodRadius = new LodRadius(100, 200, 400, 800, 1600, 3200);
-				Vector3f center = new Vector3f(camera.goalX, camera.goalY, camera.goalZ);
-				EntityBatch e1 = new EntityBatch(EntityType.Grass1, g1, center, lodRadius);
-				EntityBatch e2 = new EntityBatch(EntityType.Grass2, g2, center, lodRadius);
-				EntityBatch e3 = new EntityBatch(EntityType.Grass3, g3, center, lodRadius);
-				entityDatabase.addEntity(e1);
-				entityDatabase.addEntity(e2);
-				entityDatabase.addEntity(e3);
-				GlError.out("Created bulk patch of ("+count+") grass. (Took "
-					+(System.currentTimeMillis()-grassGenerationStart)+" ms.)");
-			}
 		}
 		if(LoadDynmap)
 			dynmap = new Dynmap(machine);
@@ -372,7 +333,7 @@ public class SinglePlayerGame implements Driver{
 		if(shift)
 			camera.goalY -= delta;
 		if(cameraMoved&&grounded)
-			camera.goalY = (int)(machine.getWorldHeight(camera.goalX, camera.goalZ)+6);
+			camera.goalY = (int)(machine.getWorldHeight((int)camera.goalX+0.5f, (int)camera.goalZ+0.5f)+6);
 	}
 	private void updateCamera(double delta){
 		float x = camera.x;
