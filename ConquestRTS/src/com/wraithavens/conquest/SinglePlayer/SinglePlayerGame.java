@@ -27,7 +27,7 @@ public class SinglePlayerGame implements Driver{
 	private static final boolean LoadCloudForeground = true;
 	private static final boolean LoadDynmap = true;
 	private static final boolean LoadEntityDatabase = true;
-	private static final boolean SpawnInitalBulkGrass = true;
+	private static final boolean SpawnInitalBulkGrass = false;
 	private static final boolean LoadLandscape = true;
 	private boolean w, a, s, d, shift, space, grounded = true, lockedMouse, walkLock, e;
 	private boolean wireframeMode;
@@ -77,7 +77,7 @@ public class SinglePlayerGame implements Driver{
 		// Load the landscape.
 		// ---
 		if(LoadLandscape)
-			landscape = new LandscapeWorld(machine);
+			landscape = new LandscapeWorld(machine, camera);
 		// // ---
 		// // Load the skyboxes.
 		// // ---
@@ -319,7 +319,7 @@ public class SinglePlayerGame implements Driver{
 		}
 		if(processBlocks){
 			if(landscape!=null)
-				landscape.render(camera);
+				landscape.render();
 		}
 		if(entityDatabase!=null)
 			entityDatabase.render(camera);
@@ -334,7 +334,7 @@ public class SinglePlayerGame implements Driver{
 		// ---
 		if(processBlocks&&chunkLoading){
 			if(landscape!=null)
-				landscape.update(camera);
+				landscape.update();
 		}
 		// ---
 		// Skybox isn't visible in wireframe mode, so no need to update it.

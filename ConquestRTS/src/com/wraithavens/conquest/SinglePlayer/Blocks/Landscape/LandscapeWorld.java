@@ -12,17 +12,20 @@ import com.wraithavens.conquest.Utility.Algorithms;
 
 public class LandscapeWorld{
 	static int ShadeAttribLocation;
+	private static final int ViewDistance = 3;
 	private final ArrayList<LandscapeChunk> chunks = new ArrayList();
 	private final WorldNoiseMachine machine;
 	private final ShaderProgram shader;
 	private final SpiralGridAlgorithm spiral;
 	private final ChunkHeightData chunkHeights;
+	private final Camera camera;
 	private int chunkX;
 	private int chunkZ;
 	private int frame = 0;
-	public LandscapeWorld(WorldNoiseMachine machine){
+	public LandscapeWorld(WorldNoiseMachine machine, Camera camera){
 		GlError.out("Building landscape.");
 		this.machine = machine;
+		this.camera = camera;
 		shader =
 			new ShaderProgram(new File(WraithavensConquest.assetFolder, "Landscape.vert"), null, new File(
 				WraithavensConquest.assetFolder, "Landscape.frag"));
@@ -31,7 +34,7 @@ public class LandscapeWorld{
 		GL20.glEnableVertexAttribArray(ShadeAttribLocation);
 		GlError.dumpError();
 		spiral = new SpiralGridAlgorithm();
-		spiral.setMaxDistance(3);
+		spiral.setMaxDistance(ViewDistance);
 		chunkHeights = new ChunkHeightData(machine);
 	}
 	public void dispose(){
@@ -54,14 +57,14 @@ public class LandscapeWorld{
 		chunks.add(c);
 		return c;
 	}
-	public void render(Camera camera){
+	public void render(){
 		shader.bind();
 		for(LandscapeChunk c : chunks)
 			if(camera.getFrustum().cubeInFrustum(c.getX(), c.getY(), c.getZ(), LandscapeChunk.LandscapeSize))
 				c.render();
 		GlError.dumpError();
 	}
-	public void update(Camera camera){
+	public void update(){
 		// ---
 		// First, make sure we are loading from the camera's location.
 		// ---
@@ -74,15 +77,29 @@ public class LandscapeWorld{
 		}
 		// ---
 		// Next, load a chunk. Because of their size, I don't want to load more
-		// then 1 chunk, every ten frames.
+		// then 1 chunk, every ten frames. I also want to unload chunks, but
+		// every tens frame. I do this by flipping off tasks, and doing one or
+		// the other every 5 frames.
 		// ---
 		frame++;
-		if(frame%1==0){
-			if(!spiral.hasNext())
-				return;
-			spiral.next();
-			loadChunks(spiral.getX()*LandscapeChunk.LandscapeSize+chunkX, spiral.getY()
-				*LandscapeChunk.LandscapeSize+chunkZ);
+		if(frame%5==0){
+			if(frame%10==0){
+				if(!spiral.hasNext())
+					return;
+				spiral.next();
+				loadChunks(spiral.getX()*LandscapeChunk.LandscapeSize+chunkX, spiral.getY()
+					*LandscapeChunk.LandscapeSize+chunkZ);
+			}else
+				clearDistanceChunks();
+		}
+	}
+	private void clearDistanceChunks(){
+		for(int i = 0; i<chunks.size();){
+			if(shouldRemove(chunks.get(i))){
+				chunks.get(i).dispose();
+				chunks.remove(i);
+			}else
+				i++;
 		}
 	}
 	private void loadChunks(int x, int z){
@@ -90,5 +107,11 @@ public class LandscapeWorld{
 		chunkHeights.getChunkHeight(x, z, h);
 		for(int i = 0; i<h[1]; i++)
 			getContainingChunk(x, i*LandscapeChunk.LandscapeSize+h[0], z, true);
+	}
+	private boolean shouldRemove(LandscapeChunk chunk){
+		int x = Algorithms.groupLocation((int)camera.x, LandscapeChunk.LandscapeSize);
+		int z = Algorithms.groupLocation((int)camera.z, LandscapeChunk.LandscapeSize);
+		return Math.pow(x-chunk.getX(), 2)+Math.pow(z-chunk.getZ(), 2)>Math.pow((ViewDistance+1)
+			*LandscapeChunk.LandscapeSize, 2);
 	}
 }
