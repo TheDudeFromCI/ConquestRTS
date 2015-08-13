@@ -297,7 +297,8 @@ public class LandscapeChunk{
 							}else{
 								Matrix4f mat = new Matrix4f();
 								mat.translate(a+x+0.5f, machine.getGroundLevel(a+x, b+z), b+z+0.5f);
-								mat.scale(1/20f, 1/20f, 1/20f);
+								float scale = 1/5f+(float)(Math.random()*2-1)*1/10f;
+								mat.scale(scale, scale, scale);
 								if(plantLocations.containsKey(entity))
 									plantLocations.get(entity).add(mat);
 								else{
@@ -368,7 +369,7 @@ public class LandscapeChunk{
 				}
 				bin.compile(file);
 				GlError.out("Generated plantlife.\n  Types: "+plantLocations.size()+"\n  Total Entitys: "
-					+plantCount+"\n  Grass Types: "+grassLocations.size()+"\n   Amount"+grassBladeCount);
+					+plantCount+"\n  Grass Types: "+grassLocations.size()+"\n   Amount: "+grassBladeCount);
 			}
 		}
 		GlError.dumpError();

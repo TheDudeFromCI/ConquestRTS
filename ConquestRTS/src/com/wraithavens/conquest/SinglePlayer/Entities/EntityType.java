@@ -4,7 +4,8 @@ public enum EntityType{
 	Grass1("Grass1.tal", true),
 	Grass2("Grass2.tal", true),
 	Grass3("Grass3.tal", true),
-	Catgirl("Catgirl.tal", false);
+	Catgirl("Catgirl.tal", false),
+	DupaiTree("DupaiTree.tal", false);
 	EntityMesh mesh;
 	public final String fileName;
 	public final boolean isGrass;
