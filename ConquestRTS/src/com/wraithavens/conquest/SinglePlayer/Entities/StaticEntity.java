@@ -7,7 +7,7 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 
 public class StaticEntity extends Entity{
 	private final Vector3f position = new Vector3f();
-	private float scale = 1f/20;
+	private float scale = 1/5f;
 	private AABB aabb;
 	public StaticEntity(EntityType type){
 		super(type);
@@ -41,15 +41,15 @@ public class StaticEntity extends Entity{
 			Math.pow(camera.x-position.x, 2)+Math.pow(camera.y-position.y, 2)+Math.pow(camera.z-position.z, 2);
 		if(d<100*100)
 			return 0;
-		if(d<150*150)
+		if(d<200*200)
 			return 1;
 		if(d<300*300)
 			return 2;
-		if(d<450*450)
+		if(d<400*400)
 			return 3;
-		if(d<600*600)
+		if(d<500*500)
 			return 4;
-		if(d<1000*1000)
+		if(d<600*600)
 			return 5;
 		return -1;
 	}
