@@ -70,7 +70,7 @@ public class SinglePlayerGame implements Driver{
 		// ---
 		GlError.out("Preparing camera.");
 		camera.cameraMoveSpeed = 10.0f;
-		camera.goalY = camera.y = (float)machine.getWorldHeight(8192, 8192)+6;
+		camera.goalY = camera.y = machine.getGroundLevel(8192, 8192)+6;
 		camera.goalX = 8192;
 		camera.goalZ = 8192;
 		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
@@ -106,8 +106,8 @@ public class SinglePlayerGame implements Driver{
 			int x, z;
 			for(x = 0; x<16; x++)
 				for(z = 0; z<16; z++)
-					locations.add(new Vector3f((int)camera.goalX+x+0.5f, (int)machine.getWorldHeight(
-						(int)camera.goalX+x+0.5f, (int)camera.goalZ+z+0.5f), (int)camera.goalZ+z+0.5f));
+					locations.add(new Vector3f((int)camera.goalX+x+0.5f, machine.getGroundLevel(
+						(int)camera.goalX+x, (int)camera.goalZ+z), (int)camera.goalZ+z));
 			GrassPatch patch = new GrassPatch(locations);
 			grassLands.addPatch(patch);
 		}
@@ -348,7 +348,7 @@ public class SinglePlayerGame implements Driver{
 		if(shift)
 			camera.goalY -= delta;
 		if(cameraMoved&&grounded)
-			camera.goalY = (int)(machine.getWorldHeight((int)camera.goalX+0.5f, (int)camera.goalZ+0.5f)+6);
+			camera.goalY = machine.getGroundLevel((int)camera.goalX, (int)camera.goalZ)+6;
 	}
 	private void updateCamera(double delta){
 		float x = camera.x;

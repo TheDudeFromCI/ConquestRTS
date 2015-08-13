@@ -26,7 +26,7 @@ public class WorldNoiseMachine{
 		// ---
 		CosineInterpolation cos = new CosineInterpolation();
 		LinearInterpolation lerp = new LinearInterpolation();
-		SubNoise worldHeightNoise1 = SubNoise.build(seeds[0], 6000, 6, cos, 5000, 0);
+		SubNoise worldHeightNoise1 = SubNoise.build(seeds[0], 6000, 6, cos, 1000, 0);
 		SubNoise prairieRed = SubNoise.build(seeds[1], 120, 2, lerp, 0.15f, 0.25f);
 		SubNoise prairieGreen = SubNoise.build(seeds[2], 20, 1, lerp, 0.1f, 0);
 		SubNoise prairieBlue = SubNoise.build(seeds[3], 80, 2, lerp, 0.15f, 0.3f);
@@ -49,6 +49,9 @@ public class WorldNoiseMachine{
 	private WorldNoiseMachine(AdvancedNoise worldHeight, ColorNoise prairieColor){
 		this.worldHeight = worldHeight;
 		this.prairieColor = prairieColor;
+	}
+	public int getGroundLevel(int x, int z){
+		return (int)getWorldHeight(x+0.5f, z+0.5f);
 	}
 	public double getMaxHeight(){
 		return worldHeight.getMaxHeight();

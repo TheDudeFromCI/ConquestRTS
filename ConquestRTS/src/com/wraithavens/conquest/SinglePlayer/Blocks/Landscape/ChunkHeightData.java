@@ -36,7 +36,7 @@ public class ChunkHeightData{
 		int maxHeight = 0;
 		for(a = 0; a<LandscapeChunk.LandscapeSize; a++)
 			for(b = 0; b<LandscapeChunk.LandscapeSize; b++){
-				h = (int)machine.getWorldHeight(x+a, z+b);
+				h = machine.getGroundLevel(x+a, z+b);
 				if(h<minHeight)
 					minHeight = h;
 				if(h>maxHeight)

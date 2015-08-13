@@ -124,7 +124,7 @@ public class LandscapeChunk{
 				int a, b, c, j, q;
 				for(a = 0; a<LandscapeSize+2; a++)
 					for(b = 0; b<LandscapeSize+2; b++)
-						heights[a][b] = (int)machine.getWorldHeight(a-1+x, b-1+z);
+						heights[a][b] = machine.getGroundLevel(a-1+x, b-1+z)-1;
 				// ---
 				// Build the rest of the data, based on that information.
 				// ---
@@ -262,7 +262,7 @@ public class LandscapeChunk{
 						entity = machine.randomPlant(a+x, b+z);
 						if(entity!=null){
 							Matrix4f mat = new Matrix4f();
-							mat.translate(a+x+0.5f, (int)machine.getWorldHeight(a+x+0.5f, b+z+0.5f)+1, b+z+0.5f);
+							mat.translate(a+x+0.5f, machine.getGroundLevel(a+x, b+z), b+z+0.5f);
 							mat.scale(1/20f, 1/20f, 1/20f);
 							if(plantLocations.containsKey(entity))
 								plantLocations.get(entity).add(mat);
