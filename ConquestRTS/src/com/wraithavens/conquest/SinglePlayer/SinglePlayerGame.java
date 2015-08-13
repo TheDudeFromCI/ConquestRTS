@@ -14,7 +14,6 @@ import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.Entities.LodRadius;
 import com.wraithavens.conquest.SinglePlayer.Entities.StaticEntity;
-import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassPatch;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.SinglePlayer.Heightmap.Dynmap;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
@@ -30,6 +29,7 @@ public class SinglePlayerGame implements Driver{
 	private static final boolean LoadDynmap = true;
 	private static final boolean LoadEntityDatabase = true;
 	private static final boolean LoadLandscape = true;
+	private static final boolean LoadGrasslands = true;
 	private boolean w, a, s, d, shift, space, grounded = true, lockedMouse, walkLock, e;
 	private boolean wireframeMode;
 	private boolean processBlocks = true;
@@ -75,13 +75,8 @@ public class SinglePlayerGame implements Driver{
 		camera.goalZ = 8192;
 		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
 			/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 0.5f, 16384);
-		// ---
-		// Load the landscape.
-		// ---
 		if(LoadEntityDatabase)
 			entityDatabase = new EntityDatabase();
-		if(LoadLandscape)
-			landscape = new LandscapeWorld(machine, entityDatabase, camera);
 		// // ---
 		// // Load the skyboxes.
 		// // ---
@@ -100,18 +95,10 @@ public class SinglePlayerGame implements Driver{
 		}
 		if(LoadDynmap)
 			dynmap = new Dynmap(machine);
-		{
+		if(LoadGrasslands)
 			grassLands = new Grasslands();
-			ArrayList<Vector3f> locations = new ArrayList();
-			int x, z;
-			for(x = 0; x<128; x++)
-				for(z = 0; z<128; z++)
-					if(Math.random()<0.5)
-						locations.add(new Vector3f((int)camera.goalX+x+0.5f, machine.getGroundLevel(
-							(int)camera.goalX+x, (int)camera.goalZ+z), (int)camera.goalZ+z+0.5f));
-			GrassPatch patch = new GrassPatch(locations);
-			grassLands.addPatch(patch);
-		}
+		if(LoadLandscape)
+			landscape = new LandscapeWorld(machine, entityDatabase, grassLands, camera);
 	}
 	public void onKey(int key, int action){
 		if(key==GLFW.GLFW_KEY_W){

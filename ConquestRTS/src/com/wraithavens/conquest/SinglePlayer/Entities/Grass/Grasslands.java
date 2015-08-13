@@ -78,6 +78,9 @@ public class Grasslands{
 	public void addPatch(GrassPatch patch){
 		patches.add(patch);
 	}
+	public void removePatch(GrassPatch patch){
+		patches.remove(patch);
+	}
 	public void render(){
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 		GL11.glVertexPointer(3, GL11.GL_FLOAT, 20, 0);

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
+import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
@@ -21,14 +22,17 @@ public class LandscapeWorld{
 	private final ChunkHeightData chunkHeights;
 	private final Camera camera;
 	private final EntityDatabase entityDatabase;
+	private final Grasslands grassLands;
 	private int chunkX;
 	private int chunkZ;
 	private int frame = 0;
-	public LandscapeWorld(WorldNoiseMachine machine, EntityDatabase entityDatabase, Camera camera){
+	public LandscapeWorld(
+		WorldNoiseMachine machine, EntityDatabase entityDatabase, Grasslands grassLands, Camera camera){
 		GlError.out("Building landscape.");
 		this.machine = machine;
 		this.camera = camera;
 		this.entityDatabase = entityDatabase;
+		this.grassLands = grassLands;
 		shader =
 			new ShaderProgram(new File(WraithavensConquest.assetFolder, "Landscape.vert"), null, new File(
 				WraithavensConquest.assetFolder, "Landscape.frag"));
@@ -56,7 +60,7 @@ public class LandscapeWorld{
 				return c;
 		if(!load)
 			return null;
-		LandscapeChunk c = new LandscapeChunk(machine, entityDatabase, x, y, z);
+		LandscapeChunk c = new LandscapeChunk(machine, entityDatabase, grassLands, x, y, z);
 		chunks.add(c);
 		return c;
 	}

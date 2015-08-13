@@ -7,6 +7,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL30;
 import com.wraithavens.conquest.Math.Vector3f;
+import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 
 public class GrassPatch{
@@ -21,7 +22,9 @@ public class GrassPatch{
 	private final int textureId;
 	private final int textureSize;
 	private final int grassCount;
-	public GrassPatch(ArrayList<Vector3f> locations){
+	private final EntityType grassType;
+	public GrassPatch(EntityType grassType, ArrayList<Vector3f> locations){
+		this.grassType = grassType;
 		textureId = GL11.glGenTextures();
 		{
 			grassCount = locations.size();
@@ -44,11 +47,14 @@ public class GrassPatch{
 		}
 		GlError.dumpError();
 	}
+	public void dispose(){
+		GL11.glDeleteTextures(textureId);
+	}
+	public EntityType getType(){
+		return grassType;
+	}
 	void bind(){
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
-	}
-	void dispose(){
-		GL11.glDeleteTextures(textureId);
 	}
 	int getCount(){
 		return grassCount;

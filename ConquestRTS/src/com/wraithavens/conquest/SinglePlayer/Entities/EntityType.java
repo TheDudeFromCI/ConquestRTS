@@ -1,14 +1,16 @@
 package com.wraithavens.conquest.SinglePlayer.Entities;
 
 public enum EntityType{
-	Grass1("Grass1.tal"),
-	Grass2("Grass2.tal"),
-	Grass3("Grass3.tal"),
-	Catgirl("Catgirl.tal");
+	Grass1("Grass1.tal", true),
+	Grass2("Grass2.tal", true),
+	Grass3("Grass3.tal", true),
+	Catgirl("Catgirl.tal", false);
 	EntityMesh mesh;
 	public final String fileName;
-	private EntityType(String fileName){
+	public final boolean isGrass;
+	private EntityType(String fileName, boolean isGrass){
 		this.fileName = fileName;
+		this.isGrass = isGrass;
 	}
 	public EntityMesh createReference(){
 		if(mesh!=null){
