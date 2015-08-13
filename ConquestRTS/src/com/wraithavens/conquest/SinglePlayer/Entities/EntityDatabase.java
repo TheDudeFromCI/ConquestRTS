@@ -11,21 +11,13 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 
 public class EntityDatabase{
 	static int SingularShaderAttrib;
-	static int BatchShaderAttrib;
 	private final ArrayList<Entity> entities = new ArrayList();
 	private final Comparator entitySorter = new Comparator<Entity>(){
 		public int compare(Entity a, Entity b){
-			if(a instanceof EntityBatch&&b instanceof EntityBatch){
-				return a.mesh==b.mesh?0:a.mesh.getId()>b.mesh.getId()?1:-1;
-			}else if(a instanceof EntityBatch)
-				return 1;
-			else if(b instanceof EntityBatch)
-				return -1;
 			return a.mesh==b.mesh?0:a.mesh.getId()>b.mesh.getId()?1:-1;
 		}
 	};
 	private final ShaderProgram shader;
-	private final ShaderProgram batchShader;
 	public EntityDatabase(){
 		GlError.out("Creating entity database.");
 		shader =
@@ -34,14 +26,6 @@ public class EntityDatabase{
 		shader.bind();
 		SingularShaderAttrib = shader.getAttributeLocation("shade");
 		GL20.glEnableVertexAttribArray(SingularShaderAttrib);
-		batchShader =
-			new ShaderProgram(new File(WraithavensConquest.assetFolder, "BatchModelShader.vert"), null,
-				new File(WraithavensConquest.assetFolder, "ModelShader.frag"));
-		batchShader.bind();
-		BatchShaderAttrib = batchShader.getAttributeLocation("shade");
-		batchShader.loadUniforms("transform", "textureSize", "textureSizeHigh", "textureShrink");
-		batchShader.setUniform1I(0, 0);
-		GL20.glEnableVertexAttribArray(BatchShaderAttrib);
 		GlError.dumpError();
 	}
 	public void addEntity(Entity e){
@@ -73,26 +57,11 @@ public class EntityDatabase{
 		// Render all entities. Switching mesh types as nessicary.
 		// ---
 		EntityMesh mesh = null;
-		int mode = 0;
+		shader.bind();
 		for(Entity e : entities){
-			if(mode!=2&&e instanceof EntityBatch){
-				mode = 2;
-				batchShader.bind();
-				mesh = null;
-			}else if(mode!=1&&!(e instanceof EntityBatch)){
-				mode = 1;
-				shader.bind();
-				mesh = null;
-			}
 			if(mesh==null||e.getMesh()!=mesh){
 				mesh = e.getMesh();
-				if(mesh!=null)
-					mesh.bind(mode==1);
-			}
-			if(e instanceof EntityBatch){
-				batchShader.setUniform1I(1, ((EntityBatch)e).getTextureSize());
-				batchShader.setUniform1I(2, ((EntityBatch)e).getTextureSize()-1);
-				batchShader.setUniform1f(3, 1.0f/((EntityBatch)e).getTextureSize());
+				mesh.bind();
 			}
 			e.render(camera);
 		}

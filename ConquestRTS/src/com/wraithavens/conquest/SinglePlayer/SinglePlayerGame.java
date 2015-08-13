@@ -1,18 +1,13 @@
 package com.wraithavens.conquest.SinglePlayer;
 
-import java.util.ArrayList;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import com.wraithavens.conquest.Launcher.Driver;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
-import com.wraithavens.conquest.Math.Matrix4f;
 import com.wraithavens.conquest.Math.MatrixUtils;
-import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
-import com.wraithavens.conquest.SinglePlayer.Entities.EntityBatch;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
-import com.wraithavens.conquest.SinglePlayer.Entities.LodRadius;
 import com.wraithavens.conquest.SinglePlayer.Entities.StaticEntity;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.SinglePlayer.Heightmap.Dynmap;
@@ -211,30 +206,6 @@ public class SinglePlayerGame implements Driver{
 			if(action==GLFW.GLFW_PRESS){
 				chunkLoading = !chunkLoading;
 				GlError.out("Chunk loading now set to "+chunkLoading+".");
-			}
-		}else if(key==GLFW.GLFW_KEY_P){
-			if(action==GLFW.GLFW_PRESS){
-				if(entityDatabase==null){
-					GlError.out("Entity database not created. Could not place entity.");
-					return;
-				}
-				ArrayList<Matrix4f> locs = new ArrayList();
-				float points = 20;
-				float height = 0.1f;
-				float disScale = 0.1f;
-				for(int i = 0; i<1000; i++){
-					Matrix4f mat = new Matrix4f();
-					float cos = (float)Math.cos(i/(points+i*0.1f)*Math.PI*2);
-					float sin = (float)Math.sin(i/(points+i*0.1f)*Math.PI*2);
-					mat.translate(camera.x+cos*disScale*i, (int)(camera.y-5)+height*i, camera.z+sin*disScale*i);
-					mat.scale(0.25f, 0.25f, 0.25f);
-					locs.add(mat);
-				}
-				EntityBatch e =
-					new EntityBatch(EntityType.Catgirl, locs, new Vector3f(camera.x, camera.y, camera.z),
-						new LodRadius(100, 200, 400, 800, 1600, 3200));
-				entityDatabase.addEntity(e);
-				GlError.out("Spawned batch entity at ("+camera.x+", "+(camera.y-5)+", "+camera.z+").");
 			}
 		}
 	}
