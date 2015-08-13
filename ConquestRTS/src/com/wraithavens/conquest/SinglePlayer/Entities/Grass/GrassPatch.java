@@ -32,7 +32,6 @@ public class GrassPatch{
 				data.put(l.x);
 				data.put(l.y);
 				data.put(l.z);
-				System.out.println(l);
 			}
 			data.flip();
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);

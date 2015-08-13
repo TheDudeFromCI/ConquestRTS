@@ -104,10 +104,11 @@ public class SinglePlayerGame implements Driver{
 			grassLands = new Grasslands();
 			ArrayList<Vector3f> locations = new ArrayList();
 			int x, z;
-			for(x = 0; x<16; x++)
-				for(z = 0; z<16; z++)
-					locations.add(new Vector3f((int)camera.goalX+x+0.5f, machine.getGroundLevel(
-						(int)camera.goalX+x, (int)camera.goalZ+z), (int)camera.goalZ+z));
+			for(x = 0; x<128; x++)
+				for(z = 0; z<128; z++)
+					if(Math.random()<0.5)
+						locations.add(new Vector3f((int)camera.goalX+x+0.5f, machine.getGroundLevel(
+							(int)camera.goalX+x, (int)camera.goalZ+z), (int)camera.goalZ+z));
 			GrassPatch patch = new GrassPatch(locations);
 			grassLands.addPatch(patch);
 		}
