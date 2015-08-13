@@ -114,9 +114,9 @@ public class LandscapeChunk{
 				else
 					grassPatches = new GrassPatch[grassPatchCount];
 				for(i = 0; i<grassPatchCount; i++){
-					locationCount = bin.getInt();
 					ArrayList<Vector3f> locations = new ArrayList();
 					EntityType grassType = EntityType.values()[bin.getInt()];
+					locationCount = bin.getInt();
 					for(a = 0; a<locationCount; a++)
 						locations.add(new Vector3f(bin.getFloat(), bin.getFloat(), bin.getFloat()));
 					if(grassLands!=null){

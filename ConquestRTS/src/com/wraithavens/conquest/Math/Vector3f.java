@@ -34,6 +34,16 @@ public class Vector3f extends Vector{
 		z = buf.get();
 		return this;
 	}
+	public void max(Vector3f v){
+		x = Math.max(x, v.x);
+		y = Math.max(y, v.y);
+		z = Math.max(z, v.z);
+	}
+	public void min(Vector3f v){
+		x = Math.min(x, v.x);
+		y = Math.min(y, v.y);
+		z = Math.min(z, v.z);
+	}
 	@Override
 	public Vector negate(){
 		x = -x;

@@ -1,5 +1,6 @@
 package com.wraithavens.conquest.SinglePlayer.Entities;
 
+import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 
 public class AABB{
@@ -12,6 +13,12 @@ public class AABB{
 		this.y = y-size/2;
 		this.z = z-size/2;
 		this.size = size;
+	}
+	public void calculate(Vector3f minEdge, Vector3f maxEdge){
+		x = minEdge.x;
+		y = minEdge.y;
+		z = minEdge.z;
+		size = Math.max(Math.max(maxEdge.x-minEdge.x, maxEdge.y-minEdge.y), maxEdge.z-minEdge.z);
 	}
 	public boolean visible(Camera camera){
 		return camera.getFrustum().cubeInFrustum(x, y, z, size);

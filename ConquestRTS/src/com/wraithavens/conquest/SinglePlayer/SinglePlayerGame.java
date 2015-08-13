@@ -96,7 +96,7 @@ public class SinglePlayerGame implements Driver{
 		if(LoadDynmap)
 			dynmap = new Dynmap(machine);
 		if(LoadGrasslands)
-			grassLands = new Grasslands();
+			grassLands = new Grasslands(camera);
 		if(LoadLandscape)
 			landscape = new LandscapeWorld(machine, entityDatabase, grassLands, camera);
 	}

@@ -7,7 +7,9 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL30;
 import com.wraithavens.conquest.Math.Vector3f;
+import com.wraithavens.conquest.SinglePlayer.Entities.AABB;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
+import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 
 public class GrassPatch{
@@ -23,19 +25,26 @@ public class GrassPatch{
 	private final int textureSize;
 	private final int grassCount;
 	private final EntityType grassType;
+	private final AABB aabb;
 	public GrassPatch(EntityType grassType, ArrayList<Vector3f> locations){
 		this.grassType = grassType;
 		textureId = GL11.glGenTextures();
+		aabb = new AABB();
 		{
 			grassCount = locations.size();
 			textureSize = nextPowerOf2((int)Math.ceil(Math.sqrt(grassCount)));
 			GlError.out("Created grass patch.\n  Objects: "+grassCount+"\n  Texture Size:"+textureSize);
 			FloatBuffer data = BufferUtils.createFloatBuffer(textureSize*textureSize*3);
+			Vector3f minEdge = new Vector3f(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
+			Vector3f maxEdge = new Vector3f(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
 			for(Vector3f l : locations){
 				data.put(l.x);
 				data.put(l.y);
 				data.put(l.z);
+				minEdge.min(l);
+				maxEdge.max(l);
 			}
+			aabb.calculate(minEdge, maxEdge);
 			data.flip();
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
@@ -61,5 +70,8 @@ public class GrassPatch{
 	}
 	int getTextureSize(){
 		return textureSize;
+	}
+	boolean isVisible(Camera camera){
+		return aabb.visible(camera);
 	}
 }
