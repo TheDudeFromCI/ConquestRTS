@@ -66,7 +66,7 @@ public class Grasslands{
 		// ---
 		// This part is just a test.
 		// ---
-		texture = new Texture(new File(WraithavensConquest.assetFolder, "Grass.png"), 0);
+		texture = new Texture(new File(WraithavensConquest.assetFolder, "Grass.png"), 1);
 		GlError.dumpError();
 	}
 	public void addPatch(GrassPatch patch){
