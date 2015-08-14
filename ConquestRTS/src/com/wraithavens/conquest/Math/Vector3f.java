@@ -69,6 +69,11 @@ public class Vector3f extends Vector{
 		this.y = y;
 		this.z = z;
 	}
+	public void set(Vector3f v){
+		x = v.x;
+		y = v.y;
+		z = v.z;
+	}
 	@Override
 	public Vector store(FloatBuffer buf){
 		buf.put(x);

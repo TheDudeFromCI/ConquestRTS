@@ -16,10 +16,11 @@ public class StaticEntity extends Entity{
 	}
 	public void moveTo(float x, float y, float z){
 		position.set(x, y, z);
-		aabb.calculate(x, y, z, mesh.getSize()*20*scale);
+		aabb.calculate(x, y, z, mesh.getSize()*scale);
 	}
 	@Override
 	public void render(Camera camera){
+		aabb.draw();
 		if(!aabb.visible(camera))
 			return;
 		int lod = getLod(camera);
@@ -34,7 +35,7 @@ public class StaticEntity extends Entity{
 	}
 	public void scaleTo(float scale){
 		this.scale = scale;
-		aabb.calculate(position.x, position.y, position.z, mesh.getSize()*20*scale);
+		aabb.calculate(position.x, position.y, position.z, mesh.getSize()*scale);
 	}
 	private int getLod(Camera camera){
 		double d =

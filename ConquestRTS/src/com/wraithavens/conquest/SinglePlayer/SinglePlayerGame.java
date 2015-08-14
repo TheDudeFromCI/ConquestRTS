@@ -16,6 +16,7 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyBox;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxClouds;
+import com.wraithavens.conquest.Utility.WireframeCube;
 
 public class SinglePlayerGame implements Driver{
 	private static final boolean LoadSkyboxes = true;
@@ -52,6 +53,7 @@ public class SinglePlayerGame implements Driver{
 			landscape.dispose();
 		if(entityDatabase!=null)
 			entityDatabase.dispose();
+		WireframeCube.dipose();
 		GlError.dumpError();
 	}
 	public void initalize(double time){
@@ -94,6 +96,7 @@ public class SinglePlayerGame implements Driver{
 			grassLands = new Grasslands(camera);
 		if(LoadLandscape)
 			landscape = new LandscapeWorld(machine, entityDatabase, grassLands, camera);
+		WireframeCube.intance();
 	}
 	public void onKey(int key, int action){
 		if(key==GLFW.GLFW_KEY_W){
@@ -258,6 +261,7 @@ public class SinglePlayerGame implements Driver{
 		if(entityDatabase!=null)
 			entityDatabase.render(camera);
 		grassLands.render();
+		WireframeCube.render();
 		GL11.glPopMatrix();
 	}
 	public void update(double delta, double time){

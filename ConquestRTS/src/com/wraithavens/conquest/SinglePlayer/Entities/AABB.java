@@ -2,6 +2,7 @@ package com.wraithavens.conquest.SinglePlayer.Entities;
 
 import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
+import com.wraithavens.conquest.Utility.WireframeCube;
 
 public class AABB{
 	private float x;
@@ -19,6 +20,13 @@ public class AABB{
 		y = minEdge.y;
 		z = minEdge.z;
 		size = Math.max(Math.max(maxEdge.x-minEdge.x, maxEdge.y-minEdge.y), maxEdge.z-minEdge.z);
+	}
+	public void draw(){
+		WireframeCube cube = WireframeCube.intance();
+		cube.setColor(1, 0, 0);
+		cube.setPosition(x, y, z);
+		cube.setScale(size, size, size);
+		cube.push();
 	}
 	public boolean visible(Camera camera){
 		return camera.getFrustum().cubeInFrustum(x, y, z, size);
