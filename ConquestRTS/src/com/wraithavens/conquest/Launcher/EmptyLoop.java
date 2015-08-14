@@ -1,6 +1,7 @@
 package com.wraithavens.conquest.Launcher;
 
 import java.text.NumberFormat;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL32;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
@@ -53,8 +54,11 @@ abstract class EmptyLoop implements LoopObjective{
 		frames++;
 		double timePassed = time-lastFpsDumpTime;
 		if(timePassed>=1){
-			GlError.out("Render MS: "+NumberFormat.getInstance().format(timePassed/frames*1000.0)+"  (~"
-				+Math.round(frames/timePassed)+" Fps)");
+			String renderTime =
+				"Render MS: "+NumberFormat.getInstance().format(timePassed/frames*1000.0)+"  (~"
+					+Math.round(frames/timePassed)+" Fps)";
+			GlError.out(renderTime);
+			GLFW.glfwSetWindowTitle(WraithavensConquest.INSTANCE.getWindow(), "Talantra ["+renderTime+"]");
 			lastFpsDumpTime = time;
 			frames = 0;
 		}
