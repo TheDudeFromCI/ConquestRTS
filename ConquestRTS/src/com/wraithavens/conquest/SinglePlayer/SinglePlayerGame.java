@@ -23,9 +23,9 @@ public class SinglePlayerGame implements Driver{
 	private static final boolean LoadCloudBackdrop = true;
 	private static final boolean LoadCloudForeground = true;
 	private static final boolean LoadDynmap = true;
-	private static final boolean LoadEntityDatabase = false;
+	private static final boolean LoadEntityDatabase = true;
 	private static final boolean LoadLandscape = true;
-	private static final boolean LoadGrasslands = false;
+	private static final boolean LoadGrasslands = true;
 	private boolean w, a, s, d, shift, space, grounded = true, lockedMouse, walkLock, e;
 	private boolean wireframeMode;
 	private boolean processBlocks = true;
@@ -72,11 +72,6 @@ public class SinglePlayerGame implements Driver{
 		camera.goalZ = 8192;
 		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
 			/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 0.5f, 16384);
-		if(LoadEntityDatabase)
-			entityDatabase = new EntityDatabase();
-		// // ---
-		// // Load the skyboxes.
-		// // ---
 		if(LoadSkyboxes){
 			SkyboxClouds noise = LoadCloudBackdrop?new SkyboxClouds(true, 0.5f):null;
 			SkyboxClouds[] noise2 = null;
@@ -85,17 +80,18 @@ public class SinglePlayerGame implements Driver{
 				for(int i = 0; i<SkyboxClouds.LayerCount; i++)
 					noise2[i] = new SkyboxClouds(false, (float)Math.random()*2);
 			}
-			// ---
-			// Load the mountain skybox renderer.
-			// ---
 			skybox = new SkyBox(noise, null, noise2);
 		}
 		if(LoadDynmap)
 			dynmap = new Dynmap(machine);
 		if(LoadGrasslands)
 			grassLands = new Grasslands(camera);
+		if(LoadEntityDatabase)
+			entityDatabase = new EntityDatabase();
 		if(LoadLandscape)
 			landscape = new LandscapeWorld(machine, entityDatabase, grassLands, camera);
+		if(entityDatabase!=null)
+			entityDatabase.setLandscape(landscape);
 		// WireframeCube.build();
 	}
 	public void onKey(int key, int action){

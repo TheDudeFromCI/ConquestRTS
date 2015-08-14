@@ -64,6 +64,14 @@ public class LandscapeWorld{
 		chunks.add(c);
 		return c;
 	}
+	public boolean isWithinView(int x, int z){
+		int cx = Algorithms.groupLocation((int)camera.x, LandscapeChunk.LandscapeSize);
+		int cz = Algorithms.groupLocation((int)camera.z, LandscapeChunk.LandscapeSize);
+		x = Algorithms.groupLocation(x, LandscapeChunk.LandscapeSize);
+		z = Algorithms.groupLocation(z, LandscapeChunk.LandscapeSize);
+		return Math.abs(x-cx)<=ViewDistance*LandscapeChunk.LandscapeSize
+			&&Math.abs(z-cz)<=ViewDistance*LandscapeChunk.LandscapeSize;
+	}
 	public void render(){
 		shader.bind();
 		for(LandscapeChunk c : chunks)

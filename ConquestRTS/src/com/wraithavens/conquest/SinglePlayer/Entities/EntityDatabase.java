@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
+import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
@@ -18,6 +19,7 @@ public class EntityDatabase{
 		}
 	};
 	private final ShaderProgram shader;
+	private LandscapeWorld landscape;
 	public EntityDatabase(){
 		GlError.out("Creating entity database.");
 		shader =
@@ -59,12 +61,17 @@ public class EntityDatabase{
 		EntityMesh mesh = null;
 		shader.bind();
 		for(Entity e : entities){
+			if(!e.canRender(landscape, camera))
+				continue;
 			if(mesh==null||e.getMesh()!=mesh){
 				mesh = e.getMesh();
 				mesh.bind();
 			}
-			e.render(camera);
+			e.render();
 		}
 		GlError.dumpError();
+	}
+	public void setLandscape(LandscapeWorld landscape){
+		this.landscape = landscape;
 	}
 }
