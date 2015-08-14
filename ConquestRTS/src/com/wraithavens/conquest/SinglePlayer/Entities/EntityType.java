@@ -1,17 +1,22 @@
 package com.wraithavens.conquest.SinglePlayer.Entities;
 
 public enum EntityType{
-	Grass1("Grass1.tal", true),
-	Grass2("Grass2.tal", true),
-	Grass3("Grass3.tal", true),
-	Catgirl("Catgirl.tal", false),
-	DupaiTree("DupaiTree.tal", false);
+	Grass1("Grass1.tal", true, null),
+	Grass2("Grass2.tal", true, null),
+	Grass3("Grass3.tal", true, null),
+	Catgirl("Catgirl.tal", false, null),
+	DupaiTree("DupaiTree.tal", false, null);
 	EntityMesh mesh;
 	public final String fileName;
 	public final boolean isGrass;
-	private EntityType(String fileName, boolean isGrass){
+	public final LodRadius lodRadius;
+	private EntityType(String fileName, boolean isGrass, LodRadius lodRadius){
 		this.fileName = fileName;
 		this.isGrass = isGrass;
+		if(lodRadius==null)
+			this.lodRadius = new LodRadius(100, 200, 300, 400, 500, 600);
+		else
+			this.lodRadius = lodRadius;
 	}
 	public EntityMesh createReference(){
 		if(mesh!=null){

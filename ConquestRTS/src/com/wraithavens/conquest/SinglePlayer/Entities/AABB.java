@@ -9,17 +9,13 @@ public class AABB{
 	private float y;
 	private float z;
 	private float size;
-	public void calculate(float x, float y, float z, float size){
-		this.x = x-size/2;
-		this.y = y-size/2;
-		this.z = z-size/2;
-		this.size = size;
-	}
-	public void calculate(Vector3f minEdge, Vector3f maxEdge){
-		x = minEdge.x;
-		y = minEdge.y;
-		z = minEdge.z;
-		size = Math.max(Math.max(maxEdge.x-minEdge.x, maxEdge.y-minEdge.y), maxEdge.z-minEdge.z);
+	public void calculate(Vector3f minEdge, Vector3f maxEdge, float scale, Vector3f offset){
+		x = minEdge.x*scale+(offset==null?0:offset.x);
+		y = minEdge.y*scale+(offset==null?0:offset.y);
+		z = minEdge.z*scale+(offset==null?0:offset.z);
+		size =
+			Math.max(Math.max(maxEdge.x*scale-minEdge.x*scale, maxEdge.y*scale-minEdge.y*scale), maxEdge.z*scale
+				-minEdge.z*scale);
 	}
 	public void draw(){
 		WireframeCube cube = WireframeCube.intance();

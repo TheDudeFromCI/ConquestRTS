@@ -16,14 +16,14 @@ public class StaticEntity extends Entity{
 	}
 	public void moveTo(float x, float y, float z){
 		position.set(x, y, z);
-		aabb.calculate(x, y, z, mesh.getSize()*scale);
+		aabb.calculate(mesh.getAabbMin(), mesh.getAabbMax(), scale, position);
 	}
 	@Override
 	public void render(Camera camera){
 		aabb.draw();
 		if(!aabb.visible(camera))
 			return;
-		int lod = getLod(camera);
+		int lod = mesh.getType().lodRadius.getLod(camera, position);
 		if(lod==-1)
 			return;
 		GL11.glPushMatrix();
@@ -35,23 +35,6 @@ public class StaticEntity extends Entity{
 	}
 	public void scaleTo(float scale){
 		this.scale = scale;
-		aabb.calculate(position.x, position.y, position.z, mesh.getSize()*scale);
-	}
-	private int getLod(Camera camera){
-		double d =
-			Math.pow(camera.x-position.x, 2)+Math.pow(camera.y-position.y, 2)+Math.pow(camera.z-position.z, 2);
-		if(d<100*100)
-			return 0;
-		if(d<200*200)
-			return 1;
-		if(d<300*300)
-			return 2;
-		if(d<400*400)
-			return 3;
-		if(d<500*500)
-			return 4;
-		if(d<600*600)
-			return 5;
-		return -1;
+		aabb.calculate(mesh.getAabbMin(), mesh.getAabbMax(), scale, position);
 	}
 }

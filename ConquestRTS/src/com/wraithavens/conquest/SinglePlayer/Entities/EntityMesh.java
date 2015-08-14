@@ -10,6 +10,7 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL31;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
+import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
@@ -20,7 +21,8 @@ public class EntityMesh{
 	private final int ibo;
 	private final int indexCount;
 	private final int dataType;
-	private final float aabbSize;
+	private final Vector3f aabbMin;
+	private final Vector3f aabbMax;
 	private final int[] lodSizes = new int[6];
 	private final int[] lodCounts = new int[6];
 	EntityMesh(EntityType type){
@@ -101,7 +103,8 @@ public class EntityMesh{
 				}
 				GlError.dumpError();
 			}
-			aabbSize = bin.getFloat();
+			aabbMin = new Vector3f(bin.getFloat(), bin.getFloat(), bin.getFloat());
+			aabbMax = new Vector3f(bin.getFloat(), bin.getFloat(), bin.getFloat());
 			GlError.out("Loaded entity: "+type.fileName+".");
 			GlError.out("  Vertex Count: "+vertexCount);
 			GlError
@@ -139,11 +142,17 @@ public class EntityMesh{
 		GL31.glDrawElementsInstanced(GL11.GL_TRIANGLES, lodCounts[lod], dataType, lodSizes[lod], instances);
 		GlError.dumpError();
 	}
+	Vector3f getAabbMax(){
+		return aabbMax;
+	}
+	Vector3f getAabbMin(){
+		return aabbMin;
+	}
 	int getId(){
 		return type.ordinal();
 	}
-	float getSize(){
-		return aabbSize;
+	EntityType getType(){
+		return type;
 	}
 	void removeReference(){
 		references--;

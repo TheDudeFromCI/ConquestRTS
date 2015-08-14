@@ -44,7 +44,7 @@ public class GrassPatch{
 				minEdge.min(l);
 				maxEdge.max(l);
 			}
-			aabb.calculate(minEdge, maxEdge);
+			aabb.calculate(minEdge, maxEdge, 1.0f, null);
 			data.flip();
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
