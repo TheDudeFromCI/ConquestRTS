@@ -10,6 +10,9 @@ public class SpiralGridAlgorithm{
 	private int maxDistance;
 	private int tempX;
 	private int tempY;
+	public int getDistance(){
+		return dis;
+	}
 	public int getX(){
 		return tempX;
 	}

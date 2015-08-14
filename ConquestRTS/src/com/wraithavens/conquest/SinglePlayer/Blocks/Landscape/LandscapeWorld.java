@@ -41,7 +41,7 @@ public class LandscapeWorld{
 		GL20.glEnableVertexAttribArray(ShadeAttribLocation);
 		GlError.dumpError();
 		spiral = new SpiralGridAlgorithm();
-		spiral.setMaxDistance(ViewDistance);
+		spiral.setMaxDistance(ViewDistance+2);
 		chunkHeights = new ChunkHeightData(machine);
 	}
 	public void dispose(){
@@ -87,12 +87,16 @@ public class LandscapeWorld{
 		// Next, load a chunk. Because of their size, I don't want to load more
 		// then 1 chunk, every ten frames. I also want to unload chunks, but
 		// every tens frame. I do this by flipping off tasks, and doing one or
-		// the other every 5 frames.
+		// the other every 5 frames. When processing chunks not in immediate
+		// view distance, slow chunk loading to once every 40 frames.
 		// ---
 		frame++;
 		if(frame%5==0){
 			if(frame%10==0){
 				if(!spiral.hasNext())
+					return;
+				System.out.println("Distance = "+spiral.getDistance());
+				if(spiral.getDistance()>=ViewDistance&&frame%40!=0)
 					return;
 				spiral.next();
 				loadChunks(spiral.getX()*LandscapeChunk.LandscapeSize+chunkX, spiral.getY()
@@ -113,8 +117,8 @@ public class LandscapeWorld{
 	private boolean isWithinView(LandscapeChunk c, int distance){
 		int x = Algorithms.groupLocation((int)camera.x, LandscapeChunk.LandscapeSize);
 		int z = Algorithms.groupLocation((int)camera.z, LandscapeChunk.LandscapeSize);
-		return Math.pow(x-c.getX(), 2)+Math.pow(z-c.getZ(), 2)>Math
-			.pow(distance*LandscapeChunk.LandscapeSize, 2);
+		return Math.abs(x-c.getX())<=distance*LandscapeChunk.LandscapeSize
+			&&Math.abs(z-c.getZ())<=distance*LandscapeChunk.LandscapeSize;
 	}
 	private void loadChunks(int x, int z){
 		int[] h = new int[2];
@@ -123,6 +127,6 @@ public class LandscapeWorld{
 			getContainingChunk(x, i*LandscapeChunk.LandscapeSize+h[0], z, true);
 	}
 	private boolean shouldRemove(LandscapeChunk chunk){
-		return isWithinView(chunk, ViewDistance+2);
+		return !isWithinView(chunk, ViewDistance+3);
 	}
 }

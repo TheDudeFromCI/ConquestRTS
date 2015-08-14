@@ -23,9 +23,9 @@ public class SinglePlayerGame implements Driver{
 	private static final boolean LoadCloudBackdrop = true;
 	private static final boolean LoadCloudForeground = true;
 	private static final boolean LoadDynmap = true;
-	private static final boolean LoadEntityDatabase = true;
+	private static final boolean LoadEntityDatabase = false;
 	private static final boolean LoadLandscape = true;
-	private static final boolean LoadGrasslands = true;
+	private static final boolean LoadGrasslands = false;
 	private boolean w, a, s, d, shift, space, grounded = true, lockedMouse, walkLock, e;
 	private boolean wireframeMode;
 	private boolean processBlocks = true;
@@ -260,7 +260,8 @@ public class SinglePlayerGame implements Driver{
 		}
 		if(entityDatabase!=null)
 			entityDatabase.render(camera);
-		grassLands.render();
+		if(grassLands!=null)
+			grassLands.render();
 		WireframeCube.render();
 		GL11.glPopMatrix();
 	}
