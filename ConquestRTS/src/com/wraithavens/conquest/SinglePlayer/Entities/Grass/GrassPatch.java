@@ -71,6 +71,12 @@ public class GrassPatch{
 	int getTextureSize(){
 		return textureSize;
 	}
+	int getX(){
+		return (int)aabb.getX();
+	}
+	int getZ(){
+		return (int)aabb.getZ();
+	}
 	boolean isVisible(Camera camera){
 		return aabb.visible(camera);
 	}

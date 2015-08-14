@@ -26,6 +26,12 @@ public class AABB{
 		cube.setScale(size, size, size);
 		cube.push();
 	}
+	public float getX(){
+		return x;
+	}
+	public float getZ(){
+		return z;
+	}
 	public boolean visible(Camera camera){
 		return camera.getFrustum().cubeInFrustum(x, y, z, size);
 	}

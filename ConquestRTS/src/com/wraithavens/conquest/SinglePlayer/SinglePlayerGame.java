@@ -84,14 +84,16 @@ public class SinglePlayerGame implements Driver{
 		}
 		if(LoadDynmap)
 			dynmap = new Dynmap(machine);
-		if(LoadGrasslands)
-			grassLands = new Grasslands(camera);
 		if(LoadEntityDatabase)
 			entityDatabase = new EntityDatabase();
+		if(LoadGrasslands)
+			grassLands = new Grasslands(camera);
 		if(LoadLandscape)
 			landscape = new LandscapeWorld(machine, entityDatabase, grassLands, camera);
 		if(entityDatabase!=null)
 			entityDatabase.setLandscape(landscape);
+		if(grassLands!=null)
+			grassLands.setLandscape(landscape);
 		// WireframeCube.build();
 	}
 	public void onKey(int key, int action){

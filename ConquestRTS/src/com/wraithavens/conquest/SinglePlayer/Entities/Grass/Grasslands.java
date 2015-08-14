@@ -10,6 +10,7 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL31;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
+import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
@@ -22,6 +23,7 @@ public class Grasslands{
 	private final ShaderProgram shader;
 	private final Texture texture;
 	private final Camera camera;
+	private LandscapeWorld landscape;
 	public Grasslands(Camera camera){
 		this.camera = camera;
 		ibo = GL15.glGenBuffers();
@@ -95,6 +97,8 @@ public class Grasslands{
 		texture.bind();
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		for(GrassPatch grass : patches){
+			if(landscape!=null&&!landscape.isWithinView(grass.getX(), grass.getZ()))
+				continue;
 			if(!grass.isVisible(camera))
 				continue;
 			grass.bind();
@@ -105,5 +109,8 @@ public class Grasslands{
 		}
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GlError.dumpError();
+	}
+	public void setLandscape(LandscapeWorld landscape){
+		this.landscape = landscape;
 	}
 }
