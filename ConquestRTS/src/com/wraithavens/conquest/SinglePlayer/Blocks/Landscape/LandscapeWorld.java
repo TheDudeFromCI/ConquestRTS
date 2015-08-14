@@ -14,7 +14,7 @@ import com.wraithavens.conquest.Utility.Algorithms;
 
 public class LandscapeWorld{
 	static int ShadeAttribLocation;
-	private static final int ViewDistance = 1;
+	private static final int ViewDistance = 2;
 	private final ArrayList<LandscapeChunk> chunks = new ArrayList();
 	private final WorldNoiseMachine machine;
 	private final ShaderProgram shader;
@@ -105,7 +105,7 @@ public class LandscapeWorld{
 			if(frame%10==0||spiral.getDistance()<=0){
 				if(!spiral.hasNext())
 					return;
-				if(spiral.getDistance()>=ViewDistance&&frame%40!=0)
+				if(spiral.getDistance()>ViewDistance&&frame%40!=0)
 					return;
 				spiral.next();
 				loadChunks(spiral.getX()*LandscapeChunk.LandscapeSize+chunkX, spiral.getY()

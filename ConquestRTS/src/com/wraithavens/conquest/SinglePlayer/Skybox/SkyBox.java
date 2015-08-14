@@ -55,6 +55,7 @@ public class SkyBox{
 		GL11.glTranslatef(cameraX, cameraY, cameraZ);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glDisable(GL11.GL_CULL_FACE);
+		GL11.glEnable(GL11.GL_BLEND);
 		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
 			/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 0.001f, 5f);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
@@ -74,6 +75,7 @@ public class SkyBox{
 				s.render();
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glPopMatrix();
 		GlError.dumpError();
 	}
