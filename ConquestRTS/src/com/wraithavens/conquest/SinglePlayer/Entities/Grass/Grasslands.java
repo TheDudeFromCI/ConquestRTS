@@ -87,6 +87,7 @@ public class Grasslands{
 		patches.remove(patch);
 	}
 	public void render(){
+		GL11.glEnable(GL11.GL_ALPHA_TEST);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 		GL11.glVertexPointer(3, GL11.GL_FLOAT, 20, 0);
 		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 20, 12);
@@ -108,6 +109,7 @@ public class Grasslands{
 			GL31.glDrawElementsInstanced(GL11.GL_TRIANGLES, 18, GL11.GL_UNSIGNED_BYTE, 0, grass.getCount());
 		}
 		GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		GlError.dumpError();
 	}
 	public void setLandscape(LandscapeWorld landscape){
