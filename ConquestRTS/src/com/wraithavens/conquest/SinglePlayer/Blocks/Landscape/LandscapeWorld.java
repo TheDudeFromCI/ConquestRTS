@@ -96,14 +96,15 @@ public class LandscapeWorld{
 		// then 1 chunk, every ten frames. I also want to unload chunks, but
 		// every tens frame. I do this by flipping off tasks, and doing one or
 		// the other every 5 frames. When processing chunks not in immediate
-		// view distance, slow chunk loading to once every 40 frames.
+		// view distance, slow chunk loading to once every 40 frames. If the
+		// spiral distance is less or equal to 1 chunk away, kick into high gear
+		// to prevent the player from reaching the edge.
 		// ---
 		frame++;
 		if(frame%5==0){
-			if(frame%10==0){
+			if(frame%10==0||spiral.getDistance()<=0){
 				if(!spiral.hasNext())
 					return;
-				System.out.println("Distance = "+spiral.getDistance());
 				if(spiral.getDistance()>=ViewDistance&&frame%40!=0)
 					return;
 				spiral.next();
