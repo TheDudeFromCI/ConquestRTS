@@ -67,7 +67,8 @@ public class LandscapeWorld{
 	public void render(){
 		shader.bind();
 		for(LandscapeChunk c : chunks)
-			if(camera.getFrustum().cubeInFrustum(c.getX(), c.getY(), c.getZ(), LandscapeChunk.LandscapeSize))
+			if(isWithinView(c, ViewDistance)
+				&&camera.getFrustum().cubeInFrustum(c.getX(), c.getY(), c.getZ(), LandscapeChunk.LandscapeSize))
 				c.render();
 		GlError.dumpError();
 	}
@@ -109,6 +110,12 @@ public class LandscapeWorld{
 				i++;
 		}
 	}
+	private boolean isWithinView(LandscapeChunk c, int distance){
+		int x = Algorithms.groupLocation((int)camera.x, LandscapeChunk.LandscapeSize);
+		int z = Algorithms.groupLocation((int)camera.z, LandscapeChunk.LandscapeSize);
+		return Math.pow(x-c.getX(), 2)+Math.pow(z-c.getZ(), 2)>Math
+			.pow(distance*LandscapeChunk.LandscapeSize, 2);
+	}
 	private void loadChunks(int x, int z){
 		int[] h = new int[2];
 		chunkHeights.getChunkHeight(x, z, h);
@@ -116,9 +123,6 @@ public class LandscapeWorld{
 			getContainingChunk(x, i*LandscapeChunk.LandscapeSize+h[0], z, true);
 	}
 	private boolean shouldRemove(LandscapeChunk chunk){
-		int x = Algorithms.groupLocation((int)camera.x, LandscapeChunk.LandscapeSize);
-		int z = Algorithms.groupLocation((int)camera.z, LandscapeChunk.LandscapeSize);
-		return Math.pow(x-chunk.getX(), 2)+Math.pow(z-chunk.getZ(), 2)>Math.pow((ViewDistance+1)
-			*LandscapeChunk.LandscapeSize, 2);
+		return isWithinView(chunk, ViewDistance+2);
 	}
 }
