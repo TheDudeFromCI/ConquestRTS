@@ -96,7 +96,7 @@ public class SinglePlayerGame implements Driver{
 			grassLands = new Grasslands(camera);
 		if(LoadLandscape)
 			landscape = new LandscapeWorld(machine, entityDatabase, grassLands, camera);
-		WireframeCube.intance();
+		// WireframeCube.build();
 	}
 	public void onKey(int key, int action){
 		if(key==GLFW.GLFW_KEY_W){

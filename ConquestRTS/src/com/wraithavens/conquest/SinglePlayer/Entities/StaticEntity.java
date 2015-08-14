@@ -20,12 +20,12 @@ public class StaticEntity extends Entity{
 	}
 	@Override
 	public void render(Camera camera){
-		aabb.draw();
 		if(!aabb.visible(camera))
 			return;
 		int lod = mesh.getType().lodRadius.getLod(camera, position);
 		if(lod==-1)
 			return;
+		aabb.draw();
 		GL11.glPushMatrix();
 		GL11.glTranslatef(position.x, position.y, position.z);
 		GL11.glScalef(scale, scale, scale);

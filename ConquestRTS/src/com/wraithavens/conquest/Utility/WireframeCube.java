@@ -12,16 +12,16 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 
 public class WireframeCube{
+	public static void build(){
+		Instance = new WireframeCube();
+		GlError.out("Created Wireframe cube instance.");
+	}
 	public static void dipose(){
 		if(Instance==null)
 			return;
 		Instance.disposeObject();
 	}
 	public static WireframeCube intance(){
-		if(Instance==null){
-			Instance = new WireframeCube();
-			GlError.out("Created Wireframe cube instance.");
-		}
 		return Instance;
 	}
 	public static void render(){

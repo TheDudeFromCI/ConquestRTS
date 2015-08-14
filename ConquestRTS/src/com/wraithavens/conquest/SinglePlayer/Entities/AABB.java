@@ -19,6 +19,8 @@ public class AABB{
 	}
 	public void draw(){
 		WireframeCube cube = WireframeCube.intance();
+		if(cube==null)
+			return;
 		cube.setColor(1, 0, 0);
 		cube.setPosition(x, y, z);
 		cube.setScale(size, size, size);
