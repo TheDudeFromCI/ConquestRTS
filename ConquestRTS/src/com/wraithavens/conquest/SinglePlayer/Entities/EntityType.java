@@ -14,7 +14,7 @@ public enum EntityType{
 		this.fileName = fileName;
 		this.isGrass = isGrass;
 		if(lodRadius==null)
-			this.lodRadius = new LodRadius(20, 200, 300, 400, 500, 600);
+			this.lodRadius = new LodRadius(100, 200, 300, 400, 500, 600);
 		else
 			this.lodRadius = lodRadius;
 	}
