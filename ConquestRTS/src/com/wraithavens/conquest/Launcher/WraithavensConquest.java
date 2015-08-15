@@ -5,6 +5,7 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileSystemView;
 import org.lwjgl.Sys;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
@@ -42,11 +43,16 @@ public class WraithavensConquest extends EmptyLoop{
 		GlError.dumpError();
 		int extentions = GL11.glGetInteger(GL30.GL_NUM_EXTENSIONS);
 		GlError.out("  Extensions: "+extentions);
+		String s = "";
 		for(int i = 0; i<extentions; i++)
-			GlError.out("    "+GL30.glGetStringi(GL11.GL_EXTENSIONS, i));
+			s += (i==0?"":", ")+GL30.glGetStringi(GL11.GL_EXTENSIONS, i);
+		GlError.out("    "+s);
 		GlError.dumpError();
 		GlError.out("  GLSL version: "+GL11.glGetString(GL20.GL_SHADING_LANGUAGE_VERSION));
 		GlError.out("  Maximum Texture Size: "+GL11.glGetInteger(GL11.GL_MAX_TEXTURE_SIZE));
+		GlError.out("  Maximum 3D Texture Size: "+GL11.glGetInteger(GL12.GL_MAX_3D_TEXTURE_SIZE));
+		GlError.out("  Max VBO Vertices: "+GL11.glGetInteger(GL12.GL_MAX_ELEMENTS_VERTICES));
+		GlError.out("  Max VBO Indices: "+GL11.glGetInteger(GL12.GL_MAX_ELEMENTS_INDICES));
 		GlError.out("End of version info.");
 		GlError.dumpError();
 	}
