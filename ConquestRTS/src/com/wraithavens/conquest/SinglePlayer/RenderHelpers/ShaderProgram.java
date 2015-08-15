@@ -6,6 +6,7 @@ import java.io.FileReader;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL32;
+import com.wraithavens.conquest.Launcher.WraithavensConquest;
 
 public class ShaderProgram{
 	private static String readFile(File file){
@@ -32,6 +33,10 @@ public class ShaderProgram{
 	public ShaderProgram(File vertexShader, File geometryShader, File fragmentShader){
 		this(ShaderProgram.readFile(vertexShader), geometryShader==null?null:ShaderProgram
 			.readFile(geometryShader), ShaderProgram.readFile(fragmentShader));
+	}
+	public ShaderProgram(String name){
+		this(new File(WraithavensConquest.assetFolder, name+".vert"), null, new File(
+			WraithavensConquest.assetFolder, name+".frag"));
 	}
 	private ShaderProgram(String vertexShader, String geometryShader, String fragmentShader){
 		// Vertex Shader

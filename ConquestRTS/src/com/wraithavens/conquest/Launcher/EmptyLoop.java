@@ -3,6 +3,7 @@ package com.wraithavens.conquest.Launcher;
 import java.text.NumberFormat;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL32;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 
@@ -10,6 +11,7 @@ abstract class EmptyLoop implements LoopObjective{
 	private static void setupOGL(){
 		GlError.out("Setting up OpenGL parameters.");
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glEnable(GL12.GL_TEXTURE_3D);
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glCullFace(GL11.GL_BACK);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);

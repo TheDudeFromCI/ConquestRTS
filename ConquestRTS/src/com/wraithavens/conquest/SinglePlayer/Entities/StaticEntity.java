@@ -27,6 +27,26 @@ public class StaticEntity extends Entity{
 			return false;
 		return true;
 	}
+	@Override
+	public int getLod(){
+		return lod;
+	}
+	@Override
+	public float getScale(){
+		return scale;
+	}
+	@Override
+	public float getX(){
+		return position.x;
+	}
+	@Override
+	public float getY(){
+		return position.y;
+	}
+	@Override
+	public float getZ(){
+		return position.z;
+	}
 	public void moveTo(float x, float y, float z){
 		position.set(x, y, z);
 		aabb.calculate(mesh.getAabbMin(), mesh.getAabbMax(), scale, position);
@@ -37,7 +57,7 @@ public class StaticEntity extends Entity{
 		GL11.glPushMatrix();
 		GL11.glTranslatef(position.x, position.y, position.z);
 		GL11.glScalef(scale, scale, scale);
-		mesh.drawStatic(lod);
+		mesh.drawStatic();
 		GL11.glPopMatrix();
 		GlError.dumpError();
 	}

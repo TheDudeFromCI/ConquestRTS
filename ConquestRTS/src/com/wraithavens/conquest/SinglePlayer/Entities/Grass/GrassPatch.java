@@ -33,7 +33,6 @@ public class GrassPatch{
 		{
 			grassCount = locations.size();
 			textureSize = nextPowerOf2((int)Math.ceil(Math.sqrt(grassCount)));
-			GlError.out("Created grass patch.\n  Objects: "+grassCount+"\n  Texture Size:"+textureSize);
 			FloatBuffer data = BufferUtils.createFloatBuffer(textureSize*textureSize*3);
 			Vector3f minEdge = new Vector3f(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
 			Vector3f maxEdge = new Vector3f(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
