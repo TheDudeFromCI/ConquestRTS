@@ -66,7 +66,7 @@ public class WorldNoiseMachine{
 		"static-method", "unused"
 	})
 	public EntityType randomPlant(int x, int y){
-		if(Math.random()<0.5){
+		if(Math.random()<0.2){
 			if(Math.random()<0.0005)
 				return EntityType.DupaiTree;
 			int i = (int)(Math.random()*3);

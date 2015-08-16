@@ -32,7 +32,7 @@ public class SinglePlayerGame implements Driver{
 	private boolean processHeightmap = true;
 	private boolean processMoveEvents = true;
 	private boolean chunkLoading = true;
-	private final float cameraSpeed = 40f;
+	private final float cameraSpeed = 10f;
 	private final float mouseSpeed = 0.2f;
 	private final Camera camera = new Camera();
 	private double frameDelta;
@@ -94,7 +94,7 @@ public class SinglePlayerGame implements Driver{
 			entityDatabase.setLandscape(landscape);
 		if(grassLands!=null)
 			grassLands.setLandscape(landscape);
-		WireframeCube.build();
+		// WireframeCube.build();
 	}
 	public void onKey(int key, int action){
 		if(key==GLFW.GLFW_KEY_W){
