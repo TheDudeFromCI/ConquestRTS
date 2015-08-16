@@ -93,9 +93,9 @@ public class EntityMesh{
 			GlError.out("Loaded entity: "+type.fileName+".");
 			GlError.out("  Vertex Count: "+vertexCount);
 			GlError
-				.out("  Index Count: "+indexCount+"  ("+indexCount/3+" tris) (Storage: "
-					+(dataType==GL11.GL_UNSIGNED_BYTE?"Byte":dataType==GL11.GL_UNSIGNED_SHORT?"Short":"Integer")
-					+")");
+			.out("  Index Count: "+indexCount+"  ("+indexCount/3+" tris) (Storage: "
+				+(dataType==GL11.GL_UNSIGNED_BYTE?"Byte":dataType==GL11.GL_UNSIGNED_SHORT?"Short":"Integer")
+				+")");
 			{
 				// ---
 				// Now load the 3D texture.
@@ -117,7 +117,6 @@ public class EntityMesh{
 				ByteBuffer pixels = BufferUtils.createByteBuffer(byteCount);
 				for(int i = 0; i<byteCount; i++)
 					pixels.put(bin.getByte());
-				System.out.println("First Color = "+(pixels.get(0)+128)/255f);
 				pixels.flip();
 				GL12.glTexImage3D(GL12.GL_TEXTURE_3D, 0, GL11.GL_RGBA, xSize, ySize, zSize, 0, GL11.GL_RGBA,
 					GL11.GL_UNSIGNED_BYTE, pixels);

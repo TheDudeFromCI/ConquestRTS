@@ -7,12 +7,14 @@ import java.util.Comparator;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 
 public class BillboardEntities{
 	private static final int LayersPerLod = 5;
 	private static final int MaxLayerCount = LayersPerLod*4+1;
+	private static int AttribShade;
 	private final int vbo;
 	private final int ibo;
 	private final ShaderProgram shader;
@@ -24,25 +26,25 @@ public class BillboardEntities{
 				// ---
 				// Build vertex data.
 				// ---
-				FloatBuffer vertexData = BufferUtils.createFloatBuffer(MaxLayerCount*36);
+				FloatBuffer vertexData = BufferUtils.createFloatBuffer(MaxLayerCount*48);
 				float x;
 				for(int i = 0; i<MaxLayerCount; i++){
 					x = i*(1f/(MaxLayerCount-1));
 					// X Axis
-					vertexData.put(x).put(0).put(0);
-					vertexData.put(x).put(0).put(1);
-					vertexData.put(x).put(1).put(1);
-					vertexData.put(x).put(1).put(0);
+					vertexData.put(x).put(0).put(0).put(0.784f);
+					vertexData.put(x).put(0).put(1).put(0.784f);
+					vertexData.put(x).put(1).put(1).put(0.784f);
+					vertexData.put(x).put(1).put(0).put(0.784f);
 					// Y Axis
-					vertexData.put(0).put(x).put(0);
-					vertexData.put(0).put(x).put(1);
-					vertexData.put(1).put(x).put(1);
-					vertexData.put(1).put(x).put(0);
+					vertexData.put(0).put(x).put(0).put(1.0f);
+					vertexData.put(0).put(x).put(1).put(1.0f);
+					vertexData.put(1).put(x).put(1).put(1.0f);
+					vertexData.put(1).put(x).put(0).put(1.0f);
 					// Z Axis
-					vertexData.put(0).put(0).put(x);
-					vertexData.put(0).put(1).put(x);
-					vertexData.put(1).put(1).put(x);
-					vertexData.put(1).put(0).put(x);
+					vertexData.put(0).put(0).put(x).put(0.705f);
+					vertexData.put(0).put(1).put(x).put(0.705f);
+					vertexData.put(1).put(1).put(x).put(0.705f);
+					vertexData.put(1).put(0).put(x).put(0.705f);
 				}
 				vertexData.flip();
 				GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
@@ -87,17 +89,20 @@ public class BillboardEntities{
 				// Load the shader.
 				// ---
 				shader = new ShaderProgram("Billboard");
-				shader.loadUniforms("texture");
+				shader.loadUniforms("texture", "shade");
 				shader.bind();
 				shader.setUniform1I(0, 0);
+				AttribShade = shader.getAttributeLocation("att_shade");
+				GL20.glEnableVertexAttribArray(AttribShade);
 			}
 		}
 		GlError.dumpError();
 	}
 	void bind(){
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
-		GL11.glVertexPointer(3, GL11.GL_FLOAT, 12, 0);
-		GL11.glTexCoordPointer(3, GL11.GL_FLOAT, 12, 0);
+		GL11.glVertexPointer(3, GL11.GL_FLOAT, 16, 0);
+		GL11.glTexCoordPointer(3, GL11.GL_FLOAT, 16, 0);
+		GL20.glVertexAttribPointer(AttribShade, 1, GL11.GL_FLOAT, false, 16, 12);
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glEnable(GL11.GL_ALPHA_TEST);
@@ -113,6 +118,7 @@ public class BillboardEntities{
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 	}
+	@SuppressWarnings("static-method")
 	void render(int lod){
 		GL11.glDrawElements(GL11.GL_TRIANGLES, (MaxLayerCount-LayersPerLod*(lod-1))*18, GL11.GL_UNSIGNED_SHORT,
 			0);
