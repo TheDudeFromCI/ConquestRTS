@@ -19,13 +19,13 @@ import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxClouds;
 import com.wraithavens.conquest.Utility.WireframeCube;
 
 public class SinglePlayerGame implements Driver{
-	private static final boolean LoadSkyboxes = true;
+	private static final boolean LoadSkyboxes = false;
 	private static final boolean LoadCloudBackdrop = true;
 	private static final boolean LoadCloudForeground = true;
 	private static final boolean LoadDynmap = true;
 	private static final boolean LoadEntityDatabase = true;
 	private static final boolean LoadLandscape = true;
-	private static final boolean LoadGrasslands = true;
+	private static final boolean LoadGrasslands = false;
 	private boolean w, a, s, d, shift, space, grounded = true, lockedMouse, walkLock, e;
 	private boolean wireframeMode;
 	private boolean processBlocks = true;
@@ -85,7 +85,7 @@ public class SinglePlayerGame implements Driver{
 		if(LoadDynmap)
 			dynmap = new Dynmap(machine);
 		if(LoadEntityDatabase)
-			entityDatabase = new EntityDatabase();
+			entityDatabase = new EntityDatabase(camera);
 		if(LoadGrasslands)
 			grassLands = new Grasslands(camera);
 		if(LoadLandscape)
@@ -256,10 +256,10 @@ public class SinglePlayerGame implements Driver{
 			if(landscape!=null)
 				landscape.render();
 		}
-		if(entityDatabase!=null)
-			entityDatabase.render(camera);
 		if(grassLands!=null)
 			grassLands.render();
+		if(entityDatabase!=null)
+			entityDatabase.render();
 		WireframeCube.render();
 		GL11.glPopMatrix();
 	}
@@ -279,6 +279,8 @@ public class SinglePlayerGame implements Driver{
 		// ---
 		if(!wireframeMode&&skybox!=null)
 			skybox.update(time);
+		if(entityDatabase!=null)
+			entityDatabase.update();
 	}
 	private void move(double delta){
 		delta *= cameraSpeed;

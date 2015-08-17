@@ -1,8 +1,8 @@
 package com.wraithavens.conquest.SinglePlayer.Entities.Grass;
 
 import java.io.File;
-import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.Comparator;
 import org.lwjgl.BufferUtils;
@@ -39,7 +39,7 @@ public class Grasslands{
 			// ---
 			// Build the index buffer.
 			// ---
-			ByteBuffer indexData = BufferUtils.createByteBuffer(24);
+			ShortBuffer indexData = BufferUtils.createShortBuffer(24);
 			indexData.put((byte)8).put((byte)9).put((byte)10);
 			indexData.put((byte)8).put((byte)10).put((byte)11);
 			indexData.put((byte)0).put((byte)1).put((byte)2);
@@ -127,7 +127,7 @@ public class Grasslands{
 				shader.setUniform1I(3, grass.getTextureSize()-1);
 				shader.setUniform1f(4, 1.0f/grass.getTextureSize());
 			}
-			GL31.glDrawElementsInstanced(GL11.GL_TRIANGLES, 18, GL11.GL_UNSIGNED_BYTE, 0, grass.getCount());
+			GL31.glDrawElementsInstanced(GL11.GL_TRIANGLES, 18, GL11.GL_UNSIGNED_SHORT, 0, grass.getCount());
 		}
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glDisable(GL11.GL_ALPHA_TEST);

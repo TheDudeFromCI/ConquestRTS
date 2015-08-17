@@ -58,21 +58,12 @@ public class EntityMesh{
 				vertexData.flip();
 				GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 				GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertexData, GL15.GL_STATIC_DRAW);
-				dataType =
-					vertexCount<256?GL11.GL_UNSIGNED_BYTE:vertexCount<65536?GL11.GL_UNSIGNED_SHORT
-						:GL11.GL_UNSIGNED_INT;
+				dataType = vertexCount<65536?GL11.GL_UNSIGNED_SHORT:GL11.GL_UNSIGNED_INT;
 				GlError.dumpError();
 			}
 			{
 				indexCount = bin.getInt();
-				if(dataType==GL11.GL_UNSIGNED_BYTE){
-					ByteBuffer indexData = BufferUtils.createByteBuffer(indexCount);
-					for(int i = 0; i<indexCount; i++)
-						indexData.put((byte)bin.getInt());
-					indexData.flip();
-					GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
-					GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_STATIC_DRAW);
-				}else if(dataType==GL11.GL_UNSIGNED_SHORT){
+				if(dataType==GL11.GL_UNSIGNED_SHORT){
 					ShortBuffer indexData = BufferUtils.createShortBuffer(indexCount);
 					for(int i = 0; i<indexCount; i++)
 						indexData.put((short)bin.getInt());
@@ -92,10 +83,8 @@ public class EntityMesh{
 			aabbMax = new Vector3f(bin.getFloat(), bin.getFloat(), bin.getFloat());
 			GlError.out("Loaded entity: "+type.fileName+".");
 			GlError.out("  Vertex Count: "+vertexCount);
-			GlError
-			.out("  Index Count: "+indexCount+"  ("+indexCount/3+" tris) (Storage: "
-				+(dataType==GL11.GL_UNSIGNED_BYTE?"Byte":dataType==GL11.GL_UNSIGNED_SHORT?"Short":"Integer")
-				+")");
+			GlError.out("  Index Count: "+indexCount+"  ("+indexCount/3+" tris) (Storage: "
+				+(dataType==GL11.GL_UNSIGNED_SHORT?"Short":"Integer")+")");
 			{
 				// ---
 				// Now load the 3D texture.
@@ -118,7 +107,7 @@ public class EntityMesh{
 				for(int i = 0; i<byteCount; i++)
 					pixels.put(bin.getByte());
 				pixels.flip();
-				GL12.glTexImage3D(GL12.GL_TEXTURE_3D, 0, GL11.GL_RGBA, xSize, ySize, zSize, 0, GL11.GL_RGBA,
+				GL12.glTexImage3D(GL12.GL_TEXTURE_3D, 0, GL11.GL_RGBA8, xSize, ySize, zSize, 0, GL11.GL_RGBA,
 					GL11.GL_UNSIGNED_BYTE, pixels);
 				GlError.out("  Loaded entity texture.\n   Size: "+xSize+" x "+ySize+" x "+zSize+"   (Mem: ~"
 					+Algorithms.formatByteCount(byteCount)+")");

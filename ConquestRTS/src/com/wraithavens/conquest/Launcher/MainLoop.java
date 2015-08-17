@@ -79,19 +79,15 @@ public class MainLoop{
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		while(GLFW.glfwWindowShouldClose(window)==GL11.GL_FALSE){
 			GlError.dumpError();
+			windowInitalizer.loopObjective.render();
 			currentTime = GLFW.glfwGetTime();
 			delta = currentTime-lastTime;
 			lastTime = currentTime;
-			GL11.glPushMatrix();
 			windowInitalizer.loopObjective.update(delta, currentTime);
-			windowInitalizer.loopObjective.render();
-			GL11.glPopMatrix();
-			GlError.dumpError();
 			GLFW.glfwSwapBuffers(window);
 			GLFW.glfwPollEvents();
 			if(MainLoop.FPS_SYNC)
 				sync();
-			GlError.dumpError();
 		}
 		GlError.dumpError();
 	}
@@ -101,6 +97,7 @@ public class MainLoop{
 		try{
 			init();
 			loop();
+			windowInitalizer.loopObjective.cleanUp();
 			GlError.dumpError();
 			keyCallback.release();
 			mouseButtonCallback.release();
@@ -111,7 +108,6 @@ public class MainLoop{
 			exception.printStackTrace();
 		}finally{
 			GlError.dumpError();
-			windowInitalizer.loopObjective.cleanUp();
 			errorCallback.release();
 			GLFW.glfwDestroyWindow(window);
 			GLFW.glfwTerminate();

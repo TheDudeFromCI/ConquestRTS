@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 class ResolutionSize{
+	private static int gcd(int a, int b){
+		return b==0?a:ResolutionSize.gcd(b, a%b);
+	}
 	static ResolutionSize[] generateSizes(){
 		ArrayList<ResolutionSize> sizes = new ArrayList();
 		ResolutionSize nativeSize = new ResolutionSize(sizes.size());
@@ -35,20 +38,21 @@ class ResolutionSize{
 		sizes.add(new ResolutionSize(1093, 614, sizes.size()));
 		sizes.add(new ResolutionSize(1536, 864, sizes.size()));
 		sizes.add(new ResolutionSize(640, 480, sizes.size()));
+		sizes.add(new ResolutionSize(160, 120, sizes.size()));
 		sizes.sort(new Comparator<ResolutionSize>(){
 			public int compare(ResolutionSize b, ResolutionSize a){
-				if(a.real)return 1;
-				if(b.real)return -1;
+				if(a.real)
+					return 1;
+				if(b.real)
+					return -1;
 				double dis1 = Math.abs(a.ratio-nativeSize.ratio);
 				double dis2 = Math.abs(b.ratio-nativeSize.ratio);
-				if(dis1==dis2)return a.pixels==b.pixels?0:a.pixels<b.pixels?1:-1;
+				if(dis1==dis2)
+					return a.pixels==b.pixels?0:a.pixels<b.pixels?1:-1;
 				return dis1<dis2?1:-1;
 			}
 		});
 		return sizes.toArray(new ResolutionSize[sizes.size()]);
-	}
-	private static int gcd(int a, int b){
-		return b==0?a:ResolutionSize.gcd(b, a%b);
 	}
 	final int width;
 	final int height;
@@ -58,17 +62,6 @@ class ResolutionSize{
 	private final int ratioNum;
 	private final int ratioDen;
 	public final int id;
-	private ResolutionSize(int width, int height, int id){
-		this.id = id;
-		this.width = width;
-		this.height = height;
-		real = false;
-		ratio = (double)width/height;
-		pixels = width*height;
-		int gcd = ResolutionSize.gcd(width, height);
-		ratioNum = width/gcd;
-		ratioDen = height/gcd;
-	}
 	private ResolutionSize(int id){
 		this.id = id;
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
@@ -81,12 +74,25 @@ class ResolutionSize{
 		ratioNum = width/gcd;
 		ratioDen = height/gcd;
 	}
+	private ResolutionSize(int width, int height, int id){
+		this.id = id;
+		this.width = width;
+		this.height = height;
+		real = false;
+		ratio = (double)width/height;
+		pixels = width*height;
+		int gcd = ResolutionSize.gcd(width, height);
+		ratioNum = width/gcd;
+		ratioDen = height/gcd;
+	}
 	@Override
 	public String toString(){
-		if(real)return "Native ("+width+" x "+height+"    "+ratioNum+":"+ratioDen+")";
+		if(real)
+			return "Native ("+width+" x "+height+"    "+ratioNum+":"+ratioDen+")";
 		StringBuilder sb = new StringBuilder();
 		sb.append(width);
-		if(sb.length()==3)sb.insert(0, ' ');
+		if(sb.length()==3)
+			sb.insert(0, ' ');
 		sb.append(" x ");
 		sb.append(height);
 		int numDigits = String.valueOf(ratioNum).length();

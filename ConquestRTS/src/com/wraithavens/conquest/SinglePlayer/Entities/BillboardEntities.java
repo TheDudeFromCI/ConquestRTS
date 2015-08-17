@@ -12,8 +12,7 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 
 public class BillboardEntities{
-	private static final int LayersPerLod = 5;
-	private static final int MaxLayerCount = LayersPerLod*4+1;
+	private static final int MaxLayerCount = 21;
 	private static int AttribShade;
 	private final int vbo;
 	private final int ibo;
@@ -120,7 +119,27 @@ public class BillboardEntities{
 	}
 	@SuppressWarnings("static-method")
 	void render(int lod){
-		GL11.glDrawElements(GL11.GL_TRIANGLES, (MaxLayerCount-LayersPerLod*(lod-1))*18, GL11.GL_UNSIGNED_SHORT,
-			0);
+		int layers;
+		switch(lod){
+			case 1:
+				layers = 21;
+				break;
+			case 2:
+				layers = 15;
+				break;
+			case 3:
+				layers = 5;
+				break;
+			case 4:
+				layers = 1;
+				break;
+			case 5:
+				layers = 1;
+				break;
+			default:
+				layers = 0;
+				break;
+		}
+		GL11.glDrawElements(GL11.GL_TRIANGLES, layers*18, GL11.GL_UNSIGNED_SHORT, 0);
 	}
 }
