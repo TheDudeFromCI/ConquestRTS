@@ -40,7 +40,7 @@ public class NoiseGenerator{
 			pow = (int)Math.pow(2, k);
 			total += layerNoise(x, pow, k)/pow;
 		}
-		return total/maxHeight+1-1;
+		return total/maxHeight;
 	}
 	public void setFunction(InterpolationFunction function){
 		this.function = function;
