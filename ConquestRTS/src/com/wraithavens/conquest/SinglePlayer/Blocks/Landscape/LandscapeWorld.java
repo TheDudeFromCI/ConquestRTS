@@ -14,7 +14,7 @@ import com.wraithavens.conquest.Utility.Algorithms;
 
 public class LandscapeWorld{
 	static int ShadeAttribLocation;
-	private static final int ViewDistance = 4;
+	private static final int ViewDistance = 2;
 	private final ArrayList<LandscapeChunk> chunks = new ArrayList();
 	private final WorldNoiseMachine machine;
 	private final ShaderProgram shader;
