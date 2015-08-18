@@ -30,25 +30,42 @@ public class WorldNoiseMachine{
 		SubNoise prairieRed = SubNoise.build(seeds[1], 120, 2, lerp, 0.15f, 0.25f);
 		SubNoise prairieGreen = SubNoise.build(seeds[2], 20, 1, lerp, 0.1f, 0);
 		SubNoise prairieBlue = SubNoise.build(seeds[3], 80, 2, lerp, 0.15f, 0.3f);
+		SubNoise humidityNoise = SubNoise.build(seeds[0], 6000, 6, cos, 1000, 0);
+		SubNoise tempatureNoise = SubNoise.build(seeds[0], 6000, 6, cos, 1000, 0);
 		// ---
 		// And compiling these together.
 		// ---
 		AdvancedNoise worldHeight = new AdvancedNoise();
 		worldHeight.addSubNoise(worldHeightNoise1);
 		ColorNoise prairieColor = new ColorNoise(prairieRed, prairieGreen, prairieBlue);
-		return new WorldNoiseMachine(worldHeight, prairieColor);
+		AdvancedNoise humidity = new AdvancedNoise();
+		humidity.addSubNoise(humidityNoise);
+		AdvancedNoise tempature = new AdvancedNoise();
+		tempature.addSubNoise(tempatureNoise);
+		return new WorldNoiseMachine(worldHeight, prairieColor, humidity, tempature);
 	}
 	// ---
 	// General world-wide generators.
 	// ---
 	private final AdvancedNoise worldHeight;
+	private final AdvancedNoise tempature;
+	private final AdvancedNoise humidity;
 	// ---
 	// Biome specific noise generators.
 	// ---
 	private final ColorNoise prairieColor;
-	private WorldNoiseMachine(AdvancedNoise worldHeight, ColorNoise prairieColor){
+	private WorldNoiseMachine(
+		AdvancedNoise worldHeight, ColorNoise prairieColor, AdvancedNoise humidity, AdvancedNoise tempature){
 		this.worldHeight = worldHeight;
 		this.prairieColor = prairieColor;
+		this.humidity = humidity;
+		this.tempature = tempature;
+	}
+	public Biome getBiomeAt(int x, int z){
+		float h = (float)humidity.noise(x, z);
+		float t = (float)tempature.noise(x, z);
+		float l = (float)(getWorldHeight(x, z)/getMaxHeight());
+		return Biome.getFittingBiome(h, t, l);
 	}
 	public int getGroundLevel(int x, int z){
 		return (int)getWorldHeight(x+0.5f, z+0.5f);
@@ -65,7 +82,7 @@ public class WorldNoiseMachine{
 	@SuppressWarnings({
 		"static-method", "unused"
 	})
-	public EntityType randomPlant(int x, int y){
+	public EntityType randomPlant(int x, int z){
 		if(Math.random()<0.2){
 			if(Math.random()<0.0005)
 				return EntityType.DupaiTree;
