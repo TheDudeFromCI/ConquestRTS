@@ -39,41 +39,31 @@ public class Grasslands{
 			// ---
 			// Build the index buffer.
 			// ---
-			ShortBuffer indexData = BufferUtils.createShortBuffer(24);
-			indexData.put((byte)8).put((byte)9).put((byte)10);
-			indexData.put((byte)8).put((byte)10).put((byte)11);
+			ShortBuffer indexData = BufferUtils.createShortBuffer(12);
 			indexData.put((byte)0).put((byte)1).put((byte)2);
 			indexData.put((byte)0).put((byte)2).put((byte)3);
 			indexData.put((byte)4).put((byte)5).put((byte)6);
 			indexData.put((byte)4).put((byte)6).put((byte)7);
-			// -
-			indexData.put((byte)12).put((byte)13).put((byte)14);
-			indexData.put((byte)12).put((byte)14).put((byte)15);
 			indexData.flip();
 			GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 			GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_STATIC_DRAW);
 			// ---
 			// Build the vertex buffer.
 			// ---
-			FloatBuffer vertexData = BufferUtils.createFloatBuffer(80);
+			FloatBuffer vertexData = BufferUtils.createFloatBuffer(60);
+			float r = 0.5f;
 			float h = (float)Math.sqrt(2);
-			vertexData.put(-0.5f).put(0.0f).put(-0.5f).put(0.0f).put(1.0f);
-			vertexData.put(0.5f).put(0.0f).put(0.5f).put(1.0f).put(1.0f);
-			vertexData.put(0.5f).put(h).put(0.5f).put(1.0f).put(0.0f);
-			vertexData.put(-0.5f).put(h).put(-0.5f).put(0.0f).put(0.0f);
-			vertexData.put(0.5f).put(0.0f).put(-0.5f).put(0.0f).put(1.0f);
-			vertexData.put(-0.5f).put(0.0f).put(0.5f).put(1.0f).put(1.0f);
-			vertexData.put(-0.5f).put(h).put(0.5f).put(1.0f).put(0.0f);
-			vertexData.put(0.5f).put(h).put(-0.5f).put(0.0f).put(0.0f);
-			vertexData.put(-0.5f).put(h/2).put(-0.5f).put(0.0f).put(0.0f);
-			vertexData.put(-0.5f).put(h/2).put(0.5f).put(0.0f).put(1.0f);
-			vertexData.put(0.5f).put(h/2).put(0.5f).put(1.0f).put(1.0f);
-			vertexData.put(0.5f).put(h/2).put(-0.5f).put(1.0f).put(0.0f);
-			// -
-			vertexData.put(0.0f).put(0.0f).put(0.0f).put(0.0f).put(0.0f);
-			vertexData.put(0.0f).put(1.0f).put(0.0f).put(0.0f).put(1.0f);
-			vertexData.put(1.0f).put(1.0f).put(0.0f).put(1.0f).put(1.0f);
-			vertexData.put(1.0f).put(0.0f).put(0.0f).put(1.0f).put(0.0f);
+			final float GrassScale = 2.0f;
+			r *= GrassScale;
+			h *= GrassScale;
+			vertexData.put(-r).put(0.0f).put(-r).put(0.0f).put(1.0f);
+			vertexData.put(r).put(0.0f).put(r).put(1.0f).put(1.0f);
+			vertexData.put(r).put(h).put(r).put(1.0f).put(0.0f);
+			vertexData.put(-r).put(h).put(-r).put(0.0f).put(0.0f);
+			vertexData.put(r).put(0.0f).put(-r).put(0.0f).put(1.0f);
+			vertexData.put(-r).put(0.0f).put(r).put(1.0f).put(1.0f);
+			vertexData.put(-r).put(h).put(r).put(1.0f).put(0.0f);
+			vertexData.put(r).put(h).put(-r).put(0.0f).put(0.0f);
 			vertexData.flip();
 			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertexData, GL15.GL_STATIC_DRAW);
@@ -127,7 +117,7 @@ public class Grasslands{
 				shader.setUniform1I(3, grass.getTextureSize()-1);
 				shader.setUniform1f(4, 1.0f/grass.getTextureSize());
 			}
-			GL31.glDrawElementsInstanced(GL11.GL_TRIANGLES, 18, GL11.GL_UNSIGNED_SHORT, 0, grass.getCount());
+			GL31.glDrawElementsInstanced(GL11.GL_TRIANGLES, 12, GL11.GL_UNSIGNED_SHORT, 0, grass.getCount());
 		}
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glDisable(GL11.GL_ALPHA_TEST);

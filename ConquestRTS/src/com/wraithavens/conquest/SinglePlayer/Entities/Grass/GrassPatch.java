@@ -33,13 +33,14 @@ public class GrassPatch{
 		{
 			grassCount = locations.size();
 			textureSize = nextPowerOf2((int)Math.ceil(Math.sqrt(grassCount)));
-			FloatBuffer data = BufferUtils.createFloatBuffer(textureSize*textureSize*3);
+			FloatBuffer data = BufferUtils.createFloatBuffer(textureSize*textureSize*4);
 			Vector3f minEdge = new Vector3f(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
 			Vector3f maxEdge = new Vector3f(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
 			for(Vector3f l : locations){
 				data.put(l.x);
 				data.put(l.y);
 				data.put(l.z);
+				data.put((float)(Math.random()*Math.PI*2));
 				minEdge.min(l);
 				maxEdge.max(l);
 			}
@@ -50,7 +51,7 @@ public class GrassPatch{
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
-			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL30.GL_RGB32F, textureSize, textureSize, 0, GL11.GL_RGB,
+			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL30.GL_RGBA32F, textureSize, textureSize, 0, GL11.GL_RGBA,
 				GL11.GL_FLOAT, data);
 		}
 		GlError.dumpError();
