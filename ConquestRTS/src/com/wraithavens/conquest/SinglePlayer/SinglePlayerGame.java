@@ -25,7 +25,7 @@ public class SinglePlayerGame implements Driver{
 	private static final boolean LoadDynmap = true;
 	private static final boolean LoadEntityDatabase = true;
 	private static final boolean LoadLandscape = true;
-	private static final boolean LoadGrasslands = false;
+	private static final boolean LoadGrasslands = true;
 	private boolean w, a, s, d, shift, space, grounded = true, lockedMouse, walkLock, e;
 	private boolean wireframeMode;
 	private boolean processBlocks = true;

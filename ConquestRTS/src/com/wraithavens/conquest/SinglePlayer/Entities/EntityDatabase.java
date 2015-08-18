@@ -3,7 +3,6 @@ package com.wraithavens.conquest.SinglePlayer.Entities;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.Vector3f;
@@ -26,8 +25,6 @@ public class EntityDatabase{
 		}
 	};
 	private final ShaderProgram shader;
-	private final BillboardEntities billboardEntities;
-	private final EntityList entitiesAsBillboard = new EntityList();
 	private final Camera camera;
 	private final Vector3f cameraLocation = new Vector3f();
 	private LandscapeWorld landscape;
@@ -40,7 +37,6 @@ public class EntityDatabase{
 		shader.bind();
 		SingularShaderAttrib = shader.getAttributeLocation("shade");
 		GL20.glEnableVertexAttribArray(SingularShaderAttrib);
-		billboardEntities = new BillboardEntities();
 		GlError.dumpError();
 	}
 	public void addEntity(Entity e){
@@ -77,7 +73,9 @@ public class EntityDatabase{
 			if(!e.canRender(landscape, camera))
 				continue;
 			if(e.getLod()>0){
-				entitiesAsBillboard.add(e);
+				// ---
+				// TODO Make object render more... eh, father away-ish.
+				// ---
 				continue;
 			}
 			if(!shaderBound){
@@ -89,27 +87,6 @@ public class EntityDatabase{
 				mesh.bind();
 			}
 			e.render();
-		}
-		if(entitiesAsBillboard.size()>0){
-			billboardEntities.bind();
-			mesh = null;
-			Entity e;
-			for(int i = 0; i<entitiesAsBillboard.size(); i++){
-				e = entitiesAsBillboard.get(i);
-				if(mesh==null||e.getMesh()!=mesh){
-					mesh = e.getMesh();
-					mesh.bindTexture();
-				}
-				GL11.glPushMatrix();
-				GL11.glTranslatef(e.getX(), e.getY()+mesh.getYShift()*1/5f, e.getZ());
-				GL11.glScalef(mesh.getTextureSize().x*e.getScale(), mesh.getTextureSize().y*e.getScale(),
-					mesh.getTextureSize().z*e.getScale());
-				GL11.glTranslatef(-0.5f, 0, -0.5f);
-				billboardEntities.render(e.getLod());
-				GL11.glPopMatrix();
-			}
-			billboardEntities.end();
-			entitiesAsBillboard.clear();
 		}
 		GlError.dumpError();
 	}

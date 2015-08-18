@@ -110,6 +110,8 @@ public class LandscapeWorld{
 				spiral.next();
 				loadChunks(spiral.getX()*LandscapeChunk.LandscapeSize+chunkX, spiral.getY()
 					*LandscapeChunk.LandscapeSize+chunkZ);
+				if(!spiral.hasNext())
+					System.out.println("All chunks loaded.");
 			}else
 				clearDistanceChunks();
 		}
