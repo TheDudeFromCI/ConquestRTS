@@ -4,7 +4,6 @@ import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 
 public abstract class Entity{
-	private float tempDistance;
 	protected final EntityMesh mesh;
 	public Entity(EntityType type){
 		mesh = type.createReference();
@@ -22,10 +21,4 @@ public abstract class Entity{
 	public abstract float getY();
 	public abstract float getZ();
 	public abstract void render();
-	float getTempDistance(){
-		return tempDistance;
-	}
-	void storeTempDistance(float tempDistance){
-		this.tempDistance = tempDistance;
-	}
 }

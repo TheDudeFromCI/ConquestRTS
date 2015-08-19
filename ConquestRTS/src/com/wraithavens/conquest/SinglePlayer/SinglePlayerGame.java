@@ -279,8 +279,6 @@ public class SinglePlayerGame implements Driver{
 		// ---
 		if(!wireframeMode&&skybox!=null)
 			skybox.update(time);
-		if(entityDatabase!=null)
-			entityDatabase.update();
 	}
 	private void move(double delta){
 		delta *= cameraSpeed;
