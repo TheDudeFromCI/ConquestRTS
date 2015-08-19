@@ -10,15 +10,19 @@ import com.wraithavens.conquest.Math.MatrixUtils;
 import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
+import com.wraithavens.conquest.Utility.Algorithms;
 
 public class Dynmap{
 	static final int VertexCount = 1025;
 	public static final int BlocksPerChunk = 32768;
 	static final int MaxDepth = Integer.numberOfTrailingZeros(VertexCount-1)-1;
+	private static final int WalkingWrapDistance = 8192;
 	private final int vbo;
-	private final DynmapChunk chunk;
+	private DynmapChunk chunk;
 	private final ShaderProgram shader;
+	private final WorldNoiseMachine machine;
 	public Dynmap(WorldNoiseMachine machine){
+		this.machine = machine;
 		vbo = GL15.glGenBuffers();
 		loadVbo();
 		shader =
@@ -35,7 +39,7 @@ public class Dynmap{
 			shader.setUniform3f(3, (float)(sunDirection.x/mag), (float)(sunDirection.y/mag),
 				(float)(sunDirection.z/mag));
 		}
-		chunk = new DynmapChunk(machine, 0, 0);
+		// chunk = new DynmapChunk(machine, 0, 0);
 	}
 	public void dispose(){
 		GL15.glDeleteBuffers(vbo);
@@ -52,6 +56,12 @@ public class Dynmap{
 	}
 	public void update(float x, float z){
 		shader.bind();
+		int boardX = Algorithms.groupLocation((int)x, WalkingWrapDistance);
+		int boardZ = Algorithms.groupLocation((int)z, WalkingWrapDistance);
+		if(chunk==null||chunk.getX()!=boardX||chunk.getZ()!=boardZ){
+			if(chunk!=null)
+				chunk.dispose();
+		}
 		chunk.update(x, z);
 	}
 	private void loadVbo(){
