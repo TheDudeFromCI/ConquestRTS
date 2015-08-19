@@ -6,14 +6,11 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
-import com.wraithavens.conquest.Utility.Algorithms;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class EntityMesh{
@@ -23,17 +20,12 @@ public class EntityMesh{
 	private final int ibo;
 	private final int indexCount;
 	private final int dataType;
-	private final int textureId;
 	private final Vector3f aabbMin;
 	private final Vector3f aabbMax;
-	private final int billboardYShift;
-	private final Vector3f textureScale;
 	EntityMesh(EntityType type){
 		this.type = type;
 		vbo = GL15.glGenBuffers();
 		ibo = GL15.glGenBuffers();
-		textureId = GL11.glGenTextures();
-		GlError.dumpError();
 		{
 			File file = new File(WraithavensConquest.modelFolder, type.fileName);
 			BinaryFile bin = new BinaryFile(file);
@@ -85,39 +77,11 @@ public class EntityMesh{
 			GlError.out("  Vertex Count: "+vertexCount);
 			GlError.out("  Index Count: "+indexCount+"  ("+indexCount/3+" tris) (Storage: "
 				+(dataType==GL11.GL_UNSIGNED_SHORT?"Short":"Integer")+")");
-			{
-				// ---
-				// Now load the 3D texture.
-				// ---
-				GL11.glBindTexture(GL12.GL_TEXTURE_3D, textureId);
-				GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
-				GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
-				GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL12.GL_TEXTURE_WRAP_R, GL12.GL_CLAMP_TO_EDGE);
-				GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL11.GL_TEXTURE_MIN_FILTER,
-					GL11.GL_NEAREST_MIPMAP_NEAREST);
-				GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-				GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL14.GL_GENERATE_MIPMAP, GL11.GL_TRUE);
-				int xSize = bin.getInt();
-				int ySize = bin.getInt();
-				int zSize = bin.getInt();
-				textureScale = new Vector3f(xSize, ySize, zSize);
-				billboardYShift = bin.getInt();
-				int byteCount = xSize*ySize*zSize*4;
-				ByteBuffer pixels = BufferUtils.createByteBuffer(byteCount);
-				for(int i = 0; i<byteCount; i++)
-					pixels.put(bin.getByte());
-				pixels.flip();
-				GL12.glTexImage3D(GL12.GL_TEXTURE_3D, 0, GL11.GL_RGBA8, xSize, ySize, zSize, 0, GL11.GL_RGBA,
-					GL11.GL_UNSIGNED_BYTE, pixels);
-				GlError.out("  Loaded entity texture.\n   Size: "+xSize+" x "+ySize+" x "+zSize+"   (Mem: ~"
-					+Algorithms.formatByteCount(byteCount)+")");
-			}
 		}
 	}
 	private void dispose(){
 		GL15.glDeleteBuffers(vbo);
 		GL15.glDeleteBuffers(ibo);
-		GL11.glDeleteTextures(textureId);
 		GlError.out(type.fileName+" disposed.");
 	}
 	void addReference(){
@@ -130,9 +94,6 @@ public class EntityMesh{
 		GL11.glColorPointer(3, GL11.GL_UNSIGNED_BYTE, 16, 13);
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 		GlError.dumpError();
-	}
-	void bindTexture(){
-		GL11.glBindTexture(GL12.GL_TEXTURE_3D, textureId);
 	}
 	void drawStatic(){
 		GL11.glDrawElements(GL11.GL_TRIANGLES, indexCount, dataType, 0);
@@ -147,14 +108,8 @@ public class EntityMesh{
 	int getId(){
 		return type.ordinal();
 	}
-	Vector3f getTextureSize(){
-		return textureScale;
-	}
 	EntityType getType(){
 		return type;
-	}
-	int getYShift(){
-		return billboardYShift;
 	}
 	void removeReference(){
 		references--;
