@@ -68,8 +68,8 @@ public class SinglePlayerGame implements Driver{
 		GlError.out("Preparing camera.");
 		camera.cameraMoveSpeed = 10.0f;
 		camera.goalY = camera.y = machine.getGroundLevel(8192, 8192)+6;
-		camera.goalX = 8192;
-		camera.goalZ = 8192;
+		camera.goalX = 4096;
+		camera.goalZ = 4096;
 		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
 			/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 0.5f, 16384);
 		if(LoadSkyboxes){

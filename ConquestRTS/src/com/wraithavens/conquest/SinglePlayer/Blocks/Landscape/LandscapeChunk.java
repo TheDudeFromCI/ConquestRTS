@@ -393,9 +393,9 @@ public class LandscapeChunk{
 						for(blockZ = 0; blockZ<64; blockZ++)
 							for(blockY = 0; blockY<64; blockY++)
 								for(blockX = 0; blockX<64; blockX++){
-									red = (byte)(blockX/63.0f*255);
-									green = (byte)(blockY/63.0f*255);
-									blue = (byte)(blockZ/63.0f*255);
+									red = (byte)(blockX/63.0f*255-128);
+									green = (byte)(blockY/63.0f*255-128);
+									blue = (byte)(blockZ/63.0f*255-128);
 									pixels.put(red);
 									pixels.put(green);
 									pixels.put(blue);

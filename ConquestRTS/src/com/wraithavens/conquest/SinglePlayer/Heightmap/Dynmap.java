@@ -29,12 +29,13 @@ public class Dynmap{
 		shader =
 			new ShaderProgram(new File(WraithavensConquest.assetFolder, "Dynmap.vert"), null, new File(
 				WraithavensConquest.assetFolder, "Dynmap.frag"));
-		shader.loadUniforms("texture", "shift", "size", "sunDirection");
+		shader.loadUniforms("texture", "shift", "size", "sunDirection", "colors");
 		{
 			shader.bind();
 			shader.setUniform1I(0, 0);
 			shader.setUniform2f(1, 0, 0);
 			shader.setUniform2f(2, BlocksPerChunk, BlocksPerChunk);
+			shader.setUniform1I(4, 1);
 			Vector3f sunDirection = new Vector3f(1, 2, 0.5f);
 			double mag = Math.sqrt(sunDirection.lengthSquared());
 			shader.setUniform3f(3, (float)(sunDirection.x/mag), (float)(sunDirection.y/mag),

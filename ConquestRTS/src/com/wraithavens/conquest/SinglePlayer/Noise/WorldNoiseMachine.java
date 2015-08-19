@@ -67,6 +67,13 @@ public class WorldNoiseMachine{
 		float l = (float)(getWorldHeight(x, z)/getMaxHeight());
 		return Biome.getFittingBiome(h, t, l);
 	}
+	@SuppressWarnings("static-method")
+	public void getBiomeColorAt(int x, int y, int z, Vector3f colorOut){
+		// ---
+		// TODO Make actual biome colors.
+		// ---
+		colorOut.set(x%64/63f, y%64/63f, z%64/63f);
+	}
 	public int getGroundLevel(int x, int z){
 		return (int)getWorldHeight(x+0.5f, z+0.5f);
 	}

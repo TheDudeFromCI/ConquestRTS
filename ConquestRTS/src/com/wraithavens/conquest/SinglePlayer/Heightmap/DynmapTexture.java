@@ -1,10 +1,12 @@
 package com.wraithavens.conquest.SinglePlayer.Heightmap;
 
 import java.io.File;
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
+import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.Vector3f;
@@ -27,8 +29,10 @@ public class DynmapTexture{
 	}
 	private static final int TextureDetail = 1024;
 	private final int textureId;
+	private final int colorTextureId;
 	public DynmapTexture(WorldNoiseMachine machine, int x, int z, int size){
 		textureId = GL11.glGenTextures();
+		colorTextureId = GL11.glGenTextures();
 		build(machine, x, z, size);
 	}
 	private void build(WorldNoiseMachine machine, int x, int z, int size){
@@ -40,7 +44,7 @@ public class DynmapTexture{
 		else
 			generate(file, machine, x, z, size);
 	}
-	private void compile(FloatBuffer data){
+	private void compile(FloatBuffer data, ByteBuffer data2){
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
@@ -48,11 +52,19 @@ public class DynmapTexture{
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL30.GL_RGBA32F, TextureDetail, TextureDetail, 0, GL11.GL_RGBA,
 			GL11.GL_FLOAT, data);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, colorTextureId);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB8, TextureDetail, TextureDetail, 0, GL11.GL_RGB,
+			GL11.GL_UNSIGNED_BYTE, data2);
 	}
 	private void generate(File file, WorldNoiseMachine machine, float posX, float posZ, float size){
 		System.out.println("Generating heightmap.");
-		BinaryFile bin = new BinaryFile(TextureDetail*TextureDetail*16);
+		BinaryFile bin = new BinaryFile(TextureDetail*TextureDetail*16+TextureDetail*TextureDetail*3);
 		FloatBuffer data = BufferUtils.createFloatBuffer(TextureDetail*TextureDetail*4);
+		ByteBuffer data2 = BufferUtils.createByteBuffer(TextureDetail*TextureDetail*3);
 		int x, z;
 		float height;
 		float blockX;
@@ -69,6 +81,10 @@ public class DynmapTexture{
 				data.put(normal.y);
 				data.put(normal.z);
 				data.put(height);
+				machine.getBiomeColorAt((int)blockX, (int)height, (int)blockZ, normal);
+				data2.put((byte)(normal.x*255-128));
+				data2.put((byte)(normal.y*255-128));
+				data2.put((byte)(normal.z*255-128));
 				bin.addFloat(normal.x);
 				bin.addFloat(normal.y);
 				bin.addFloat(normal.z);
@@ -76,9 +92,12 @@ public class DynmapTexture{
 			}
 			System.out.println(z+"/"+TextureDetail+" pixel rows complete.");
 		}
+		for(int i = 0; i<data2.capacity(); i++)
+			bin.addByte(data2.get(i));
 		bin.compile(file);
 		data.flip();
-		compile(data);
+		data2.flip();
+		compile(data, data2);
 		System.out.println("Heightmap generated.");
 	}
 	private void load(File file){
@@ -88,13 +107,22 @@ public class DynmapTexture{
 		for(int i = 0; i<size; i++)
 			data.put(bin.getFloat());
 		data.flip();
-		compile(data);
+		ByteBuffer data2 = BufferUtils.createByteBuffer(TextureDetail*TextureDetail*3);
+		size = data2.capacity();
+		for(int i = 0; i<size; i++)
+			data2.put(bin.getByte());
+		data2.flip();
+		compile(data, data2);
 	}
 	void bind(){
+		GL13.glActiveTexture(GL13.GL_TEXTURE1);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, colorTextureId);
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
 	}
 	void dispose(){
 		GL11.glDeleteTextures(textureId);
+		GL11.glDeleteTextures(colorTextureId);
 	}
 	void reload(WorldNoiseMachine machine, int x, int z, int size){
 		build(machine, x, z, size);
