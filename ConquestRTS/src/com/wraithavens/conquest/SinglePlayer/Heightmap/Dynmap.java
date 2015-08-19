@@ -39,7 +39,6 @@ public class Dynmap{
 			shader.setUniform3f(3, (float)(sunDirection.x/mag), (float)(sunDirection.y/mag),
 				(float)(sunDirection.z/mag));
 		}
-		// chunk = new DynmapChunk(machine, 0, 0);
 	}
 	public void dispose(){
 		GL15.glDeleteBuffers(vbo);
@@ -55,12 +54,14 @@ public class Dynmap{
 		chunk.render();
 	}
 	public void update(float x, float z){
-		shader.bind();
 		int boardX = Algorithms.groupLocation((int)x, WalkingWrapDistance);
 		int boardZ = Algorithms.groupLocation((int)z, WalkingWrapDistance);
 		if(chunk==null||chunk.getX()!=boardX||chunk.getZ()!=boardZ){
 			if(chunk!=null)
 				chunk.dispose();
+			chunk = new DynmapChunk(machine, boardX, boardZ);
+			shader.bind();
+			shader.setUniform2f(1, boardX, boardZ);
 		}
 		chunk.update(x, z);
 	}

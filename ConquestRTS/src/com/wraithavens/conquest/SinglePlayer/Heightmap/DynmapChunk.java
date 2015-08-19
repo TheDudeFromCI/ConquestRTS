@@ -81,7 +81,8 @@ public class DynmapChunk{
 		placeTriangleIndex(getIndex(tree, p2));
 		placeTriangleIndex(getIndex(tree, p3));
 	}
-	private static int MountainResolution = 5;
+	private static final int MountainResolution = 5;
+	private static final int TreeUpdateForgiveness = 5;
 	private static int[] triangleIndices = new int[100];
 	private static int triangleIndexLocation;
 	private final int ibo;
@@ -90,6 +91,8 @@ public class DynmapChunk{
 	private final int x;
 	private final int z;
 	private final QuadTree tree;
+	private float lastTreeUpdateX = Integer.MAX_VALUE;
+	private float lastTreeUpdateZ = Integer.MAX_VALUE;
 	DynmapChunk(WorldNoiseMachine machine, int x, int z){
 		this.x = x;
 		this.z = z;
@@ -99,6 +102,11 @@ public class DynmapChunk{
 		updateIndices();
 	}
 	public void update(float x, float z){
+		if(Math.abs(x-lastTreeUpdateX)>TreeUpdateForgiveness||Math.abs(z-lastTreeUpdateZ)>TreeUpdateForgiveness){
+			lastTreeUpdateX = x;
+			lastTreeUpdateZ = z;
+		}else
+			return;
 		breakDown(tree, x-this.x, z-this.z, 0);
 		updateIndices();
 	}
