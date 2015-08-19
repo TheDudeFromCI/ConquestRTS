@@ -1,5 +1,10 @@
+uniform sampler3D texture;
 flat in float color;
+in vec3 pos;
+
+const float textureScale =  1.0f/63.0f;
 
 void main(){
-	gl_FragColor = vec4(vec3(color)*vec3(0.0f, 0.5f, 0.0f), 1.0f);
+	gl_FragColor = vec4(texture(texture, floor(pos)*textureScale).rgb*color, 1.0f);
+//	gl_FragColor = vec4(texture(texture, vec3(0.5f)).rgb*color, 1.0f);
 }

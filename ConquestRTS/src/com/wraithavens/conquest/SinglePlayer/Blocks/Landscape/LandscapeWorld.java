@@ -37,6 +37,8 @@ public class LandscapeWorld{
 			new ShaderProgram(new File(WraithavensConquest.assetFolder, "Landscape.vert"), null, new File(
 				WraithavensConquest.assetFolder, "Landscape.frag"));
 		shader.bind();
+		shader.loadUniforms("texture", "offset");
+		shader.setUniform1I(0, 0);
 		ShadeAttribLocation = shader.getAttributeLocation("shade");
 		GL20.glEnableVertexAttribArray(ShadeAttribLocation);
 		GlError.dumpError();
@@ -45,6 +47,7 @@ public class LandscapeWorld{
 		chunkHeights = new ChunkHeightData(machine);
 	}
 	public void dispose(){
+		shader.dispose();
 		GlError.out("Disposing landscape.");
 		for(LandscapeChunk c : chunks)
 			c.dispose();
@@ -76,8 +79,10 @@ public class LandscapeWorld{
 		shader.bind();
 		for(LandscapeChunk c : chunks)
 			if(isWithinView(c, ViewDistance)
-				&&camera.getFrustum().cubeInFrustum(c.getX(), c.getY(), c.getZ(), LandscapeChunk.LandscapeSize))
+				&&camera.getFrustum().cubeInFrustum(c.getX(), c.getY(), c.getZ(), LandscapeChunk.LandscapeSize)){
+				shader.setUniform3f(1, c.getX(), c.getY(), c.getZ());
 				c.render();
+			}
 		GlError.dumpError();
 	}
 	public void update(){

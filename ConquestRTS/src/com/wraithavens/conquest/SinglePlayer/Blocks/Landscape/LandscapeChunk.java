@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
@@ -35,6 +36,7 @@ public class LandscapeChunk{
 	private final int z;
 	private final int vbo;
 	private final int ibo;
+	private final int textureId;
 	private final int indexCount;
 	private final ArrayList<StaticEntity> plantLife;
 	private final GrassPatch[] grassPatches;
@@ -49,6 +51,7 @@ public class LandscapeChunk{
 		this.grassLands = grassLands;
 		vbo = GL15.glGenBuffers();
 		ibo = GL15.glGenBuffers();
+		textureId = GL11.glGenTextures();
 		plantLife = new ArrayList();
 		{
 			// ---
@@ -110,6 +113,24 @@ public class LandscapeChunk{
 						grassPatches[i] = new GrassPatch(grassType, locations);
 						grassLands.addPatch(grassPatches[i]);
 					}
+				}
+				{
+					// ---
+					// Now load the 3D texture.
+					// ---
+					GL11.glBindTexture(GL12.GL_TEXTURE_3D, textureId);
+					GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
+					GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
+					GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL12.GL_TEXTURE_WRAP_R, GL12.GL_CLAMP_TO_EDGE);
+					GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+					GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+					int byteCount = 64*64*64*3;
+					ByteBuffer pixels = BufferUtils.createByteBuffer(byteCount);
+					for(i = 0; i<byteCount; i++)
+						pixels.put(bin.getByte());
+					pixels.flip();
+					GL12.glTexImage3D(GL12.GL_TEXTURE_3D, 0, GL11.GL_RGB8, 64, 64, 64, 0, GL11.GL_RGB,
+						GL11.GL_UNSIGNED_BYTE, pixels);
 				}
 			}else{
 				GlError.out("New landmass discovered. Generating now.");
@@ -350,6 +371,43 @@ public class LandscapeChunk{
 					grassBladeCount += locs.size();
 					i++;
 				}
+				{
+					// ---
+					// Now load the 3D texture.
+					// ---
+					GL11.glBindTexture(GL12.GL_TEXTURE_3D, textureId);
+					GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
+					GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
+					GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL12.GL_TEXTURE_WRAP_R, GL12.GL_CLAMP_TO_EDGE);
+					GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+					GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+					int byteCount = 64*64*64*3;
+					bin.allocateMoreSpace(byteCount);
+					ByteBuffer pixels = BufferUtils.createByteBuffer(byteCount);
+					{
+						// ---
+						// Generate biome colors.
+						// ---
+						int blockX, blockY, blockZ;
+						byte red, green, blue;
+						for(blockZ = 0; blockZ<64; blockZ++)
+							for(blockY = 0; blockY<64; blockY++)
+								for(blockX = 0; blockX<64; blockX++){
+									red = (byte)(blockX/63.0f*255);
+									green = (byte)(blockY/63.0f*255);
+									blue = (byte)(blockZ/63.0f*255);
+									pixels.put(red);
+									pixels.put(green);
+									pixels.put(blue);
+									bin.addByte(red);
+									bin.addByte(green);
+									bin.addByte(blue);
+								}
+					}
+					pixels.flip();
+					GL12.glTexImage3D(GL12.GL_TEXTURE_3D, 0, GL11.GL_RGB8, 64, 64, 64, 0, GL11.GL_RGB,
+						GL11.GL_UNSIGNED_BYTE, pixels);
+				}
 				bin.compile(file);
 				GlError.out("Generated plantlife.\n  Types: "+plantLocations.size()+"\n  Total Entitys: "
 					+plantCount+"\n  Grass Types: "+grassLocations.size()+"\n   Amount: "+grassBladeCount);
@@ -360,6 +418,7 @@ public class LandscapeChunk{
 	void dispose(){
 		GL15.glDeleteBuffers(vbo);
 		GL15.glDeleteBuffers(ibo);
+		GL11.glDeleteTextures(textureId);
 		GlError.dumpError();
 		if(entityDatabase!=null)
 			for(StaticEntity batch : plantLife){
@@ -382,6 +441,7 @@ public class LandscapeChunk{
 		return z;
 	}
 	void render(){
+		GL11.glBindTexture(GL12.GL_TEXTURE_3D, textureId);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 		GL11.glVertexPointer(3, GL11.GL_FLOAT, 13, 0);
 		GL20.glVertexAttribPointer(LandscapeWorld.ShadeAttribLocation, 1, GL11.GL_UNSIGNED_BYTE, true, 13, 12);
