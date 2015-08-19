@@ -12,8 +12,8 @@ import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 
 public class Dynmap{
-	static final int VertexCount = 4096+1;
-	public static final int BlocksPerChunk = 16384;
+	static final int VertexCount = 1025;
+	public static final int BlocksPerChunk = 32768;
 	static final int MaxDepth = Integer.numberOfTrailingZeros(VertexCount-1)-1;
 	private final int vbo;
 	private final DynmapChunk chunk;

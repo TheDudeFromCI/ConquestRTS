@@ -74,8 +74,7 @@ public class DynmapTexture{
 				bin.addFloat(normal.z);
 				bin.addFloat(height);
 			}
-			if(z%100==0)
-				System.out.println(z+"/"+TextureDetail+" pixel rows complete.");
+			System.out.println(z+"/"+TextureDetail+" pixel rows complete.");
 		}
 		bin.compile(file);
 		data.flip();
