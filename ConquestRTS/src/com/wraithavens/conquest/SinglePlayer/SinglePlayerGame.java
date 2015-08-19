@@ -19,7 +19,7 @@ import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxClouds;
 import com.wraithavens.conquest.Utility.WireframeCube;
 
 public class SinglePlayerGame implements Driver{
-	private static final boolean LoadSkyboxes = false;
+	private static final boolean LoadSkyboxes = true;
 	private static final boolean LoadCloudBackdrop = true;
 	private static final boolean LoadCloudForeground = true;
 	private static final boolean LoadDynmap = true;

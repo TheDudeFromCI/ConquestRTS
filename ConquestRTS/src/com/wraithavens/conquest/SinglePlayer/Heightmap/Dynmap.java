@@ -17,6 +17,7 @@ public class Dynmap{
 	public static final int BlocksPerChunk = 32768;
 	static final int MaxDepth = Integer.numberOfTrailingZeros(VertexCount-1)-1;
 	private static final int WalkingWrapDistance = 8192;
+	private static final int WalkingViewBuffer = (BlocksPerChunk-WalkingWrapDistance)/2;
 	private final int vbo;
 	private DynmapChunk chunk;
 	private final ShaderProgram shader;
@@ -54,12 +55,13 @@ public class Dynmap{
 		chunk.render();
 	}
 	public void update(float x, float z){
-		int boardX = Algorithms.groupLocation((int)x, WalkingWrapDistance);
-		int boardZ = Algorithms.groupLocation((int)z, WalkingWrapDistance);
+		int boardX = Algorithms.groupLocation((int)x, WalkingWrapDistance)-WalkingViewBuffer;
+		int boardZ = Algorithms.groupLocation((int)z, WalkingWrapDistance)-WalkingViewBuffer;
 		if(chunk==null||chunk.getX()!=boardX||chunk.getZ()!=boardZ){
-			if(chunk!=null)
-				chunk.dispose();
-			chunk = new DynmapChunk(machine, boardX, boardZ);
+			if(chunk==null)
+				chunk = new DynmapChunk(machine, boardX, boardZ);
+			else
+				chunk.reloadTexture(machine, boardX, boardZ);
 			shader.bind();
 			shader.setUniform2f(1, boardX, boardZ);
 		}

@@ -88,8 +88,8 @@ public class DynmapChunk{
 	private final int ibo;
 	private int indexCounts;
 	private final DynmapTexture texture;
-	private final int x;
-	private final int z;
+	private int x;
+	private int z;
 	private final QuadTree tree;
 	private float lastTreeUpdateX = Integer.MAX_VALUE;
 	private float lastTreeUpdateZ = Integer.MAX_VALUE;
@@ -294,6 +294,13 @@ public class DynmapChunk{
 	}
 	int getZ(){
 		return z;
+	}
+	void reloadTexture(WorldNoiseMachine machine, int x, int z){
+		this.x = x;
+		this.z = z;
+		texture.reload(machine, x, z, Dynmap.BlocksPerChunk);
+		lastTreeUpdateX = Integer.MAX_VALUE;
+		lastTreeUpdateZ = Integer.MAX_VALUE;
 	}
 	void render(){
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);

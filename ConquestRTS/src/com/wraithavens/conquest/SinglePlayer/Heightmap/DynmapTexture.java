@@ -96,4 +96,7 @@ public class DynmapTexture{
 	void dispose(){
 		GL11.glDeleteTextures(textureId);
 	}
+	void reload(WorldNoiseMachine machine, int x, int z, int size){
+		build(machine, x, z, size);
+	}
 }
