@@ -6,5 +6,4 @@ const float textureScale =  1.0f/63.0f;
 
 void main(){
 	gl_FragColor = vec4(texture(texture, floor(pos)*textureScale).rgb*color, 1.0f);
-//	gl_FragColor = vec4(texture(texture, vec3(0.5f)).rgb*color, 1.0f);
 }
