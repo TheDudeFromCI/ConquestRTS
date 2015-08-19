@@ -19,7 +19,7 @@ public class DynmapTexture{
 		double z1 = machine.getWorldHeight(x, z+1)/machine.getMaxHeight();
 		double z2 = machine.getWorldHeight(x+1, z+1)/machine.getMaxHeight();
 		double z3 = machine.getWorldHeight(x-1, z)/machine.getMaxHeight();
-		double z4 = machine.getWorldHeight(x, z)/machine.getMaxHeight();
+		double z4 = machine.getWorldHeight(x+1, z)/machine.getMaxHeight();
 		double z5 = machine.getWorldHeight(x-1, z-1)/machine.getMaxHeight();
 		double z6 = machine.getWorldHeight(x, z-1)/machine.getMaxHeight();
 		double z7 = machine.getWorldHeight(x+1, z-1)/machine.getMaxHeight();
@@ -28,6 +28,7 @@ public class DynmapTexture{
 		out.normalize();
 	}
 	private static final int TextureDetail = 1024;
+	private static final int TextureDetail2 = 2048;
 	private final int textureId;
 	private final int colorTextureId;
 	public DynmapTexture(WorldNoiseMachine machine, int x, int z, int size){
@@ -57,14 +58,14 @@ public class DynmapTexture{
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB8, TextureDetail, TextureDetail, 0, GL11.GL_RGB,
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB8, TextureDetail2, TextureDetail2, 0, GL11.GL_RGB,
 			GL11.GL_UNSIGNED_BYTE, data2);
 	}
 	private void generate(File file, WorldNoiseMachine machine, float posX, float posZ, float size){
 		System.out.println("Generating heightmap.");
-		BinaryFile bin = new BinaryFile(TextureDetail*TextureDetail*16+TextureDetail*TextureDetail*3);
+		BinaryFile bin = new BinaryFile(TextureDetail*TextureDetail*16+TextureDetail2*TextureDetail2*3);
 		FloatBuffer data = BufferUtils.createFloatBuffer(TextureDetail*TextureDetail*4);
-		ByteBuffer data2 = BufferUtils.createByteBuffer(TextureDetail*TextureDetail*3);
+		ByteBuffer data2 = BufferUtils.createByteBuffer(TextureDetail2*TextureDetail2*3);
 		int x, z;
 		float height;
 		float blockX;
@@ -81,19 +82,30 @@ public class DynmapTexture{
 				data.put(normal.y);
 				data.put(normal.z);
 				data.put(height);
-				machine.getBiomeColorAt((int)blockX, (int)height, (int)blockZ, normal);
-				data2.put((byte)(normal.x*255-128));
-				data2.put((byte)(normal.y*255-128));
-				data2.put((byte)(normal.z*255-128));
 				bin.addFloat(normal.x);
 				bin.addFloat(normal.y);
 				bin.addFloat(normal.z);
 				bin.addFloat(height);
 			}
-			System.out.println(z+"/"+TextureDetail+" pixel rows complete.");
+			System.out.println(z+"/"+TextureDetail+" pixel rows complete. (Pass 1 of 2)");
 		}
-		for(int i = 0; i<data2.capacity(); i++)
-			bin.addByte(data2.get(i));
+		s = size/(TextureDetail2-1.0f);
+		byte red, green, blue;
+		for(z = 0; z<TextureDetail2; z++){
+			for(x = 0; x<TextureDetail2; x++){
+				blockX = x*s+posX;
+				blockZ = z*s+posZ;
+				height = (float)machine.getWorldHeight(blockX, blockZ);
+				machine.getBiomeColorAt((int)blockX, (int)height, (int)blockZ, normal);
+				data2.put(red = (byte)(normal.x*255-128));
+				data2.put(green = (byte)(normal.y*255-128));
+				data2.put(blue = (byte)(normal.z*255-128));
+				bin.addByte(red);
+				bin.addByte(green);
+				bin.addByte(blue);
+			}
+			System.out.println(z+"/"+TextureDetail2+" pixel rows complete. (Pass 2 of 2)");
+		}
 		bin.compile(file);
 		data.flip();
 		data2.flip();
@@ -107,7 +119,7 @@ public class DynmapTexture{
 		for(int i = 0; i<size; i++)
 			data.put(bin.getFloat());
 		data.flip();
-		ByteBuffer data2 = BufferUtils.createByteBuffer(TextureDetail*TextureDetail*3);
+		ByteBuffer data2 = BufferUtils.createByteBuffer(TextureDetail2*TextureDetail2*3);
 		size = data2.capacity();
 		for(int i = 0; i<size; i++)
 			data2.put(bin.getByte());
