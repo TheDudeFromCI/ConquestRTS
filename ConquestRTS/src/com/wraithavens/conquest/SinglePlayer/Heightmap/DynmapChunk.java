@@ -100,6 +100,7 @@ public class DynmapChunk{
 		tree = new QuadTree(0, 0, Dynmap.VertexCount-1, null);
 		texture = new DynmapTexture(machine, x, z, Dynmap.BlocksPerChunk);
 		updateIndices();
+		System.out.println("New dynmap loaded.");
 	}
 	public void update(float x, float z){
 		if(Math.abs(x-lastTreeUpdateX)>TreeUpdateForgiveness||Math.abs(z-lastTreeUpdateZ)>TreeUpdateForgiveness){
