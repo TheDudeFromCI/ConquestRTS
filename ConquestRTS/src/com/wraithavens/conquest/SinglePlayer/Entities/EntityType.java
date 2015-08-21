@@ -1,11 +1,15 @@
 package com.wraithavens.conquest.SinglePlayer.Entities;
 
 public enum EntityType{
-	Grass1("Grass1.tal", true, null),
-	Grass2("Grass2.tal", true, null),
-	Grass3("Grass3.tal", true, null),
-	Catgirl("Catgirl.tal", false, null),
-	DupaiTree("DupaiTree.tal", false, null);
+	DupaiTree("DupaiTree.tal", false, null),
+	Grass0("Grass.tal_0", true, null),
+	Grass1("Grass.tal_1", true, null),
+	Grass2("Grass.tal_2", true, null),
+	Grass3("Grass.tal_3", true, null),
+	Grass4("Grass.tal_4", true, null),
+	Grass5("Grass.tal_5", true, null),
+	Grass6("Grass.tal_6", true, null),
+	Grass7("Grass.tal_7", true, null);
 	EntityMesh mesh;
 	public final String fileName;
 	public final boolean isGrass;

@@ -8,7 +8,6 @@ import com.wraithavens.conquest.Math.MatrixUtils;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
-import com.wraithavens.conquest.SinglePlayer.Entities.StaticEntity;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.SinglePlayer.Heightmap.Dynmap;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
@@ -171,19 +170,6 @@ public class SinglePlayerGame implements Driver{
 			if(action==GLFW.GLFW_PRESS){
 				processMoveEvents = !processMoveEvents;
 				GlError.out("Move event processing now set to "+processMoveEvents+".");
-			}
-		}else if(key==GLFW.GLFW_KEY_8){
-			if(action==GLFW.GLFW_PRESS){
-				if(entityDatabase==null){
-					GlError.out("Entity database not created. Could not place entity.");
-					return;
-				}
-				StaticEntity e = new StaticEntity(EntityType.Catgirl);
-				entityDatabase.addEntity(e);
-				e.moveTo(camera.goalX, camera.goalY-5, camera.goalZ);
-				e.scaleTo(0.25f);
-				GlError.out("Spawned grass entity at ("+camera.goalX+", "+(camera.goalY-5)+", "+camera.goalZ
-					+").");
 			}
 		}else if(key==GLFW.GLFW_KEY_9){
 			if(action==GLFW.GLFW_PRESS){

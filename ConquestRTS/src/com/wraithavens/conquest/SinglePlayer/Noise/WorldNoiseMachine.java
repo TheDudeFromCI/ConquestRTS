@@ -93,12 +93,27 @@ public class WorldNoiseMachine{
 		if(Math.random()<0.2){
 			if(Math.random()<0.0005)
 				return EntityType.DupaiTree;
-			int i = (int)(Math.random()*3);
-			if(i==0)
-				return EntityType.Grass1;
-			if(i==1)
-				return EntityType.Grass2;
-			return EntityType.Grass3;
+			int i = (int)(Math.random()*8);
+			switch(i){
+				case 0:
+					return EntityType.Grass0;
+				case 1:
+					return EntityType.Grass1;
+				case 2:
+					return EntityType.Grass2;
+				case 3:
+					return EntityType.Grass3;
+				case 4:
+					return EntityType.Grass4;
+				case 5:
+					return EntityType.Grass5;
+				case 6:
+					return EntityType.Grass6;
+				case 7:
+					return EntityType.Grass7;
+				default:
+					throw new AssertionError();
+			}
 		}
 		return null;
 	}
