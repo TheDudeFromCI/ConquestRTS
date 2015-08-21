@@ -52,6 +52,8 @@ public class SinglePlayerGame implements Driver{
 			landscape.dispose();
 		if(entityDatabase!=null)
 			entityDatabase.dispose();
+		if(grassLands!=null)
+			grassLands.dispose();
 		WireframeCube.dipose();
 		GlError.dumpError();
 	}

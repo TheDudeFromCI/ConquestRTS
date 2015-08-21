@@ -14,30 +14,33 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL31;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
+import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
-import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Texture;
 
 public class Grasslands{
 	private final ArrayList<GrassPatch> patches = new ArrayList();
 	private final Comparator grassSorter = new Comparator<GrassPatch>(){
 		public int compare(GrassPatch a, GrassPatch b){
+			if(a.getType()!=b.getType())
+				return a.getType().ordinal()<b.getType().ordinal()?1:-1;
 			return a.getTextureSize()==b.getTextureSize()?0:a.getTextureSize()<b.getTextureSize()?1:-1;
 		}
 	};
 	private final int ibo;
 	private final int vbo;
 	private final ShaderProgram shader;
-	private final Texture texture;
 	private final Camera camera;
 	private final int SwayAttribLocation;
+	private final GrassBook grassBook;
 	private LandscapeWorld landscape;
 	private int shaderLastSize = -1;
 	public Grasslands(Camera camera){
 		this.camera = camera;
 		ibo = GL15.glGenBuffers();
 		vbo = GL15.glGenBuffers();
+		grassBook = new GrassBook();
 		{
 			// ---
 			// Build the index buffer.
@@ -86,18 +89,19 @@ public class Grasslands{
 		SwayAttribLocation = shader.getAttributeLocation("swayTolerance");
 		GL20.glEnableVertexAttribArray(SwayAttribLocation);
 		GlError.dumpError();
-		// ---
-		// This part is just a test.
-		// ---
-		texture = new Texture(new File(WraithavensConquest.assetFolder, "Grass.png"), 2);
-		GlError.dumpError();
 	}
 	public void addPatch(GrassPatch patch){
 		patches.add(patch);
 		patches.sort(grassSorter);
+		grassBook.addReference(patch.getType());
+	}
+	public void dispose(){
+		grassBook.dispose();
+		shader.dispose();
 	}
 	public void removePatch(GrassPatch patch){
 		patches.remove(patch);
+		grassBook.removeReference(patch.getType());
 	}
 	public void render(){
 		GL11.glEnable(GL11.GL_ALPHA_TEST);
@@ -109,14 +113,18 @@ public class Grasslands{
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		shader.bind();
 		shader.setUniform1f(6, (float)GLFW.glfwGetTime());
-		GL13.glActiveTexture(GL13.GL_TEXTURE1);
-		texture.bind();
-		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		EntityType currentType = null;
 		for(GrassPatch grass : patches){
 			if(landscape!=null&&!landscape.isWithinView((int)grass.getX(), (int)grass.getZ()))
 				continue;
 			if(!grass.isVisible(camera))
 				continue;
+			if(currentType==null||currentType!=grass.getType()){
+				currentType = grass.getType();
+				GL13.glActiveTexture(GL13.GL_TEXTURE1);
+				grassBook.bindType(currentType);
+				GL13.glActiveTexture(GL13.GL_TEXTURE0);
+			}
 			grass.bind();
 			if(grass.getTextureSize()!=shaderLastSize){
 				shaderLastSize = grass.getTextureSize();
