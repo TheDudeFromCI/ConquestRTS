@@ -11,6 +11,7 @@ import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.SinglePlayer.Heightmap.Dynmap;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
+import com.wraithavens.conquest.SinglePlayer.Particles.ParticleEngine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyBox;
@@ -25,6 +26,7 @@ public class SinglePlayerGame implements Driver{
 	private static final boolean LoadEntityDatabase = true;
 	private static final boolean LoadLandscape = true;
 	private static final boolean LoadGrasslands = true;
+	private static final boolean LoadParticleEngine = true;
 	private boolean w, a, s, d, shift, space, grounded = true, lockedMouse, walkLock, e;
 	private boolean wireframeMode;
 	private boolean processBlocks = true;
@@ -41,6 +43,7 @@ public class SinglePlayerGame implements Driver{
 	private EntityDatabase entityDatabase;
 	private LandscapeWorld landscape;
 	private Grasslands grassLands;
+	private ParticleEngine particleEngine;
 	public void dispose(){
 		GlError.out("Disposing single player driver.");
 		GlError.dumpError();
@@ -54,6 +57,8 @@ public class SinglePlayerGame implements Driver{
 			entityDatabase.dispose();
 		if(grassLands!=null)
 			grassLands.dispose();
+		if(particleEngine!=null)
+			particleEngine.dispose();
 		WireframeCube.dipose();
 		GlError.dumpError();
 	}
@@ -91,6 +96,8 @@ public class SinglePlayerGame implements Driver{
 			grassLands = new Grasslands(camera);
 		if(LoadLandscape)
 			landscape = new LandscapeWorld(machine, entityDatabase, grassLands, camera);
+		if(LoadParticleEngine)
+			particleEngine = new ParticleEngine();
 		if(entityDatabase!=null)
 			entityDatabase.setLandscape(landscape);
 		if(grassLands!=null)
@@ -254,6 +261,8 @@ public class SinglePlayerGame implements Driver{
 			grassLands.render();
 		if(entityDatabase!=null)
 			entityDatabase.render();
+		if(particleEngine!=null)
+			particleEngine.render();
 		WireframeCube.render();
 		GL11.glPopMatrix();
 	}
@@ -273,6 +282,8 @@ public class SinglePlayerGame implements Driver{
 		// ---
 		if(!wireframeMode&&skybox!=null)
 			skybox.update(time);
+		if(particleEngine!=null)
+			particleEngine.update(time);
 	}
 	private void move(double delta){
 		delta *= cameraSpeed;
