@@ -42,6 +42,7 @@ public class ChunkHeightData{
 				if(h>maxHeight)
 					maxHeight = h;
 			}
+		minHeight -= 1;
 		minHeight = Algorithms.groupLocation(minHeight, LandscapeChunk.LandscapeSize);
 		maxHeight = Algorithms.groupLocation(maxHeight, LandscapeChunk.LandscapeSize);
 		out[0] = minHeight;

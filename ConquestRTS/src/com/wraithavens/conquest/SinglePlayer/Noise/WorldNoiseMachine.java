@@ -70,8 +70,8 @@ public class WorldNoiseMachine{
 		return Biome.getFittingBiome(h, t, l);
 	}
 	public void getBiomeColorAt(int x, int y, int z, Vector3f colorOut){
-		float n = grassShadeNoise.noise(x, z)*20-10;
-		colorOut.set((140+n)/255f, (160+n)/255f, (80+n)/255f);
+		float n = grassShadeNoise.noise(x, z)*-10;
+		colorOut.set((109+n)/255f, (135+n)/255f, (24+n)/255f);
 	}
 	public int getGroundLevel(int x, int z){
 		return (int)getWorldHeight(x+0.5f, z+0.5f);
