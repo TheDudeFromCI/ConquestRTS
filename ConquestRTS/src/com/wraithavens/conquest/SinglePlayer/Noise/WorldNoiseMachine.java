@@ -92,6 +92,8 @@ public class WorldNoiseMachine{
 		if(Math.random()<0.2){
 			if(Math.random()<0.02)
 				return EntityType.TayleaFlower;
+			if(Math.random()<0.005)
+				return EntityType.VallaFlower;
 			if(Math.random()<0.005){
 				int i = (int)(Math.random()*3);
 				switch(i){

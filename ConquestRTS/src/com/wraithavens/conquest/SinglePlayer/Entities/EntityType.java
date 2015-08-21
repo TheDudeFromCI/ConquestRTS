@@ -13,7 +13,8 @@ public enum EntityType{
 	TayleaFlower("TayleaFlower.tal", false, null),
 	Rock1("Rock1.tal", false, null),
 	Rock2("Rock2.tal", false, null),
-	Rock3("Rock3.tal", false, null);
+	Rock3("Rock3.tal", false, null),
+	VallaFlower("VallaFlower.tal", false, null);
 	EntityMesh mesh;
 	public final String fileName;
 	public final boolean isGrass;

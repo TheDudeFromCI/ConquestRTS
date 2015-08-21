@@ -43,7 +43,7 @@ public class LandscapeWorld{
 		GL20.glEnableVertexAttribArray(ShadeAttribLocation);
 		GlError.dumpError();
 		spiral = new SpiralGridAlgorithm();
-		spiral.setMaxDistance(ViewDistance+2);
+		spiral.setMaxDistance(ViewDistance+1);
 		chunkHeights = new ChunkHeightData(machine);
 	}
 	public void dispose(){
