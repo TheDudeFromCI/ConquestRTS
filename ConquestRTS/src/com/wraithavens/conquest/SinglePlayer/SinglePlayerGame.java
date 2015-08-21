@@ -12,6 +12,7 @@ import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.SinglePlayer.Heightmap.Dynmap;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.Particles.ParticleBatch;
+import com.wraithavens.conquest.SinglePlayer.Particles.ParticleTypes.Pollen;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyBox;
@@ -43,7 +44,7 @@ public class SinglePlayerGame implements Driver{
 	private EntityDatabase entityDatabase;
 	private LandscapeWorld landscape;
 	private Grasslands grassLands;
-	private ParticleBatch particleEngine;
+	private ParticleBatch particleBatch;
 	public void dispose(){
 		GlError.out("Disposing single player driver.");
 		GlError.dumpError();
@@ -57,8 +58,8 @@ public class SinglePlayerGame implements Driver{
 			entityDatabase.dispose();
 		if(grassLands!=null)
 			grassLands.dispose();
-		if(particleEngine!=null)
-			particleEngine.dispose();
+		if(particleBatch!=null)
+			particleBatch.dispose();
 		WireframeCube.dipose();
 		GlError.dumpError();
 	}
@@ -96,8 +97,10 @@ public class SinglePlayerGame implements Driver{
 			grassLands = new Grasslands(camera);
 		if(LoadLandscape)
 			landscape = new LandscapeWorld(machine, entityDatabase, grassLands, camera);
-		if(LoadParticleEngine)
-			particleEngine = new ParticleBatch(camera);
+		if(LoadParticleEngine){
+			particleBatch = new ParticleBatch(camera);
+			particleBatch.addParticle(new Pollen(4096, 1097, 4091));
+		}
 		if(entityDatabase!=null)
 			entityDatabase.setLandscape(landscape);
 		if(grassLands!=null)
@@ -261,8 +264,8 @@ public class SinglePlayerGame implements Driver{
 			grassLands.render();
 		if(entityDatabase!=null)
 			entityDatabase.render();
-		if(particleEngine!=null)
-			particleEngine.render();
+		if(particleBatch!=null)
+			particleBatch.render();
 		WireframeCube.render();
 		GL11.glPopMatrix();
 	}
@@ -282,8 +285,8 @@ public class SinglePlayerGame implements Driver{
 		// ---
 		if(!wireframeMode&&skybox!=null)
 			skybox.update(time);
-		if(particleEngine!=null)
-			particleEngine.update(time);
+		if(particleBatch!=null)
+			particleBatch.update(time);
 	}
 	private void move(double delta){
 		delta *= cameraSpeed;

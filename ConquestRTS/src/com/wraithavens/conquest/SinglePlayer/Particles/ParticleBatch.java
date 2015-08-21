@@ -46,10 +46,6 @@ public class ParticleBatch{
 		}
 		{
 			particleData = BufferUtils.createFloatBuffer(5*MaxParticleCount);
-			particleData.put(4096).put(1097).put(4091).put(1.0f).put(1.0f);
-			particleData.flip();
-			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, particleBuffer);
-			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, particleData, GL15.GL_STREAM_DRAW);
 		}
 		shader = new ShaderProgram("Particle");
 		shader.bind();
@@ -69,6 +65,8 @@ public class ParticleBatch{
 		shader.dispose();
 	}
 	public void render(){
+		if(particles.size()==0)
+			return;
 		shader.bind();
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glEnable(GL11.GL_BLEND);
@@ -104,5 +102,8 @@ public class ParticleBatch{
 			particleData.put(scale.x);
 			particleData.put(scale.y);
 		}
+		particleData.flip();
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, particleBuffer);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, particleData, GL15.GL_STREAM_DRAW);
 	}
 }
