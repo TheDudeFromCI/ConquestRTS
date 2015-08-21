@@ -11,7 +11,7 @@ import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.SinglePlayer.Heightmap.Dynmap;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
-import com.wraithavens.conquest.SinglePlayer.Particles.ParticleEngine;
+import com.wraithavens.conquest.SinglePlayer.Particles.ParticleBatch;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyBox;
@@ -43,7 +43,7 @@ public class SinglePlayerGame implements Driver{
 	private EntityDatabase entityDatabase;
 	private LandscapeWorld landscape;
 	private Grasslands grassLands;
-	private ParticleEngine particleEngine;
+	private ParticleBatch particleEngine;
 	public void dispose(){
 		GlError.out("Disposing single player driver.");
 		GlError.dumpError();
@@ -97,7 +97,7 @@ public class SinglePlayerGame implements Driver{
 		if(LoadLandscape)
 			landscape = new LandscapeWorld(machine, entityDatabase, grassLands, camera);
 		if(LoadParticleEngine)
-			particleEngine = new ParticleEngine();
+			particleEngine = new ParticleBatch(camera);
 		if(entityDatabase!=null)
 			entityDatabase.setLandscape(landscape);
 		if(grassLands!=null)
