@@ -69,6 +69,7 @@ public class WorldNoiseMachine{
 		float l = (float)(getWorldHeight(x, z)/getMaxHeight());
 		return Biome.getFittingBiome(h, t, l);
 	}
+	@SuppressWarnings("unused")
 	public void getBiomeColorAt(int x, int y, int z, Vector3f colorOut){
 		float n = grassShadeNoise.noise(x, z)*-10;
 		colorOut.set((109+n)/255f, (135+n)/255f, (24+n)/255f);
@@ -92,7 +93,7 @@ public class WorldNoiseMachine{
 		if(Math.random()<0.2){
 			if(Math.random()<0.02)
 				return EntityType.TayleaFlower;
-			if(Math.random()<0.005)
+			if(Math.random()<0.0025)
 				return EntityType.VallaFlower;
 			if(Math.random()<0.005){
 				int i = (int)(Math.random()*3);
