@@ -43,7 +43,7 @@ public class LandscapeWorld{
 		GL20.glEnableVertexAttribArray(ShadeAttribLocation);
 		GlError.dumpError();
 		spiral = new SpiralGridAlgorithm();
-		spiral.setMaxDistance(ViewDistance+1);
+		spiral.setMaxDistance(ViewDistance);
 		chunkHeights = new ChunkHeightData(machine);
 	}
 	public void dispose(){
@@ -80,7 +80,6 @@ public class LandscapeWorld{
 			spiral.next();
 			loadChunks(spiral.getX()*LandscapeChunk.LandscapeSize+chunkX, spiral.getY()
 				*LandscapeChunk.LandscapeSize+chunkZ);
-			System.out.println(chunks.size()+"/110 chunks loaded.");
 		}
 		System.out.println("All chunks loaded.");
 	}
@@ -126,8 +125,6 @@ public class LandscapeWorld{
 					*LandscapeChunk.LandscapeSize+chunkZ);
 				if(!spiral.hasNext())
 					System.out.println("All chunks loaded.");
-				else
-					System.out.println(chunks.size()+"/110 chunks loaded.");
 			}else
 				clearDistanceChunks();
 		}
