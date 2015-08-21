@@ -90,9 +90,13 @@ public class LandscapeChunk{
 						float vx = bin.getFloat();
 						float vy = bin.getFloat();
 						float vz = bin.getFloat();
+						float scale = bin.getFloat();
+						float yaw = bin.getFloat();
 						if(entityDatabase!=null){
 							StaticEntity e = new StaticEntity(type);
 							e.moveTo(vx, vy, vz);
+							e.scaleTo(scale);
+							e.setYaw(yaw);
 							plantLife.add(e);
 							entityDatabase.addEntity(e);
 						}
@@ -323,7 +327,7 @@ public class LandscapeChunk{
 				int bytes = 8;
 				for(EntityType type : plantLocations.keySet()){
 					bytes += 8;
-					bytes += plantLocations.get(type).size()*3*4;
+					bytes += plantLocations.get(type).size()*5*4;
 				}
 				for(EntityType type : grassLocations.keySet()){
 					bytes += 8;
@@ -340,9 +344,15 @@ public class LandscapeChunk{
 						bin.addFloat(loc.x);
 						bin.addFloat(loc.y);
 						bin.addFloat(loc.z);
+						float scale = (float)(Math.random()*0.1f-0.05f+1/5f);
+						float yaw = (float)(Math.random()*360);
+						bin.addFloat(scale);
+						bin.addFloat(yaw);
 						if(entityDatabase!=null){
 							StaticEntity e = new StaticEntity(type);
 							e.moveTo(loc.x, loc.y, loc.z);
+							e.scaleTo(scale);
+							e.setYaw(yaw);
 							plantLife.add(e);
 							entityDatabase.addEntity(e);
 						}
