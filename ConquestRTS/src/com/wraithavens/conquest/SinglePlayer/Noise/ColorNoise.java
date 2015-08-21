@@ -11,6 +11,9 @@ class ColorNoise{
 		this.green = green;
 		this.blue = blue;
 	}
+	void noise(float x, float y, float z, Vector3f out){
+		out.set((float)red.noise(x, y, z), (float)green.noise(x, y, z), (float)blue.noise(x, y, z));
+	}
 	void noise(float x, float y, Vector3f out){
 		out.set((float)red.noise(x, y), (float)green.noise(x, y), (float)blue.noise(x, y));
 	}

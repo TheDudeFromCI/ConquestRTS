@@ -97,9 +97,9 @@ public class DynmapTexture{
 				blockZ = z*s+posZ;
 				height = (float)machine.getWorldHeight(blockX, blockZ);
 				machine.getBiomeColorAt((int)blockX, (int)height, (int)blockZ, normal);
-				data2.put(red = (byte)(normal.x*255-128));
-				data2.put(green = (byte)(normal.y*255-128));
-				data2.put(blue = (byte)(normal.z*255-128));
+				data2.put(red = (byte)Math.round(normal.x*255));
+				data2.put(green = (byte)Math.round(normal.y*255));
+				data2.put(blue = (byte)Math.round(normal.z*255));
 				bin.addByte(red);
 				bin.addByte(green);
 				bin.addByte(blue);

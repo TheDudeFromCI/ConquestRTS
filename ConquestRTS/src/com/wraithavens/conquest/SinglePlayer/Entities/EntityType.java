@@ -9,7 +9,11 @@ public enum EntityType{
 	Grass4("Grass.tal_4", true, null),
 	Grass5("Grass.tal_5", true, null),
 	Grass6("Grass.tal_6", true, null),
-	Grass7("Grass.tal_7", true, null);
+	Grass7("Grass.tal_7", true, null),
+	TayleaFlower("TayleaFlower.tal", false, null),
+	Rock1("Rock1.tal", false, null),
+	Rock2("Rock2.tal", false, null),
+	Rock3("Rock3.tal", false, null);
 	EntityMesh mesh;
 	public final String fileName;
 	public final boolean isGrass;

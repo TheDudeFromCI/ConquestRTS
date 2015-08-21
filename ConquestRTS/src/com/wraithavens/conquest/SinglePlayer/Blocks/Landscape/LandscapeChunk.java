@@ -390,12 +390,14 @@ public class LandscapeChunk{
 						// ---
 						int blockX, blockY, blockZ;
 						byte red, green, blue;
+						Vector3f colors = new Vector3f();
 						for(blockZ = 0; blockZ<64; blockZ++)
 							for(blockY = 0; blockY<64; blockY++)
 								for(blockX = 0; blockX<64; blockX++){
-									red = (byte)(blockX/63.0f*255-128);
-									green = (byte)(blockY/63.0f*255-128);
-									blue = (byte)(blockZ/63.0f*255-128);
+									machine.getBiomeColorAt(blockX+x, blockY+y, blockZ+z, colors);
+									red = (byte)Math.round(colors.x*255);
+									green = (byte)Math.round(colors.y*255);
+									blue = (byte)Math.round(colors.z*255);
 									pixels.put(red);
 									pixels.put(green);
 									pixels.put(blue);

@@ -60,7 +60,7 @@ public class SinglePlayerGame implements Driver{
 	public void initalize(double time){
 		GlError.out("Initalizing single player driver.");
 		long[] seeds = new long[]{
-			0, 1, 2, 3
+			0, 1, 2, 3, 4, 5
 		};
 		machine = WorldNoiseMachine.generate(seeds);
 		// ---
@@ -68,7 +68,7 @@ public class SinglePlayerGame implements Driver{
 		// ---
 		GlError.out("Preparing camera.");
 		camera.cameraMoveSpeed = 10.0f;
-		camera.goalY = camera.y = machine.getGroundLevel(8192, 8192)+6;
+		camera.goalY = camera.y = machine.getGroundLevel(4096, 4096)+6;
 		camera.goalX = 4096;
 		camera.goalZ = 4096;
 		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
@@ -172,6 +172,12 @@ public class SinglePlayerGame implements Driver{
 			if(action==GLFW.GLFW_PRESS){
 				processMoveEvents = !processMoveEvents;
 				GlError.out("Move event processing now set to "+processMoveEvents+".");
+			}
+		}else if(key==GLFW.GLFW_KEY_8){
+			if(action==GLFW.GLFW_PRESS){
+				System.out.println("Loading all chunks...");
+				if(landscape!=null)
+					landscape.loadAllChunks();
 			}
 		}else if(key==GLFW.GLFW_KEY_9){
 			if(action==GLFW.GLFW_PRESS){

@@ -75,6 +75,15 @@ public class LandscapeWorld{
 		return Math.abs(x-cx)<=ViewDistance*LandscapeChunk.LandscapeSize
 			&&Math.abs(z-cz)<=ViewDistance*LandscapeChunk.LandscapeSize;
 	}
+	public void loadAllChunks(){
+		while(spiral.hasNext()){
+			spiral.next();
+			loadChunks(spiral.getX()*LandscapeChunk.LandscapeSize+chunkX, spiral.getY()
+				*LandscapeChunk.LandscapeSize+chunkZ);
+			System.out.println(chunks.size()+"/110 chunks loaded.");
+		}
+		System.out.println("All chunks loaded.");
+	}
 	public void render(){
 		shader.bind();
 		for(LandscapeChunk c : chunks)
@@ -117,6 +126,8 @@ public class LandscapeWorld{
 					*LandscapeChunk.LandscapeSize+chunkZ);
 				if(!spiral.hasNext())
 					System.out.println("All chunks loaded.");
+				else
+					System.out.println(chunks.size()+"/110 chunks loaded.");
 			}else
 				clearDistanceChunks();
 		}

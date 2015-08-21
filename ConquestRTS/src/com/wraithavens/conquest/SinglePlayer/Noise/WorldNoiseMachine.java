@@ -26,12 +26,12 @@ public class WorldNoiseMachine{
 		// ---
 		CosineInterpolation cos = new CosineInterpolation();
 		LinearInterpolation lerp = new LinearInterpolation();
-		SubNoise worldHeightNoise1 = SubNoise.build(seeds[0], 6000, 6, cos, 1000, 0);
-		SubNoise prairieRed = SubNoise.build(seeds[1], 120, 2, lerp, 0.15f, 0.25f);
-		SubNoise prairieGreen = SubNoise.build(seeds[2], 20, 1, lerp, 0.1f, 0);
-		SubNoise prairieBlue = SubNoise.build(seeds[3], 80, 2, lerp, 0.15f, 0.3f);
-		SubNoise humidityNoise = SubNoise.build(seeds[0], 6000, 6, cos, 1000, 0);
-		SubNoise tempatureNoise = SubNoise.build(seeds[0], 6000, 6, cos, 1000, 0);
+		SubNoise worldHeightNoise1 = SubNoise.build(seeds[0], 6000, 6, cos, 1500, 0);
+		SubNoise prairieRed = SubNoise.build(seeds[1], 120, 2, lerp, 0.05f, 0.1f);
+		SubNoise prairieGreen = SubNoise.build(seeds[2], 20, 1, lerp, 0.2f, 0.8f);
+		SubNoise prairieBlue = SubNoise.build(seeds[3], 80, 2, lerp, 0.05f, 0.1f);
+		SubNoise humidityNoise = SubNoise.build(seeds[4], 6000, 6, cos, 1, 0);
+		SubNoise tempatureNoise = SubNoise.build(seeds[5], 6000, 6, cos, 1, 0);
 		// ---
 		// And compiling these together.
 		// ---
@@ -54,12 +54,14 @@ public class WorldNoiseMachine{
 	// Biome specific noise generators.
 	// ---
 	private final ColorNoise prairieColor;
+	private NoiseGenerator grassShadeNoise = new NoiseGenerator(100, 20, 2);
 	private WorldNoiseMachine(
 		AdvancedNoise worldHeight, ColorNoise prairieColor, AdvancedNoise humidity, AdvancedNoise tempature){
 		this.worldHeight = worldHeight;
 		this.prairieColor = prairieColor;
 		this.humidity = humidity;
 		this.tempature = tempature;
+		grassShadeNoise.setFunction(new CosineInterpolation());
 	}
 	public Biome getBiomeAt(int x, int z){
 		float h = (float)humidity.noise(x, z);
@@ -67,12 +69,9 @@ public class WorldNoiseMachine{
 		float l = (float)(getWorldHeight(x, z)/getMaxHeight());
 		return Biome.getFittingBiome(h, t, l);
 	}
-	@SuppressWarnings("static-method")
 	public void getBiomeColorAt(int x, int y, int z, Vector3f colorOut){
-		// ---
-		// TODO Make actual biome colors.
-		// ---
-		colorOut.set(x%64/63f, y%64/63f, z%64/63f);
+		float n = grassShadeNoise.noise(x, z)*20-10;
+		colorOut.set((140+n)/255f, (160+n)/255f, (80+n)/255f);
 	}
 	public int getGroundLevel(int x, int z){
 		return (int)getWorldHeight(x+0.5f, z+0.5f);
@@ -91,8 +90,21 @@ public class WorldNoiseMachine{
 	})
 	public EntityType randomPlant(int x, int z){
 		if(Math.random()<0.2){
-			if(Math.random()<0.0005)
-				return EntityType.DupaiTree;
+			if(Math.random()<0.02)
+				return EntityType.TayleaFlower;
+			if(Math.random()<0.01){
+				int i = (int)(Math.random()*3);
+				switch(i){
+					case 0:
+						return EntityType.Rock1;
+					case 1:
+						return EntityType.Rock2;
+					case 2:
+						return EntityType.Rock3;
+					default:
+						throw new AssertionError();
+				}
+			}
 			int i = (int)(Math.random()*8);
 			switch(i){
 				case 0:
