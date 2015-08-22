@@ -26,7 +26,7 @@ public class SinglePlayerGame implements Driver{
 	private static final boolean LoadDynmap = true;
 	private static final boolean LoadEntityDatabase = true;
 	private static final boolean LoadLandscape = true;
-	private static final boolean LoadGrasslands = true;
+	private static final boolean LoadGrasslands = false;
 	private static final boolean LoadParticleEngine = true;
 	private boolean w, a, s, d, shift, space, grounded = true, lockedMouse, walkLock, e;
 	private boolean wireframeMode;
@@ -101,7 +101,7 @@ public class SinglePlayerGame implements Driver{
 			landscape = new LandscapeWorld(machine, entityDatabase, grassLands, camera);
 		if(LoadParticleEngine){
 			particleBatch = new ParticleBatch(camera);
-			PollenParticleEngine e = new PollenParticleEngine(particleBatch, camera.x, camera.y, camera.z, 16);
+			PollenParticleEngine e = new PollenParticleEngine(particleBatch, camera, 32);
 			particleBatch.addEngine(e);
 		}
 		if(entityDatabase!=null)
@@ -213,7 +213,7 @@ public class SinglePlayerGame implements Driver{
 		}else if(key==GLFW.GLFW_KEY_0){
 			if(action==GLFW.GLFW_PRESS){
 				chunkLoading = !chunkLoading;
-				GlError.out("Chunk loading now set to "+chunkLoading+".");
+				System.out.println("Chunk loading now set to "+chunkLoading+".");
 			}
 		}
 	}
@@ -258,7 +258,9 @@ public class SinglePlayerGame implements Driver{
 		if(dynmap!=null){
 			dynmap.render();
 			GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
-		}
+		}else
+			MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
+				/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 0.5f, 10000);
 		if(processBlocks){
 			if(landscape!=null)
 				landscape.render();

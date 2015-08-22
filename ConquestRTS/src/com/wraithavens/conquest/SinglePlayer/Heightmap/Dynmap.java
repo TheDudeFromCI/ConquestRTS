@@ -44,20 +44,23 @@ public class Dynmap{
 	}
 	public void dispose(){
 		GL15.glDeleteBuffers(vbo);
-		chunk.dispose();
+		if(chunk!=null)
+			chunk.dispose();
 		shader.dispose();
 	}
 	public void render(){
+		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
+			/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 0.5f, 10000);
 		if(chunk==null)
 			return;
-		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
-			/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 0.5f, 16384);
 		shader.bind();
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 		GL11.glVertexPointer(2, GL11.GL_FLOAT, 8, 0);
 		chunk.render();
 	}
 	public void update(float x, float z){
+		// if(1<2)
+		// return;
 		int boardX = Algorithms.groupLocation((int)x, WalkingWrapDistance)-WalkingViewBuffer;
 		int boardZ = Algorithms.groupLocation((int)z, WalkingWrapDistance)-WalkingViewBuffer;
 		if(chunk==null||chunk.getX()!=boardX||chunk.getZ()!=boardZ){

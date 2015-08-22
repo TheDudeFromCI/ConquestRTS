@@ -81,11 +81,9 @@ public class Grasslands{
 			new ShaderProgram(new File(WraithavensConquest.assetFolder, "Grass.vert"), null, new File(
 				WraithavensConquest.assetFolder, "Grass.frag"));
 		shader.bind();
-		shader.loadUniforms("transform", "texture", "textureSize", "textureSizeHigh", "textureShrink",
-			"billboard", "time");
+		shader.loadUniforms("transform", "texture", "uni_texStats", "time");
 		shader.setUniform1I(0, 0);
 		shader.setUniform1I(1, 1);
-		shader.setUniform1I(5, 0);
 		SwayAttribLocation = shader.getAttributeLocation("swayTolerance");
 		GL20.glEnableVertexAttribArray(SwayAttribLocation);
 		GlError.dumpError();
@@ -112,7 +110,7 @@ public class Grasslands{
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		shader.bind();
-		shader.setUniform1f(6, (float)GLFW.glfwGetTime());
+		shader.setUniform1f(3, (float)GLFW.glfwGetTime());
 		EntityType currentType = null;
 		for(GrassPatch grass : patches){
 			if(landscape!=null&&!landscape.isWithinView((int)grass.getX(), (int)grass.getZ()))
@@ -128,9 +126,7 @@ public class Grasslands{
 			grass.bind();
 			if(grass.getTextureSize()!=shaderLastSize){
 				shaderLastSize = grass.getTextureSize();
-				shader.setUniform1I(2, grass.getTextureSize());
-				shader.setUniform1I(3, grass.getTextureSize()-1);
-				shader.setUniform1f(4, 1.0f/grass.getTextureSize());
+				shader.setUniform2I(2, grass.getTextureSize(), grass.getTextureSize()-1);
 			}
 			GL31.glDrawElementsInstanced(GL11.GL_TRIANGLES, 12, GL11.GL_UNSIGNED_SHORT, 0, grass.getCount());
 		}

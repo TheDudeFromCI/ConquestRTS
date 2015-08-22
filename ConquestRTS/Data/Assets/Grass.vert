@@ -1,7 +1,5 @@
 uniform sampler2D transform;
-uniform int textureSize;
-uniform int textureSizeHigh;
-uniform float textureShrink;
+uniform uvec2 uni_texStats;
 uniform float time;
 in float swayTolerance;
 out vec2 uv;
@@ -9,7 +7,7 @@ out vec2 uv;
 const float swayStrength = 0.15f;
 
 void main(){
-	vec4 tex = texture(transform, vec2(gl_InstanceID&textureSizeHigh, gl_InstanceID/textureSize)*textureShrink);
+	vec4 tex = texture(transform, vec2(gl_InstanceID&uni_texStats.y, gl_InstanceID/uni_texStats.x)/float(uni_texStats.x));
 	vec2 r = vec2(cos(tex.a), sin(tex.a));
 	vec3 pos = vec3(
 		gl_Vertex.x*r.x-gl_Vertex.z*r.y,

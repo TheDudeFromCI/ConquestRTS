@@ -4,20 +4,17 @@ import org.lwjgl.glfw.GLFW;
 import com.wraithavens.conquest.SinglePlayer.Particles.Particle;
 import com.wraithavens.conquest.SinglePlayer.Particles.ParticleBatch;
 import com.wraithavens.conquest.SinglePlayer.Particles.ParticleEngine;
+import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 
 public class PollenParticleEngine implements ParticleEngine{
-	private static final int ParticlesPerSecond = 20;
-	private final float x;
-	private final float y;
-	private final float z;
+	private static final int ParticlesPerSecond = 90;
 	private final float r;
 	private final ParticleBatch batch;
 	private long generated = 0;
 	private double creationTime;
-	public PollenParticleEngine(ParticleBatch batch, float x, float y, float z, float r){
-		this.x = x;
-		this.y = y;
-		this.z = z;
+	private final Camera camera;
+	public PollenParticleEngine(ParticleBatch batch, Camera camera, float r){
+		this.camera = camera;
 		this.r = r;
 		this.batch = batch;
 		creationTime = GLFW.glfwGetTime();
@@ -32,8 +29,8 @@ public class PollenParticleEngine implements ParticleEngine{
 		double spin = Math.random()*Math.PI*2;
 		double distance = Math.random()*r;
 		Pollen p =
-			new Pollen((float)(x+Math.cos(spin)*distance), (float)(y+Math.random()*5), (float)(z+Math.sin(spin)
-				*distance), time);
+			new Pollen((float)(camera.x+Math.cos(spin)*distance), (float)(camera.y-Math.random()*3),
+				(float)(camera.z+Math.sin(spin)*distance), time);
 		return p;
 	}
 }

@@ -111,9 +111,9 @@ public class WorldNoiseMachine{
 			int i = (int)(Math.random()*8);
 			switch(i){
 				case 0:
-					return EntityType.Grass0;
-				case 1:
 					return EntityType.Grass1;
+				case 1:
+					return EntityType.Grass2;
 				case 2:
 					return EntityType.Grass2;
 				case 3:

@@ -2,12 +2,17 @@ package com.wraithavens.conquest.SinglePlayer.Particles;
 
 import com.wraithavens.conquest.Math.Vector2f;
 import com.wraithavens.conquest.Math.Vector3f;
+import com.wraithavens.conquest.Math.Vector4f;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 
 public abstract class Particle{
 	protected final Vector3f location = new Vector3f();
 	protected final Vector2f scale = new Vector2f();
+	protected final Vector4f color = new Vector4f();
 	private double camDistance;
+	public Vector4f getColor(){
+		return color;
+	}
 	public Vector3f getLocation(){
 		return location;
 	}
