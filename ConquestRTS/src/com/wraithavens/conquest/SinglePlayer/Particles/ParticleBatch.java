@@ -2,7 +2,6 @@ package com.wraithavens.conquest.SinglePlayer.Particles;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
-import java.util.Comparator;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
@@ -23,12 +22,6 @@ public class ParticleBatch{
 	private final int offsetAttribLocation;
 	private final int scaleAttribLocation;
 	private final ArrayList<Particle> particles = new ArrayList(MaxParticleCount);
-	private final Comparator particleSorter = new Comparator<Particle>(){
-		public int compare(Particle a, Particle b){
-			return a.getCameraDistance()==b.getCameraDistance()?0:a.getCameraDistance()<b.getCameraDistance()?1
-				:-1;
-		}
-	};
 	private final Camera camera;
 	public ParticleBatch(Camera camera){
 		this.camera = camera;
@@ -44,9 +37,7 @@ public class ParticleBatch{
 			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertexData, GL15.GL_STATIC_DRAW);
 		}
-		{
-			particleData = BufferUtils.createFloatBuffer(5*MaxParticleCount);
-		}
+		particleData = BufferUtils.createFloatBuffer(5*MaxParticleCount);
 		shader = new ShaderProgram("Particle");
 		shader.bind();
 		offsetAttribLocation = shader.getAttributeLocation("att_offset");
@@ -70,8 +61,8 @@ public class ParticleBatch{
 		if(particles.size()==0)
 			return;
 		shader.bind();
-		GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glDepthMask(false);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 		GL11.glVertexPointer(2, GL11.GL_FLOAT, 8, 0);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, particleBuffer);
@@ -80,8 +71,12 @@ public class ParticleBatch{
 		GL31.glDrawArraysInstanced(GL11.GL_TRIANGLE_STRIP, 0, 4, particles.size());
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glDepthMask(true);
 	}
 	public void update(double time){
+		particleData.clear();
+		Vector3f location;
+		Vector2f scale;
 		for(int i = 0; i<particles.size();){
 			particles.get(i).update(time);
 			if(!particles.get(i).isAlive()){
@@ -89,13 +84,6 @@ public class ParticleBatch{
 				continue;
 			}
 			particles.get(i).setCameraDistance(camera);
-			i++;
-		}
-		particles.sort(particleSorter);
-		particleData.clear();
-		Vector3f location;
-		Vector2f scale;
-		for(int i = 0; i<particles.size(); i++){
 			location = particles.get(i).getLocation();
 			scale = particles.get(i).getScale();
 			particleData.put(location.x);
@@ -103,9 +91,10 @@ public class ParticleBatch{
 			particleData.put(location.z);
 			particleData.put(scale.x);
 			particleData.put(scale.y);
+			i++;
 		}
 		particleData.flip();
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, particleBuffer);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, particleData, GL15.GL_STREAM_DRAW);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, particleData, GL15.GL_DYNAMIC_DRAW);
 	}
 }

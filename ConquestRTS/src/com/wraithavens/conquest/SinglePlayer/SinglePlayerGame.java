@@ -263,10 +263,10 @@ public class SinglePlayerGame implements Driver{
 			if(landscape!=null)
 				landscape.render();
 		}
-		if(grassLands!=null)
-			grassLands.render();
 		if(entityDatabase!=null)
 			entityDatabase.render();
+		if(grassLands!=null)
+			grassLands.render();
 		if(particleBatch!=null)
 			particleBatch.render();
 		WireframeCube.render();
