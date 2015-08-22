@@ -14,7 +14,7 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 
 public class ParticleBatch{
-	private static final int MaxParticleCount = 5000;
+	private static final int MaxParticleCount = 500;
 	private final int vbo;
 	private final int particleBuffer;
 	private final ShaderProgram shader;
@@ -43,9 +43,7 @@ public class ParticleBatch{
 		offsetAttribLocation = shader.getAttributeLocation("att_offset");
 		scaleAttribLocation = shader.getAttributeLocation("att_scale");
 		GL20.glEnableVertexAttribArray(offsetAttribLocation);
-		GL33.glVertexAttribDivisor(offsetAttribLocation, 1);
 		GL20.glEnableVertexAttribArray(scaleAttribLocation);
-		GL33.glVertexAttribDivisor(scaleAttribLocation, 1);
 	}
 	public void addParticle(Particle particle){
 		if(particles.size()==MaxParticleCount)
@@ -62,6 +60,8 @@ public class ParticleBatch{
 			return;
 		shader.bind();
 		GL11.glEnable(GL11.GL_BLEND);
+		GL33.glVertexAttribDivisor(offsetAttribLocation, 1);
+		GL33.glVertexAttribDivisor(scaleAttribLocation, 1);
 		GL11.glDepthMask(false);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 		GL11.glVertexPointer(2, GL11.GL_FLOAT, 8, 0);
@@ -71,6 +71,8 @@ public class ParticleBatch{
 		GL31.glDrawArraysInstanced(GL11.GL_TRIANGLE_STRIP, 0, 4, particles.size());
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glDisable(GL11.GL_BLEND);
+		GL33.glVertexAttribDivisor(offsetAttribLocation, 0);
+		GL33.glVertexAttribDivisor(scaleAttribLocation, 0);
 		GL11.glDepthMask(true);
 	}
 	public void update(double time){

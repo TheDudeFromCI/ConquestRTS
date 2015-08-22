@@ -269,6 +269,8 @@ public class SinglePlayerGame implements Driver{
 			grassLands.render();
 		if(particleBatch!=null)
 			particleBatch.render();
+		else
+			GL11.glEnable(GL11.GL_CULL_FACE);
 		WireframeCube.render();
 		GL11.glPopMatrix();
 	}
