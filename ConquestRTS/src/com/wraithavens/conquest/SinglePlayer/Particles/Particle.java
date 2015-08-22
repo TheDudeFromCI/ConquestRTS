@@ -15,7 +15,7 @@ public abstract class Particle{
 		return scale;
 	}
 	public abstract boolean isAlive();
-	public abstract void update(double time);
+	public abstract void update(double delta, double time);
 	double getCameraDistance(){
 		return camDistance;
 	}

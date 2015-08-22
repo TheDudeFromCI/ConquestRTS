@@ -15,7 +15,7 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 
 public class ParticleBatch{
-	private static final int MaxParticleCount = 500;
+	private static final int MaxParticleCount = 5000;
 	private final int vbo;
 	private final int particleBuffer;
 	private final ShaderProgram shader;
@@ -30,6 +30,7 @@ public class ParticleBatch{
 		}
 	};
 	private final Camera camera;
+	private final ArrayList<ParticleEngine> engines = new ArrayList();
 	public ParticleBatch(Camera camera){
 		this.camera = camera;
 		vbo = GL15.glGenBuffers();
@@ -52,6 +53,9 @@ public class ParticleBatch{
 		GL20.glEnableVertexAttribArray(offsetAttribLocation);
 		GL20.glEnableVertexAttribArray(scaleAttribLocation);
 	}
+	public void addEngine(ParticleEngine engine){
+		engines.add(engine);
+	}
 	public void addParticle(Particle particle){
 		if(particles.size()==MaxParticleCount)
 			return;
@@ -61,6 +65,9 @@ public class ParticleBatch{
 		GL15.glDeleteBuffers(vbo);
 		GL15.glDeleteBuffers(particleBuffer);
 		shader.dispose();
+	}
+	public void removeEngine(ParticleEngine engine){
+		engines.remove(engine);
 	}
 	public void render(){
 		if(particles.size()==0)
@@ -82,9 +89,11 @@ public class ParticleBatch{
 		GL33.glVertexAttribDivisor(scaleAttribLocation, 0);
 		GL11.glDepthMask(true);
 	}
-	public void update(double time){
+	public void update(double delta, double time){
+		for(int i = 0; i<engines.size(); i++)
+			engines.get(i).update(time);
 		for(int i = 0; i<particles.size();){
-			particles.get(i).update(time);
+			particles.get(i).update(delta, time);
 			if(!particles.get(i).isAlive()){
 				particles.remove(i);
 				continue;

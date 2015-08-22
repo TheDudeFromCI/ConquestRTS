@@ -12,7 +12,7 @@ import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.SinglePlayer.Heightmap.Dynmap;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.Particles.ParticleBatch;
-import com.wraithavens.conquest.SinglePlayer.Particles.ParticleTypes.Pollen;
+import com.wraithavens.conquest.SinglePlayer.Particles.ParticleTypes.PollenParticleEngine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyBox;
@@ -75,8 +75,8 @@ public class SinglePlayerGame implements Driver{
 		GlError.out("Preparing camera.");
 		camera.cameraMoveSpeed = 10.0f;
 		camera.goalY = camera.y = machine.getGroundLevel(4096, 4096)+6;
-		camera.goalX = 4096;
-		camera.goalZ = 4096;
+		camera.goalX = camera.x = 4096;
+		camera.goalZ = camera.z = 4096;
 		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
 			/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 0.5f, 16384);
 		if(LoadSkyboxes){
@@ -89,8 +89,10 @@ public class SinglePlayerGame implements Driver{
 			}
 			skybox = new SkyBox(noise, null, noise2);
 		}
-		if(LoadDynmap)
+		if(LoadDynmap){
 			dynmap = new Dynmap(machine);
+			dynmap.update(camera.x, camera.z);
+		}
 		if(LoadEntityDatabase)
 			entityDatabase = new EntityDatabase(camera);
 		if(LoadGrasslands)
@@ -99,10 +101,8 @@ public class SinglePlayerGame implements Driver{
 			landscape = new LandscapeWorld(machine, entityDatabase, grassLands, camera);
 		if(LoadParticleEngine){
 			particleBatch = new ParticleBatch(camera);
-			particleBatch.addParticle(new Pollen(4096, 1097, 4091, Math.random()));
-			particleBatch.addParticle(new Pollen(4096, 1097, 4092, Math.random()));
-			particleBatch.addParticle(new Pollen(4097, 1097, 4091, Math.random()));
-			particleBatch.addParticle(new Pollen(4097, 1097, 4092, Math.random()));
+			PollenParticleEngine e = new PollenParticleEngine(particleBatch, camera.x, camera.y, camera.z, 16);
+			particleBatch.addEngine(e);
 		}
 		if(entityDatabase!=null)
 			entityDatabase.setLandscape(landscape);
@@ -291,7 +291,7 @@ public class SinglePlayerGame implements Driver{
 		if(!wireframeMode&&skybox!=null)
 			skybox.update(time);
 		if(particleBatch!=null)
-			particleBatch.update(time);
+			particleBatch.update(delta, time);
 	}
 	private void move(double delta){
 		delta *= cameraSpeed;

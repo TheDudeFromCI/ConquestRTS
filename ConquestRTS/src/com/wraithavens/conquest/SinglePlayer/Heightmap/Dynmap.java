@@ -48,6 +48,8 @@ public class Dynmap{
 		shader.dispose();
 	}
 	public void render(){
+		if(chunk==null)
+			return;
 		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
 			/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 0.5f, 16384);
 		shader.bind();
