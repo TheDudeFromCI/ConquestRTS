@@ -99,7 +99,10 @@ public class SinglePlayerGame implements Driver{
 			landscape = new LandscapeWorld(machine, entityDatabase, grassLands, camera);
 		if(LoadParticleEngine){
 			particleBatch = new ParticleBatch(camera);
-			particleBatch.addParticle(new Pollen(4096, 1097, 4091));
+			particleBatch.addParticle(new Pollen(4096, 1097, 4091, Math.random()));
+			particleBatch.addParticle(new Pollen(4096, 1097, 4092, Math.random()));
+			particleBatch.addParticle(new Pollen(4097, 1097, 4091, Math.random()));
+			particleBatch.addParticle(new Pollen(4097, 1097, 4092, Math.random()));
 		}
 		if(entityDatabase!=null)
 			entityDatabase.setLandscape(landscape);

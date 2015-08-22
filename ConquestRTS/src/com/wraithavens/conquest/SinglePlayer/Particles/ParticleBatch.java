@@ -15,7 +15,7 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 
 public class ParticleBatch{
-	private static final int MaxParticleCount = 2;
+	private static final int MaxParticleCount = 5000;
 	private final int vbo;
 	private final int particleBuffer;
 	private final ShaderProgram shader;
@@ -57,6 +57,8 @@ public class ParticleBatch{
 		GL33.glVertexAttribDivisor(scaleAttribLocation, 1);
 	}
 	public void addParticle(Particle particle){
+		if(particles.size()==MaxParticleCount)
+			return;
 		particles.add(particle);
 	}
 	public void dispose(){
