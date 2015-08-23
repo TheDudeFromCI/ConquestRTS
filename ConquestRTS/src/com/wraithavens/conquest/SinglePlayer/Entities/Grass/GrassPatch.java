@@ -2,85 +2,31 @@ package com.wraithavens.conquest.SinglePlayer.Entities.Grass;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-import org.lwjgl.opengl.GL30;
-import com.wraithavens.conquest.Math.Vector3f;
-import com.wraithavens.conquest.SinglePlayer.Entities.AABB;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
-import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
-import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 
 public class GrassPatch{
-	private static int nextPowerOf2(int i){
-		int x = 1;
-		while(true){
-			if(i<=x)
-				return x;
-			x *= 2;
-		}
-	}
-	private final int textureId;
-	private final int textureSize;
-	private final int grassCount;
+	private final ArrayList<GrassTransform> grassBlades;
 	private final EntityType grassType;
-	private final AABB aabb;
-	public GrassPatch(EntityType grassType, ArrayList<Vector3f> locations){
+	public GrassPatch(EntityType grassType, ArrayList<GrassTransform> grassBlades){
 		this.grassType = grassType;
-		textureId = GL11.glGenTextures();
-		aabb = new AABB();
-		{
-			grassCount = locations.size();
-			textureSize = nextPowerOf2((int)Math.ceil(Math.sqrt(grassCount)));
-			FloatBuffer data = BufferUtils.createFloatBuffer(textureSize*textureSize*4);
-			Vector3f minEdge = new Vector3f(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
-			Vector3f maxEdge = new Vector3f(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
-			for(Vector3f l : locations){
-				data.put(l.x);
-				data.put(l.y);
-				data.put(l.z);
-				data.put((float)(Math.random()*Math.PI*2));
-				minEdge.min(l);
-				maxEdge.max(l);
-			}
-			aabb.calculate(minEdge, maxEdge, 1.0f, null);
-			data.flip();
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
-			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL30.GL_RGBA32F, textureSize, textureSize, 0, GL11.GL_RGBA,
-				GL11.GL_FLOAT, data);
-		}
-		GlError.dumpError();
-	}
-	public void dispose(){
-		GL11.glDeleteTextures(textureId);
-	}
-	public EntityType getType(){
-		return grassType;
-	}
-	void bind(){
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
+		this.grassBlades = grassBlades;
 	}
 	int getCount(){
-		return grassCount;
+		return grassBlades.size();
 	}
-	int getTextureSize(){
-		return textureSize;
+	ArrayList<GrassTransform> getGrassBlades(){
+		return grassBlades;
 	}
-	float getX(){
-		return aabb.getX();
+	EntityType getType(){
+		return grassType;
 	}
-	float getY(){
-		return aabb.getY();
-	}
-	float getZ(){
-		return aabb.getZ();
-	}
-	boolean isVisible(Camera camera){
-		return aabb.visible(camera);
+	void store(FloatBuffer data){
+		for(GrassTransform t : grassBlades){
+			data.put(t.getX());
+			data.put(t.getY());
+			data.put(t.getZ());
+			data.put(t.getRotation());
+			data.put(t.getScale());
+		}
 	}
 }

@@ -26,7 +26,7 @@ public class SinglePlayerGame implements Driver{
 	private static final boolean LoadDynmap = true;
 	private static final boolean LoadEntityDatabase = true;
 	private static final boolean LoadLandscape = true;
-	private static final boolean LoadGrasslands = false;
+	private static final boolean LoadGrasslands = true;
 	private static final boolean LoadParticleEngine = true;
 	private boolean w, a, s, d, shift, space, grounded = true, lockedMouse, walkLock, e;
 	private boolean wireframeMode;
@@ -45,6 +45,7 @@ public class SinglePlayerGame implements Driver{
 	private LandscapeWorld landscape;
 	private Grasslands grassLands;
 	private ParticleBatch particleBatch;
+	private int frame = 0;
 	public void dispose(){
 		GlError.out("Disposing single player driver.");
 		GlError.dumpError();
@@ -96,7 +97,7 @@ public class SinglePlayerGame implements Driver{
 		if(LoadEntityDatabase)
 			entityDatabase = new EntityDatabase(camera);
 		if(LoadGrasslands)
-			grassLands = new Grasslands(camera);
+			grassLands = new Grasslands();
 		if(LoadLandscape)
 			landscape = new LandscapeWorld(machine, entityDatabase, grassLands, camera);
 		if(LoadParticleEngine){
@@ -106,8 +107,6 @@ public class SinglePlayerGame implements Driver{
 		}
 		if(entityDatabase!=null)
 			entityDatabase.setLandscape(landscape);
-		if(grassLands!=null)
-			grassLands.setLandscape(landscape);
 		// WireframeCube.build();
 	}
 	public void onKey(int key, int action){
@@ -294,6 +293,11 @@ public class SinglePlayerGame implements Driver{
 			skybox.update(time);
 		if(particleBatch!=null)
 			particleBatch.update(delta, time);
+		System.out.println(frame+"a");
+		if(grassLands!=null)
+			grassLands.update();
+		System.out.println(frame+"b");
+		frame++;
 	}
 	private void move(double delta){
 		delta *= cameraSpeed;

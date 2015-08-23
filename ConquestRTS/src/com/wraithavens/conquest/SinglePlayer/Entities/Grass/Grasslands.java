@@ -4,43 +4,30 @@ import java.io.File;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.HashMap;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL31;
+import org.lwjgl.opengl.GL33;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
-import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
-import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
-import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 
 public class Grasslands{
 	private final ArrayList<GrassPatch> patches = new ArrayList();
-	private final Comparator grassSorter = new Comparator<GrassPatch>(){
-		public int compare(GrassPatch a, GrassPatch b){
-			if(a.getType()!=b.getType())
-				return a.getType().ordinal()<b.getType().ordinal()?1:-1;
-			return a.getTextureSize()==b.getTextureSize()?0:a.getTextureSize()<b.getTextureSize()?1:-1;
-		}
-	};
-	private final int ibo;
 	private final int vbo;
+	private final int ibo;
 	private final ShaderProgram shader;
-	private final Camera camera;
 	private final int SwayAttribLocation;
+	private final int OffsetAttribLocation;
+	private final int RotScaleAttribLocation;
 	private final GrassBook grassBook;
-	private LandscapeWorld landscape;
-	private int shaderLastSize = -1;
-	public Grasslands(Camera camera){
-		this.camera = camera;
-		ibo = GL15.glGenBuffers();
+	private HashMap<GrassPatch,Boolean> que = new HashMap();
+	public Grasslands(){
 		vbo = GL15.glGenBuffers();
-		grassBook = new GrassBook();
+		ibo = GL15.glGenBuffers();
 		{
 			// ---
 			// Build the index buffer.
@@ -56,12 +43,9 @@ public class Grasslands{
 			// ---
 			// Build the vertex buffer.
 			// ---
-			FloatBuffer vertexData = BufferUtils.createFloatBuffer(68);
+			FloatBuffer vertexData = BufferUtils.createFloatBuffer(48);
 			float r = 0.5f;
 			float h = (float)Math.sqrt(2);
-			final float GrassScale = 2.0f;
-			r *= GrassScale;
-			h *= GrassScale;
 			vertexData.put(-r).put(0.0f).put(-r).put(0.0f).put(1.0f).put(0.0f);
 			vertexData.put(r).put(0.0f).put(r).put(1.0f).put(1.0f).put(0.0f);
 			vertexData.put(r).put(h).put(r).put(1.0f).put(0.0f).put(1.0f);
@@ -81,59 +65,59 @@ public class Grasslands{
 			new ShaderProgram(new File(WraithavensConquest.assetFolder, "Grass.vert"), null, new File(
 				WraithavensConquest.assetFolder, "Grass.frag"));
 		shader.bind();
-		shader.loadUniforms("transform", "texture", "uni_texStats", "time");
+		shader.loadUniforms("texture", "time");
 		shader.setUniform1I(0, 0);
-		shader.setUniform1I(1, 1);
-		SwayAttribLocation = shader.getAttributeLocation("swayTolerance");
+		SwayAttribLocation = shader.getAttributeLocation("att_swayTolerance");
+		OffsetAttribLocation = shader.getAttributeLocation("att_offset");
+		RotScaleAttribLocation = shader.getAttributeLocation("att_rotScale");
 		GL20.glEnableVertexAttribArray(SwayAttribLocation);
+		GL20.glEnableVertexAttribArray(OffsetAttribLocation);
+		GL20.glEnableVertexAttribArray(RotScaleAttribLocation);
 		GlError.dumpError();
+		grassBook = new GrassBook(OffsetAttribLocation, RotScaleAttribLocation, patches);
 	}
 	public void addPatch(GrassPatch patch){
-		patches.add(patch);
-		patches.sort(grassSorter);
-		grassBook.addReference(patch.getType());
+		que.put(patch, true);
 	}
 	public void dispose(){
 		grassBook.dispose();
 		shader.dispose();
 	}
 	public void removePatch(GrassPatch patch){
-		patches.remove(patch);
-		grassBook.removeReference(patch.getType());
+		que.put(patch, false);
 	}
 	public void render(){
+		if(patches.isEmpty())
+			return;
+		shader.bind();
+		GL33.glVertexAttribDivisor(OffsetAttribLocation, 1);
+		GL33.glVertexAttribDivisor(RotScaleAttribLocation, 1);
 		GL11.glEnable(GL11.GL_ALPHA_TEST);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
+		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 		GL11.glVertexPointer(3, GL11.GL_FLOAT, 24, 0);
 		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 24, 12);
 		GL20.glVertexAttribPointer(SwayAttribLocation, 1, GL11.GL_FLOAT, false, 24, 20);
-		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 		GL11.glDisable(GL11.GL_CULL_FACE);
-		shader.bind();
-		shader.setUniform1f(3, (float)GLFW.glfwGetTime());
-		EntityType currentType = null;
-		for(GrassPatch grass : patches){
-			if(landscape!=null&&!landscape.isWithinView((int)grass.getX(), (int)grass.getZ()))
-				continue;
-			if(!grass.isVisible(camera))
-				continue;
-			if(currentType==null||currentType!=grass.getType()){
-				currentType = grass.getType();
-				GL13.glActiveTexture(GL13.GL_TEXTURE1);
-				grassBook.bindType(currentType);
-				GL13.glActiveTexture(GL13.GL_TEXTURE0);
-			}
-			grass.bind();
-			if(grass.getTextureSize()!=shaderLastSize){
-				shaderLastSize = grass.getTextureSize();
-				shader.setUniform2I(2, grass.getTextureSize(), grass.getTextureSize()-1);
-			}
-			GL31.glDrawElementsInstanced(GL11.GL_TRIANGLES, 12, GL11.GL_UNSIGNED_SHORT, 0, grass.getCount());
-		}
+		shader.setUniform1f(1, (float)GLFW.glfwGetTime());
+		grassBook.render();
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
+		GL33.glVertexAttribDivisor(OffsetAttribLocation, 0);
+		GL33.glVertexAttribDivisor(RotScaleAttribLocation, 0);
 		GlError.dumpError();
 	}
-	public void setLandscape(LandscapeWorld landscape){
-		this.landscape = landscape;
+	public void update(){
+		if(que.isEmpty())
+			return;
+		for(GrassPatch p : que.keySet())
+			if(que.get(p)){
+				patches.add(p);
+				grassBook.addReference(p.getType());
+			}else{
+				patches.remove(p);
+				grassBook.removeReference(p.getType());
+			}
+		que.clear();
+		GlError.dumpError();
 	}
 }

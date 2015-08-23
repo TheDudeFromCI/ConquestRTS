@@ -24,6 +24,7 @@ import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.Entities.StaticEntity;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassPatch;
+import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassTransform;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
@@ -108,11 +109,12 @@ public class LandscapeChunk{
 				else
 					grassPatches = new GrassPatch[grassPatchCount];
 				for(i = 0; i<grassPatchCount; i++){
-					ArrayList<Vector3f> locations = new ArrayList();
+					ArrayList<GrassTransform> locations = new ArrayList();
 					EntityType grassType = EntityType.values()[bin.getInt()];
 					locationCount = bin.getInt();
 					for(a = 0; a<locationCount; a++)
-						locations.add(new Vector3f(bin.getFloat(), bin.getFloat(), bin.getFloat()));
+						locations.add(new GrassTransform(bin.getFloat(), bin.getFloat(), bin.getFloat(), bin
+							.getFloat(), bin.getFloat()));
 					if(grassLands!=null){
 						grassPatches[i] = new GrassPatch(grassType, locations);
 						grassLands.addPatch(grassPatches[i]);
@@ -292,7 +294,7 @@ public class LandscapeChunk{
 				indexCount = indices.size();
 				GlError.out("Generated landmass.\n  Verts: "+vertices.size()+"\n  Tris: "+indices.size()/3+" ("
 					+indices.size()+" Indices)\n  Finished in "+(System.currentTimeMillis()-time)+" ms.");
-				HashMap<EntityType,ArrayList<Vector3f>> grassLocations = new HashMap();
+				HashMap<EntityType,ArrayList<GrassTransform>> grassLocations = new HashMap();
 				HashMap<EntityType,ArrayList<Vector3f>> plantLocations = new HashMap();
 				int plantCount = 0;
 				EntityType entity;
@@ -301,12 +303,13 @@ public class LandscapeChunk{
 						entity = machine.randomPlant(a+x, b+z);
 						if(entity!=null){
 							if(entity.isGrass){
-								Vector3f loc =
-									new Vector3f(a+x+0.5f, machine.getGroundLevel(a+x, b+z), b+z+0.5f);
+								GrassTransform loc =
+									new GrassTransform(a+x+0.5f, machine.getGroundLevel(a+x, b+z), b+z+0.5f,
+										(float)(Math.random()*Math.PI*2), 1.0f+(float)(Math.random()*0.1f-0.05f));
 								if(grassLocations.containsKey(entity))
 									grassLocations.get(entity).add(loc);
 								else{
-									ArrayList<Vector3f> locs = new ArrayList();
+									ArrayList<GrassTransform> locs = new ArrayList();
 									locs.add(loc);
 									grassLocations.put(entity, locs);
 								}
@@ -331,7 +334,7 @@ public class LandscapeChunk{
 				}
 				for(EntityType type : grassLocations.keySet()){
 					bytes += 8;
-					bytes += grassLocations.get(type).size()*3*4;
+					bytes += grassLocations.get(type).size()*5*4;
 				}
 				bin.allocateMoreSpace(bytes);
 				bin.addInt(plantLocations.size());
@@ -367,12 +370,14 @@ public class LandscapeChunk{
 				int grassBladeCount = 0;
 				for(EntityType type : grassLocations.keySet()){
 					bin.addInt(type.ordinal());
-					ArrayList<Vector3f> locs = grassLocations.get(type);
+					ArrayList<GrassTransform> locs = grassLocations.get(type);
 					bin.addInt(locs.size());
-					for(Vector3f loc : locs){
-						bin.addFloat(loc.x);
-						bin.addFloat(loc.y);
-						bin.addFloat(loc.z);
+					for(GrassTransform loc : locs){
+						bin.addFloat(loc.getX());
+						bin.addFloat(loc.getY());
+						bin.addFloat(loc.getZ());
+						bin.addFloat(loc.getRotation());
+						bin.addFloat(loc.getScale());
 					}
 					if(grassLands!=null){
 						grassPatches[i] = new GrassPatch(type, locs);
@@ -438,10 +443,8 @@ public class LandscapeChunk{
 				entityDatabase.removeEntity(batch);
 			}
 		if(grassPatches!=null)
-			for(GrassPatch patch : grassPatches){
-				patch.dispose();
+			for(GrassPatch patch : grassPatches)
 				grassLands.removePatch(patch);
-			}
 	}
 	int getX(){
 		return x;
@@ -455,9 +458,9 @@ public class LandscapeChunk{
 	void render(){
 		GL11.glBindTexture(GL12.GL_TEXTURE_3D, textureId);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
+		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 		GL11.glVertexPointer(3, GL11.GL_FLOAT, 13, 0);
 		GL20.glVertexAttribPointer(LandscapeWorld.ShadeAttribLocation, 1, GL11.GL_UNSIGNED_BYTE, true, 13, 12);
-		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 		GL11.glDrawElements(GL11.GL_TRIANGLES, indexCount, GL11.GL_UNSIGNED_INT, 0);
 		GlError.dumpError();
 	}
