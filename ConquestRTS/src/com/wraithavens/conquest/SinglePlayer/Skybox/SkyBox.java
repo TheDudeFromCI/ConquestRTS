@@ -12,6 +12,8 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 
 public class SkyBox{
+	public static final int SunnyClouds = 0;
+	public static final int StormyClouds = 1;
 	private final SkyboxClouds layer0;
 	private final Sunbox layer1;
 	private final SkyboxClouds[] layer2;

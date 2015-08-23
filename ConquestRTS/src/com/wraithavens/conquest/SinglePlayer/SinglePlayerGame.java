@@ -81,12 +81,12 @@ public class SinglePlayerGame implements Driver{
 		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
 			/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 0.5f, 16384);
 		if(LoadSkyboxes){
-			SkyboxClouds noise = LoadCloudBackdrop?new SkyboxClouds(true, 0.5f):null;
+			SkyboxClouds noise = LoadCloudBackdrop?new SkyboxClouds(true, 0.5f, 0):null;
 			SkyboxClouds[] noise2 = null;
 			if(LoadCloudForeground){
 				noise2 = new SkyboxClouds[SkyboxClouds.LayerCount];
 				for(int i = 0; i<SkyboxClouds.LayerCount; i++)
-					noise2[i] = new SkyboxClouds(false, (float)Math.random()*2);
+					noise2[i] = new SkyboxClouds(false, (float)Math.random()*2, 0);
 			}
 			skybox = new SkyBox(noise, null, noise2);
 		}

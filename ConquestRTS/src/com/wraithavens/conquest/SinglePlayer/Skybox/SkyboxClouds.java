@@ -29,10 +29,11 @@ public class SkyboxClouds{
 			?GL11.GL_RGB:GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, data);
 		GlError.dumpError();
 	}
-	static void load(boolean backdrop){
+	static void load(boolean backdrop, int weatherType){
 		int skyId = (int)(Math.random()*CloudCombinationCount);
 		File file =
-			new File(WraithavensConquest.assetFolder+File.separatorChar+"Sky", skyId+(backdrop?"b":"")+".dat");
+			new File(WraithavensConquest.assetFolder+File.separatorChar+"Sky", skyId+(backdrop?"b":"a")
+				+weatherType+".dat");
 		GlError.out("Loading skybox: "+file.getName());
 		long time = System.currentTimeMillis();
 		BinaryFile bin = new BinaryFile(file);
@@ -47,17 +48,17 @@ public class SkyboxClouds{
 		}
 		GlError.out("Loaded in "+(System.currentTimeMillis()-time)+" ms.");
 	}
-	public static final int TextureSize = 512;
+	public static final int TextureSize = 128;
 	public static final int CloudCombinationCount = 5;
-	public static final int LayerCount = 4;
+	public static final int LayerCount = 0;
 	private final int textureId;
 	private float spinSpeed = 0.0f;
 	private float angle = 0.0f;
-	public SkyboxClouds(boolean backdrop, float spinSpeed){
+	public SkyboxClouds(boolean backdrop, float spinSpeed, int weatherType){
 		this.spinSpeed = spinSpeed;
 		textureId = GL11.glGenTextures();
 		createTexture();
-		load(backdrop);
+		load(backdrop, weatherType);
 		GlError.dumpError();
 	}
 	private void createTexture(){
