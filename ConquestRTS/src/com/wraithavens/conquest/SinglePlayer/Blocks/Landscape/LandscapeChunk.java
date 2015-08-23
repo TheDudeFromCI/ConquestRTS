@@ -305,7 +305,7 @@ public class LandscapeChunk{
 							if(entity.isGrass){
 								GrassTransform loc =
 									new GrassTransform(a+x+0.5f, machine.getGroundLevel(a+x, b+z), b+z+0.5f,
-										(float)(Math.random()*Math.PI*2), 1.0f+(float)(Math.random()*0.1f-0.05f));
+										(float)(Math.random()*Math.PI*2), 2.0f+(float)(Math.random()*0.3f-0.15f));
 								if(grassLocations.containsKey(entity))
 									grassLocations.get(entity).add(loc);
 								else{

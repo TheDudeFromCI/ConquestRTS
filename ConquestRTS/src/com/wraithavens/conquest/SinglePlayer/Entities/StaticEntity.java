@@ -54,7 +54,6 @@ public class StaticEntity extends Entity{
 	}
 	@Override
 	public void render(){
-		aabb.draw();
 		GL11.glPushMatrix();
 		GL11.glTranslatef(position.x, position.y, position.z);
 		GL11.glRotatef(yaw, 0, 1, 0);
