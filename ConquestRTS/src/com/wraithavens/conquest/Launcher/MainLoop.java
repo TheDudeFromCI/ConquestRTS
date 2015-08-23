@@ -79,11 +79,11 @@ public class MainLoop{
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		while(GLFW.glfwWindowShouldClose(window)==GL11.GL_FALSE){
 			GlError.dumpError();
-			windowInitalizer.loopObjective.render();
 			currentTime = GLFW.glfwGetTime();
 			delta = currentTime-lastTime;
 			lastTime = currentTime;
 			windowInitalizer.loopObjective.update(delta, currentTime);
+			windowInitalizer.loopObjective.render();
 			GLFW.glfwSwapBuffers(window);
 			GLFW.glfwPollEvents();
 			if(MainLoop.FPS_SYNC)
