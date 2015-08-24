@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
-import com.wraithavens.conquest.SinglePlayer.SecondaryLoop;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;

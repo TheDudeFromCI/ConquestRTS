@@ -1,4 +1,4 @@
-package com.wraithavens.conquest.SinglePlayer;
+package com.wraithavens.conquest.SinglePlayer.Blocks.Landscape;
 
 import java.io.File;
 import java.text.NumberFormat;
@@ -15,13 +15,6 @@ import com.wraithavens.conquest.SinglePlayer.BlockPopulators.ExtremeQuadOptimize
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Quad;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.QuadListener;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.QuadOptimizer;
-import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.ChunkHeightData;
-import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.ChunkLoadQue;
-import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.IndexStorage;
-import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeChunk;
-import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.SpiralGridAlgorithm;
-import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.Vertex;
-import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.VertexStorage;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassTransform;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
