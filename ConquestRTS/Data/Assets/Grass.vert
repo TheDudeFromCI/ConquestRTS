@@ -13,7 +13,7 @@ void main(){
 		gl_Vertex.y,
 		gl_Vertex.x*r.y+gl_Vertex.z*r.x
 	)*att_rotScale.y;
-	vec2 swayLocations = vec2(sin(time+pos.x), cos(+pos.z))*swayStrength*att_swayTolerance;
+	vec2 swayLocations = vec2(sin(time+pos.x), cos(time+pos.z))*swayStrength*att_swayTolerance;
 	pos.x += swayLocations.x;
 	pos.y -= swayLocations.x+swayLocations.y;
 	pos.z += swayLocations.y;

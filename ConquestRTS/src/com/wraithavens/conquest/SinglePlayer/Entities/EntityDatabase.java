@@ -3,6 +3,7 @@ package com.wraithavens.conquest.SinglePlayer.Entities;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
@@ -28,6 +29,8 @@ public class EntityDatabase{
 			new ShaderProgram(new File(WraithavensConquest.assetFolder, "ModelShader.vert"), null, new File(
 				WraithavensConquest.assetFolder, "ModelShader.frag"));
 		shader.bind();
+		shader.loadUniforms("uni_swayAmount", "uni_meshCenter", "uni_time");
+		shader.setUniform1f(0, 0.0375f);
 		SingularShaderAttrib = shader.getAttributeLocation("shade");
 		GL20.glEnableVertexAttribArray(SingularShaderAttrib);
 		GlError.dumpError();
@@ -74,11 +77,13 @@ public class EntityDatabase{
 			if(!shaderBound){
 				shaderBound = true;
 				shader.bind();
+				shader.setUniform1f(2, (float)GLFW.glfwGetTime());
 			}
 			if(mesh==null||e.getMesh()!=mesh){
 				mesh = e.getMesh();
 				mesh.bind();
 			}
+			shader.setUniform2f(1, e.getX(), e.getZ());
 			e.render();
 		}
 		GlError.dumpError();
