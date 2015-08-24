@@ -52,6 +52,7 @@ public class CloudGenerator{
 		temp.set(temp.x*temp.w+skyColor.x*(1.0f-temp.w), temp.y*temp.w+skyColor.y*(1.0f-temp.w), temp.z*temp.w
 			+skyColor.z*(1.0f-temp.w), 1.0f);
 	}
+	@SuppressWarnings("unused")
 	private static void buildPreview(){
 		final BufferedImage image =
 			new BufferedImage(SkyboxClouds.TextureSize, SkyboxClouds.TextureSize, BufferedImage.TYPE_INT_ARGB);
