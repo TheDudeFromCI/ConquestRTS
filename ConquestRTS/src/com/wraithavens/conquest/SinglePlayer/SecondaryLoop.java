@@ -27,6 +27,7 @@ import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.Utility.Algorithms;
 import com.wraithavens.conquest.Utility.BinaryFile;
+import com.wraithavens.conquest.Utility.QuadList;
 
 public class SecondaryLoop implements Runnable{
 	private volatile boolean writing;
@@ -38,17 +39,17 @@ public class SecondaryLoop implements Runnable{
 	private volatile WorldNoiseMachine machine;
 	private int lastX = Integer.MAX_VALUE;
 	private int lastZ = Integer.MAX_VALUE;
-	private int[] temp = new int[2];
-	private int[][] heights = new int[LandscapeChunk.LandscapeSize+2][LandscapeChunk.LandscapeSize+2];
-	private ChunkXQuadCounter xCounter = new ChunkXQuadCounter();
-	private ChunkYQuadCounter yCounter = new ChunkYQuadCounter();
-	private ChunkZQuadCounter zCounter = new ChunkZQuadCounter();
-	private ArrayList<Quad> quadList = new ArrayList();
-	private int[][] quads = new int[LandscapeChunk.LandscapeSize][LandscapeChunk.LandscapeSize];
-	private int[][] storage = new int[LandscapeChunk.LandscapeSize][LandscapeChunk.LandscapeSize];
-	private int[][] tempStorage = new int[LandscapeChunk.LandscapeSize][LandscapeChunk.LandscapeSize];
-	private VertexStorage vertices = new VertexStorage();
-	private IndexStorage indices = new IndexStorage();
+	private final int[] temp = new int[2];
+	private final int[][] heights = new int[LandscapeChunk.LandscapeSize+2][LandscapeChunk.LandscapeSize+2];
+	private final ChunkXQuadCounter xCounter = new ChunkXQuadCounter();
+	private final ChunkYQuadCounter yCounter = new ChunkYQuadCounter();
+	private final ChunkZQuadCounter zCounter = new ChunkZQuadCounter();
+	private final QuadList quadList = new QuadList();
+	private final int[][] quads = new int[LandscapeChunk.LandscapeSize][LandscapeChunk.LandscapeSize];
+	private final int[][] storage = new int[LandscapeChunk.LandscapeSize][LandscapeChunk.LandscapeSize];
+	private final int[][] tempStorage = new int[LandscapeChunk.LandscapeSize][LandscapeChunk.LandscapeSize];
+	private final VertexStorage vertices = new VertexStorage();
+	private final IndexStorage indices = new IndexStorage();
 	private int skippedChunks = 0;
 	private long chunksLoaded = 0;
 	private double startTime;
@@ -124,9 +125,15 @@ public class SecondaryLoop implements Runnable{
 		// Calculate the world heights.
 		// ---
 		int a, b, c, j, q;
+		int maxHeight = 0;
 		for(a = 0; a<LandscapeChunk.LandscapeSize+2; a++)
-			for(b = 0; b<LandscapeChunk.LandscapeSize+2; b++)
+			for(b = 0; b<LandscapeChunk.LandscapeSize+2; b++){
 				heights[a][b] = machine.getGroundLevel(a-1+x, b-1+z)-1;
+				if(heights[a][b]>maxHeight)
+					maxHeight = heights[a][b];
+			}
+		maxHeight -= y;
+		maxHeight += 1;
 		// ---
 		// Combine the quads into their final form.
 		// ---
@@ -158,7 +165,7 @@ public class SecondaryLoop implements Runnable{
 						LandscapeChunk.LandscapeSize, q);
 				}
 			}else if(j==2){
-				for(b = 0; b<LandscapeChunk.LandscapeSize; b++){
+				for(b = 0; b<maxHeight; b++){
 					for(a = 0; a<LandscapeChunk.LandscapeSize; a++)
 						for(c = 0; c<LandscapeChunk.LandscapeSize; c++){
 							if(heights[a+1][c+1]==b+y)
@@ -208,7 +215,9 @@ public class SecondaryLoop implements Runnable{
 		indices.clear();
 		int v0, v1, v2, v3;
 		byte shade;
-		for(Quad quad : quadList){
+		Quad quad;
+		for(int i = 0; i<quadList.size(); i++){
+			quad = quadList.get(i);
 			shade = (byte)(quad.side==2?255:quad.side==3?130:quad.side==0||quad.side==1?200:180);
 			v0 = vertices.indexOf(quad.data.get(0), quad.data.get(1), quad.data.get(2), shade);
 			v1 = vertices.indexOf(quad.data.get(3), quad.data.get(4), quad.data.get(5), shade);
@@ -266,7 +275,7 @@ public class SecondaryLoop implements Runnable{
 		// ---
 		// Compile and save.
 		// ---
-		BinaryFile bin = new BinaryFile(vertices.size()*13+indices.size()*4+8+bytes);
+		BinaryFile bin = new BinaryFile(vertices.size()*13+indices.size()*4+8+bytes+64*64*64*3);
 		bin.addInt(vertices.size());
 		bin.addInt(indices.size());
 		Vertex v;
@@ -289,10 +298,8 @@ public class SecondaryLoop implements Runnable{
 				bin.addFloat(loc.x);
 				bin.addFloat(loc.y);
 				bin.addFloat(loc.z);
-				float scale = (float)(Math.random()*0.1f-0.05f+1/5f);
-				float yaw = (float)(Math.random()*360);
-				bin.addFloat(scale);
-				bin.addFloat(yaw);
+				bin.addFloat((float)(Math.random()*0.1f-0.05f+1/5f));
+				bin.addFloat((float)(Math.random()*360));
 			}
 		}
 		bin.addInt(grassLocations.size());
@@ -312,8 +319,6 @@ public class SecondaryLoop implements Runnable{
 			// ---
 			// Now load the 3D texture.
 			// ---
-			int byteCount = 64*64*64*3;
-			bin.allocateMoreSpace(byteCount);
 			{
 				// ---
 				// Generate biome colors.
@@ -344,7 +349,7 @@ public class SecondaryLoop implements Runnable{
 			attemptGenerateChunk();
 		}else
 			try{
-				Thread.sleep(250);
+				Thread.sleep(50);
 			}catch(InterruptedException e){
 				e.printStackTrace();
 			}
@@ -356,7 +361,7 @@ public class SecondaryLoop implements Runnable{
 			double passed = time-startTime;
 			lastMessage = time;
 			System.out.println("Loading ~"+NumberFormat.getInstance().format((float)(chunksLoaded/(passed/60)))
-				+" chunks per minute.");
+				+" chunks per minute. ["+chunksLoaded+" chunks loaded]");
 		}
 	}
 	private void updateCameraLocation(){
