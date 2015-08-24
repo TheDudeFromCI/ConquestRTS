@@ -16,7 +16,6 @@ public class WraithavensConquest extends EmptyLoop{
 		programFolder = System.getProperty("user.dir")+File.separatorChar+"Data";
 		assetFolder = programFolder+File.separatorChar+"Assets";
 		saveFolder = programFolder+File.separatorChar+"Saves";
-		chunkLoadFolder = programFolder+File.separatorChar+"ChunkLoad";
 		saveFolder = defaultDirectory()+File.separatorChar+"Talantra Save Data";
 		modelFolder = programFolder+File.separatorChar+"Models";
 		// ---
@@ -56,9 +55,8 @@ public class WraithavensConquest extends EmptyLoop{
 		GlError.out("End of version info.");
 		GlError.dumpError();
 	}
-	static String programFolder;
+	private static String programFolder;
 	public static String assetFolder;
-	public static String chunkLoadFolder;
 	public static String currentGameFolder;
 	// TODO Remove unused code found by UCDetector
 	// public static String loadingScreenImagesFolder;
@@ -66,7 +64,7 @@ public class WraithavensConquest extends EmptyLoop{
 	public static String saveFolder;
 	public static WraithavensConquest INSTANCE;
 	private Driver driver;
-	private Driver newDriver;
+	Driver newDriver;
 	private double currentTime;
 	private WraithavensConquest(WindowInitalizer init){
 		super(init);

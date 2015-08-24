@@ -14,7 +14,7 @@ import org.lwjgl.opengl.GLContext;
 import org.lwjgl.system.MemoryUtil;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 
-public class MainLoop{
+class MainLoop{
 	static boolean FPS_SYNC = true;
 	private GLFWCursorPosCallback cursorPosCallback;
 	private GLFWErrorCallback errorCallback;

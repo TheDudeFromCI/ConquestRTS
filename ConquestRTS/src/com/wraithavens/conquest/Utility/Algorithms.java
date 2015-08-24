@@ -1,16 +1,6 @@
 package com.wraithavens.conquest.Utility;
 
-
 public class Algorithms{
-	public static String formatByteCount(long byteCount){
-		if(byteCount<1024)
-			return byteCount+" B";
-		if(byteCount<1024*1024)
-			return String.format("%.2f", (float)(byteCount/1024.0))+" KB";
-		if(byteCount<1024*1024*1024)
-			return String.format("%.2f", (float)(byteCount/(1024.0*1024.0)))+" MB";
-		return String.format("%.2f", (float)(byteCount/(1024.0*1024.0*1024.0)))+" GB";
-	}
 	/**
 	 * This function takes any value, <i>x</i>, and groups it into evenly sized
 	 * chunks.

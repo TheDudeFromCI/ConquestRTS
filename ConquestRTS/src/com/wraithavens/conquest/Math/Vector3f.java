@@ -10,14 +10,6 @@ public class Vector3f extends Vector{
 	public Vector3f(float x, float y, float z){
 		set(x, y, z);
 	}
-	public void cross(Vector3f v){
-		float nx = y*v.z-z*v.y;
-		float ny = z*v.x-x*v.z;
-		float nz = x*v.y-y*v.x;
-		x = nx;
-		y = ny;
-		z = nz;
-	}
 	@Override
 	public boolean equals(Object obj){
 		if(this==obj)
@@ -41,16 +33,6 @@ public class Vector3f extends Vector{
 		y = buf.get();
 		z = buf.get();
 		return this;
-	}
-	public void max(Vector3f v){
-		x = Math.max(x, v.x);
-		y = Math.max(y, v.y);
-		z = Math.max(z, v.z);
-	}
-	public void min(Vector3f v){
-		x = Math.min(x, v.x);
-		y = Math.min(y, v.y);
-		z = Math.min(z, v.z);
 	}
 	@Override
 	public Vector negate(){

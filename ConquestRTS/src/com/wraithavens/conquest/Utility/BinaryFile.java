@@ -5,7 +5,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.util.Arrays;
 
 public class BinaryFile{
 	private static byte[] read(File file){
@@ -74,9 +73,6 @@ public class BinaryFile{
 		binary[pos+3] = (byte)(n>>24&0xFF);
 		pos += 4;
 	}
-	public void allocateMoreSpace(int bytes){
-		binary = Arrays.copyOf(binary, binary.length+bytes);
-	}
 	public void compile(File file){
 		if(!file.exists()){
 			try{
@@ -88,9 +84,6 @@ public class BinaryFile{
 			}
 		}
 		write(file, binary);
-	}
-	public byte[] getBinary(){
-		return binary;
 	}
 	public boolean getBoolean(){
 		return getByte()==1;
