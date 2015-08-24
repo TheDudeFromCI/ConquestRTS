@@ -21,17 +21,15 @@ public class LandscapeWorld{
 	private final ChunkHeightData chunkHeights;
 	private final Camera camera;
 	private final EntityDatabase entityDatabase;
-	private final Grasslands grassLands;
 	private final SecondaryLoop loadingLoop;
 	private int chunkX;
 	private int chunkZ;
 	private int frame = 0;
-	public LandscapeWorld(
-		WorldNoiseMachine machine, EntityDatabase entityDatabase, Grasslands grassLands, Camera camera){
+	private Grasslands grassLands;
+	public LandscapeWorld(WorldNoiseMachine machine, EntityDatabase entityDatabase, Camera camera){
 		GlError.out("Building landscape.");
 		this.camera = camera;
 		this.entityDatabase = entityDatabase;
-		this.grassLands = grassLands;
 		shader =
 			new ShaderProgram(new File(WraithavensConquest.assetFolder, "Landscape.vert"), null, new File(
 				WraithavensConquest.assetFolder, "Landscape.frag"));
@@ -72,6 +70,8 @@ public class LandscapeWorld{
 		// ---
 		LandscapeChunk c = new LandscapeChunk(entityDatabase, grassLands, x, y, z, loadingLoop.getQue());
 		chunks.add(c);
+		if(grassLands!=null)
+			grassLands.updateVisibility();
 		return c;
 	}
 	public boolean isWithinView(int x, int z){
@@ -99,6 +99,9 @@ public class LandscapeWorld{
 				c.render();
 			}
 		GlError.dumpError();
+	}
+	public void setup(Grasslands grassLands){
+		this.grassLands = grassLands;
 	}
 	public void update(){
 		// ---

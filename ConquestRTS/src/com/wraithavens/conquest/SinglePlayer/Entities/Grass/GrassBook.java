@@ -12,6 +12,7 @@ import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL31;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
+import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
@@ -39,10 +40,14 @@ public class GrassBook{
 	private final ArrayList<GrassPatch> patches;
 	private final int OffsetAttribLocation;
 	private final int RotScaleAttribLocation;
-	GrassBook(int OffsetAttribLocation, int RotScaleAttribLocation, ArrayList<GrassPatch> patches){
+	private final LandscapeWorld landscape;
+	GrassBook(
+		int OffsetAttribLocation, int RotScaleAttribLocation, ArrayList<GrassPatch> patches,
+		LandscapeWorld landscape){
 		this.OffsetAttribLocation = OffsetAttribLocation;
 		this.RotScaleAttribLocation = RotScaleAttribLocation;
 		this.patches = patches;
+		this.landscape = landscape;
 	}
 	private int bindType(EntityType type){
 		assert types.containsKey(type);
@@ -55,12 +60,12 @@ public class GrassBook{
 	private void rebuildDataBuffer(EntityType type){
 		int count = 0;
 		for(GrassPatch patch : patches)
-			if(patch.getType()==type)
+			if(patch.getType()==type&&patch.inView(landscape))
 				count += patch.getCount();
 		GrassTypeData grassType = types.get(type);
 		FloatBuffer data = grassType.allocateData(count);
 		for(GrassPatch patch : patches)
-			if(patch.getType()==type)
+			if(patch.getType()==type&&patch.inView(landscape))
 				patch.store(data);
 		grassType.recompile();
 	}
@@ -90,5 +95,9 @@ public class GrassBook{
 	void render(){
 		for(EntityType type : types.keySet())
 			GL31.glDrawElementsInstanced(GL11.GL_TRIANGLES, 12, GL11.GL_UNSIGNED_SHORT, 0, bindType(type));
+	}
+	void updateVisibility(){
+		for(EntityType type : types.keySet())
+			rebuildDataBuffer(type);
 	}
 }

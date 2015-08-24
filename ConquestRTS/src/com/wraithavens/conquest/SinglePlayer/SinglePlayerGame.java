@@ -93,10 +93,10 @@ public class SinglePlayerGame implements Driver{
 		}
 		if(LoadEntityDatabase)
 			entityDatabase = new EntityDatabase(camera);
-		if(LoadGrasslands)
-			grassLands = new Grasslands();
 		if(LoadLandscape)
-			landscape = new LandscapeWorld(machine, entityDatabase, grassLands, camera);
+			landscape = new LandscapeWorld(machine, entityDatabase, camera);
+		if(LoadGrasslands)
+			grassLands = new Grasslands(landscape, camera);
 		if(LoadParticleEngine){
 			particleBatch = new ParticleBatch(camera);
 			PollenParticleEngine e = new PollenParticleEngine(particleBatch, camera, 32);
@@ -104,6 +104,8 @@ public class SinglePlayerGame implements Driver{
 		}
 		if(entityDatabase!=null)
 			entityDatabase.setLandscape(landscape);
+		if(landscape!=null)
+			landscape.setup(grassLands);
 		// WireframeCube.build();
 	}
 	public void onKey(int key, int action){

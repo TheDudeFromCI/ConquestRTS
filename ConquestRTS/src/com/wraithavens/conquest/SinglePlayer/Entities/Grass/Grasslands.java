@@ -12,8 +12,12 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL33;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
+import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeChunk;
+import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
+import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
+import com.wraithavens.conquest.Utility.Algorithms;
 
 public class Grasslands{
 	private final ArrayList<GrassPatch> patches = new ArrayList();
@@ -24,8 +28,12 @@ public class Grasslands{
 	private final int OffsetAttribLocation;
 	private final int RotScaleAttribLocation;
 	private final GrassBook grassBook;
-	private HashMap<GrassPatch,Boolean> que = new HashMap();
-	public Grasslands(){
+	private final HashMap<GrassPatch,Boolean> que = new HashMap();
+	private final Camera camera;
+	private int lastX;
+	private int lastZ;
+	public Grasslands(LandscapeWorld landscape, Camera camera){
+		this.camera = camera;
 		vbo = GL15.glGenBuffers();
 		ibo = GL15.glGenBuffers();
 		{
@@ -74,7 +82,9 @@ public class Grasslands{
 		GL20.glEnableVertexAttribArray(OffsetAttribLocation);
 		GL20.glEnableVertexAttribArray(RotScaleAttribLocation);
 		GlError.dumpError();
-		grassBook = new GrassBook(OffsetAttribLocation, RotScaleAttribLocation, patches);
+		grassBook = new GrassBook(OffsetAttribLocation, RotScaleAttribLocation, patches, landscape);
+		lastX = Algorithms.groupLocation((int)camera.x, LandscapeChunk.LandscapeSize);
+		lastZ = Algorithms.groupLocation((int)camera.z, LandscapeChunk.LandscapeSize);
 	}
 	public void addPatch(GrassPatch patch){
 		que.put(patch, true);
@@ -107,8 +117,10 @@ public class Grasslands{
 		GlError.dumpError();
 	}
 	public void update(){
-		if(que.isEmpty())
+		if(que.isEmpty()){
+			checkCameraPos();
 			return;
+		}
 		for(GrassPatch p : que.keySet())
 			if(que.get(p)){
 				patches.add(p);
@@ -118,6 +130,19 @@ public class Grasslands{
 				grassBook.removeReference(p.getType());
 			}
 		que.clear();
+		checkCameraPos();
 		GlError.dumpError();
+	}
+	public void updateVisibility(){
+		grassBook.updateVisibility();
+	}
+	private void checkCameraPos(){
+		int x = Algorithms.groupLocation((int)camera.x, LandscapeChunk.LandscapeSize);
+		int z = Algorithms.groupLocation((int)camera.z, LandscapeChunk.LandscapeSize);
+		if(x!=lastX||z!=lastZ){
+			lastX = x;
+			lastZ = z;
+			grassBook.updateVisibility();
+		}
 	}
 }
