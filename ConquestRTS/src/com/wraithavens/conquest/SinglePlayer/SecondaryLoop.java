@@ -16,6 +16,7 @@ import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Quad;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.QuadListener;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.QuadOptimizer;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.ChunkHeightData;
+import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.ChunkLoadQue;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.IndexStorage;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeChunk;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.SpiralGridAlgorithm;
@@ -54,12 +55,14 @@ public class SecondaryLoop implements Runnable{
 	private long chunksLoaded = 0;
 	private double startTime;
 	private double lastMessage;
+	private final ChunkLoadQue que;
 	public SecondaryLoop(Camera camera, ChunkHeightData chunkHeights, WorldNoiseMachine machine){
 		this.camera = camera;
 		this.chunkHeights = chunkHeights;
 		this.machine = machine;
 		spiral = new SpiralGridAlgorithm();
 		spiral.setMaxDistance(20);
+		que = new ChunkLoadQue();
 		Thread t = new Thread(this);
 		t.setName("Secondary Loading Thread");
 		t.setDaemon(true);
@@ -70,6 +73,9 @@ public class SecondaryLoop implements Runnable{
 	}
 	public int[] getChunkIndex(){
 		return chunkIndex;
+	}
+	public ChunkLoadQue getQue(){
+		return que;
 	}
 	public boolean isWriting(){
 		return writing;
@@ -343,6 +349,13 @@ public class SecondaryLoop implements Runnable{
 		writing = false;
 	}
 	private void loadNext(){
+		if(que.check()){
+			System.out.println("Object in que, taking...");
+			genChunk(new File(WraithavensConquest.currentGameFolder+File.separatorChar+"Landscape", que.getX()
+				+","+que.getY()+","+que.getZ()+".dat"), que.getX(), que.getY(), que.getZ());
+			que.take();
+			System.out.println("Que emptied.");
+		}
 		updateCameraLocation();
 		if(spiral.hasNext()){
 			spiral.next();

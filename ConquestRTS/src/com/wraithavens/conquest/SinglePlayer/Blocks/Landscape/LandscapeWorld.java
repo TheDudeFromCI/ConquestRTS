@@ -17,7 +17,6 @@ public class LandscapeWorld{
 	static int ShadeAttribLocation;
 	private static final int ViewDistance = 2;
 	private final ArrayList<LandscapeChunk> chunks = new ArrayList();
-	private final WorldNoiseMachine machine;
 	private final ShaderProgram shader;
 	private final SpiralGridAlgorithm spiral;
 	private final ChunkHeightData chunkHeights;
@@ -31,7 +30,6 @@ public class LandscapeWorld{
 	public LandscapeWorld(
 		WorldNoiseMachine machine, EntityDatabase entityDatabase, Grasslands grassLands, Camera camera){
 		GlError.out("Building landscape.");
-		this.machine = machine;
 		this.camera = camera;
 		this.entityDatabase = entityDatabase;
 		this.grassLands = grassLands;
@@ -68,10 +66,12 @@ public class LandscapeWorld{
 		if(!load)
 			return null;
 		while(loadingLoop.isWriting()&&loadingLoop.getChunkIndex()[0]==x&&loadingLoop.getChunkIndex()[1]==y
-			&&loadingLoop.getChunkIndex()[2]==z); // If it's current generating
-													// the chunk we want, wait
-													// until it's done.
-		LandscapeChunk c = new LandscapeChunk(machine, entityDatabase, grassLands, x, y, z);
+			&&loadingLoop.getChunkIndex()[2]==z)
+			Thread.yield();
+		// ---
+		// If it's current generating the chunk we want, wait until it's done.
+		// ---
+		LandscapeChunk c = new LandscapeChunk(entityDatabase, grassLands, x, y, z, loadingLoop.getQue());
 		chunks.add(c);
 		return c;
 	}
