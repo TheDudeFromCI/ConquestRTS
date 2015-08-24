@@ -3,7 +3,8 @@ package com.wraithavens.conquest.SinglePlayer.BlockPopulators;
 import java.util.ArrayList;
 
 public class ExtremeQuadOptimizer{
-	public static void countQuads(QuadCounter counter, int[][] storage, int width, int height, int quadCount){
+	public synchronized static void countQuads(QuadCounter counter, int[][] storage, int width, int height,
+		int quadCount){
 		int x, y, w, h, o;
 		if(quadCount>quadReferences.length)
 			quadReferences = new boolean[quadCount];
@@ -30,7 +31,7 @@ public class ExtremeQuadOptimizer{
 			}
 		}
 	}
-	public static int optimize(int[][] storage, int[][] temp, int[][] quads, int width, int height){
+	public synchronized static int optimize(int[][] storage, int[][] temp, int[][] quads, int width, int height){
 		int x, y;
 		for(x = 0; x<width; x++)
 			for(y = 0; y<height; y++)

@@ -8,13 +8,13 @@ import com.wraithavens.conquest.Utility.Algorithms;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class ChunkHeightData{
-	private int[] heights = new int[0];
+	private volatile int[] heights = new int[0];
 	private final WorldNoiseMachine machine;
 	public ChunkHeightData(WorldNoiseMachine machine){
 		this.machine = machine;
 		loadList();
 	}
-	public void getChunkHeight(int x, int z, int[] out){
+	public synchronized void getChunkHeight(int x, int z, int[] out){
 		for(int i = 0; i<heights.length; i += 4)
 			if(heights[i]==x&&heights[i+1]==z){
 				out[0] = heights[i+2];

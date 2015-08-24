@@ -31,7 +31,7 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class LandscapeChunk{
-	static final int LandscapeSize = 64;
+	public static final int LandscapeSize = 64;
 	private final int x;
 	private final int y;
 	private final int z;

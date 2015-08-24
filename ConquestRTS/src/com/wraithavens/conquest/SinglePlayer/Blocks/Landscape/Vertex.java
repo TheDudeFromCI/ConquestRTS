@@ -11,16 +11,16 @@ public class Vertex{
 		this.z = z;
 		this.shade = shade;
 	}
-	byte getShade(){
+	public byte getShade(){
 		return shade;
 	}
-	float getX(){
+	public float getX(){
 		return x;
 	}
-	float getY(){
+	public float getY(){
 		return y;
 	}
-	float getZ(){
+	public float getZ(){
 		return z;
 	}
 }

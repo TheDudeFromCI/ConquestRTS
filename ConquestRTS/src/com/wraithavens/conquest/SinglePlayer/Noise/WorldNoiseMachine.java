@@ -63,27 +63,27 @@ public class WorldNoiseMachine{
 		this.tempature = tempature;
 		grassShadeNoise.setFunction(new CosineInterpolation());
 	}
-	public Biome getBiomeAt(int x, int z){
+	public synchronized Biome getBiomeAt(int x, int z){
 		float h = (float)humidity.noise(x, z);
 		float t = (float)tempature.noise(x, z);
 		float l = (float)(getWorldHeight(x, z)/getMaxHeight());
 		return Biome.getFittingBiome(h, t, l);
 	}
 	@SuppressWarnings("unused")
-	public void getBiomeColorAt(int x, int y, int z, Vector3f colorOut){
+	public synchronized void getBiomeColorAt(int x, int y, int z, Vector3f colorOut){
 		float n = grassShadeNoise.noise(x, z)*-10;
 		colorOut.set((109+n)/255f, (135+n)/255f, (24+n)/255f);
 	}
-	public int getGroundLevel(int x, int z){
+	public synchronized int getGroundLevel(int x, int z){
 		return (int)getWorldHeight(x+0.5f, z+0.5f);
 	}
 	public double getMaxHeight(){
 		return worldHeight.getMaxHeight();
 	}
-	public void getPrairieColor(float x, float y, Vector3f colorOut){
+	public synchronized void getPrairieColor(float x, float y, Vector3f colorOut){
 		prairieColor.noise(x, y, colorOut);
 	}
-	public double getWorldHeight(float x, float y){
+	public synchronized double getWorldHeight(float x, float y){
 		return worldHeight.noise(x, y);
 	}
 	@SuppressWarnings({

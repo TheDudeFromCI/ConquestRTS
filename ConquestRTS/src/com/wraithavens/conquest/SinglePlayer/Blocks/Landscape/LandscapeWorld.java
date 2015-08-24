@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
+import com.wraithavens.conquest.SinglePlayer.SecondaryLoop;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
@@ -23,6 +24,7 @@ public class LandscapeWorld{
 	private final Camera camera;
 	private final EntityDatabase entityDatabase;
 	private final Grasslands grassLands;
+	private final SecondaryLoop loadingLoop;
 	private int chunkX;
 	private int chunkZ;
 	private int frame = 0;
@@ -45,8 +47,10 @@ public class LandscapeWorld{
 		spiral = new SpiralGridAlgorithm();
 		spiral.setMaxDistance(ViewDistance);
 		chunkHeights = new ChunkHeightData(machine);
+		loadingLoop = new SecondaryLoop(camera, chunkHeights, machine);
 	}
 	public void dispose(){
+		loadingLoop.dispose();
 		shader.dispose();
 		GlError.out("Disposing landscape.");
 		for(LandscapeChunk c : chunks)
@@ -63,6 +67,10 @@ public class LandscapeWorld{
 				return c;
 		if(!load)
 			return null;
+		while(loadingLoop.isWriting()&&loadingLoop.getChunkIndex()[0]==x&&loadingLoop.getChunkIndex()[1]==y
+			&&loadingLoop.getChunkIndex()[2]==z); // If it's current generating
+													// the chunk we want, wait
+													// until it's done.
 		LandscapeChunk c = new LandscapeChunk(machine, entityDatabase, grassLands, x, y, z);
 		chunks.add(c);
 		return c;

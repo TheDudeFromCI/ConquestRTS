@@ -6,9 +6,9 @@ public class Camera{
 	public float cameraMoveSpeed = 1;
 	private final Frustum frustum = new Frustum();
 	public float goalX, goalY, goalZ;
-	public float x;
-	public float y;
-	public float z;
+	public volatile float x;
+	public volatile float y;
+	public volatile float z;
 	public float rx;
 	public float ry;
 	public Frustum getFrustum(){

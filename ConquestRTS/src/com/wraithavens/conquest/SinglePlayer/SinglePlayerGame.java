@@ -45,7 +45,6 @@ public class SinglePlayerGame implements Driver{
 	private LandscapeWorld landscape;
 	private Grasslands grassLands;
 	private ParticleBatch particleBatch;
-	private int frame = 0;
 	public void dispose(){
 		GlError.out("Disposing single player driver.");
 		GlError.dumpError();
@@ -75,11 +74,9 @@ public class SinglePlayerGame implements Driver{
 		// ---
 		GlError.out("Preparing camera.");
 		camera.cameraMoveSpeed = 10.0f;
-		camera.goalY = camera.y = machine.getGroundLevel(4096, 4096)+6;
+		camera.goalY = machine.getGroundLevel(4096, 4096)+6;
 		camera.goalX = camera.x = 4096;
 		camera.goalZ = camera.z = 4096;
-		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
-			/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 0.5f, 16384);
 		if(LoadSkyboxes){
 			SkyboxClouds noise = LoadCloudBackdrop?new SkyboxClouds(true, 0.5f, 0):null;
 			SkyboxClouds[] noise2 = null;
@@ -292,11 +289,8 @@ public class SinglePlayerGame implements Driver{
 			skybox.update(time);
 		if(particleBatch!=null)
 			particleBatch.update(delta, time);
-		System.out.println(frame+"a");
 		if(grassLands!=null)
 			grassLands.update();
-		System.out.println(frame+"b");
-		frame++;
 	}
 	private void move(double delta){
 		delta *= cameraSpeed;

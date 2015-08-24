@@ -5,6 +5,9 @@ import java.util.Arrays;
 public class IndexStorage{
 	private int[] indices = new int[100];
 	private int size;
+	public void clear(){
+		size = 0;
+	}
 	public int get(int index){
 		return indices[index];
 	}
