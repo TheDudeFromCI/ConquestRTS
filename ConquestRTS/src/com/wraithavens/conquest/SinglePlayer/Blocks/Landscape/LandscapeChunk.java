@@ -32,7 +32,7 @@ public class LandscapeChunk{
 	private final GrassPatch[] grassPatches;
 	private final EntityDatabase entityDatabase;
 	private final Grasslands grassLands;
-	LandscapeChunk(EntityDatabase entityDatabase, Grasslands grassLands, int x, int y, int z, ChunkLoadQue que){
+	LandscapeChunk(EntityDatabase entityDatabase, Grasslands grassLands, int x, int y, int z, ChunkWorkerQue que){
 		this.x = x;
 		this.y = y;
 		this.z = z;

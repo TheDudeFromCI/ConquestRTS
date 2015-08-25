@@ -62,9 +62,6 @@ public class LandscapeWorld{
 				return c;
 		if(!load)
 			return null;
-		while(loadingLoop.isWriting()&&loadingLoop.getChunkIndex()[0]==x&&loadingLoop.getChunkIndex()[1]==y
-			&&loadingLoop.getChunkIndex()[2]==z)
-			Thread.yield();
 		// ---
 		// If it's current generating the chunk we want, wait until it's done.
 		// ---

@@ -42,7 +42,7 @@ public class WorldNoiseMachine{
 		humidity.addSubNoise(humidityNoise);
 		AdvancedNoise tempature = new AdvancedNoise();
 		tempature.addSubNoise(tempatureNoise);
-		return new WorldNoiseMachine(worldHeight, prairieColor, humidity, tempature);
+		return new WorldNoiseMachine(seeds, worldHeight, prairieColor, humidity, tempature);
 	}
 	// ---
 	// General world-wide generators.
@@ -55,13 +55,19 @@ public class WorldNoiseMachine{
 	// ---
 	private final ColorNoise prairieColor;
 	private NoiseGenerator grassShadeNoise = new NoiseGenerator(100, 20, 2);
+	private final long[] seeds;
 	private WorldNoiseMachine(
-		AdvancedNoise worldHeight, ColorNoise prairieColor, AdvancedNoise humidity, AdvancedNoise tempature){
+		long[] seeds, AdvancedNoise worldHeight, ColorNoise prairieColor, AdvancedNoise humidity,
+		AdvancedNoise tempature){
+		this.seeds = seeds;
 		this.worldHeight = worldHeight;
 		this.prairieColor = prairieColor;
 		this.humidity = humidity;
 		this.tempature = tempature;
 		grassShadeNoise.setFunction(new CosineInterpolation());
+	}
+	public WorldNoiseMachine createInstance(){
+		return generate(seeds);
 	}
 	public synchronized Biome getBiomeAt(int x, int z){
 		float h = (float)humidity.noise(x, z);
