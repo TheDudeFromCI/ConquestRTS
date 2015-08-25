@@ -53,6 +53,7 @@ public class ChunkLoadingThread implements Runnable{
 	private void genChunk(ChunkWorkerTask task){
 		genChunk(Algorithms.getChunkPath(task.getX(), task.getY(), task.getZ()), task.getX(), task.getY(),
 			task.getZ());
+		task.setFinished();
 		SecondaryLoop.chunksLoaded++;
 	}
 	private void genChunk(File file, int x, int y, int z){

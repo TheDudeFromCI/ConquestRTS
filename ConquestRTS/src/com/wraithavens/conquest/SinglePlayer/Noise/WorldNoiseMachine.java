@@ -70,14 +70,16 @@ public class WorldNoiseMachine{
 		return generate(seeds);
 	}
 	public synchronized Biome getBiomeAt(int x, int z){
-		float h = (float)humidity.noise(x, z);
-		float t = (float)tempature.noise(x, z);
-		float l = (float)(getWorldHeight(x, z)/getMaxHeight());
-		return Biome.getFittingBiome(h, t, l);
+		// float h = (float)humidity.noise(x, z);
+		// float t = (float)tempature.noise(x, z);
+		// float l = (float)(getWorldHeight(x, z)/getMaxHeight());
+		// return Biome.getFittingBiome(h, t, l);
+		return Biome.TayleaMeadow;
 	}
 	public synchronized void getBiomeColorAt(int x, int y, int z, Vector3f colorOut){
 		Biome biome = getBiomeAt(x, z);
-		float n = grassShadeNoise.noise(x, y, z)*-10;
+		// float n = grassShadeNoise.noise(x, y, z)*-10;
+		float n = 0;
 		switch(biome){
 			case TayleaMeadow:
 				colorOut.set((109+n)/255f, (135+n)/255f, (24+n)/255f);
