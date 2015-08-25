@@ -99,11 +99,11 @@ public class WorldNoiseMachine{
 				int i = (int)(Math.random()*3);
 				switch(i){
 					case 0:
-						return EntityType.Rock1;
+						return EntityType.TayleaMeadowRock1;
 					case 1:
-						return EntityType.Rock2;
+						return EntityType.TayleaMeadowRock2;
 					case 2:
-						return EntityType.Rock3;
+						return EntityType.TayleaMeadowRock3;
 					default:
 						throw new AssertionError();
 				}
@@ -132,21 +132,21 @@ public class WorldNoiseMachine{
 			int i = (int)(Math.random()*8);
 			switch(i){
 				case 0:
-					return EntityType.Grass1;
+					return EntityType.TayleaMeadowGrass0;
 				case 1:
-					return EntityType.Grass2;
+					return EntityType.TayleaMeadowGrass1;
 				case 2:
-					return EntityType.Grass2;
+					return EntityType.TayleaMeadowGrass2;
 				case 3:
-					return EntityType.Grass3;
+					return EntityType.TayleaMeadowGrass3;
 				case 4:
-					return EntityType.Grass4;
+					return EntityType.TayleaMeadowGrass4;
 				case 5:
-					return EntityType.Grass5;
+					return EntityType.TayleaMeadowGrass5;
 				case 6:
-					return EntityType.Grass6;
+					return EntityType.TayleaMeadowGrass6;
 				case 7:
-					return EntityType.Grass7;
+					return EntityType.TayleaMeadowGrass7;
 				default:
 					throw new AssertionError();
 			}
