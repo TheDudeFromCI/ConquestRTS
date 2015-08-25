@@ -4,7 +4,6 @@ import java.io.File;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import org.lwjgl.glfw.GLFW;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Block;
@@ -46,8 +45,8 @@ public class SecondaryLoop implements Runnable{
 	private final IndexStorage indices = new IndexStorage();
 	private int skippedChunks = 0;
 	private long chunksLoaded = 0;
-	private double startTime;
-	private double lastMessage;
+	private long startTime;
+	private long lastMessage;
 	private final ChunkLoadQue que;
 	public SecondaryLoop(Camera camera, ChunkHeightData chunkHeights, WorldNoiseMachine machine){
 		this.camera = camera;
@@ -74,7 +73,7 @@ public class SecondaryLoop implements Runnable{
 		return writing;
 	}
 	public void run(){
-		startTime = GLFW.glfwGetTime();
+		startTime = System.currentTimeMillis();
 		lastMessage = startTime;
 		while(running){
 			try{
@@ -361,11 +360,11 @@ public class SecondaryLoop implements Runnable{
 		printMessage();
 	}
 	private void printMessage(){
-		double time = GLFW.glfwGetTime();
-		if(time-lastMessage>=5){
-			double passed = time-startTime;
+		long time = System.currentTimeMillis();
+		if(time-lastMessage>=5000){
 			lastMessage = time;
-			System.out.println("Loading ~"+NumberFormat.getInstance().format((float)(chunksLoaded/(passed/60)))
+			System.out.println("Loading ~"
+				+NumberFormat.getInstance().format((float)(chunksLoaded/((time-startTime)/1000.0/60.0)))
 				+" chunks per minute. ["+chunksLoaded+" chunks loaded]");
 		}
 	}
