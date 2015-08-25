@@ -29,7 +29,8 @@ public enum EntityType{
 	Arcstone4("Arcstone 4.tal", false, true, false, new LodRadius(300, 600, 900, 1200, 1500, 1800)),
 	Arcstone5("Arcstone 5.tal", false, true, false, new LodRadius(300, 600, 900, 1200, 1500, 1800)),
 	Arcstone6("Arcstone 6.tal", false, true, false, new LodRadius(300, 600, 900, 1200, 1500, 1800)),
-	Arcstone7("Arcstone 7.tal", false, true, false, new LodRadius(300, 600, 900, 1200, 1500, 1800));
+	Arcstone7("Arcstone 7.tal", false, true, false, new LodRadius(300, 600, 900, 1200, 1500, 1800)),
+	Arcstone8("Arcstone 8.tal", false, true, false, new LodRadius(300, 600, 900, 1200, 1500, 1800));
 	EntityMesh mesh;
 	public final String fileName;
 	public final boolean isGrass;

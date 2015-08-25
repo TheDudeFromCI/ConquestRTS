@@ -70,9 +70,19 @@ public class WorldNoiseMachine{
 		return Biome.getFittingBiome(h, t, l);
 	}
 	public synchronized void getBiomeColorAt(int x, int y, int z, Vector3f colorOut){
+		Biome biome = getBiomeAt(x, z);
 		float n = grassShadeNoise.noise(x, y, z)*-10;
-		colorOut.set((109+n)/255f, (135+n)/255f, (24+n)/255f);
-		// colorOut.set((90+n)/255f, (110+n)/255f, (20+n)/255f);
+		switch(biome){
+			case TayleaMeadow:
+				colorOut.set((109+n)/255f, (135+n)/255f, (24+n)/255f);
+				break;
+			case ArcstoneHills:
+				colorOut.set((90+n)/255f, (110+n)/255f, (20+n)/255f);
+				break;
+			default:
+				colorOut.set(0, 0, 0);
+				break;
+		}
 	}
 	public synchronized int getGroundLevel(int x, int z){
 		return (int)getWorldHeight(x+0.5f, z+0.5f);
@@ -86,16 +96,14 @@ public class WorldNoiseMachine{
 	public synchronized double getWorldHeight(float x, float y){
 		return worldHeight.noise(x, y);
 	}
-	@SuppressWarnings({
-		"static-method", "unused"
-	})
 	public EntityType randomPlant(int x, int z){
 		if(Math.random()<0.2){
-			if(Math.random()<0.02)
+			Biome biome = getBiomeAt(x, z);
+			if(biome==Biome.TayleaMeadow&&Math.random()<0.02)
 				return EntityType.TayleaFlower;
-			if(Math.random()<0.0025)
+			if(biome==Biome.TayleaMeadow&&Math.random()<0.0025)
 				return EntityType.VallaFlower;
-			if(Math.random()<0.005){
+			if(biome==Biome.TayleaMeadow&&Math.random()<0.005){
 				int i = (int)(Math.random()*3);
 				switch(i){
 					case 0:
@@ -108,7 +116,7 @@ public class WorldNoiseMachine{
 						throw new AssertionError();
 				}
 			}
-			if(Math.random()<0.0002){
+			if(biome==Biome.ArcstoneHills&&Math.random()<0.0002){
 				int i = (int)(Math.random()*7);
 				switch(i){
 					case 0:
@@ -125,28 +133,18 @@ public class WorldNoiseMachine{
 						return EntityType.Arcstone6;
 					case 6:
 						return EntityType.Arcstone7;
+					case 7:
+						return EntityType.Arcstone8;
 					default:
 						throw new AssertionError();
 				}
 			}
 			int i = (int)(Math.random()*8);
-			switch(i){
-				case 0:
-					return EntityType.TayleaMeadowGrass0;
-				case 1:
-					return EntityType.TayleaMeadowGrass1;
-				case 2:
-					return EntityType.TayleaMeadowGrass2;
-				case 3:
-					return EntityType.TayleaMeadowGrass3;
-				case 4:
-					return EntityType.TayleaMeadowGrass4;
-				case 5:
-					return EntityType.TayleaMeadowGrass5;
-				case 6:
-					return EntityType.TayleaMeadowGrass6;
-				case 7:
-					return EntityType.TayleaMeadowGrass7;
+			switch(biome){
+				case TayleaMeadow:
+					return EntityType.values()[EntityType.TayleaMeadowGrass0.ordinal()+i];
+				case ArcstoneHills:
+					return EntityType.values()[EntityType.ArcstoneHillsGrass0.ordinal()+i];
 				default:
 					throw new AssertionError();
 			}

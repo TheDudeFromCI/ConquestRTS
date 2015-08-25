@@ -4,7 +4,6 @@ import java.io.File;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Block;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.ChunkXQuadCounter;
@@ -342,8 +341,8 @@ public class SecondaryLoop implements Runnable{
 	private void loadNext(){
 		if(que.check()){
 			System.out.println("Object in que, taking...");
-			genChunk(new File(WraithavensConquest.currentGameFolder+File.separatorChar+"Landscape", que.getX()
-				+","+que.getY()+","+que.getZ()+".dat"), que.getX(), que.getY(), que.getZ());
+			genChunk(Algorithms.getChunkPath(que.getX(), que.getY(), que.getZ()), que.getX(), que.getY(),
+				que.getZ());
 			que.take();
 			System.out.println("Que emptied.");
 		}

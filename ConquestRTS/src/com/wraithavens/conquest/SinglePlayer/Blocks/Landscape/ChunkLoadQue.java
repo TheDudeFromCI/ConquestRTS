@@ -26,6 +26,10 @@ public class ChunkLoadQue{
 		this.z = z;
 		waiting = true;
 		while(waiting)
-			Thread.yield();
+			try{
+				Thread.sleep(1);
+			}catch(InterruptedException e){
+				e.printStackTrace();
+			}
 	}
 }

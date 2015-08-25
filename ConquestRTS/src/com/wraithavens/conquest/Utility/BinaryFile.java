@@ -127,12 +127,13 @@ public class BinaryFile{
 	public void decompress(byte[] buffer, boolean readBuffSize){
 		try{
 			Inflater inflater = new Inflater();
-			inflater.setInput(binary, 0, binary.length);
 			if(readBuffSize){
+				inflater.setInput(binary, 4, binary.length-4);
 				pos = 0;
 				int size = getInt();
 				buffer = new byte[size];
-			}
+			}else
+				inflater.setInput(binary, 0, binary.length);
 			int size = inflater.inflate(buffer);
 			inflater.end();
 			binary = Arrays.copyOf(buffer, size);
