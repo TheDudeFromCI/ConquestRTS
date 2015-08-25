@@ -91,9 +91,7 @@ public class SecondaryLoop implements Runnable{
 		int y;
 		for(int i = 0; i<temp[1]; i++){
 			y = i*LandscapeChunk.LandscapeSize+temp[0];
-			File file =
-				new File(WraithavensConquest.currentGameFolder+File.separatorChar+"Landscape", x+","+y+","+z
-					+".dat");
+			File file = Algorithms.getChunkPath(x, y, z);
 			if(file.exists()&&file.length()>0){
 				skippedChunks++;
 				continue;
@@ -295,9 +293,9 @@ public class SecondaryLoop implements Runnable{
 			for(int i = 0; i<locs.size(); i++){
 				Vector3f loc = locs.get(i);
 				bin.addFloat(loc.x);
-				bin.addFloat(loc.y);
+				bin.addFloat(type.isGiant?loc.y-5.1f:loc.y);
 				bin.addFloat(loc.z);
-				bin.addFloat((float)(Math.random()*0.1f-0.05f+1/5f));
+				bin.addFloat(type.isGiant?1:(float)(Math.random()*0.1f-0.05f+1/5f));
 				bin.addFloat((float)(Math.random()*360));
 			}
 		}
@@ -338,6 +336,7 @@ public class SecondaryLoop implements Runnable{
 						}
 			}
 		}
+		bin.compress();
 		bin.compile(file);
 		writing = false;
 	}

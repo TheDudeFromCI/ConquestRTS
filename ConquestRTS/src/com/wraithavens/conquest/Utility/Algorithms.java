@@ -1,6 +1,25 @@
 package com.wraithavens.conquest.Utility;
 
+import java.io.File;
+import com.wraithavens.conquest.Launcher.WraithavensConquest;
+
 public class Algorithms{
+	public static File getChunkPath(int x, int y, int z){
+		String s = WraithavensConquest.currentGameFolder+File.separatorChar+"Landscape";
+		int a1, b1;
+		a1 = Algorithms.groupLocation(x, 32768);
+		b1 = Algorithms.groupLocation(z, 32768);
+		s += File.separatorChar+(a1+","+b1);
+		a1 = Algorithms.groupLocation(x, 8192);
+		b1 = Algorithms.groupLocation(z, 8192);
+		s += File.separatorChar+(a1+","+b1);
+		a1 = Algorithms.groupLocation(x, 2048);
+		b1 = Algorithms.groupLocation(z, 2048);
+		s += File.separatorChar+(a1+","+b1);
+		File file = new File(s, x+","+y+","+z+".dat");
+		file.getParentFile().mkdirs();
+		return file;
+	}
 	/**
 	 * This function takes any value, <i>x</i>, and groups it into evenly sized
 	 * chunks.

@@ -108,6 +108,27 @@ public class WorldNoiseMachine{
 						throw new AssertionError();
 				}
 			}
+			if(Math.random()<0.0002){
+				int i = (int)(Math.random()*7);
+				switch(i){
+					case 0:
+						return EntityType.Arcstone1;
+					case 1:
+						return EntityType.Arcstone2;
+					case 2:
+						return EntityType.Arcstone3;
+					case 3:
+						return EntityType.Arcstone4;
+					case 4:
+						return EntityType.Arcstone5;
+					case 5:
+						return EntityType.Arcstone6;
+					case 6:
+						return EntityType.Arcstone7;
+					default:
+						throw new AssertionError();
+				}
+			}
 			int i = (int)(Math.random()*8);
 			switch(i){
 				case 0:

@@ -9,7 +9,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
-import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.Entities.StaticEntity;
@@ -17,6 +16,7 @@ import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassPatch;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassTransform;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
+import com.wraithavens.conquest.Utility.Algorithms;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class LandscapeChunk{
@@ -46,12 +46,11 @@ public class LandscapeChunk{
 			// ---
 			// Load this chunk, or generate if nessicary.
 			// ---
-			File file =
-				new File(WraithavensConquest.currentGameFolder+File.separatorChar+"Landscape", x+","+y+","+z
-					+".dat");
+			File file = Algorithms.getChunkPath(x, y, z);
 			if(!(file.exists()&&file.length()>0))
 				que.placeAndWait(x, y, z);
 			BinaryFile bin = new BinaryFile(file);
+			bin.decompress();
 			int vertexCount = bin.getInt();
 			indexCount = bin.getInt();
 			ByteBuffer vertexData = BufferUtils.createByteBuffer(vertexCount*13);

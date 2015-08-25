@@ -5,6 +5,10 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.Arrays;
+import java.util.zip.DataFormatException;
+import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 
 public class BinaryFile{
 	private static byte[] read(File file){
@@ -42,6 +46,7 @@ public class BinaryFile{
 				}
 		}
 	}
+	private static byte[] CompressionBuffer = new byte[1024*1024]; // 1 Mb.
 	private byte[] binary;
 	private int pos;
 	/**
@@ -62,6 +67,14 @@ public class BinaryFile{
 	public void addByte(byte n){
 		binary[pos] = n;
 		pos++;
+	}
+	public void addBytes(byte[] bytes){
+		addBytes(bytes, 0, bytes.length);
+	}
+	public void addBytes(byte[] bytes, int offset, int length){
+		for(int i = offset; i<offset+length; i++)
+			binary[pos+i-offset] = bytes[i];
+		pos += length;
 	}
 	public void addFloat(float n){
 		addInt(Float.floatToIntBits(n));
@@ -85,6 +98,34 @@ public class BinaryFile{
 		}
 		write(file, binary);
 	}
+	public void compress(){
+		Deflater deflater = new Deflater();
+		deflater.setInput(binary);
+		deflater.finish();
+		synchronized(CompressionBuffer){
+			int size = deflater.deflate(CompressionBuffer);
+			pos = 0;
+			binary = Arrays.copyOf(binary, size);
+			addBytes(CompressionBuffer, 0, size);
+		}
+	}
+	public void decompress(){
+		Inflater inflater = new Inflater();
+		inflater.setInput(binary, 0, binary.length);
+		try{
+			synchronized(CompressionBuffer){
+				int size = inflater.inflate(CompressionBuffer);
+				inflater.end();
+				binary = Arrays.copyOf(CompressionBuffer, size);
+			}
+			pos = 0;
+		}catch(DataFormatException e){
+			e.printStackTrace();
+		}
+	}
+	public byte[] getBinary(){
+		return binary;
+	}
 	public boolean getBoolean(){
 		return getByte()==1;
 	}
@@ -101,10 +142,16 @@ public class BinaryFile{
 		pos += 4;
 		return i;
 	}
+	public int getPos(){
+		return pos;
+	}
 	public int length(){
 		return binary.length;
 	}
 	public int size(){
 		return binary.length;
+	}
+	public void skip(int bytes){
+		pos += bytes;
 	}
 }

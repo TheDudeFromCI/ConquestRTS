@@ -1,27 +1,36 @@
 package com.wraithavens.conquest.SinglePlayer.Entities;
 
 public enum EntityType{
-	DupaiTree("DupaiTree.tal", false, null),
-	Grass0("Grass.tal_0", true, null),
-	Grass1("Grass.tal_1", true, null),
-	Grass2("Grass.tal_2", true, null),
-	Grass3("Grass.tal_3", true, null),
-	Grass4("Grass.tal_4", true, null),
-	Grass5("Grass.tal_5", true, null),
-	Grass6("Grass.tal_6", true, null),
-	Grass7("Grass.tal_7", true, null),
-	TayleaFlower("TayleaFlower.tal", false, null),
-	Rock1("Rock1.tal", false, null),
-	Rock2("Rock2.tal", false, null),
-	Rock3("Rock3.tal", false, null),
-	VallaFlower("VallaFlower.tal", false, null);
+	DupaiTree("DupaiTree.tal", false, false, null),
+	Grass0("Grass.tal_0", true, false, null),
+	Grass1("Grass.tal_1", true, false, null),
+	Grass2("Grass.tal_2", true, false, null),
+	Grass3("Grass.tal_3", true, false, null),
+	Grass4("Grass.tal_4", true, false, null),
+	Grass5("Grass.tal_5", true, false, null),
+	Grass6("Grass.tal_6", true, false, null),
+	Grass7("Grass.tal_7", true, false, null),
+	TayleaFlower("TayleaFlower.tal", false, false, null),
+	Rock1("Rock1.tal", false, false, null),
+	Rock2("Rock2.tal", false, false, null),
+	Rock3("Rock3.tal", false, false, null),
+	VallaFlower("VallaFlower.tal", false, false, null),
+	Arcstone1("Arcstone 1.tal", false, true, new LodRadius(300, 600, 900, 1200, 1500, 1800)),
+	Arcstone2("Arcstone 2.tal", false, true, new LodRadius(300, 600, 900, 1200, 1500, 1800)),
+	Arcstone3("Arcstone 3.tal", false, true, new LodRadius(300, 600, 900, 1200, 1500, 1800)),
+	Arcstone4("Arcstone 4.tal", false, true, new LodRadius(300, 600, 900, 1200, 1500, 1800)),
+	Arcstone5("Arcstone 5.tal", false, true, new LodRadius(300, 600, 900, 1200, 1500, 1800)),
+	Arcstone6("Arcstone 6.tal", false, true, new LodRadius(300, 600, 900, 1200, 1500, 1800)),
+	Arcstone7("Arcstone 7.tal", false, true, new LodRadius(300, 600, 900, 1200, 1500, 1800));
 	EntityMesh mesh;
 	public final String fileName;
 	public final boolean isGrass;
+	public final boolean isGiant;
 	public final LodRadius lodRadius;
-	private EntityType(String fileName, boolean isGrass, LodRadius lodRadius){
+	private EntityType(String fileName, boolean isGrass, boolean isGiant, LodRadius lodRadius){
 		this.fileName = fileName;
 		this.isGrass = isGrass;
+		this.isGiant = isGiant;
 		if(lodRadius==null)
 			this.lodRadius = new LodRadius(100, 200, 300, 400, 500, 600);
 		else
