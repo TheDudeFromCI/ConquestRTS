@@ -66,7 +66,7 @@ public class SecondaryLoop implements Runnable{
 			if(skippedChunks>0)
 				System.out.println("Skipped "+skippedChunks+" chunks.");
 			skippedChunks = 0;
-			while(que.size()>WorkerThreadCount)
+			while(que.size()>=WorkerThreadCount)
 				try{
 					Thread.sleep(1);
 				}catch(Exception exception){
