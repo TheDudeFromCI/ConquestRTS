@@ -4,6 +4,9 @@ import java.io.File;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 
 public class Algorithms{
+	/**
+	 * Gets the file inside it's correct directory for the requested chunk.
+	 */
 	public static File getChunkPath(int x, int y, int z){
 		String s = WraithavensConquest.currentGameFolder+File.separatorChar+"Landscape";
 		int a1, b1;
@@ -17,6 +20,19 @@ public class Algorithms{
 		b1 = Algorithms.groupLocation(z, 2048);
 		s += File.separatorChar+(a1+","+b1);
 		File file = new File(s, x+","+y+","+z+".dat");
+		file.getParentFile().mkdirs();
+		return file;
+	}
+	/**
+	 * Gets the heightmap file inside it's correct directory.
+	 */
+	public static File getHeightmapFile(int x, int z){
+		String s = WraithavensConquest.currentGameFolder+File.separatorChar+"Landscape";
+		int a1, b1;
+		a1 = Algorithms.groupLocation(x, 32768);
+		b1 = Algorithms.groupLocation(z, 32768);
+		s += File.separatorChar+(a1+","+b1);
+		File file = new File(s, x+","+z+".dat");
 		file.getParentFile().mkdirs();
 		return file;
 	}

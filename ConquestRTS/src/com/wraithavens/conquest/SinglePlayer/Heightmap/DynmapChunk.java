@@ -98,7 +98,7 @@ public class DynmapChunk{
 		this.z = z;
 		ibo = GL15.glGenBuffers();
 		tree = new QuadTree(0, 0, Dynmap.VertexCount-1, null);
-		texture = new DynmapTexture(machine, x, z, Dynmap.BlocksPerChunk);
+		texture = new DynmapTexture(machine, x, z);
 		updateIndices();
 		System.out.println("New dynmap loaded.");
 	}
@@ -298,7 +298,7 @@ public class DynmapChunk{
 	void reloadTexture(WorldNoiseMachine machine, int x, int z){
 		this.x = x;
 		this.z = z;
-		texture.reload(machine, x, z, Dynmap.BlocksPerChunk);
+		texture.reload(machine, x, z);
 		lastTreeUpdateX = Integer.MAX_VALUE;
 		lastTreeUpdateZ = Integer.MAX_VALUE;
 	}

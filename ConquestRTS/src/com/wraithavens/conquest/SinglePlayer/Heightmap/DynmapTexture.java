@@ -8,9 +8,9 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
-import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
+import com.wraithavens.conquest.Utility.Algorithms;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class DynmapTexture{
@@ -31,19 +31,17 @@ public class DynmapTexture{
 	private static final int TextureDetail2 = 2048;
 	private final int textureId;
 	private final int colorTextureId;
-	public DynmapTexture(WorldNoiseMachine machine, int x, int z, int size){
+	public DynmapTexture(WorldNoiseMachine machine, int x, int z){
 		textureId = GL11.glGenTextures();
 		colorTextureId = GL11.glGenTextures();
-		build(machine, x, z, size);
+		build(machine, x, z);
 	}
-	private void build(WorldNoiseMachine machine, int x, int z, int size){
-		File file =
-			new File(WraithavensConquest.currentGameFolder+File.separatorChar+"Heightmaps", x+","+z+","+size
-				+".dat");
+	private void build(WorldNoiseMachine machine, int x, int z){
+		File file = Algorithms.getHeightmapFile(x, z);
 		if(file.exists()&&file.length()>0)
 			load(file);
 		else
-			generate(file, machine, x, z, size);
+			generate(file, machine, x, z);
 	}
 	private void compile(FloatBuffer data, ByteBuffer data2){
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
@@ -61,7 +59,7 @@ public class DynmapTexture{
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB8, TextureDetail2, TextureDetail2, 0, GL11.GL_RGB,
 			GL11.GL_UNSIGNED_BYTE, data2);
 	}
-	private void generate(File file, WorldNoiseMachine machine, float posX, float posZ, float size){
+	private void generate(File file, WorldNoiseMachine machine, float posX, float posZ){
 		System.out.println("Generating heightmap.");
 		BinaryFile bin = new BinaryFile(TextureDetail*TextureDetail*16+TextureDetail2*TextureDetail2*3);
 		FloatBuffer data = BufferUtils.createFloatBuffer(TextureDetail*TextureDetail*4);
@@ -70,7 +68,7 @@ public class DynmapTexture{
 		float height;
 		float blockX;
 		float blockZ;
-		float s = size/(TextureDetail-1.0f);
+		float s = Dynmap.BlocksPerChunk/(TextureDetail-1.0f);
 		Vector3f normal = new Vector3f();
 		for(z = 0; z<TextureDetail; z++){
 			for(x = 0; x<TextureDetail; x++){
@@ -89,7 +87,7 @@ public class DynmapTexture{
 			}
 			System.out.println(z+"/"+TextureDetail+" pixel rows complete. (Pass 1 of 2)");
 		}
-		s = size/(TextureDetail2-1.0f);
+		s = Dynmap.BlocksPerChunk/(TextureDetail2-1.0f);
 		byte red, green, blue;
 		for(z = 0; z<TextureDetail2; z++){
 			for(x = 0; x<TextureDetail2; x++){
@@ -138,7 +136,7 @@ public class DynmapTexture{
 		GL11.glDeleteTextures(textureId);
 		GL11.glDeleteTextures(colorTextureId);
 	}
-	void reload(WorldNoiseMachine machine, int x, int z, int size){
-		build(machine, x, z, size);
+	void reload(WorldNoiseMachine machine, int x, int z){
+		build(machine, x, z);
 	}
 }

@@ -69,10 +69,10 @@ public class WorldNoiseMachine{
 		float l = (float)(getWorldHeight(x, z)/getMaxHeight());
 		return Biome.getFittingBiome(h, t, l);
 	}
-	@SuppressWarnings("unused")
 	public synchronized void getBiomeColorAt(int x, int y, int z, Vector3f colorOut){
-		float n = grassShadeNoise.noise(x, z)*-10;
+		float n = grassShadeNoise.noise(x, y, z)*-10;
 		colorOut.set((109+n)/255f, (135+n)/255f, (24+n)/255f);
+		// colorOut.set((90+n)/255f, (110+n)/255f, (20+n)/255f);
 	}
 	public synchronized int getGroundLevel(int x, int z){
 		return (int)getWorldHeight(x+0.5f, z+0.5f);
