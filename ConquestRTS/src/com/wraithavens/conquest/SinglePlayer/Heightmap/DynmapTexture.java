@@ -106,6 +106,7 @@ public class DynmapTexture{
 			}
 			System.out.println(z+"/"+TextureDetail2+" pixel rows complete. (Pass 2 of 2)");
 		}
+		bin.compress(new byte[18*1024*1024]); // 18 Mb
 		bin.compile(file);
 		data.flip();
 		data2.flip();
@@ -114,6 +115,7 @@ public class DynmapTexture{
 	}
 	private void load(File file){
 		BinaryFile bin = new BinaryFile(file);
+		bin.decompress(new byte[28*1024*1024]); // 28 Mb
 		FloatBuffer data = BufferUtils.createFloatBuffer(TextureDetail*TextureDetail*4);
 		int size = data.capacity();
 		for(int i = 0; i<size; i++)

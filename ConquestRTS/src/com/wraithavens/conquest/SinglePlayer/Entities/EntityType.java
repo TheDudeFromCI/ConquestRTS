@@ -2,6 +2,14 @@ package com.wraithavens.conquest.SinglePlayer.Entities;
 
 public enum EntityType{
 	DupaiTree("DupaiTree.tal", false, false, false, null),
+	// Grass0("Arcstone Grass.tal_0", true, false, true, null),
+	// Grass1("Arcstone Grass.tal_1", true, false, true, null),
+	// Grass2("Arcstone Grass.tal_2", true, false, true, null),
+	// Grass3("Arcstone Grass.tal_3", true, false, true, null),
+	// Grass4("Arcstone Grass.tal_4", true, false, true, null),
+	// Grass5("Arcstone Grass.tal_5", true, false, true, null),
+	// Grass6("Arcstone Grass.tal_6", true, false, true, null),
+	// Grass7("Arcstone Grass.tal_7", true, false, true, null),
 	Grass0("Grass.tal_0", true, false, true, null),
 	Grass1("Grass.tal_1", true, false, true, null),
 	Grass2("Grass.tal_2", true, false, true, null),

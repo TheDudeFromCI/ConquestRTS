@@ -99,25 +99,31 @@ public class BinaryFile{
 		write(file, binary);
 	}
 	public void compress(){
+		synchronized(CompressionBuffer){
+			compress(CompressionBuffer);
+		}
+	}
+	public void compress(byte[] buffer){
 		Deflater deflater = new Deflater();
 		deflater.setInput(binary);
 		deflater.finish();
-		synchronized(CompressionBuffer){
-			int size = deflater.deflate(CompressionBuffer);
-			pos = 0;
-			binary = Arrays.copyOf(binary, size);
-			addBytes(CompressionBuffer, 0, size);
-		}
+		int size = deflater.deflate(buffer);
+		pos = 0;
+		binary = Arrays.copyOf(binary, size);
+		addBytes(buffer, 0, size);
 	}
 	public void decompress(){
-		Inflater inflater = new Inflater();
-		inflater.setInput(binary, 0, binary.length);
+		synchronized(CompressionBuffer){
+			decompress(CompressionBuffer);
+		}
+	}
+	public void decompress(byte[] buffer){
 		try{
-			synchronized(CompressionBuffer){
-				int size = inflater.inflate(CompressionBuffer);
-				inflater.end();
-				binary = Arrays.copyOf(CompressionBuffer, size);
-			}
+			Inflater inflater = new Inflater();
+			inflater.setInput(binary, 0, binary.length);
+			int size = inflater.inflate(buffer);
+			inflater.end();
+			binary = Arrays.copyOf(buffer, size);
 			pos = 0;
 		}catch(DataFormatException e){
 			e.printStackTrace();
