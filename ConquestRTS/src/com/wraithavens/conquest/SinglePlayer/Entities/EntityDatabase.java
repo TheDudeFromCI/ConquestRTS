@@ -16,7 +16,15 @@ public class EntityDatabase{
 	private final ArrayList<Entity> entities = new ArrayList();
 	private final Comparator entitySorter = new Comparator<Entity>(){
 		public int compare(Entity a, Entity b){
-			return a.mesh==b.mesh?0:a.mesh.getId()>b.mesh.getId()?1:-1;
+			if(a.mesh==b.mesh)
+				return 0;
+			if(a.mesh.getType().sways!=b.mesh.getType().sways){
+				if(a.mesh.getType().sways)
+					return 1;
+				if(b.mesh.getType().sways)
+					return -1;
+			}
+			return a.mesh.getId()>b.mesh.getId()?1:-1;
 		}
 	};
 	private final ShaderProgram shader;
@@ -30,7 +38,6 @@ public class EntityDatabase{
 				WraithavensConquest.assetFolder, "ModelShader.frag"));
 		shader.bind();
 		shader.loadUniforms("uni_swayAmount", "uni_meshCenter", "uni_time");
-		shader.setUniform1f(0, 0.0375f);
 		SingularShaderAttrib = shader.getAttributeLocation("shade");
 		GL20.glEnableVertexAttribArray(SingularShaderAttrib);
 		GlError.dumpError();
@@ -65,6 +72,7 @@ public class EntityDatabase{
 		// ---
 		EntityMesh mesh = null;
 		boolean shaderBound = false;
+		boolean isSwaying = false;
 		for(Entity e : entities){
 			if(!e.canRender(landscape, camera))
 				continue;
@@ -78,10 +86,15 @@ public class EntityDatabase{
 				shaderBound = true;
 				shader.bind();
 				shader.setUniform1f(2, (float)GLFW.glfwGetTime());
+				shader.setUniform1f(0, 0.0f);
 			}
 			if(mesh==null||e.getMesh()!=mesh){
 				mesh = e.getMesh();
 				mesh.bind();
+			}
+			if(mesh.getType().sways!=isSwaying){
+				isSwaying = mesh.getType().sways;
+				shader.setUniform1f(0, isSwaying?0.0375f:0.0f);
 			}
 			shader.setUniform2f(1, e.getX(), e.getZ());
 			e.render();
