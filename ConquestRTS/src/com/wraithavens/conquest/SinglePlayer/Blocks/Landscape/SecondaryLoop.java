@@ -335,7 +335,7 @@ public class SecondaryLoop implements Runnable{
 						}
 			}
 		}
-		bin.compress();
+		bin.compress(false);
 		bin.compile(file);
 		writing = false;
 	}

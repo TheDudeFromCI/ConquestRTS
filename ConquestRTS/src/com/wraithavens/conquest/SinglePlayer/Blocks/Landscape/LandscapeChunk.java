@@ -50,7 +50,7 @@ public class LandscapeChunk{
 			if(!(file.exists()&&file.length()>0))
 				que.placeAndWait(x, y, z);
 			BinaryFile bin = new BinaryFile(file);
-			bin.decompress();
+			bin.decompress(false);
 			int vertexCount = bin.getInt();
 			indexCount = bin.getInt();
 			ByteBuffer vertexData = BufferUtils.createByteBuffer(vertexCount*13);

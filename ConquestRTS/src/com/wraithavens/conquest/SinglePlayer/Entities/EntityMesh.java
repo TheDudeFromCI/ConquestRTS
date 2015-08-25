@@ -29,6 +29,7 @@ public class EntityMesh{
 		{
 			File file = new File(WraithavensConquest.modelFolder, type.fileName);
 			BinaryFile bin = new BinaryFile(file);
+			bin.decompress(true);
 			// ---
 			// This slot would normally check to see if the mesh was boneless or
 			// not. Because I don't currently have support for layered meshes, I

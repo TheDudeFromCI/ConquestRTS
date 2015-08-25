@@ -98,29 +98,41 @@ public class BinaryFile{
 		}
 		write(file, binary);
 	}
-	public void compress(){
+	public void compress(boolean writeBufSize){
 		synchronized(CompressionBuffer){
-			compress(CompressionBuffer);
+			compress(CompressionBuffer, writeBufSize);
 		}
 	}
-	public void compress(byte[] buffer){
+	public void compress(byte[] buffer, boolean writeBufSize){
 		Deflater deflater = new Deflater();
 		deflater.setInput(binary);
 		deflater.finish();
 		int size = deflater.deflate(buffer);
 		pos = 0;
-		binary = Arrays.copyOf(binary, size);
-		addBytes(buffer, 0, size);
-	}
-	public void decompress(){
-		synchronized(CompressionBuffer){
-			decompress(CompressionBuffer);
+		if(writeBufSize){
+			int originalSize = binary.length;
+			binary = Arrays.copyOf(binary, size+4);
+			addInt(originalSize);
+			addBytes(buffer, 0, size);
+		}else{
+			binary = Arrays.copyOf(binary, size);
+			addBytes(buffer, 0, size);
 		}
 	}
-	public void decompress(byte[] buffer){
+	public void decompress(boolean readBuffSize){
+		synchronized(CompressionBuffer){
+			decompress(CompressionBuffer, readBuffSize);
+		}
+	}
+	public void decompress(byte[] buffer, boolean readBuffSize){
 		try{
 			Inflater inflater = new Inflater();
 			inflater.setInput(binary, 0, binary.length);
+			if(readBuffSize){
+				pos = 0;
+				int size = getInt();
+				buffer = new byte[size];
+			}
 			int size = inflater.inflate(buffer);
 			inflater.end();
 			binary = Arrays.copyOf(buffer, size);
