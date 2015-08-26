@@ -73,7 +73,6 @@ public class SecondaryLoop implements Runnable{
 					exception.printStackTrace();
 				}
 			que.addTask(x, y, z);
-			chunksLoaded++;
 		}
 	}
 	private void loadNext(){

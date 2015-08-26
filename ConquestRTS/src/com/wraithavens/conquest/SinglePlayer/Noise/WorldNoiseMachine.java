@@ -30,8 +30,8 @@ public class WorldNoiseMachine{
 		SubNoise prairieRed = SubNoise.build(seeds[1], 120, 2, lerp, 0.05f, 0.1f);
 		SubNoise prairieGreen = SubNoise.build(seeds[2], 20, 1, lerp, 0.2f, 0.8f);
 		SubNoise prairieBlue = SubNoise.build(seeds[3], 80, 2, lerp, 0.05f, 0.1f);
-		SubNoise humidityNoise = SubNoise.build(seeds[4], 6000, 6, cos, 1, 0);
-		SubNoise tempatureNoise = SubNoise.build(seeds[5], 6000, 6, cos, 1, 0);
+		SubNoise humidityNoise = SubNoise.build(seeds[4], 2000, 3, lerp, 1, 0);
+		SubNoise tempatureNoise = SubNoise.build(seeds[5], 2000, 3, lerp, 1, 0);
 		// ---
 		// And compiling these together.
 		// ---
@@ -70,22 +70,20 @@ public class WorldNoiseMachine{
 		return generate(seeds);
 	}
 	public synchronized Biome getBiomeAt(int x, int z){
-		// float h = (float)humidity.noise(x, z);
-		// float t = (float)tempature.noise(x, z);
-		// float l = (float)(getWorldHeight(x, z)/getMaxHeight());
-		// return Biome.getFittingBiome(h, t, l);
-		return Biome.TayleaMeadow;
+		float h = (float)humidity.noise(x, z);
+		float t = (float)tempature.noise(x, z);
+		float l = (float)(getWorldHeight(x, z)/getMaxHeight());
+		return Biome.getFittingBiome(h, t, l);
 	}
+	@SuppressWarnings("unused")
 	public synchronized void getBiomeColorAt(int x, int y, int z, Vector3f colorOut){
 		Biome biome = getBiomeAt(x, z);
-		// float n = grassShadeNoise.noise(x, y, z)*-10;
-		float n = 0;
 		switch(biome){
 			case TayleaMeadow:
-				colorOut.set((109+n)/255f, (135+n)/255f, (24+n)/255f);
+				colorOut.set(109/255f, 135/255f, 24/255f);
 				break;
 			case ArcstoneHills:
-				colorOut.set((90+n)/255f, (110+n)/255f, (20+n)/255f);
+				colorOut.set(90/255f, 110/255f, 20/255f);
 				break;
 			default:
 				colorOut.set(0, 0, 0);

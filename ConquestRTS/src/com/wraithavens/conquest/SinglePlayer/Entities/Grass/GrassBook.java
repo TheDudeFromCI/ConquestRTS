@@ -20,7 +20,7 @@ public class GrassBook{
 	private static int loadTexture(EntityType type){
 		File file = new File(WraithavensConquest.modelFolder, type.fileName);
 		BinaryFile bin = new BinaryFile(file);
-		bin.decompress(true);
+		bin.decompress(null, true);
 		ByteBuffer data = BufferUtils.createByteBuffer(bin.size());
 		for(int i = 0; i<bin.size(); i++)
 			data.put(bin.getByte());
