@@ -90,6 +90,7 @@ public class GrassBook{
 		if(data.removeReferences()){
 			data.dispose();
 			types.remove(type);
+			return;
 		}
 		rebuildDataBuffer(type);
 	}
