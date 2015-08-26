@@ -61,6 +61,11 @@ public class SecondaryLoop implements Runnable{
 			File file = Algorithms.getChunkPath(x, y, z);
 			if(file.exists()&&file.length()>0){
 				skippedChunks++;
+				try{
+					Thread.sleep(1);
+				}catch(Exception exception){
+					exception.printStackTrace();
+				}
 				continue;
 			}
 			if(skippedChunks>0)
