@@ -25,7 +25,7 @@ public class SecondaryLoop implements Runnable{
 		this.camera = camera;
 		this.chunkHeights = chunkHeights;
 		spiral = new SpiralGridAlgorithm();
-		spiral.setMaxDistance(20);
+		spiral.setMaxDistance(50);
 		que = new ChunkWorkerQue();
 		for(int i = 0; i<workers.length; i++)
 			workers[i] = new ChunkLoadingThread(i, que, machine.createInstance());

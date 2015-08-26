@@ -87,14 +87,14 @@ public class SinglePlayerGame implements Driver{
 			}
 			skybox = new SkyBox(noise, null, noise2);
 		}
-		if(LoadDynmap){
-			dynmap = new Dynmap(machine);
-			dynmap.update(camera.x, camera.z);
-		}
 		if(LoadEntityDatabase)
 			entityDatabase = new EntityDatabase(camera);
 		if(LoadLandscape)
 			landscape = new LandscapeWorld(machine, entityDatabase, camera);
+		if(LoadDynmap){
+			dynmap = new Dynmap(machine);
+			dynmap.update(camera.x, camera.z);
+		}
 		if(LoadGrasslands)
 			grassLands = new Grasslands(landscape, camera);
 		if(LoadParticleEngine){
