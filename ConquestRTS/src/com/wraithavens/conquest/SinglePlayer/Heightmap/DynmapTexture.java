@@ -86,7 +86,8 @@ public class DynmapTexture{
 				bin.addFloat(normal.z);
 				bin.addFloat(height);
 			}
-			System.out.println(z+"/"+TextureDetail+" pixel rows complete. (Pass 1 of 2)");
+			if(z%10==0)
+				System.out.println(z+"/"+TextureDetail+" pixel rows complete. (Pass 1 of 2)");
 		}
 		s = Dynmap.BlocksPerChunk/(TextureDetail2-1.0f);
 		byte red, green, blue;
@@ -108,7 +109,8 @@ public class DynmapTexture{
 				bin.addByte(green);
 				bin.addByte(blue);
 			}
-			System.out.println(z+"/"+TextureDetail2+" pixel rows complete. (Pass 2 of 2)");
+			if(z%25==0)
+				System.out.println(z+"/"+TextureDetail2+" pixel rows complete. (Pass 2 of 2)");
 		}
 		bin.compress(new byte[28*1024*1024], false); // 28 Mb
 		bin.compile(file);
