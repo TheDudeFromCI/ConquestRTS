@@ -37,7 +37,7 @@ public class MassChunkHeightData{
 		int index = ((z-this.z)/64*128+(x-this.z)/64)*2;
 		heightRanges[index] = (short)(Algorithms.groupLocation(in[0], 64)/64);
 		heightRanges[index+1] = (short)in[1];
-		File file = Algorithms.getMassChunkHeightsPath(x, z);
+		File file = Algorithms.getMassChunkHeightsPath(this.x, this.z);
 		BinaryFile bin = new BinaryFile(128*128*5);
 		for(int i = 0; i<heightRanges.length; i += 2){
 			bin.addShort(heightRanges[i]);
