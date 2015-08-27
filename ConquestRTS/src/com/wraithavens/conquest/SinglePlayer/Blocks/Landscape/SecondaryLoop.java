@@ -22,8 +22,40 @@ import com.wraithavens.conquest.Utility.BinaryFile;
 import com.wraithavens.conquest.Utility.QuadList;
 
 public class SecondaryLoop implements Runnable{
-	private static EntityType randomPlant(Biome biome){
+	private static Biome randomBiomeObject(float h, float t){
+		final float mapSize = 100;
+		h *= mapSize;
+		t *= mapSize;
+		Biome c1 = Biome.getFittingBiome((int)h/mapSize, (int)t/mapSize, 1.0f);
+		Biome c2 = Biome.getFittingBiome((int)(h+1)/mapSize, (int)t/mapSize, 1.0f);
+		Biome c3 = Biome.getFittingBiome((int)h/mapSize, (int)(t+1)/mapSize, 1.0f);
+		Biome c4 = Biome.getFittingBiome((int)(h+1)/mapSize, (int)(t+1)/mapSize, 1.0f);
+		if(c1==c2&&c2==c3&&c3==c4)
+			return c1;
+		float x = h-(int)h;
+		float y = t-(int)t;
+		float p1 = 1/(float)(Math.pow(x, 2)+Math.pow(y, 2));
+		float p2 = 1/(float)(Math.pow(x-1, 2)+Math.pow(y, 2));
+		float p3 = 1/(float)(Math.pow(x, 2)+Math.pow(y-1, 2));
+		float p4 = 1/(float)(Math.pow(x-1, 2)+Math.pow(y-1, 2));
+		float c = p1+p2+p3+p4;
+		p1 /= c;
+		p2 = p2/c+p1;
+		p3 = p3/c+p2;
+		// Normally this should also be done to p4, but since it's never used
+		// again, I'll skip it. :P (Though it would always == 1.)
+		float r = (float)Math.random();
+		if(r<=p1)
+			return c1;
+		if(r<=p2)
+			return c2;
+		if(r<=p3)
+			return c3;
+		return c4;
+	}
+	private static EntityType randomPlant(float h, float t){
 		if(Math.random()<0.2){
+			Biome biome = randomBiomeObject(h, t);
 			if(biome==Biome.TayleaMeadow&&Math.random()<0.02)
 				return EntityType.TayleaFlower;
 			if(biome==Biome.TayleaMeadow&&Math.random()<0.0025)
@@ -144,8 +176,8 @@ public class SecondaryLoop implements Runnable{
 				heights[a][b] =
 					a==0||b==0||a==65||b==65?machine.getGroundLevel(a-1+x, b-1+z):heightData.getHeight(a-1+x, b
 						-1+z)-1;
-				if(!(a==0||b==0||a==65||b==65)&&heights[a][b]>maxHeight)
-					maxHeight = heights[a][b];
+					if(!(a==0||b==0||a==65||b==65)&&heights[a][b]>maxHeight)
+						maxHeight = heights[a][b];
 			}
 		maxHeight -= y;
 		maxHeight += 1;
@@ -258,7 +290,8 @@ public class SecondaryLoop implements Runnable{
 			for(b = 0; b<LandscapeChunk.LandscapeSize; b++){
 				tempA = a+x;
 				tempB = b+z;
-				entity = randomPlant(heightData.getBiome(tempA, tempB));
+				entity =
+					randomPlant(heightData.getHumidity(tempA, tempB), heightData.getTempature(tempA, tempB));
 				if(entity!=null){
 					if(entity.isGrass){
 						GrassTransform loc =
