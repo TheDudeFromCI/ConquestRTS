@@ -72,7 +72,11 @@ public class SecondaryLoop implements Runnable{
 		this.camera = camera;
 		this.machine = machine;
 		spiral = new SpiralGridAlgorithm();
-		spiral.setMaxDistance(50);
+		// ---
+		// And this should prevent the map from generating too many chunks will
+		// AFK.
+		// ---
+		spiral.setMaxDistance(6);
 		que = new ChunkWorkerQue();
 		Thread t = new Thread(this);
 		t.setName("Secondary Loading Thread");
@@ -154,8 +158,8 @@ public class SecondaryLoop implements Runnable{
 				heights[a][b] =
 					a==0||b==0||a==65||b==65?machine.getGroundLevel(a-1+x, b-1+z):heightData.getHeight(a-1+x, b
 						-1+z)-1;
-					if(!(a==0||b==0||a==65||b==65)&&heights[a][b]>maxHeight)
-						maxHeight = heights[a][b];
+				if(!(a==0||b==0||a==65||b==65)&&heights[a][b]>maxHeight)
+					maxHeight = heights[a][b];
 			}
 		maxHeight -= y;
 		maxHeight += 1;
