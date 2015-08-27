@@ -37,17 +37,41 @@ public class WorldNoiseMachine{
 		tempature.addSubNoise(tempatureNoise);
 		return new WorldNoiseMachine(seeds, worldHeight, humidity, tempature);
 	}
-	public static void getBiomeColorAt(Biome biome, Vector3f colorOut){
-		switch(biome){
-			case TayleaMeadow:
-				colorOut.set(109/255f, 135/255f, 24/255f);
-				break;
-			case ArcstoneHills:
-				colorOut.set(90/255f, 110/255f, 20/255f);
-				break;
-			default:
-				colorOut.set(0, 0, 0);
-				break;
+	public static void getBiomeColorAt(Biome biome, float h, float t, Vector3f colorOut){
+		switch(biome.getType()){
+			case Biome.BiomeTypeNull:
+				throw new AssertionError();
+			case Biome.BiomeTypeOcean:
+				// ---
+				// TODO
+				// ---
+				return;
+			case Biome.BiomeTypeGrasslands:
+				final float mapSize = 100;
+				h *= mapSize;
+				t *= mapSize;
+				Biome c1 = Biome.getFittingBiome((int)h/mapSize, (int)t/mapSize, 1.0f);
+				Biome c2 = Biome.getFittingBiome((int)(h+1)/mapSize, (int)t/mapSize, 1.0f);
+				Biome c3 = Biome.getFittingBiome((int)h/mapSize, (int)(t+1)/mapSize, 1.0f);
+				Biome c4 = Biome.getFittingBiome((int)(h+1)/mapSize, (int)(t+1)/mapSize, 1.0f);
+				float[] p1 = new float[3];
+				float[] p2 = new float[3];
+				float[] p3 = new float[3];
+				float[] p4 = new float[3];
+				getTempBiomeColorAt(c1, p1);
+				getTempBiomeColorAt(c2, p2);
+				getTempBiomeColorAt(c3, p3);
+				getTempBiomeColorAt(c4, p4);
+				float[] t1 = new float[3];
+				float[] t2 = new float[3];
+				float[] t3 = new float[3];
+				float x = h-(int)h;
+				float y = t-(int)t;
+				blend(p1, p2, x, t1);
+				blend(p3, p4, x, t2);
+				blend(t1, t2, y, t3);
+				colorOut.set(t3[0], t3[1], t3[2]);
+				return;
 		}
 	}
 	@SuppressWarnings("unused")
@@ -70,8 +94,30 @@ public class WorldNoiseMachine{
 		a = (l-0.5f)*2000;
 		return a<0?(int)a-1:(int)a;
 	}
+	private static void blend(float[] a, float[] b, float c, float[] out){
+		c = (float)((1-Math.cos(c*Math.PI))/2);
+		out[0] = a[0]*(1-c)+b[0]*c;
+		out[1] = a[1]*(1-c)+b[1]*c;
+		out[2] = a[2]*(1-c)+b[2]*c;
+	}
 	private static int cheapFloor(float x){
 		return x<0?(int)x-1:(int)x;
+	}
+	private static void getTempBiomeColorAt(Biome biome, float[] out){
+		switch(biome){
+			case TayleaMeadow:
+				out[0] = 109/255f;
+				out[1] = 135/255f;
+				out[2] = 24/255f;
+				return;
+			case ArcstoneHills:
+				out[0] = 90/255f;
+				out[1] = 110/255f;
+				out[2] = 20/255f;
+				return;
+			default:
+				return;
+		}
 	}
 	private final AdvancedNoise worldHeight;
 	private final AdvancedNoise tempature;

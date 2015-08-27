@@ -144,8 +144,8 @@ public class SecondaryLoop implements Runnable{
 				heights[a][b] =
 					a==0||b==0||a==65||b==65?machine.getGroundLevel(a-1+x, b-1+z):heightData.getHeight(a-1+x, b
 						-1+z)-1;
-					if(!(a==0||b==0||a==65||b==65)&&heights[a][b]>maxHeight)
-						maxHeight = heights[a][b];
+				if(!(a==0||b==0||a==65||b==65)&&heights[a][b]>maxHeight)
+					maxHeight = heights[a][b];
 			}
 		maxHeight -= y;
 		maxHeight += 1;
@@ -348,12 +348,17 @@ public class SecondaryLoop implements Runnable{
 				// ---
 				int blockX, blockY, blockZ;
 				byte red, green, blue;
+				int tempX, tempZ;
 				Vector3f colors = new Vector3f();
 				for(blockZ = 0; blockZ<64; blockZ++)
 					for(blockY = 0; blockY<64; blockY++)
 						for(blockX = 0; blockX<64; blockX++){
-							heightData.getBiome(blockX+x, blockZ+z);
-							WorldNoiseMachine.getBiomeColorAt(heightData.getBiome(blockX+x, blockZ+z), colors);
+							tempX = blockX+x;
+							tempZ = blockZ+z;
+							heightData.getBiome(tempX, tempZ);
+							WorldNoiseMachine.getBiomeColorAt(heightData.getBiome(tempX, tempZ),
+								heightData.getHumidity(tempX, tempZ), heightData.getTempature(tempX, tempZ),
+								colors);
 							red = (byte)Math.round(colors.x*255);
 							green = (byte)Math.round(colors.y*255);
 							blue = (byte)Math.round(colors.z*255);

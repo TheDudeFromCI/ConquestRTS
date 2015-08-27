@@ -101,7 +101,7 @@ public class DynmapTexture{
 					machine.getBiomeAt(blockX<0?(int)blockX-1:(int)blockX, blockZ<0?(int)blockZ-1:(int)blockZ,
 						tempHeight);
 				height = WorldNoiseMachine.scaleHeight(biome, tempHeight[0], tempHeight[1], tempHeight[2]);
-				WorldNoiseMachine.getBiomeColorAt(biome, normal);
+				WorldNoiseMachine.getBiomeColorAt(biome, tempHeight[0], tempHeight[1], normal);
 				data2.put(red = (byte)Math.round(normal.x*255));
 				data2.put(green = (byte)Math.round(normal.y*255));
 				data2.put(blue = (byte)Math.round(normal.z*255));

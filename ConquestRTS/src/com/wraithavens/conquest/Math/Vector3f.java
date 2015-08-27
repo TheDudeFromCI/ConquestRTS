@@ -10,6 +10,11 @@ public class Vector3f extends Vector{
 	public Vector3f(float x, float y, float z){
 		set(x, y, z);
 	}
+	public void divide(float v){
+		x /= v;
+		y /= v;
+		z /= v;
+	}
 	@Override
 	public boolean equals(Object obj){
 		if(this==obj)
