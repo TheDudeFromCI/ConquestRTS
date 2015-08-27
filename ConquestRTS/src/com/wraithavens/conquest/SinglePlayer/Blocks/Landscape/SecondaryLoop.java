@@ -1,7 +1,6 @@
 package com.wraithavens.conquest.SinglePlayer.Blocks.Landscape;
 
 import java.io.File;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import com.wraithavens.conquest.Math.Vector3f;
@@ -45,16 +44,12 @@ public class SecondaryLoop implements Runnable{
 		}
 		return null;
 	}
-	static long chunksLoaded = 0;
 	private volatile boolean running = true;
 	private final SpiralGridAlgorithm spiral;
 	private volatile Camera camera;
 	private final int[] temp = new int[2];
 	private int lastX = Integer.MAX_VALUE;
 	private int lastZ = Integer.MAX_VALUE;
-	private int skippedChunks = 0;
-	private long startTime;
-	private long lastMessage;
 	private MassChunkHeightData massChunkHeightData;
 	private final ChunkWorkerQue que;
 	private final WorldNoiseMachine machine;
@@ -87,9 +82,6 @@ public class SecondaryLoop implements Runnable{
 		running = false;
 	}
 	public void run(){
-		startTime = System.currentTimeMillis();
-		chunksLoaded = 0;
-		lastMessage = startTime;
 		while(running){
 			try{
 				loadNext();
@@ -112,7 +104,6 @@ public class SecondaryLoop implements Runnable{
 			y = i*LandscapeChunk.LandscapeSize+temp[0];
 			File file = Algorithms.getChunkPath(x, y, z);
 			if(file.exists()&&file.length()>0){
-				skippedChunks++;
 				try{
 					Thread.sleep(1);
 				}catch(Exception exception){
@@ -122,18 +113,13 @@ public class SecondaryLoop implements Runnable{
 			}
 			if(heightData==null)
 				heightData = new ChunkHeightData(machine, x, z, massChunkHeightData);
-			if(skippedChunks>0)
-				System.out.println("Skipped "+skippedChunks+" chunks.");
-			skippedChunks = 0;
 			if(que.size()>0){
 				ChunkWorkerTask task = que.take();
 				genChunk(Algorithms.getChunkPath(task.getX(), task.getY(), task.getZ()), task.getX(),
 					task.getY(), task.getZ(), task.getHeightData());
 				task.setFinished();
-				chunksLoaded++;
 			}
 			genChunk(Algorithms.getChunkPath(x, y, z), x, y, z, heightData);
-			chunksLoaded++;
 		}
 	}
 	private void genChunk(File file, int x, int y, int z, ChunkHeightData heightData){
@@ -158,8 +144,8 @@ public class SecondaryLoop implements Runnable{
 				heights[a][b] =
 					a==0||b==0||a==65||b==65?machine.getGroundLevel(a-1+x, b-1+z):heightData.getHeight(a-1+x, b
 						-1+z)-1;
-				if(!(a==0||b==0||a==65||b==65)&&heights[a][b]>maxHeight)
-					maxHeight = heights[a][b];
+					if(!(a==0||b==0||a==65||b==65)&&heights[a][b]>maxHeight)
+						maxHeight = heights[a][b];
 			}
 		maxHeight -= y;
 		maxHeight += 1;
@@ -404,16 +390,6 @@ public class SecondaryLoop implements Runnable{
 			}catch(InterruptedException e){
 				e.printStackTrace();
 			}
-		printMessage();
-	}
-	private void printMessage(){
-		long time = System.currentTimeMillis();
-		if(time-lastMessage>=5000){
-			lastMessage = time;
-			System.out.println("Loading ~"
-				+NumberFormat.getInstance().format((float)(chunksLoaded/((time-startTime)/1000.0/60.0)))
-				+" chunks per minute. ["+chunksLoaded+" chunks loaded]");
-		}
 	}
 	private void updateCameraLocation(){
 		int x =
