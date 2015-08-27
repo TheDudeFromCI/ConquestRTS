@@ -97,25 +97,17 @@ public class WorldNoiseMachine{
 	public int getGroundLevel(float x, float z){
 		return getGroundLevel(cheapFloor(x), cheapFloor(z));
 	}
-	public int getGroundLevel(int x, int z){
-		synchronized(tempHTL){
-			Biome biome = getBiomeAt(x, z, tempHTL);
-			return scaleHeight(biome, tempHTL[0], tempHTL[1], tempHTL[2]);
-		}
+	public synchronized int getGroundLevel(int x, int z){
+		Biome biome = getBiomeAt(x, z, tempHTL);
+		return scaleHeight(biome, tempHTL[0], tempHTL[1], tempHTL[2]);
 	}
-	public float getHumidityRaw(float x, float z){
-		synchronized(humidity){
-			return humidity.noise(x, z);
-		}
+	public synchronized float getHumidityRaw(float x, float z){
+		return humidity.noise(x, z);
 	}
-	public float getLevelRaw(float x, float y){
-		synchronized(worldHeight){
-			return worldHeight.noise(x, y);
-		}
+	public synchronized float getLevelRaw(float x, float y){
+		return worldHeight.noise(x, y)/worldHeight.getMaxHeight();
 	}
-	public float getTempatureRaw(float x, float z){
-		synchronized(tempature){
-			return tempature.noise(x, z);
-		}
+	public synchronized float getTempatureRaw(float x, float z){
+		return tempature.noise(x, z);
 	}
 }
