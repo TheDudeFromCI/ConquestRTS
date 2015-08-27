@@ -7,18 +7,18 @@ public class AdvancedNoise{
 	public void addSubNoise(SubNoise subnoise){
 		noise.add(subnoise);
 	}
-	double getMaxHeight(){
+	float getMaxHeight(){
 		double f = 0;
 		for(SubNoise n : noise)
 			f += n.amplitude;
-		return f;
+		return (float)f;
 	}
-	double noise(float x, float y){
+	float noise(float x, float y){
 		if(noise.size()==0)
 			throw new IllegalStateException("No noise generators defined!");
 		double total = 0;
 		for(int i = 0; i<noise.size(); i++)
 			total += noise.get(i).noise(x, y);
-		return total;
+		return (float)total;
 	}
 }

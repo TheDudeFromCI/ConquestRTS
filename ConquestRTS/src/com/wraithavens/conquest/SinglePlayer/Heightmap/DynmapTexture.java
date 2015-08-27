@@ -9,22 +9,23 @@ import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
 import com.wraithavens.conquest.Math.Vector3f;
+import com.wraithavens.conquest.SinglePlayer.Noise.Biome;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.Utility.Algorithms;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class DynmapTexture{
 	private static void calculateNormal(float x, float z, Vector3f out, WorldNoiseMachine machine){
-		double z0 = machine.getWorldHeight(x-1, z+1)/machine.getMaxHeight();
-		double z1 = machine.getWorldHeight(x, z+1)/machine.getMaxHeight();
-		double z2 = machine.getWorldHeight(x+1, z+1)/machine.getMaxHeight();
-		double z3 = machine.getWorldHeight(x-1, z)/machine.getMaxHeight();
-		double z4 = machine.getWorldHeight(x+1, z)/machine.getMaxHeight();
-		double z5 = machine.getWorldHeight(x-1, z-1)/machine.getMaxHeight();
-		double z6 = machine.getWorldHeight(x, z-1)/machine.getMaxHeight();
-		double z7 = machine.getWorldHeight(x+1, z-1)/machine.getMaxHeight();
-		out.set((float)(z2+2.0f*z4+z7-z0-2.0f*z3-z5), (float)(1.0f/machine.getMaxHeight()), (float)(z5+2.0f*z6
-			+z7-z0-2.0f*z1-z2));
+		double z0 = machine.getLevelRaw(x-1, z+1);
+		double z1 = machine.getLevelRaw(x, z+1);
+		double z2 = machine.getLevelRaw(x+1, z+1);
+		double z3 = machine.getLevelRaw(x-1, z);
+		double z4 = machine.getLevelRaw(x+1, z);
+		double z5 = machine.getLevelRaw(x-1, z-1);
+		double z6 = machine.getLevelRaw(x, z-1);
+		double z7 = machine.getLevelRaw(x+1, z-1);
+		out.set((float)(z2+2.0f*z4+z7-z0-2.0f*z3-z5), 1.0f/machine.getGroundLevel(x, z), (float)(z5+2.0f*z6+z7
+			-z0-2.0f*z1-z2));
 		out.normalize();
 	}
 	private static final int TextureDetail = 1024;
@@ -74,7 +75,7 @@ public class DynmapTexture{
 			for(x = 0; x<TextureDetail; x++){
 				blockX = x*s+posX;
 				blockZ = z*s+posZ;
-				height = (float)machine.getWorldHeight(blockX, blockZ);
+				height = machine.getGroundLevel(blockX, blockZ);
 				calculateNormal(blockX, blockZ, normal, machine);
 				data.put(normal.x);
 				data.put(normal.y);
@@ -89,12 +90,17 @@ public class DynmapTexture{
 		}
 		s = Dynmap.BlocksPerChunk/(TextureDetail2-1.0f);
 		byte red, green, blue;
+		float[] tempHeight = new float[3];
+		Biome biome;
 		for(z = 0; z<TextureDetail2; z++){
 			for(x = 0; x<TextureDetail2; x++){
 				blockX = x*s+posX;
 				blockZ = z*s+posZ;
-				height = (float)machine.getWorldHeight(blockX, blockZ);
-				machine.getBiomeColorAt((int)blockX, (int)height, (int)blockZ, normal);
+				biome =
+					machine.getBiomeAt(blockX<0?(int)blockX-1:(int)blockX, blockZ<0?(int)blockZ-1:(int)blockZ,
+						tempHeight);
+				height = WorldNoiseMachine.scaleHeight(biome, tempHeight[0], tempHeight[1], tempHeight[2]);
+				WorldNoiseMachine.getBiomeColorAt(biome, normal);
 				data2.put(red = (byte)Math.round(normal.x*255));
 				data2.put(green = (byte)Math.round(normal.y*255));
 				data2.put(blue = (byte)Math.round(normal.z*255));

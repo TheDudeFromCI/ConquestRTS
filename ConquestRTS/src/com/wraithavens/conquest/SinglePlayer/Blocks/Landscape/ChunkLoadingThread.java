@@ -21,19 +21,6 @@ import com.wraithavens.conquest.Utility.BinaryFile;
 import com.wraithavens.conquest.Utility.QuadList;
 
 public class ChunkLoadingThread implements Runnable{
-	private static void getBiomeColorAt(Biome biome, Vector3f colorOut){
-		switch(biome){
-			case TayleaMeadow:
-				colorOut.set(109/255f, 135/255f, 24/255f);
-				break;
-			case ArcstoneHills:
-				colorOut.set(90/255f, 110/255f, 20/255f);
-				break;
-			default:
-				colorOut.set(0, 0, 0);
-				break;
-		}
-	}
 	private static EntityType randomPlant(Biome biome){
 		if(Math.random()<0.2){
 			if(biome==Biome.TayleaMeadow&&Math.random()<0.02)
@@ -326,7 +313,7 @@ public class ChunkLoadingThread implements Runnable{
 					for(blockY = 0; blockY<64; blockY++)
 						for(blockX = 0; blockX<64; blockX++){
 							heightData.getBiome(blockX+x, blockZ+z);
-							getBiomeColorAt(heightData.getBiome(blockX+x, blockZ+z), colors);
+							WorldNoiseMachine.getBiomeColorAt(heightData.getBiome(blockX+x, blockZ+z), colors);
 							red = (byte)Math.round(colors.x*255);
 							green = (byte)Math.round(colors.y*255);
 							blue = (byte)Math.round(colors.z*255);
