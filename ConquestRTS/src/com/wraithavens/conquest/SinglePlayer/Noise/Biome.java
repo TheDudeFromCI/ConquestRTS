@@ -27,7 +27,6 @@ public enum Biome{
 	private final float minL;
 	private final float maxL;
 	private final int biomeType;
-	private final float area;
 	private Biome(float minH, float maxH, float minT, float maxT, float minL, float maxL, int biomeType){
 		this.minH = minH;
 		this.maxH = maxH;
@@ -36,7 +35,6 @@ public enum Biome{
 		this.minL = minL;
 		this.maxL = maxL;
 		this.biomeType = biomeType;
-		area = (maxH-minH)*(maxT-minT);
 	}
 	private Biome(int minH, int maxH, int minT, int maxT, float minL, float maxL, int biomeType){
 		this(minH*0.01f, maxH*0.01f, minT*0.01f, maxT*0.01f, minL*0.01f, maxL*0.01f, biomeType);
@@ -49,9 +47,6 @@ public enum Biome{
 	}
 	public float averageTempature(){
 		return (maxT+minT)/2;
-	}
-	public float getArea(){
-		return area;
 	}
 	public int getType(){
 		return biomeType;
