@@ -54,6 +54,12 @@ public class WorldNoiseMachine{
 				Biome c2 = Biome.getFittingBiome((int)(h+1)/mapSize, (int)t/mapSize, 1.0f);
 				Biome c3 = Biome.getFittingBiome((int)h/mapSize, (int)(t+1)/mapSize, 1.0f);
 				Biome c4 = Biome.getFittingBiome((int)(h+1)/mapSize, (int)(t+1)/mapSize, 1.0f);
+				if(c1==c2&&c2==c3&&c3==c4){
+					float[] temp = new float[3];
+					getTempBiomeColorAt(c1, temp);
+					colorOut.set(temp[0], temp[1], temp[2]);
+					return;
+				}
 				float[] p1 = new float[3];
 				float[] p2 = new float[3];
 				float[] p3 = new float[3];
