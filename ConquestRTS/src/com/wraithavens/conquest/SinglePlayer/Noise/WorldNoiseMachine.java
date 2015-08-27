@@ -44,6 +44,26 @@ public class WorldNoiseMachine{
 		tempature.addSubNoise(tempatureNoise);
 		return new WorldNoiseMachine(seeds, worldHeight, prairieColor, humidity, tempature);
 	}
+	@SuppressWarnings("unused")
+	public static int scaleHeight(Biome biome, float h, float t, float l){
+		float a;
+		// ---
+		// TODO Make biome heights blend together better.
+		// ---
+		// switch(biome){
+		// case TayleaMeadow:
+		// a = height*2000;
+		// break;
+		// case ArcstoneHills:
+		// a = height*4000;
+		// break;
+		// default:
+		// a = 0;
+		// break;
+		// }
+		a = (l-0.5f)*2000;
+		return a<0?(int)a-1:(int)a;
+	}
 	// ---
 	// General world-wide generators.
 	// ---
@@ -74,6 +94,12 @@ public class WorldNoiseMachine{
 		float t = (float)tempature.noise(x, z);
 		float l = (float)(getWorldHeight(x, z)/getMaxHeight());
 		return Biome.getFittingBiome(h, t, l);
+	}
+	public synchronized Biome getBiomeAt(int x, int z, float[] heightOut){
+		heightOut[0] = (float)humidity.noise(x, z);
+		heightOut[1] = (float)tempature.noise(x, z);
+		heightOut[2] = (float)(getWorldHeight(x, z)/getMaxHeight());
+		return Biome.getFittingBiome(heightOut[0], heightOut[1], heightOut[2]);
 	}
 	@SuppressWarnings("unused")
 	public synchronized void getBiomeColorAt(int x, int y, int z, Vector3f colorOut){

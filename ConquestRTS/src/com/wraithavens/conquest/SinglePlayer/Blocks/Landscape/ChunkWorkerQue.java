@@ -4,11 +4,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class ChunkWorkerQue{
 	private LinkedBlockingQueue<ChunkWorkerTask> taskList = new LinkedBlockingQueue();
-	void addTask(int x, int y, int z){
-		taskList.add(new ChunkWorkerTask(x, y, z));
+	void addTask(int x, int y, int z, ChunkHeightData heightData){
+		taskList.add(new ChunkWorkerTask(x, y, z, heightData));
 	}
-	void placeAndWait(int x, int y, int z){
-		ChunkWorkerTask task = new ChunkWorkerTask(x, y, z);
+	void placeAndWait(int x, int y, int z, ChunkHeightData heightData){
+		ChunkWorkerTask task = new ChunkWorkerTask(x, y, z, heightData);
 		taskList.add(task);
 		while(!task.isFinished())
 			try{

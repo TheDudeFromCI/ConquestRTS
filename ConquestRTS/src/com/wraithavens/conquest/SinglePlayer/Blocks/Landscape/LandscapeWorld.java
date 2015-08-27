@@ -18,18 +18,20 @@ public class LandscapeWorld{
 	private final ArrayList<LandscapeChunk> chunks = new ArrayList();
 	private final ShaderProgram shader;
 	private final SpiralGridAlgorithm spiral;
-	private final ChunkHeightData chunkHeights;
 	private final Camera camera;
 	private final EntityDatabase entityDatabase;
 	private final SecondaryLoop loadingLoop;
+	private final WorldNoiseMachine machine;
 	private int chunkX;
 	private int chunkZ;
 	private int frame = 0;
 	private Grasslands grassLands;
+	private MassChunkHeightData massChunkHeightData;
 	public LandscapeWorld(WorldNoiseMachine machine, EntityDatabase entityDatabase, Camera camera){
 		GlError.out("Building landscape.");
 		this.camera = camera;
 		this.entityDatabase = entityDatabase;
+		this.machine = machine;
 		shader =
 			new ShaderProgram(new File(WraithavensConquest.assetFolder, "Landscape.vert"), null, new File(
 				WraithavensConquest.assetFolder, "Landscape.frag"));
@@ -41,8 +43,7 @@ public class LandscapeWorld{
 		GlError.dumpError();
 		spiral = new SpiralGridAlgorithm();
 		spiral.setMaxDistance(ViewDistance);
-		chunkHeights = new ChunkHeightData(machine);
-		loadingLoop = new SecondaryLoop(camera, chunkHeights, machine);
+		loadingLoop = new SecondaryLoop(camera, machine);
 	}
 	public void dispose(){
 		loadingLoop.dispose();
@@ -53,7 +54,7 @@ public class LandscapeWorld{
 		chunks.clear();
 		GlError.dumpError();
 	}
-	public LandscapeChunk getContainingChunk(int x, int y, int z, boolean load){
+	public LandscapeChunk getContainingChunk(int x, int y, int z, boolean load, ChunkHeightData heightData){
 		x = Algorithms.groupLocation(x, LandscapeChunk.LandscapeSize);
 		y = Algorithms.groupLocation(y, LandscapeChunk.LandscapeSize);
 		z = Algorithms.groupLocation(z, LandscapeChunk.LandscapeSize);
@@ -65,7 +66,8 @@ public class LandscapeWorld{
 		// ---
 		// If it's current generating the chunk we want, wait until it's done.
 		// ---
-		LandscapeChunk c = new LandscapeChunk(entityDatabase, grassLands, x, y, z, loadingLoop.getQue());
+		LandscapeChunk c =
+			new LandscapeChunk(entityDatabase, grassLands, x, y, z, loadingLoop.getQue(), heightData);
 		chunks.add(c);
 		if(grassLands!=null)
 			grassLands.updateVisibility();
@@ -149,10 +151,25 @@ public class LandscapeWorld{
 			&&Math.abs(z-c.getZ())<=distance*LandscapeChunk.LandscapeSize;
 	}
 	private void loadChunks(int x, int z){
+		loadMassChunkHeightData(x, z);
+		ChunkHeightData chunkHeightData = new ChunkHeightData(machine, x, z, massChunkHeightData);
 		int[] h = new int[2];
-		chunkHeights.getChunkHeight(x, z, h);
+		chunkHeightData.getChunkHeight(h);
 		for(int i = 0; i<h[1]; i++)
-			getContainingChunk(x, i*LandscapeChunk.LandscapeSize+h[0], z, true);
+			getContainingChunk(x, i*LandscapeChunk.LandscapeSize+h[0], z, true, chunkHeightData);
+	}
+	private void loadMassChunkHeightData(int x, int z){
+		if(massChunkHeightData==null){
+			massChunkHeightData =
+				new MassChunkHeightData(Algorithms.groupLocation(x, 128*64), Algorithms.groupLocation(z, 128*64));
+			return;
+		}
+		int minX = massChunkHeightData.getX();
+		int minZ = massChunkHeightData.getZ();
+		if(x>=minX&&z>=minZ&&x<minX+128*64&&z<minZ+128*64)
+			return;
+		massChunkHeightData =
+			new MassChunkHeightData(Algorithms.groupLocation(x, 128*64), Algorithms.groupLocation(z, 128*64));
 	}
 	private boolean shouldRemove(LandscapeChunk chunk){
 		return !isWithinView(chunk, ViewDistance+3);

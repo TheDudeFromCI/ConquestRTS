@@ -1,67 +1,83 @@
 package com.wraithavens.conquest.SinglePlayer.Blocks.Landscape;
 
 import java.io.File;
-import java.util.Arrays;
-import com.wraithavens.conquest.Launcher.WraithavensConquest;
+import com.wraithavens.conquest.SinglePlayer.Noise.Biome;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.Utility.Algorithms;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class ChunkHeightData{
-	private volatile int[] heights = new int[0];
-	private final WorldNoiseMachine machine;
-	public ChunkHeightData(WorldNoiseMachine machine){
-		this.machine = machine;
-		loadList();
-	}
-	public synchronized void getChunkHeight(int x, int z, int[] out){
-		for(int i = 0; i<heights.length; i += 4)
-			if(heights[i]==x&&heights[i+1]==z){
-				out[0] = heights[i+2];
-				out[1] = heights[i+3];
-				return;
+	private final short[] heights = new short[64*64];
+	private final byte[] biomes = new byte[64*64];
+	private final int minHeight;
+	private final int maxHeight;
+	private final int x;
+	private final int z;
+	public ChunkHeightData(WorldNoiseMachine machine, int x, int z, MassChunkHeightData massChunkHeightData){
+		this.x = x;
+		this.z = z;
+		File file = Algorithms.getChunkHeightsPath(x, z);
+		if(file.exists()&&file.length()>0){
+			BinaryFile bin = new BinaryFile(file);
+			bin.decompress(false);
+			minHeight = bin.getInt();
+			maxHeight = bin.getInt();
+			for(int i = 0; i<heights.length; i++){
+				heights[i] = bin.getShort();
+				biomes[i] = bin.getByte();
 			}
-		loadChunkHeight(out, x, z);
-		int o = heights.length;
-		heights = Arrays.copyOf(heights, o+4);
-		heights[o] = x;
-		heights[o+1] = z;
-		heights[o+2] = out[0];
-		heights[o+3] = out[1];
-		saveList();
-	}
-	private void loadChunkHeight(int[] out, int x, int z){
-		int a, b, h;
-		int minHeight = Integer.MAX_VALUE;
-		int maxHeight = 0;
-		for(a = 0; a<LandscapeChunk.LandscapeSize; a++)
-			for(b = 0; b<LandscapeChunk.LandscapeSize; b++){
-				h = machine.getGroundLevel(x+a, z+b);
-				if(h<minHeight)
-					minHeight = h;
-				if(h>maxHeight)
-					maxHeight = h;
+			return;
+		}
+		int u = Integer.MAX_VALUE;
+		int v = Integer.MIN_VALUE;
+		int a, b, index;
+		Biome biome;
+		float[] height = new float[3];
+		int[] heights = new int[64*64];
+		for(b = 0; b<64; b++)
+			for(a = 0; a<64; a++){
+				biome = machine.getBiomeAt(x+a, z+b, height);
+				index = b*64+a;
+				biomes[index] = (byte)biome.ordinal();
+				heights[index] = WorldNoiseMachine.scaleHeight(biome, height[0], height[1], height[2]);
+				if(heights[index]<u)
+					u = heights[index];
+				if(heights[index]>v)
+					v = heights[index];
 			}
-		minHeight -= 1;
-		minHeight = Algorithms.groupLocation(minHeight, LandscapeChunk.LandscapeSize);
-		maxHeight = Algorithms.groupLocation(maxHeight, LandscapeChunk.LandscapeSize);
+		minHeight = u;
+		maxHeight = v;
+		for(int i = 0; i<heights.length; i++)
+			this.heights[i] = (short)(heights[i]-minHeight);
+		BinaryFile bin = new BinaryFile(3*64*64+8);
+		bin.addInt(minHeight);
+		bin.addInt(maxHeight);
+		for(int i = 0; i<this.heights.length; i++){
+			bin.addShort(this.heights[i]);
+			bin.addByte(biomes[i]);
+		}
+		bin.compress(false);
+		bin.compile(file);
+		int[] h = new int[2];
+		getChunkHeight(h);
+		massChunkHeightData.setHeight(x, z, h);
+	}
+	public Biome getBiome(int x, int z){
+		return Biome.values()[biomes[(z-this.z)*64+x-this.x]&0xFF];
+	}
+	public void getChunkHeight(int[] out){
+		int minHeight = Algorithms.groupLocation(this.minHeight, LandscapeChunk.LandscapeSize);
+		int maxHeight = Algorithms.groupLocation(this.maxHeight, LandscapeChunk.LandscapeSize);
 		out[0] = minHeight;
 		out[1] = (maxHeight-minHeight)/LandscapeChunk.LandscapeSize+1;
 	}
-	private void loadList(){
-		File file = new File(WraithavensConquest.currentGameFolder, "ChunkHeights.dat");
-		if(file.exists()&&file.length()>0){
-			BinaryFile bin = new BinaryFile(file);
-			heights = new int[bin.length()/4];
-			for(int i = 0; i<heights.length; i++)
-				heights[i] = bin.getInt();
-		}
+	public int getHeight(int x, int z){
+		return heights[(z-this.z)*64+x-this.x]+minHeight;
 	}
-	private void saveList(){
-		File file = new File(WraithavensConquest.currentGameFolder, "ChunkHeights.dat");
-		BinaryFile bin = new BinaryFile(heights.length*4);
-		for(int i : heights)
-			bin.addInt(i);
-		bin.compile(file);
+	public int getX(){
+		return x;
+	}
+	public int getZ(){
+		return z;
 	}
 }

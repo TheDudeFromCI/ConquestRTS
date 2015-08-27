@@ -86,6 +86,11 @@ public class BinaryFile{
 		binary[pos+3] = (byte)(n>>24&0xFF);
 		pos += 4;
 	}
+	public void addShort(short n){
+		binary[pos] = (byte)(n&0xFF);
+		binary[pos+1] = (byte)(n>>8&0xFF);
+		pos += 2;
+	}
 	public void compile(File file){
 		if(!file.exists()){
 			try{
@@ -163,6 +168,11 @@ public class BinaryFile{
 	}
 	public int getPos(){
 		return pos;
+	}
+	public short getShort(){
+		short i = (short)(binary[pos]&0xFF|(binary[pos+1]&0xFF)<<8);
+		pos += 2;
+		return i;
 	}
 	public int length(){
 		return binary.length;

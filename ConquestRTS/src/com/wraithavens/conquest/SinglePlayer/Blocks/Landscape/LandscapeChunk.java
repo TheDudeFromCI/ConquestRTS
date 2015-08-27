@@ -32,7 +32,9 @@ public class LandscapeChunk{
 	private final GrassPatch[] grassPatches;
 	private final EntityDatabase entityDatabase;
 	private final Grasslands grassLands;
-	LandscapeChunk(EntityDatabase entityDatabase, Grasslands grassLands, int x, int y, int z, ChunkWorkerQue que){
+	LandscapeChunk(
+		EntityDatabase entityDatabase, Grasslands grassLands, int x, int y, int z, ChunkWorkerQue que,
+		ChunkHeightData heightData){
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -48,7 +50,7 @@ public class LandscapeChunk{
 			// ---
 			File file = Algorithms.getChunkPath(x, y, z);
 			if(!(file.exists()&&file.length()>0))
-				que.placeAndWait(x, y, z);
+				que.placeAndWait(x, y, z, heightData);
 			BinaryFile bin = new BinaryFile(file);
 			bin.decompress(false);
 			int vertexCount = bin.getInt();

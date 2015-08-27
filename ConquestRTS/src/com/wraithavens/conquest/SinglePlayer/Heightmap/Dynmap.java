@@ -16,7 +16,7 @@ public class Dynmap{
 	static final int VertexCount = 1025;
 	public static final int BlocksPerChunk = 32768;
 	static final int MaxDepth = Integer.numberOfTrailingZeros(VertexCount-1)-1;
-	private static final int WalkingWrapDistance = 8192;
+	public static final int WalkingWrapDistance = 8192;
 	private static final int WalkingViewBuffer = (BlocksPerChunk-WalkingWrapDistance)/2;
 	private final int vbo;
 	private DynmapChunk chunk;

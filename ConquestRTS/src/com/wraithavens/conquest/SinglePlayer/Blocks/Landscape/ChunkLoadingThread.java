@@ -14,12 +14,48 @@ import com.wraithavens.conquest.SinglePlayer.BlockPopulators.QuadListener;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.QuadOptimizer;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassTransform;
+import com.wraithavens.conquest.SinglePlayer.Noise.Biome;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.Utility.Algorithms;
 import com.wraithavens.conquest.Utility.BinaryFile;
 import com.wraithavens.conquest.Utility.QuadList;
 
 public class ChunkLoadingThread implements Runnable{
+	private static void getBiomeColorAt(Biome biome, Vector3f colorOut){
+		switch(biome){
+			case TayleaMeadow:
+				colorOut.set(109/255f, 135/255f, 24/255f);
+				break;
+			case ArcstoneHills:
+				colorOut.set(90/255f, 110/255f, 20/255f);
+				break;
+			default:
+				colorOut.set(0, 0, 0);
+				break;
+		}
+	}
+	private static EntityType randomPlant(Biome biome){
+		if(Math.random()<0.2){
+			if(biome==Biome.TayleaMeadow&&Math.random()<0.02)
+				return EntityType.TayleaFlower;
+			if(biome==Biome.TayleaMeadow&&Math.random()<0.0025)
+				return EntityType.VallaFlower;
+			if(biome==Biome.TayleaMeadow&&Math.random()<0.005)
+				return EntityType.values()[EntityType.TayleaMeadowRock1.ordinal()+(int)(Math.random()*3)];
+			if(biome==Biome.ArcstoneHills&&Math.random()<0.0002)
+				return EntityType.values()[EntityType.Arcstone1.ordinal()+(int)(Math.random()*8)];
+			int i = (int)(Math.random()*8);
+			switch(biome){
+				case TayleaMeadow:
+					return EntityType.values()[EntityType.TayleaMeadowGrass0.ordinal()+i];
+				case ArcstoneHills:
+					return EntityType.values()[EntityType.ArcstoneHillsGrass0.ordinal()+i];
+				default:
+					throw new AssertionError();
+			}
+		}
+		return null;
+	}
 	private volatile boolean running = true;
 	private final ChunkWorkerQue que;
 	private final int[][] heights = new int[LandscapeChunk.LandscapeSize+2][LandscapeChunk.LandscapeSize+2];
@@ -44,6 +80,10 @@ public class ChunkLoadingThread implements Runnable{
 	public void run(){
 		while(running){
 			try{
+				// ---
+				// TODO Make this thread stop waiting when the control thread
+				// dies.
+				// ---
 				genChunk(que.take());
 			}catch(Exception exception){
 				exception.printStackTrace();
@@ -52,11 +92,11 @@ public class ChunkLoadingThread implements Runnable{
 	}
 	private void genChunk(ChunkWorkerTask task){
 		genChunk(Algorithms.getChunkPath(task.getX(), task.getY(), task.getZ()), task.getX(), task.getY(),
-			task.getZ());
+			task.getZ(), task.getHeightData());
 		task.setFinished();
 		SecondaryLoop.chunksLoaded++;
 	}
-	private void genChunk(File file, int x, int y, int z){
+	private void genChunk(File file, int x, int y, int z, ChunkHeightData heightData){
 		System.out.println("New landmass discovered. Generating now. ["+x+", "+y+", "+z+"]");
 		// ---
 		// Prepare the quad building algorithm.
@@ -71,12 +111,14 @@ public class ChunkLoadingThread implements Runnable{
 		// Calculate the world heights.
 		// ---
 		int a, b, c, j, q;
-		int maxHeight = 0;
-		for(a = 0; a<LandscapeChunk.LandscapeSize+2; a++)
-			for(b = 0; b<LandscapeChunk.LandscapeSize+2; b++){
-				heights[a][b] = machine.getGroundLevel(a-1+x, b-1+z)-1;
-				if(heights[a][b]>maxHeight)
-					maxHeight = heights[a][b];
+		int maxHeight = Integer.MIN_VALUE;
+		int tempA, tempB, tempC;
+		for(a = 0; a<66; a++)
+			for(b = 0; b<66; b++){
+				heights[a][b] =
+					a==0||b==0||a==65||b==65?getHeightAt(a-1+x, b-1+z):heightData.getHeight(a-1+x, b-1+z)-1;
+					if(!(a==0||b==0||a==65||b==65)&&heights[a][b]>maxHeight)
+						maxHeight = heights[a][b];
 			}
 		maxHeight -= y;
 		maxHeight += 1;
@@ -89,11 +131,14 @@ public class ChunkLoadingThread implements Runnable{
 			if(j==3)
 				continue;
 			if(j==0||j==1){
-				for(a = 0; a<LandscapeChunk.LandscapeSize; a++){
-					for(b = 0; b<LandscapeChunk.LandscapeSize; b++)
-						for(c = 0; c<LandscapeChunk.LandscapeSize; c++){
-							hasBack = heights[a+1][c+1]>=b+y;
-							placeQuad = heights[a+1+(j==0?1:-1)][c+1]<b+y;
+				for(a = 0; a<64; a++){
+					tempA = a+1;
+					for(b = 0; b<64; b++){
+						tempB = b+y;
+						for(c = 0; c<64; c++){
+							tempC = c+1;
+							hasBack = heights[tempA][tempC]>=tempB;
+							placeQuad = heights[tempA+(j==0?1:-1)][tempC]<tempB;
 							if(hasBack&&placeQuad)
 								quads[b][c] = 1;
 							else if(placeQuad)
@@ -101,41 +146,43 @@ public class ChunkLoadingThread implements Runnable{
 							else
 								quads[b][c] = 0;
 						}
-					q =
-						ExtremeQuadOptimizer.optimize(storage, tempStorage, quads, LandscapeChunk.LandscapeSize,
-							LandscapeChunk.LandscapeSize);
+					}
+					q = ExtremeQuadOptimizer.optimize(storage, tempStorage, quads, 64, 64);
 					if(q==0)
 						continue;
 					xCounter.setup(x, y, z, a, j, listener, Block.GRASS);
-					QuadOptimizer.countQuads(xCounter, storage, LandscapeChunk.LandscapeSize,
-						LandscapeChunk.LandscapeSize, q);
+					QuadOptimizer.countQuads(xCounter, storage, 64, 64, q);
 				}
 			}else if(j==2){
 				for(b = 0; b<maxHeight; b++){
-					for(a = 0; a<LandscapeChunk.LandscapeSize; a++)
-						for(c = 0; c<LandscapeChunk.LandscapeSize; c++){
-							if(heights[a+1][c+1]==b+y)
+					tempB = b+y;
+					for(a = 0; a<64; a++){
+						tempA = a+1;
+						for(c = 0; c<64; c++){
+							tempC = c+1;
+							if(heights[tempA][tempC]==tempB)
 								quads[a][c] = 1;
-							else if(heights[a+1][c+1]<b+y)
+							else if(heights[tempA][tempC]<tempB)
 								quads[a][c] = -1;
 							else
 								quads[a][c] = 0;
 						}
-					q =
-						ExtremeQuadOptimizer.optimize(storage, tempStorage, quads, LandscapeChunk.LandscapeSize,
-							LandscapeChunk.LandscapeSize);
+					}
+					q = ExtremeQuadOptimizer.optimize(storage, tempStorage, quads, 64, 64);
 					if(q==0)
 						continue;
 					yCounter.setup(x, y, z, b, j, listener, Block.GRASS);
-					QuadOptimizer.countQuads(yCounter, storage, LandscapeChunk.LandscapeSize,
-						LandscapeChunk.LandscapeSize, q);
+					QuadOptimizer.countQuads(yCounter, storage, 64, 64, q);
 				}
 			}else{
-				for(c = 0; c<LandscapeChunk.LandscapeSize; c++){
-					for(a = 0; a<LandscapeChunk.LandscapeSize; a++)
-						for(b = 0; b<LandscapeChunk.LandscapeSize; b++){
-							hasBack = heights[a+1][c+1]>=b+y;
-							placeQuad = heights[a+1][c+1+(j==4?1:-1)]<b+y;
+				for(c = 0; c<64; c++){
+					tempC = c+1;
+					for(a = 0; a<64; a++){
+						tempA = a+1;
+						for(b = 0; b<64; b++){
+							tempB = b+y;
+							hasBack = heights[tempA][tempC]>=tempB;
+							placeQuad = heights[tempA][tempC+(j==4?1:-1)]<tempB;
 							if(hasBack&&placeQuad)
 								quads[a][b] = 1;
 							else if(placeQuad)
@@ -143,14 +190,12 @@ public class ChunkLoadingThread implements Runnable{
 							else
 								quads[a][b] = 0;
 						}
-					q =
-						ExtremeQuadOptimizer.optimize(storage, tempStorage, quads, LandscapeChunk.LandscapeSize,
-							LandscapeChunk.LandscapeSize);
+					}
+					q = ExtremeQuadOptimizer.optimize(storage, tempStorage, quads, 64, 64);
 					if(q==0)
 						continue;
 					zCounter.setup(x, y, z, c, j, listener, Block.GRASS);
-					QuadOptimizer.countQuads(zCounter, storage, LandscapeChunk.LandscapeSize,
-						LandscapeChunk.LandscapeSize, q);
+					QuadOptimizer.countQuads(zCounter, storage, 64, 64, q);
 				}
 			}
 		}
@@ -184,11 +229,13 @@ public class ChunkLoadingThread implements Runnable{
 		EntityType entity;
 		for(a = 0; a<LandscapeChunk.LandscapeSize; a++)
 			for(b = 0; b<LandscapeChunk.LandscapeSize; b++){
-				entity = machine.randomPlant(a+x, b+z);
+				tempA = a+x;
+				tempB = b+z;
+				entity = randomPlant(heightData.getBiome(tempA, tempB));
 				if(entity!=null){
 					if(entity.isGrass){
 						GrassTransform loc =
-							new GrassTransform(a+x+0.5f, machine.getGroundLevel(a+x, b+z), b+z+0.5f,
+							new GrassTransform(tempA+0.5f, heightData.getHeight(tempA, tempB), tempB+0.5f,
 								(float)(Math.random()*Math.PI*2), 2.0f+(float)(Math.random()*0.3f-0.15f));
 						if(grassLocations.containsKey(entity))
 							grassLocations.get(entity).add(loc);
@@ -198,7 +245,7 @@ public class ChunkLoadingThread implements Runnable{
 							grassLocations.put(entity, locs);
 						}
 					}else{
-						Vector3f loc = new Vector3f(a+x+0.5f, machine.getGroundLevel(a+x, b+z), b+z+0.5f);
+						Vector3f loc = new Vector3f(tempA+0.5f, heightData.getHeight(tempA, tempB), tempB+0.5f);
 						if(plantLocations.containsKey(entity))
 							plantLocations.get(entity).add(loc);
 						else{
@@ -225,40 +272,43 @@ public class ChunkLoadingThread implements Runnable{
 		bin.addInt(vertices.size());
 		bin.addInt(indices.size());
 		Vertex v;
-		for(int i = 0; i<vertices.size(); i++){
+		int i;
+		for(i = 0; i<vertices.size(); i++){
 			v = vertices.get(i);
 			bin.addFloat(v.getX());
 			bin.addFloat(v.getY());
 			bin.addFloat(v.getZ());
 			bin.addByte(v.getShade());
 		}
-		for(int i = 0; i<indices.size(); i++)
+		for(i = 0; i<indices.size(); i++)
 			bin.addInt(indices.get(i));
 		bin.addInt(plantLocations.size());
+		Vector3f loc;
 		for(EntityType type : plantLocations.keySet()){
 			bin.addInt(type.ordinal());
 			ArrayList<Vector3f> locs = plantLocations.get(type);
 			bin.addInt(locs.size());
-			for(int i = 0; i<locs.size(); i++){
-				Vector3f loc = locs.get(i);
+			for(i = 0; i<locs.size(); i++){
+				loc = locs.get(i);
 				bin.addFloat(loc.x);
 				bin.addFloat(type.isGiant?loc.y-5.1f:loc.y);
 				bin.addFloat(loc.z);
-				bin.addFloat(type.isGiant?1:(float)(Math.random()*0.1f-0.05f+1/5f));
+				bin.addFloat(type.isGiant?1:(float)(Math.random()*0.1f+0.15f));
 				bin.addFloat((float)(Math.random()*360));
 			}
 		}
 		bin.addInt(grassLocations.size());
+		ArrayList<GrassTransform> locs;
 		for(EntityType type : grassLocations.keySet()){
 			bin.addInt(type.ordinal());
-			ArrayList<GrassTransform> locs = grassLocations.get(type);
+			locs = grassLocations.get(type);
 			bin.addInt(locs.size());
-			for(GrassTransform loc : locs){
-				bin.addFloat(loc.getX());
-				bin.addFloat(loc.getY());
-				bin.addFloat(loc.getZ());
-				bin.addFloat(loc.getRotation());
-				bin.addFloat(loc.getScale());
+			for(GrassTransform transform : locs){
+				bin.addFloat(transform.getX());
+				bin.addFloat(transform.getY());
+				bin.addFloat(transform.getZ());
+				bin.addFloat(transform.getRotation());
+				bin.addFloat(transform.getScale());
 			}
 		}
 		{
@@ -275,7 +325,8 @@ public class ChunkLoadingThread implements Runnable{
 				for(blockZ = 0; blockZ<64; blockZ++)
 					for(blockY = 0; blockY<64; blockY++)
 						for(blockX = 0; blockX<64; blockX++){
-							machine.getBiomeColorAt(blockX+x, blockY+y, blockZ+z, colors);
+							heightData.getBiome(blockX+x, blockZ+z);
+							getBiomeColorAt(heightData.getBiome(blockX+x, blockZ+z), colors);
 							red = (byte)Math.round(colors.x*255);
 							green = (byte)Math.round(colors.y*255);
 							blue = (byte)Math.round(colors.z*255);
@@ -287,6 +338,11 @@ public class ChunkLoadingThread implements Runnable{
 		}
 		bin.compress(false);
 		bin.compile(file);
+	}
+	private int getHeightAt(int x, int z){
+		float[] data = new float[3];
+		Biome biome = machine.getBiomeAt(x, z, data);
+		return WorldNoiseMachine.scaleHeight(biome, data[0], data[1], data[2]);
 	}
 	void dispose(){
 		running = false;
