@@ -18,11 +18,19 @@ public enum EntityType{
 	ArcstoneHillsGrass5("Arcstone Hills Grass.tal_5", true, false, true, null),
 	ArcstoneHillsGrass6("Arcstone Hills Grass.tal_6", true, false, true, null),
 	ArcstoneHillsGrass7("Arcstone Hills Grass.tal_7", true, false, true, null),
-	TayleaFlower("TayleaFlower.tal", false, false, true, null),
+	TayleaFlower("TayleaFlower1.tal", false, false, true, null),
+	TayleaFlower2("TayleaFlower2.tal", false, false, true, null),
+	TayleaFlower3("TayleaFlower3.tal", false, false, true, null),
+	TayleaFlower4("TayleaFlower4.tal", false, false, true, null),
+	TayleaFlower5("TayleaFlower5.tal", false, false, true, null),
+	TayleaFlower6("TayleaFlower6.tal", false, false, true, null),
 	TayleaMeadowRock1("Taylea Meadow Rock 1.tal", false, false, false, null),
 	TayleaMeadowRock2("Taylea Meadow Rock 2.tal", false, false, false, null),
 	TayleaMeadowRock3("Taylea Meadow Rock 3.tal", false, false, false, null),
-	VallaFlower("VallaFlower.tal", false, false, true, null),
+	VallaFlower("VallaFlower1.tal", false, false, true, null),
+	VallaFlower2("VallaFlower2.tal", false, false, true, null),
+	VallaFlower3("VallaFlower3.tal", false, false, true, null),
+	VallaFlower4("VallaFlower4.tal", false, false, true, null),
 	Arcstone1("Arcstone 1.tal", false, true, false, new LodRadius(300, 600, 900, 1200, 1500, 1800)),
 	Arcstone2("Arcstone 2.tal", false, true, false, new LodRadius(300, 600, 900, 1200, 1500, 1800)),
 	Arcstone3("Arcstone 3.tal", false, true, false, new LodRadius(300, 600, 900, 1200, 1500, 1800)),
@@ -31,6 +39,9 @@ public enum EntityType{
 	Arcstone6("Arcstone 6.tal", false, true, false, new LodRadius(300, 600, 900, 1200, 1500, 1800)),
 	Arcstone7("Arcstone 7.tal", false, true, false, new LodRadius(300, 600, 900, 1200, 1500, 1800)),
 	Arcstone8("Arcstone 8.tal", false, true, false, new LodRadius(300, 600, 900, 1200, 1500, 1800));
+	public static EntityType getVariation(EntityType inital, int type){
+		return values()[inital.ordinal()+type];
+	}
 	EntityMesh mesh;
 	public final String fileName;
 	public final boolean isGrass;
