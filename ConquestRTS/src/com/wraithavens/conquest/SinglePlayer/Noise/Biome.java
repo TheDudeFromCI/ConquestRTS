@@ -11,7 +11,7 @@ public enum Biome{
 	ArcstoneHills(0, 100, 0, 50, 2),
 	// And finally, a catch-all. This should never be hit.
 	Void(0, 100, 0, 100, 0, 100, 0);
-	public static Biome getFittingBiome(float h, float t, float l){
+	public static Biome getFittingBiome(double h, double t, double l){
 		for(Biome b : values())
 			if(b.fitsIn(h, t, l))
 				return b;
@@ -51,7 +51,7 @@ public enum Biome{
 	public int getType(){
 		return biomeType;
 	}
-	private boolean fitsIn(float h, float t, float l){
+	private boolean fitsIn(double h, double t, double l){
 		return h>=minH&&h<=maxH&&t>=minT&&t<=maxT&&l>=minL&&l<=maxL;
 	}
 }

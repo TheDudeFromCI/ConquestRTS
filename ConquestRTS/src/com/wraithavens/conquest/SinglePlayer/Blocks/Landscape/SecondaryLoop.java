@@ -85,14 +85,14 @@ public class SecondaryLoop implements Runnable{
 	private MassChunkHeightData massChunkHeightData;
 	private final ChunkWorkerQue que;
 	private final WorldNoiseMachine machine;
-	private final int[][] heights = new int[LandscapeChunk.LandscapeSize+2][LandscapeChunk.LandscapeSize+2];
+	private final int[][] heights = new int[66][66];
 	private final ChunkXQuadCounter xCounter = new ChunkXQuadCounter();
 	private final ChunkYQuadCounter yCounter = new ChunkYQuadCounter();
 	private final ChunkZQuadCounter zCounter = new ChunkZQuadCounter();
 	private final QuadList quadList = new QuadList();
-	private final int[][] quads = new int[LandscapeChunk.LandscapeSize][LandscapeChunk.LandscapeSize];
-	private final int[][] storage = new int[LandscapeChunk.LandscapeSize][LandscapeChunk.LandscapeSize];
-	private final int[][] tempStorage = new int[LandscapeChunk.LandscapeSize][LandscapeChunk.LandscapeSize];
+	private final int[][] quads = new int[64][64];
+	private final int[][] storage = new int[64][64];
+	private final int[][] tempStorage = new int[64][64];
 	private final VertexStorage vertices = new VertexStorage();
 	private final IndexStorage indices = new IndexStorage();
 	public SecondaryLoop(Camera camera, WorldNoiseMachine machine){
@@ -170,17 +170,23 @@ public class SecondaryLoop implements Runnable{
 		// ---
 		int a, b, c, j, q;
 		int maxHeight = Integer.MIN_VALUE;
+		int minHeight = Integer.MAX_VALUE;
 		int tempA, tempB, tempC;
 		for(a = 0; a<66; a++)
 			for(b = 0; b<66; b++){
 				heights[a][b] =
 					a==0||b==0||a==65||b==65?machine.getGroundLevel(a-1+x, b-1+z):heightData.getHeight(a-1+x, b
 						-1+z)-1;
-					if(!(a==0||b==0||a==65||b==65)&&heights[a][b]>maxHeight)
-						maxHeight = heights[a][b];
+				if(heights[a][b]>maxHeight)
+					maxHeight = heights[a][b];
+				if(heights[a][b]<minHeight)
+					minHeight = heights[a][b];
 			}
 		maxHeight -= y;
 		maxHeight += 1;
+		minHeight -= y;
+		if(maxHeight>64)
+			maxHeight = 64;
 		// ---
 		// Combine the quads into their final form.
 		// ---
@@ -213,7 +219,7 @@ public class SecondaryLoop implements Runnable{
 					QuadOptimizer.countQuads(xCounter, storage, 64, 64, q);
 				}
 			}else if(j==2){
-				for(b = 0; b<maxHeight; b++){
+				for(b = minHeight; b<maxHeight; b++){
 					tempB = b+y;
 					for(a = 0; a<64; a++){
 						tempA = a+1;
@@ -286,8 +292,16 @@ public class SecondaryLoop implements Runnable{
 		HashMap<EntityType,ArrayList<GrassTransform>> grassLocations = new HashMap();
 		HashMap<EntityType,ArrayList<Vector3f>> plantLocations = new HashMap();
 		EntityType entity;
+		int h;
 		for(a = 0; a<LandscapeChunk.LandscapeSize; a++)
 			for(b = 0; b<LandscapeChunk.LandscapeSize; b++){
+				// ---
+				// This little check is to stop multiple plants from spawning on
+				// the same block while a chunk spans multiple verticle chunks.
+				// ---
+				h = heights[a+1][b+1];
+				if(h<y||h>=y+64)
+					continue;
 				tempA = a+x;
 				tempB = b+z;
 				entity =

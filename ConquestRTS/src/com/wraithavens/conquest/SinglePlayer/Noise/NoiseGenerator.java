@@ -33,7 +33,7 @@ public class NoiseGenerator{
 			layerSeeds[i] = r.nextInt();
 		}
 	}
-	public float noise(float... x){
+	public synchronized float noise(float... x){
 		if(reals==null||x.length!=reals.length){
 			reals = new int[x.length];
 			fracs = new float[x.length];

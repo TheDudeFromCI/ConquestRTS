@@ -12,41 +12,46 @@ import java.util.zip.Inflater;
 
 public class BinaryFile{
 	private static byte[] read(File file){
-		BufferedInputStream in = null;
-		try{
-			in = new BufferedInputStream(new FileInputStream(file));
-			byte[] d = new byte[in.available()];
-			in.read(d);
-			return d;
-		}catch(Exception exception){
-			exception.printStackTrace();
-		}finally{
-			if(in!=null)
-				try{
-					in.close();
-				}catch(Exception exception){
-					exception.printStackTrace();
-				}
+		synchronized(HDD_LOCK){
+			BufferedInputStream in = null;
+			try{
+				in = new BufferedInputStream(new FileInputStream(file));
+				byte[] d = new byte[in.available()];
+				in.read(d);
+				return d;
+			}catch(Exception exception){
+				exception.printStackTrace();
+			}finally{
+				if(in!=null)
+					try{
+						in.close();
+					}catch(Exception exception){
+						exception.printStackTrace();
+					}
+			}
+			return null;
 		}
-		return null;
 	}
 	private static void write(File file, byte[] binary){
-		BufferedOutputStream out = null;
-		try{
-			out = new BufferedOutputStream(new FileOutputStream(file));
-			out.write(binary);
-		}catch(Exception exception){
-			exception.printStackTrace();
-		}finally{
-			if(out!=null)
-				try{
-					out.close();
-				}catch(Exception exception){
-					exception.printStackTrace();
-				}
+		synchronized(HDD_LOCK){
+			BufferedOutputStream out = null;
+			try{
+				out = new BufferedOutputStream(new FileOutputStream(file));
+				out.write(binary);
+			}catch(Exception exception){
+				exception.printStackTrace();
+			}finally{
+				if(out!=null)
+					try{
+						out.close();
+					}catch(Exception exception){
+						exception.printStackTrace();
+					}
+			}
 		}
 	}
-	private static byte[] CompressionBuffer = new byte[1024*1024]; // 1 Mb.
+	private static final Object HDD_LOCK = 0;
+	private static byte[] CompressionBuffer = new byte[3*1024*1024]; // 3 Mb.
 	private byte[] binary;
 	private int pos;
 	/**

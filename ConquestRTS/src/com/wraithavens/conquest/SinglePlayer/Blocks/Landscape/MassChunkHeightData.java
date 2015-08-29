@@ -22,7 +22,7 @@ public class MassChunkHeightData{
 		}
 	}
 	boolean getHeights(int x, int z, int[] out){
-		int index = ((z-this.z)/64*128+(x-this.z)/64)*2;
+		int index = ((z-this.z)/64*128+(x-this.x)/64)*2;
 		out[0] = heightRanges[index]*64;
 		out[1] = heightRanges[index+1];
 		return heightRanges[index+1]!=0;
@@ -34,7 +34,7 @@ public class MassChunkHeightData{
 		return z;
 	}
 	synchronized void setHeight(int x, int z, int[] in){
-		int index = ((z-this.z)/64*128+(x-this.z)/64)*2;
+		int index = ((z-this.z)/64*128+(x-this.x)/64)*2;
 		heightRanges[index] = (short)(Algorithms.groupLocation(in[0], 64)/64);
 		heightRanges[index+1] = (short)in[1];
 		File file = Algorithms.getMassChunkHeightsPath(this.x, this.z);

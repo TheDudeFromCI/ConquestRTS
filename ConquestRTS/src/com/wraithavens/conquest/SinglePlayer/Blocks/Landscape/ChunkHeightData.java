@@ -39,12 +39,15 @@ public class ChunkHeightData{
 		Biome biome;
 		float[] height = new float[3];
 		int[] heights = new int[64*64];
+		int tempX, tempZ;
 		for(b = 0; b<64; b++)
 			for(a = 0; a<64; a++){
-				biome = machine.getBiomeAt(x+a, z+b, height);
+				tempX = x+a;
+				tempZ = z+b;
+				biome = machine.getBiomeAt(tempX, tempZ, height);
 				index = b*64+a;
 				biomes[index] = (byte)biome.ordinal();
-				heights[index] = WorldNoiseMachine.scaleHeight(biome, height[0], height[1], height[2]);
+				heights[index] = machine.scaleHeight(height[0], height[1], height[2], tempX, tempZ);
 				if(heights[index]<u)
 					u = heights[index];
 				if(heights[index]>v)
@@ -53,7 +56,7 @@ public class ChunkHeightData{
 				weather[index] = height[0];
 				weather[index+1] = height[1];
 			}
-		minHeight = u;
+		minHeight = u-1;
 		maxHeight = v;
 		for(int i = 0; i<heights.length; i++)
 			this.heights[i] = (short)(heights[i]-minHeight);
