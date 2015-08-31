@@ -106,7 +106,7 @@ public class SinglePlayerGame implements Driver{
 			entityDatabase.setLandscape(landscape);
 		if(landscape!=null)
 			landscape.setup(grassLands);
-		// WireframeCube.build();
+		WireframeCube.build();
 	}
 	public void onKey(int key, int action){
 		if(key==GLFW.GLFW_KEY_W){
@@ -271,6 +271,7 @@ public class SinglePlayerGame implements Driver{
 			particleBatch.render();
 		else
 			GL11.glEnable(GL11.GL_CULL_FACE);
+		WireframeCube.render();
 		GL11.glPopMatrix();
 	}
 	public void update(double delta, double time){

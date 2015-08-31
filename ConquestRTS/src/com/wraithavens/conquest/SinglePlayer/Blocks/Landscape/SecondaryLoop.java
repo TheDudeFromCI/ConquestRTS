@@ -57,9 +57,9 @@ public class SecondaryLoop implements Runnable{
 		if(Math.random()<0.2){
 			Biome biome = randomBiomeObject(h, t);
 			if(biome==Biome.TayleaMeadow&&Math.random()<0.02)
-				return EntityType.TayleaFlower;
+				return EntityType.getVariation(EntityType.TayleaFlower, (int)(Math.random()*6));
 			if(biome==Biome.TayleaMeadow&&Math.random()<0.0025)
-				return EntityType.VallaFlower;
+				return EntityType.getVariation(EntityType.VallaFlower, (int)(Math.random()*4));
 			if(biome==Biome.TayleaMeadow&&Math.random()<0.005)
 				return EntityType.values()[EntityType.TayleaMeadowRock1.ordinal()+(int)(Math.random()*3)];
 			if(biome==Biome.ArcstoneHills&&Math.random()<0.0002)
@@ -168,22 +168,23 @@ public class SecondaryLoop implements Runnable{
 		// ---
 		// Calculate the world heights.
 		// ---
-		int a, b, c, j, q;
+		int a, b, c, j, q, h;
 		int maxHeight = Integer.MIN_VALUE;
 		int minHeight = Integer.MAX_VALUE;
 		int tempA, tempB, tempC;
-		for(a = 0; a<66; a++)
+		for(a = 0; a<66; a++){
+			tempA = a-1+x;
 			for(b = 0; b<66; b++){
 				heights[a][b] =
-					a==0||b==0||a==65||b==65?machine.getGroundLevel(a-1+x, b-1+z):heightData.getHeight(a-1+x, b
-						-1+z)-1;
+					(a==0||b==0||a==65||b==65?machine.getGroundLevel(tempA, b-1+z):heightData.getHeight(tempA, b
+						-1+z))-1;
 				if(heights[a][b]>maxHeight)
 					maxHeight = heights[a][b];
 				if(heights[a][b]<minHeight)
 					minHeight = heights[a][b];
 			}
-		maxHeight -= y;
-		maxHeight += 1;
+		}
+		maxHeight -= y-1;
 		minHeight -= y;
 		if(maxHeight>64)
 			maxHeight = 64;
@@ -197,6 +198,7 @@ public class SecondaryLoop implements Runnable{
 				continue;
 			if(j==0||j==1){
 				for(a = 0; a<64; a++){
+					h = 0;
 					tempA = a+1;
 					for(b = 0; b<64; b++){
 						tempB = b+y;
@@ -204,14 +206,17 @@ public class SecondaryLoop implements Runnable{
 							tempC = c+1;
 							hasBack = heights[tempA][tempC]>=tempB;
 							placeQuad = heights[tempA+(j==0?1:-1)][tempC]<tempB;
-							if(hasBack&&placeQuad)
+							if(hasBack&&placeQuad){
 								quads[b][c] = 1;
-							else if(placeQuad)
+								h++;
+							}else if(placeQuad)
 								quads[b][c] = -1;
 							else
 								quads[b][c] = 0;
 						}
 					}
+					if(h==0)
+						continue;
 					q = ExtremeQuadOptimizer.optimize(storage, tempStorage, quads, 64, 64);
 					if(q==0)
 						continue;
@@ -221,18 +226,22 @@ public class SecondaryLoop implements Runnable{
 			}else if(j==2){
 				for(b = minHeight; b<maxHeight; b++){
 					tempB = b+y;
+					h = 0;
 					for(a = 0; a<64; a++){
 						tempA = a+1;
 						for(c = 0; c<64; c++){
 							tempC = c+1;
-							if(heights[tempA][tempC]==tempB)
+							if(heights[tempA][tempC]==tempB){
 								quads[a][c] = 1;
-							else if(heights[tempA][tempC]<tempB)
+								h++;
+							}else if(heights[tempA][tempC]<tempB)
 								quads[a][c] = -1;
 							else
 								quads[a][c] = 0;
 						}
 					}
+					if(h==0)
+						continue;
 					q = ExtremeQuadOptimizer.optimize(storage, tempStorage, quads, 64, 64);
 					if(q==0)
 						continue;
@@ -242,20 +251,24 @@ public class SecondaryLoop implements Runnable{
 			}else{
 				for(c = 0; c<64; c++){
 					tempC = c+1;
+					h = 0;
 					for(a = 0; a<64; a++){
 						tempA = a+1;
 						for(b = 0; b<64; b++){
 							tempB = b+y;
 							hasBack = heights[tempA][tempC]>=tempB;
 							placeQuad = heights[tempA][tempC+(j==4?1:-1)]<tempB;
-							if(hasBack&&placeQuad)
+							if(hasBack&&placeQuad){
 								quads[a][b] = 1;
-							else if(placeQuad)
+								h++;
+							}else if(placeQuad)
 								quads[a][b] = -1;
 							else
 								quads[a][b] = 0;
 						}
 					}
+					if(h==0)
+						continue;
 					q = ExtremeQuadOptimizer.optimize(storage, tempStorage, quads, 64, 64);
 					if(q==0)
 						continue;
@@ -292,7 +305,6 @@ public class SecondaryLoop implements Runnable{
 		HashMap<EntityType,ArrayList<GrassTransform>> grassLocations = new HashMap();
 		HashMap<EntityType,ArrayList<Vector3f>> plantLocations = new HashMap();
 		EntityType entity;
-		int h;
 		for(a = 0; a<LandscapeChunk.LandscapeSize; a++)
 			for(b = 0; b<LandscapeChunk.LandscapeSize; b++){
 				// ---
