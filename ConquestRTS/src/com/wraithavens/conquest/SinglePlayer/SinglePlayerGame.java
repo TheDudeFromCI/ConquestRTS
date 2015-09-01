@@ -106,7 +106,6 @@ public class SinglePlayerGame implements Driver{
 			entityDatabase.setLandscape(landscape);
 		if(landscape!=null)
 			landscape.setup(grassLands);
-		WireframeCube.build();
 	}
 	public void onKey(int key, int action){
 		if(key==GLFW.GLFW_KEY_W){

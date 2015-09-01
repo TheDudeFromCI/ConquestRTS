@@ -18,7 +18,6 @@ import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.Utility.Algorithms;
 import com.wraithavens.conquest.Utility.BinaryFile;
-import com.wraithavens.conquest.Utility.WireframeCube;
 
 public class LandscapeChunk{
 	public static final int LandscapeSize = 64;
@@ -156,13 +155,6 @@ public class LandscapeChunk{
 		return z;
 	}
 	void render(){
-		WireframeCube cube = WireframeCube.intance();
-		if(cube!=null){
-			cube.setColor(1, 0, 0);
-			cube.setPosition(x, y, z);
-			cube.setScale(64, 64, 64);
-			cube.push();
-		}
 		GL11.glBindTexture(GL12.GL_TEXTURE_3D, textureId);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
