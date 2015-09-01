@@ -16,7 +16,6 @@ import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassPatch;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassTransform;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
-import com.wraithavens.conquest.Utility.Algorithms;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class LandscapeChunk{
@@ -32,9 +31,7 @@ public class LandscapeChunk{
 	private final GrassPatch[] grassPatches;
 	private final EntityDatabase entityDatabase;
 	private final Grasslands grassLands;
-	LandscapeChunk(
-		EntityDatabase entityDatabase, Grasslands grassLands, int x, int y, int z, ChunkWorkerQue que,
-		ChunkHeightData heightData){
+	LandscapeChunk(EntityDatabase entityDatabase, Grasslands grassLands, int x, int y, int z, File file){
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -48,9 +45,6 @@ public class LandscapeChunk{
 			// ---
 			// Load this chunk, or generate if nessicary.
 			// ---
-			File file = Algorithms.getChunkPath(x, y, z);
-			if(!(file.exists()&&file.length()>0))
-				que.placeAndWait(x, y, z, heightData);
 			BinaryFile bin = new BinaryFile(file);
 			bin.decompress(false);
 			int vertexCount = bin.getInt();

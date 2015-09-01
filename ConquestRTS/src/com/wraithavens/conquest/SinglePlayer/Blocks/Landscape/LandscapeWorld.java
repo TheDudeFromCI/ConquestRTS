@@ -27,6 +27,7 @@ public class LandscapeWorld{
 	private int frame = 0;
 	private Grasslands grassLands;
 	private MassChunkHeightData massChunkHeightData;
+	private ChunkWorkerTask currentLoadingChunk;
 	public LandscapeWorld(WorldNoiseMachine machine, EntityDatabase entityDatabase, Camera camera){
 		GlError.out("Building landscape.");
 		this.camera = camera;
@@ -66,12 +67,12 @@ public class LandscapeWorld{
 		// ---
 		// If it's current generating the chunk we want, wait until it's done.
 		// ---
-		LandscapeChunk c =
-			new LandscapeChunk(entityDatabase, grassLands, x, y, z, loadingLoop.getQue(), heightData);
-		chunks.add(c);
-		if(grassLands!=null)
-			grassLands.updateVisibility();
-		return c;
+		File file = Algorithms.getChunkPath(x, y, z);
+		if(!(file.exists()&&file.length()>0)){
+			currentLoadingChunk = loadingLoop.getQue().place(x, y, z, heightData);
+			return null;
+		}
+		return loadChunk(x, y, z, file);
 	}
 	public boolean isWithinView(int x, int z){
 		int cx = Algorithms.groupLocation((int)camera.x, LandscapeChunk.LandscapeSize);
@@ -124,6 +125,15 @@ public class LandscapeWorld{
 		frame++;
 		if(frame%5==0){
 			if(frame%10==0||spiral.getDistance()<=0){
+				if(currentLoadingChunk!=null){
+					if(currentLoadingChunk.isFinished()){
+						loadChunk(currentLoadingChunk.getX(), currentLoadingChunk.getY(),
+							currentLoadingChunk.getZ(), Algorithms.getChunkPath(currentLoadingChunk.getX(),
+								currentLoadingChunk.getY(), currentLoadingChunk.getZ()));
+						currentLoadingChunk = null;
+					}
+					return;
+				}
 				if(!spiral.hasNext())
 					return;
 				spiral.next();
@@ -149,6 +159,13 @@ public class LandscapeWorld{
 		int z = Algorithms.groupLocation((int)camera.z, LandscapeChunk.LandscapeSize);
 		return Math.abs(x-c.getX())<=distance*LandscapeChunk.LandscapeSize
 			&&Math.abs(z-c.getZ())<=distance*LandscapeChunk.LandscapeSize;
+	}
+	private LandscapeChunk loadChunk(int x, int y, int z, File file){
+		LandscapeChunk c = new LandscapeChunk(entityDatabase, grassLands, x, y, z, file);
+		chunks.add(c);
+		if(grassLands!=null)
+			grassLands.updateVisibility();
+		return c;
 	}
 	private void loadChunks(int x, int z){
 		loadMassChunkHeightData(x, z);

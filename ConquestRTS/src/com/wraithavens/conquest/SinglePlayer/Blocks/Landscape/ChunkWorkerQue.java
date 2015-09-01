@@ -7,15 +7,10 @@ public class ChunkWorkerQue{
 	void addTask(int x, int y, int z, ChunkHeightData heightData){
 		taskList.add(new ChunkWorkerTask(x, y, z, heightData));
 	}
-	void placeAndWait(int x, int y, int z, ChunkHeightData heightData){
+	ChunkWorkerTask place(int x, int y, int z, ChunkHeightData heightData){
 		ChunkWorkerTask task = new ChunkWorkerTask(x, y, z, heightData);
 		taskList.add(task);
-		while(!task.isFinished())
-			try{
-				Thread.sleep(1);
-			}catch(Exception exception){
-				exception.printStackTrace();
-			}
+		return task;
 	}
 	int size(){
 		return taskList.size();
