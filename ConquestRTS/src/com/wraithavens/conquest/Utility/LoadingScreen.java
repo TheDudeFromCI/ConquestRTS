@@ -44,7 +44,11 @@ public class LoadingScreen implements Driver{
 		spinner.h = 64;
 		spinner.x = screenWidth-spinner.w/2f;
 		spinner.y = spinner.h/2f;
-		fileCount = new File(WraithavensConquest.loadingScreenImagesFolder).list().length;
+		String[] list = new File(WraithavensConquest.loadingScreenImagesFolder).list();
+		fileCount = 0;
+		for(String s : list)
+			if(s.endsWith(".png"))
+				fileCount++;
 		lastPictureIndex = (int)(Math.random()*fileCount);
 		background =
 			new UiElement(Texture.getTexture(new File(WraithavensConquest.loadingScreenImagesFolder,

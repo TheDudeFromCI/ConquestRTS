@@ -64,6 +64,7 @@ public class Texture{
 	private final String file;
 	private final int textureId;
 	public Texture(File file){
+		System.out.println("Loading file "+file+".");
 		textureId = Texture.loadTexture(Texture.loadImage(file));
 		textures.add(this);
 		this.file = file.getAbsolutePath();

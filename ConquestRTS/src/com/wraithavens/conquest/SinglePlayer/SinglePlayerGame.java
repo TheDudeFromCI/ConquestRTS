@@ -96,10 +96,8 @@ public class SinglePlayerGame implements Driver{
 			entityDatabase = new EntityDatabase(camera);
 		if(LoadLandscape)
 			landscape = new LandscapeWorld(machine, entityDatabase, camera);
-		if(LoadDynmap){
+		if(LoadDynmap)
 			dynmap = new Dynmap(machine, this);
-			dynmap.update(camera.x, camera.z);
-		}
 		if(LoadGrasslands)
 			grassLands = new Grasslands(landscape, camera);
 		if(LoadParticleEngine){
@@ -136,6 +134,8 @@ public class SinglePlayerGame implements Driver{
 		}
 		if(landscape!=null)
 			landscape.setup(grassLands);
+		if(dynmap!=null)
+			dynmap.update(camera.x, camera.z);
 	}
 	public void onKey(int key, int action){
 		if(key==GLFW.GLFW_KEY_W){

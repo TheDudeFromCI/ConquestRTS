@@ -1,6 +1,7 @@
 package com.wraithavens.conquest.Launcher;
 
 import java.nio.ByteBuffer;
+import java.util.concurrent.LinkedBlockingQueue;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
@@ -14,8 +15,9 @@ import org.lwjgl.opengl.GLContext;
 import org.lwjgl.system.MemoryUtil;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 
-class MainLoop{
+public class MainLoop{
 	static boolean FPS_SYNC = true;
+	public static final LinkedBlockingQueue<Runnable> endLoopTasks = new LinkedBlockingQueue();
 	private GLFWCursorPosCallback cursorPosCallback;
 	private GLFWErrorCallback errorCallback;
 	private GLFWKeyCallback keyCallback;
@@ -88,6 +90,12 @@ class MainLoop{
 			GLFW.glfwPollEvents();
 			if(MainLoop.FPS_SYNC)
 				sync();
+			while(!endLoopTasks.isEmpty())
+				try{
+					endLoopTasks.take().run();
+				}catch(InterruptedException e){
+					e.printStackTrace();
+				}
 		}
 		GlError.dumpError();
 	}
