@@ -74,11 +74,11 @@ public class WorldNoiseMachine{
 				float[] t1 = new float[3];
 				float[] t2 = new float[3];
 				float[] t3 = new float[3];
-				float x = h-(int)h;
-				float y = t-(int)t;
-				blend(p1, p2, x, t1);
-				blend(p3, p4, x, t2);
-				blend(t1, t2, y, t3);
+				float a = h-(int)h;
+				float b = t-(int)t;
+				blend(p1, p2, a, t1);
+				blend(p3, p4, a, t2);
+				blend(t1, t2, b, t3);
 				colorOut.set(t3[0], t3[1], t3[2]);
 				return;
 		}
