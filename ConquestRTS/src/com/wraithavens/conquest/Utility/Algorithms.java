@@ -1,10 +1,20 @@
 package com.wraithavens.conquest.Utility;
 
 import java.io.File;
+import java.text.NumberFormat;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.SinglePlayer.Heightmap.Dynmap;
 
 public class Algorithms{
+	public static String formatBytes(int bytes){
+		if(bytes<1024*2)
+			return bytes+" B";
+		if(bytes<1024*1024*2)
+			return NumberFormat.getInstance().format(bytes/1024.0)+" kB";
+		if(bytes<1024*1024*1024*2)
+			return NumberFormat.getInstance().format(bytes/1024.0/1024.0)+" mB";
+		return NumberFormat.getInstance().format(bytes/1024.0/1024.0/1024.0)+" gB";
+	}
 	public static File getChunkHeightsPath(int x, int z){
 		String s = WraithavensConquest.currentGameFolder+File.separatorChar+"Landscape";
 		int a1, b1;

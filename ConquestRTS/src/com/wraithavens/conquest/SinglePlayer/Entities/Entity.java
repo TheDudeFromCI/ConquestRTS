@@ -21,4 +21,10 @@ public abstract class Entity{
 	public abstract float getY();
 	public abstract float getZ();
 	public abstract void render();
+	boolean isGiant(){
+		return mesh.getType().isGiant;
+	}
+	boolean sways(){
+		return mesh.getType().sways;
+	}
 }
