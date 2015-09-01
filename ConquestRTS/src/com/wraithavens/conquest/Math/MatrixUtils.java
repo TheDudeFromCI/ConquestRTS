@@ -5,6 +5,12 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
 public class MatrixUtils{
+	public static void setupImageOrtho(float scaleX, float scaleY, float near, float far){
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glLoadIdentity();
+		GL11.glOrtho(0, scaleX, 0, scaleY, near, far);
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+	}
 	public static void setupPerspective(float fov, float aspect, float near, float far){
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();

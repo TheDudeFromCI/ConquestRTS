@@ -8,7 +8,6 @@ import javax.imageio.ImageIO;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
-import org.lwjgl.opengl.GL14;
 
 public class Texture{
 	public static void disposeAll(){
@@ -16,23 +15,25 @@ public class Texture{
 			textures.get(i).dispose();
 		textures.clear();
 	}
+	public static Texture getTexture(File file){
+		for(int i = 0; i<textures.size(); i++)
+			if(textures.get(i).file.equals(file.getAbsolutePath()))
+				return textures.get(i);
+		return new Texture(file);
+	}
 	private static ByteBuffer generatePixelBuffer(BufferedImage image){
 		int[] pixels = new int[image.getWidth()*image.getHeight()];
 		image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
 		ByteBuffer buffer =
 			BufferUtils.createByteBuffer(image.getWidth()*image.getHeight()*Texture.BYTES_PER_PIXEL);
 		int x, y;
-		byte b;
-		Texture.TRANSPARENT_RETURN[0] = false;
 		for(y = 0; y<image.getHeight(); y++){
 			for(x = 0; x<image.getWidth(); x++){
 				int pixel = pixels[y*image.getWidth()+x];
 				buffer.put((byte)(pixel>>16&0xFF));
 				buffer.put((byte)(pixel>>8&0xFF));
 				buffer.put((byte)(pixel&0xFF));
-				buffer.put(b = (byte)(pixel>>24&0xFF));
-				if(b!=-1)
-					Texture.TRANSPARENT_RETURN[0] = true;
+				buffer.put((byte)(pixel>>24&0xFF));
 			}
 		}
 		buffer.flip();
@@ -47,36 +48,25 @@ public class Texture{
 		}
 		return null;
 	}
-	private static int loadTexture(BufferedImage image, int mipmapLevel){
+	private static int loadTexture(BufferedImage image){
 		int textureID = GL11.glGenTextures();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
-		if(mipmapLevel==2){
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST_MIPMAP_NEAREST);
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, GL11.GL_TRUE);
-		}else if(mipmapLevel>0){
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, GL11.GL_TRUE);
-		}else{
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-		}
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, image.getWidth(), image.getHeight(), 0,
 			GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, Texture.generatePixelBuffer(image));
 		return textureID;
 	}
 	private static final int BYTES_PER_PIXEL = 4;
 	private static final ArrayList<Texture> textures = new ArrayList();
-	private static final boolean[] TRANSPARENT_RETURN = new boolean[1];
 	private final String file;
 	private final int textureId;
-	public Texture(File file, int mipmapLevel){
-		textureId = Texture.loadTexture(Texture.loadImage(file), mipmapLevel);
+	public Texture(File file){
+		textureId = Texture.loadTexture(Texture.loadImage(file));
 		textures.add(this);
-		this.file = file.getName();
+		this.file = file.getAbsolutePath();
 	}
 	public void bind(){
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);

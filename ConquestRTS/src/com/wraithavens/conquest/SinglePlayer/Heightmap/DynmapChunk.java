@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
+import com.wraithavens.conquest.SinglePlayer.SinglePlayerGame;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 
 public class DynmapChunk{
@@ -93,12 +94,12 @@ public class DynmapChunk{
 	private final QuadTree tree;
 	private float lastTreeUpdateX = Integer.MAX_VALUE;
 	private float lastTreeUpdateZ = Integer.MAX_VALUE;
-	DynmapChunk(WorldNoiseMachine machine, int x, int z){
+	DynmapChunk(WorldNoiseMachine machine, int x, int z, SinglePlayerGame singlePlayerGame){
 		this.x = x;
 		this.z = z;
 		ibo = GL15.glGenBuffers();
 		tree = new QuadTree(0, 0, Dynmap.VertexCount-1, null);
-		texture = new DynmapTexture(machine, x, z);
+		texture = new DynmapTexture(machine, x, z, singlePlayerGame);
 		updateIndices();
 		System.out.println("New dynmap loaded.");
 	}

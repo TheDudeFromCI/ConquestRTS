@@ -46,6 +46,7 @@ public class SinglePlayerGame implements Driver{
 	private LandscapeWorld landscape;
 	private Grasslands grassLands;
 	private ParticleBatch particleBatch;
+	private boolean initalized = false;
 	public void dispose(){
 		GlError.out("Disposing single player driver.");
 		GlError.dumpError();
@@ -65,6 +66,9 @@ public class SinglePlayerGame implements Driver{
 		GlError.dumpError();
 	}
 	public void initalize(double time){
+		if(initalized)
+			return;
+		initalized = true;
 		GlError.out("Initalizing single player driver.");
 		long[] seeds = new long[]{
 			0, 1, 2, 3, 4
@@ -93,7 +97,7 @@ public class SinglePlayerGame implements Driver{
 		if(LoadLandscape)
 			landscape = new LandscapeWorld(machine, entityDatabase, camera);
 		if(LoadDynmap){
-			dynmap = new Dynmap(machine);
+			dynmap = new Dynmap(machine, this);
 			dynmap.update(camera.x, camera.z);
 		}
 		if(LoadGrasslands)

@@ -8,6 +8,7 @@ import org.lwjgl.opengl.GL15;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.MatrixUtils;
 import com.wraithavens.conquest.Math.Vector3f;
+import com.wraithavens.conquest.SinglePlayer.SinglePlayerGame;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 import com.wraithavens.conquest.Utility.Algorithms;
@@ -22,8 +23,10 @@ public class Dynmap{
 	private DynmapChunk chunk;
 	private final ShaderProgram shader;
 	private final WorldNoiseMachine machine;
-	public Dynmap(WorldNoiseMachine machine){
+	private final SinglePlayerGame singlePlayerGame;
+	public Dynmap(WorldNoiseMachine machine, SinglePlayerGame singlePlayerGame){
 		this.machine = machine;
+		this.singlePlayerGame = singlePlayerGame;
 		vbo = GL15.glGenBuffers();
 		loadVbo();
 		shader =
@@ -65,7 +68,7 @@ public class Dynmap{
 		int boardZ = Algorithms.groupLocation((int)z, WalkingWrapDistance)-WalkingViewBuffer;
 		if(chunk==null||chunk.getX()!=boardX||chunk.getZ()!=boardZ){
 			if(chunk==null)
-				chunk = new DynmapChunk(machine, boardX, boardZ);
+				chunk = new DynmapChunk(machine, boardX, boardZ, singlePlayerGame);
 			else
 				chunk.reloadTexture(machine, boardX, boardZ);
 			shader.bind();

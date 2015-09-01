@@ -18,6 +18,7 @@ public class WraithavensConquest extends EmptyLoop{
 		saveFolder = programFolder+File.separatorChar+"Saves";
 		saveFolder = defaultDirectory()+File.separatorChar+"Talantra Save Data";
 		modelFolder = programFolder+File.separatorChar+"Models";
+		loadingScreenImagesFolder = programFolder+File.separatorChar+"Loading Screen Images";
 		// ---
 		// TODO Remove this later, once game saving and loading is in.
 		// ---
@@ -58,8 +59,7 @@ public class WraithavensConquest extends EmptyLoop{
 	private static String programFolder;
 	public static String assetFolder;
 	public static String currentGameFolder;
-	// TODO Remove unused code found by UCDetector
-	// public static String loadingScreenImagesFolder;
+	public static String loadingScreenImagesFolder;
 	public static String modelFolder;
 	public static String saveFolder;
 	public static WraithavensConquest INSTANCE;
