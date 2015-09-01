@@ -379,7 +379,7 @@ public class SecondaryLoop implements Runnable{
 				bin.addFloat(loc.x);
 				bin.addFloat(type.isGiant?loc.y-5.1f:loc.y);
 				bin.addFloat(loc.z);
-				bin.addFloat(type.isGiant?1:(float)(Math.random()*0.1f+0.15f));
+				bin.addFloat(type.isGiant?(float)(Math.random()*0.1f+0.95f):(float)(Math.random()*0.1f+0.15f));
 				bin.addFloat((float)(Math.random()*360));
 			}
 		}

@@ -6,12 +6,12 @@ import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.SinglePlayer.Heightmap.Dynmap;
 
 public class Algorithms{
-	public static String formatBytes(int bytes){
-		if(bytes<1024*2)
+	public static String formatBytes(long bytes){
+		if(bytes<1024L*2L)
 			return bytes+" B";
-		if(bytes<1024*1024*2)
+		if(bytes<1024L*1024L*2L)
 			return NumberFormat.getInstance().format(bytes/1024.0)+" kB";
-		if(bytes<1024*1024*1024*2)
+		if(bytes<1024L*1024L*1024L*2L)
 			return NumberFormat.getInstance().format(bytes/1024.0/1024.0)+" mB";
 		return NumberFormat.getInstance().format(bytes/1024.0/1024.0/1024.0)+" gB";
 	}

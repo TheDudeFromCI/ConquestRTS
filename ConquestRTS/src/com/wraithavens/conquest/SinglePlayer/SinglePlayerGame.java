@@ -8,6 +8,7 @@ import com.wraithavens.conquest.Math.MatrixUtils;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
+import com.wraithavens.conquest.SinglePlayer.Entities.StaticEntity;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.SinglePlayer.Heightmap.Dynmap;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
@@ -102,8 +103,33 @@ public class SinglePlayerGame implements Driver{
 			PollenParticleEngine e = new PollenParticleEngine(particleBatch, camera, 32);
 			particleBatch.addEngine(e);
 		}
-		if(entityDatabase!=null)
+		if(entityDatabase!=null){
 			entityDatabase.setLandscape(landscape);
+			StaticEntity e = new StaticEntity(EntityType.Other1);
+			e.moveTo(4096, machine.getGroundLevel(4096, 4096), 4096);
+			e.scaleTo(1/5f);
+			entityDatabase.addEntity(e);
+			e = new StaticEntity(EntityType.Other2);
+			e.moveTo(4096, machine.getGroundLevel(4096, 4096+16), 4096+16);
+			e.scaleTo(1/5f);
+			entityDatabase.addEntity(e);
+			e = new StaticEntity(EntityType.Other3);
+			e.moveTo(4096, machine.getGroundLevel(4096, 4096+32), 4096+32);
+			e.scaleTo(1/5f);
+			entityDatabase.addEntity(e);
+			e = new StaticEntity(EntityType.Other4);
+			e.moveTo(4096, machine.getGroundLevel(4096, 4096+48), 4096+48);
+			e.scaleTo(1/5f);
+			entityDatabase.addEntity(e);
+			e = new StaticEntity(EntityType.Other5);
+			e.moveTo(4096, machine.getGroundLevel(4096, 4096+64), 4096+64);
+			e.scaleTo(1/5f);
+			entityDatabase.addEntity(e);
+			e = new StaticEntity(EntityType.Other6);
+			e.moveTo(4096, machine.getGroundLevel(4096, 4096+64+16), 4096+64+16);
+			e.scaleTo(1/5f);
+			entityDatabase.addEntity(e);
+		}
 		if(landscape!=null)
 			landscape.setup(grassLands);
 	}

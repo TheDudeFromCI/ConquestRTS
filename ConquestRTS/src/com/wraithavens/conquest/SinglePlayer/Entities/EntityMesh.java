@@ -127,6 +127,8 @@ public class EntityMesh{
 			if(meshType==2)
 				System.out.println("  3D Texture Size: "+xSize+" x "+ySize+" x "+zSize+"  (~"
 					+Algorithms.formatBytes(byteCount)+")");
+			long totalSize = vertexCount*16L+indexCount*(dataType==GL11.GL_UNSIGNED_SHORT?2L:4L)+byteCount;
+			System.out.println("  Total Memory size: ~"+Algorithms.formatBytes(totalSize)+"");
 		}
 	}
 	private void dispose(){

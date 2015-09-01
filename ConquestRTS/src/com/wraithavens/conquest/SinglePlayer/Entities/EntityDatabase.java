@@ -19,14 +19,10 @@ public class EntityDatabase{
 		public int compare(Entity a, Entity b){
 			if(a.mesh==b.mesh)
 				return 0;
-			if(a.isGiant()!=b.isGiant())
-				return a.isGiant()?1:-1;
-			if(a.mesh.getType().sways!=b.mesh.getType().sways){
-				if(a.mesh.getType().sways)
-					return 1;
-				if(b.mesh.getType().sways)
-					return -1;
-			}
+			if(a.isColorBlended()!=b.isColorBlended())
+				return a.isColorBlended()?1:-1*(isColorBlended?-1:1);
+			if(a.mesh.getType().sways!=b.mesh.getType().sways)
+				return a.sways()?1:-1*(isSwaying?-1:1);
 			return a.mesh.getId()>b.mesh.getId()?1:-1;
 		}
 	};
@@ -34,7 +30,7 @@ public class EntityDatabase{
 	private final Camera camera;
 	private LandscapeWorld landscape;
 	private boolean isSwaying = false;
-	private boolean isGiant = false;
+	private boolean isColorBlended = false;
 	public EntityDatabase(Camera camera){
 		this.camera = camera;
 		GlError.out("Creating entity database.");
@@ -42,8 +38,8 @@ public class EntityDatabase{
 			new ShaderProgram(new File(WraithavensConquest.assetFolder, "ModelShader.vert"), null, new File(
 				WraithavensConquest.assetFolder, "ModelShader.frag"));
 		shader.bind();
-		shader.loadUniforms("uni_swayAmount", "uni_meshCenter", "uni_time", "uni_giant", "uni_textureOffset",
-			"uni_textureSize");
+		shader.loadUniforms("uni_swayAmount", "uni_meshCenter", "uni_time", "uni_colorBlended",
+			"uni_textureOffset", "uni_textureSize");
 		SingularShaderAttrib = shader.getAttributeLocation("shade");
 		GL20.glEnableVertexAttribArray(SingularShaderAttrib);
 		GlError.dumpError();
@@ -101,11 +97,11 @@ public class EntityDatabase{
 					isSwaying = mesh.getType().sways;
 					shader.setUniform1f(0, isSwaying?0.0375f:0.0f);
 				}
-				if(mesh.getType().isGiant!=isGiant){
-					isGiant = mesh.getType().isGiant;
-					shader.setUniform1I(3, isGiant?1:0);
+				if(mesh.getType().colorBlended!=isColorBlended){
+					isColorBlended = mesh.getType().colorBlended;
+					shader.setUniform1I(3, isColorBlended?1:0);
 				}
-				if(isGiant){
+				if(isColorBlended){
 					textureOffset3d = mesh.getTextureOffset3D();
 					textureSize3D = mesh.getTextureSize3D();
 					shader.setUniform3f(4, textureOffset3d.x, textureOffset3d.y, textureOffset3d.z);
