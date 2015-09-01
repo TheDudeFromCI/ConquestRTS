@@ -135,24 +135,28 @@ public class DynmapTexture{
 			private void secondPass(){
 				if(z%25==0)
 					System.out.println(z+"/"+TextureDetail2+" pixel rows complete. (Pass 2 of 2)");
-				for(x = 0; x<TextureDetail2; x++){
-					blockX = x*s+posX;
-					blockZ = z*s+posZ;
-					biome =
-						machine.getBiomeAt(blockX<0?(int)blockX-1:(int)blockX, blockZ<0?(int)blockZ-1
-							:(int)blockZ, tempHeight);
-					height = machine.scaleHeight(tempHeight[0], tempHeight[1], tempHeight[2], blockX, blockZ);
-					WorldNoiseMachine.getBiomeColorAt(biome, tempHeight[0], tempHeight[1], normal);
-					data2.put(red = (byte)Math.round(normal.x*255));
-					data2.put(green = (byte)Math.round(normal.y*255));
-					data2.put(blue = (byte)Math.round(normal.z*255));
-					bin.addByte(red);
-					bin.addByte(green);
-					bin.addByte(blue);
-				}
-				z++;
-				if(z==TextureDetail2){
-					stage = 3;
+				for(int i = 0; i<4; i++){
+					for(x = 0; x<TextureDetail2; x++){
+						blockX = x*s+posX;
+						blockZ = z*s+posZ;
+						biome =
+							machine.getBiomeAt(blockX<0?(int)blockX-1:(int)blockX, blockZ<0?(int)blockZ-1
+								:(int)blockZ, tempHeight);
+						height =
+							machine.scaleHeight(tempHeight[0], tempHeight[1], tempHeight[2], blockX, blockZ);
+						WorldNoiseMachine.getBiomeColorAt(biome, tempHeight[0], tempHeight[1], normal);
+						data2.put(red = (byte)Math.round(normal.x*255));
+						data2.put(green = (byte)Math.round(normal.y*255));
+						data2.put(blue = (byte)Math.round(normal.z*255));
+						bin.addByte(red);
+						bin.addByte(green);
+						bin.addByte(blue);
+					}
+					z++;
+					if(z==TextureDetail2){
+						stage = 3;
+						return;
+					}
 				}
 			}
 			private void start(){
