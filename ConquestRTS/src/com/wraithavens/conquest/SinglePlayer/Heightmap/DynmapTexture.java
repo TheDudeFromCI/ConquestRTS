@@ -138,7 +138,7 @@ public class DynmapTexture{
 					private void secondPass(){
 						if(z%25==0)
 							System.out.println(z+"/"+TextureDetail2+" pixel rows complete. (Pass 2 of 2)");
-						for(int i = 0; i<4; i++){
+						for(int i = 0; i<2; i++){
 							for(x = 0; x<TextureDetail2; x++){
 								blockX = x*s+posX;
 								blockZ = z*s+posZ;
