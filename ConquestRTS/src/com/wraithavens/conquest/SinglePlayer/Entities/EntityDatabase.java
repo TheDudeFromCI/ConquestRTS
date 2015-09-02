@@ -20,9 +20,9 @@ public class EntityDatabase{
 			if(a.mesh==b.mesh)
 				return 0;
 			if(a.isColorBlended()!=b.isColorBlended())
-				return a.isColorBlended()?1:-1*(isColorBlended?-1:1);
+				return (a.isColorBlended()?1:-1)*(isColorBlended?-1:1);
 			if(a.mesh.getType().sways!=b.mesh.getType().sways)
-				return a.sways()?1:-1*(isSwaying?-1:1);
+				return (a.sways()?1:-1)*(isSwaying?-1:1);
 			return a.mesh.getId()>b.mesh.getId()?1:-1;
 		}
 	};
