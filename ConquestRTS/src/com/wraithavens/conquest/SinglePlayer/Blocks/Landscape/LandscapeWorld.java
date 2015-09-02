@@ -28,6 +28,8 @@ public class LandscapeWorld{
 	private Grasslands grassLands;
 	private MassChunkHeightData massChunkHeightData;
 	private ChunkWorkerTask currentLoadingChunk;
+	private int[] chunkLoadHeight = new int[5];
+	private ChunkHeightData chunkHeightDataTemp;
 	public LandscapeWorld(WorldNoiseMachine machine, EntityDatabase entityDatabase, Camera camera){
 		GlError.out("Building landscape.");
 		this.camera = camera;
@@ -45,6 +47,7 @@ public class LandscapeWorld{
 		spiral = new SpiralGridAlgorithm();
 		spiral.setMaxDistance(ViewDistance);
 		loadingLoop = new SecondaryLoop(camera, machine);
+		chunkLoadHeight[1] = 0;
 	}
 	public void dispose(){
 		loadingLoop.dispose();
@@ -124,7 +127,7 @@ public class LandscapeWorld{
 		// ---
 		frame++;
 		if(frame%5==0){
-			if(frame%10==0||spiral.getDistance()<=0){
+			if(frame%10==0){
 				if(currentLoadingChunk!=null){
 					if(currentLoadingChunk.isFinished()){
 						loadChunk(currentLoadingChunk.getX(), currentLoadingChunk.getY(),
@@ -136,6 +139,10 @@ public class LandscapeWorld{
 				}
 				if(!spiral.hasNext())
 					return;
+				if(chunkLoadHeight[1]!=0){
+					loadNextChunkHeight();
+					return;
+				}
 				spiral.next();
 				loadChunks(spiral.getX()*LandscapeChunk.LandscapeSize+chunkX, spiral.getY()
 					*LandscapeChunk.LandscapeSize+chunkZ);
@@ -169,11 +176,12 @@ public class LandscapeWorld{
 	}
 	private void loadChunks(int x, int z){
 		loadMassChunkHeightData(x, z);
-		ChunkHeightData chunkHeightData = new ChunkHeightData(machine, x, z, massChunkHeightData);
-		int[] h = new int[2];
-		chunkHeightData.getChunkHeight(h);
-		for(int i = 0; i<h[1]; i++)
-			getContainingChunk(x, i*LandscapeChunk.LandscapeSize+h[0], z, true, chunkHeightData);
+		chunkHeightDataTemp = new ChunkHeightData(machine, x, z, massChunkHeightData);
+		chunkHeightDataTemp.getChunkHeight(chunkLoadHeight);
+		chunkLoadHeight[2] = x;
+		chunkLoadHeight[3] = z;
+		chunkLoadHeight[4] = 0;
+		loadNextChunkHeight();
 	}
 	private void loadMassChunkHeightData(int x, int z){
 		if(massChunkHeightData==null){
@@ -187,6 +195,15 @@ public class LandscapeWorld{
 			return;
 		massChunkHeightData =
 			new MassChunkHeightData(Algorithms.groupLocation(x, 128*64), Algorithms.groupLocation(z, 128*64));
+	}
+	private void loadNextChunkHeight(){
+		getContainingChunk(chunkLoadHeight[2], chunkLoadHeight[4]*LandscapeChunk.LandscapeSize
+			+chunkLoadHeight[0], chunkLoadHeight[3], true, chunkHeightDataTemp);
+		chunkLoadHeight[4]++;
+		if(chunkLoadHeight[4]==chunkLoadHeight[1]){
+			chunkLoadHeight[1] = 0;
+			chunkHeightDataTemp = null;
+		}
 	}
 	private boolean shouldRemove(LandscapeChunk chunk){
 		return !isWithinView(chunk, ViewDistance+3);

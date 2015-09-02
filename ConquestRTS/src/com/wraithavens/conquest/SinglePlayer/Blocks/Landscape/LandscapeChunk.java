@@ -32,6 +32,7 @@ public class LandscapeChunk{
 	private final EntityDatabase entityDatabase;
 	private final Grasslands grassLands;
 	LandscapeChunk(EntityDatabase entityDatabase, Grasslands grassLands, int x, int y, int z, File file){
+		System.out.println("Chunk loaded.");
 		this.x = x;
 		this.y = y;
 		this.z = z;
