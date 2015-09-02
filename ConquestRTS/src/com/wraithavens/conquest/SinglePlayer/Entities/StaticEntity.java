@@ -49,7 +49,6 @@ public class StaticEntity extends Entity{
 	}
 	public void moveTo(float x, float y, float z){
 		position.set(x, y, z);
-		aabb.calculate(mesh.getAabbMin(), mesh.getAabbMax(), scale, position);
 	}
 	@Override
 	public void render(){
@@ -62,9 +61,11 @@ public class StaticEntity extends Entity{
 	}
 	public void scaleTo(float scale){
 		this.scale = scale;
-		aabb.calculate(mesh.getAabbMin(), mesh.getAabbMax(), scale, position);
 	}
 	public void setYaw(float yaw){
 		this.yaw = yaw;
+	}
+	public void updateAABB(){
+		aabb.calculate(mesh.getAabbMin(), mesh.getAabbMax(), scale, position);
 	}
 }

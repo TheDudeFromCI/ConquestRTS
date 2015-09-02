@@ -3,7 +3,6 @@ package com.wraithavens.conquest.SinglePlayer.Blocks.Landscape;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -20,8 +19,6 @@ import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class LandscapeChunk{
 	public static final int LandscapeSize = 64;
-	private static long totalChunkLoadTime = 0;
-	private static int totalChunksLoaded = 0;
 	private final int x;
 	private final int y;
 	private final int z;
@@ -34,7 +31,6 @@ public class LandscapeChunk{
 	private final EntityDatabase entityDatabase;
 	private final Grasslands grassLands;
 	LandscapeChunk(EntityDatabase entityDatabase, Grasslands grassLands, int x, int y, int z, File file){
-		long time = System.nanoTime();
 		System.out.println("Chunk loaded.");
 		this.x = x;
 		this.y = y;
@@ -82,6 +78,7 @@ public class LandscapeChunk{
 					e.moveTo(bin.getFloat(), bin.getFloat(), bin.getFloat());
 					e.scaleTo(bin.getFloat());
 					e.setYaw(bin.getFloat());
+					e.updateAABB();
 					plantLife.add(e);
 					entityDatabase.addEntity(e);
 				}
@@ -118,10 +115,6 @@ public class LandscapeChunk{
 					GL11.GL_UNSIGNED_BYTE, pixels);
 			}
 		}
-		totalChunkLoadTime += System.nanoTime()-time;
-		totalChunksLoaded++;
-		System.out.println("Average chunk load time: ~"
-			+NumberFormat.getInstance().format(totalChunkLoadTime/(double)totalChunksLoaded/1.0e+6)+" ms.");
 	}
 	void dispose(){
 		GL15.glDeleteBuffers(vbo);
