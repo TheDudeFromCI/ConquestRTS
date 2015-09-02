@@ -16,11 +16,13 @@ public class LoadingScreen{
 	private final UiElement spinner;
 	private final UiElement background;
 	private final UiElement backgroundOverlay;
+	private final TextBox completionText;
 	private final ShaderProgram shader;
 	private final int fileCount;
 	private double lastImageTime;
 	private int lastPictureIndex;
 	private boolean setup = false;
+	private int lastPercent;
 	public LoadingScreen(){
 		shader = new ShaderProgram("LoadingScreen");
 		shader.loadUniforms("texture", "alpha");
@@ -31,13 +33,8 @@ public class LoadingScreen{
 			new UiElement(Texture.getTexture(new File(WraithavensConquest.loadingScreenImagesFolder,
 				lastPictureIndex+".png")));
 		backgroundOverlay = new UiElement(background.texture);
+		completionText = new TextBox(30, 15);
 		{
-			int screenWidth = WraithavensConquest.INSTANCE.getScreenWidth();
-			int screenHeight = WraithavensConquest.INSTANCE.getScreenHeight();
-			spinner.w = 64;
-			spinner.h = 64;
-			spinner.x = screenWidth-spinner.w/2f;
-			spinner.y = spinner.h/2f;
 			String[] list = new File(WraithavensConquest.loadingScreenImagesFolder).list();
 			int count = 0;
 			for(String s : list)
@@ -45,6 +42,14 @@ public class LoadingScreen{
 					count++;
 			fileCount = count;
 			lastPictureIndex = (int)(Math.random()*fileCount);
+		}
+		{
+			int screenWidth = WraithavensConquest.INSTANCE.getScreenWidth();
+			int screenHeight = WraithavensConquest.INSTANCE.getScreenHeight();
+			spinner.w = 64;
+			spinner.h = 64;
+			spinner.x = screenWidth-spinner.w/2f;
+			spinner.y = spinner.h/2f;
 			background.w = screenWidth;
 			background.h = screenHeight;
 			background.x = screenWidth/2f;
@@ -53,6 +58,10 @@ public class LoadingScreen{
 			backgroundOverlay.h = screenHeight;
 			backgroundOverlay.x = screenWidth/2f;
 			backgroundOverlay.y = screenHeight/2f;
+			completionText.x = screenWidth/2f;
+			completionText.y = screenHeight/2f;
+			completionText.w = screenWidth*0.25f;
+			completionText.h = screenWidth*0.25f;
 			lastImageTime = GLFW.glfwGetTime();
 		}
 	}
@@ -60,6 +69,7 @@ public class LoadingScreen{
 		background.texture.dispose();
 		backgroundOverlay.texture.dispose();
 		spinner.texture.dispose();
+		completionText.texture.dispose();
 		shader.dispose();
 	}
 	public boolean hasTask(){
@@ -79,10 +89,12 @@ public class LoadingScreen{
 		background.render(shader);
 		backgroundOverlay.render(shader);
 		spinner.render(shader);
+		completionText.render(shader);
 	}
 	public void setTask(LoadingScreenTask task){
 		this.task = task;
 		setup = false;
+		lastPercent = -1;
 	}
 	public void update(double time){
 		spinner.r = (float)(time*SPINNER_SPEED);
@@ -93,6 +105,11 @@ public class LoadingScreen{
 			MainLoop.FPS_SYNC = true;
 			task = null;
 			return;
+		}
+		int percent = (int)(task.getCompletionPercent()*100);
+		if(lastPercent!=percent){
+			lastPercent = percent;
+			completionText.setText(lastPercent+"%");
 		}
 		if(time-lastImageTime>IMAGE_FLIP_SECONDS){
 			if(background.texture!=backgroundOverlay.texture)

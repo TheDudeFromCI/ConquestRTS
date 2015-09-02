@@ -63,6 +63,11 @@ public class Texture{
 	private static final ArrayList<Texture> textures = new ArrayList();
 	private final String file;
 	private final int textureId;
+	public Texture(BufferedImage buf){
+		System.out.println("Loading anonomus texture.");
+		textureId = Texture.loadTexture(buf);
+		file = "";
+	}
 	public Texture(File file){
 		System.out.println("Loading file "+file+".");
 		textureId = Texture.loadTexture(Texture.loadImage(file));
@@ -78,5 +83,10 @@ public class Texture{
 		GL11.glDeleteTextures(textureId);
 		textures.remove(this);
 		System.out.println("Disposed "+(file.isEmpty()?"Unnamed file.":file));
+	}
+	public void reloadTexture(BufferedImage image){
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
+		GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, image.getWidth(), image.getHeight(), GL11.GL_RGBA,
+			GL11.GL_UNSIGNED_BYTE, generatePixelBuffer(image));
 	}
 }

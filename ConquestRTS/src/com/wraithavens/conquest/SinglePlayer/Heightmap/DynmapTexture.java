@@ -81,6 +81,15 @@ public class DynmapTexture{
 			private byte red, green, blue;
 			private float[] tempHeight = new float[3];
 			private Biome biome;
+			public float getCompletionPercent(){
+				if(stage==0)
+					return 0;
+				if(stage==1)
+					return z*2/(2048+2048f);
+				if(stage==2)
+					return (z+2048)/(2048+2048f);
+				return 1;
+			}
 			public boolean runStep(){
 				switch(stage){
 					case 0:
