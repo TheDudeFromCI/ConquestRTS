@@ -4,7 +4,6 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import com.wraithavens.conquest.Launcher.Driver;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
-import com.wraithavens.conquest.Math.MatrixUtils;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
@@ -19,23 +18,10 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyBox;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxClouds;
 import com.wraithavens.conquest.Utility.LoadingScreen;
-import com.wraithavens.conquest.Utility.WireframeCube;
 
 public class SinglePlayerGame implements Driver{
-	private static final boolean LoadSkyboxes = true;
-	private static final boolean LoadCloudBackdrop = true;
-	private static final boolean LoadCloudForeground = true;
-	private static final boolean LoadDynmap = true;
-	private static final boolean LoadEntityDatabase = true;
-	private static final boolean LoadLandscape = true;
-	private static final boolean LoadGrasslands = true;
-	private static final boolean LoadParticleEngine = true;
 	private boolean w, a, s, d, shift, space, grounded = true, lockedMouse, walkLock, e;
 	private boolean wireframeMode;
-	private boolean processBlocks = true;
-	private boolean processHeightmap = true;
-	private boolean processMoveEvents = true;
-	private boolean chunkLoading = true;
 	private final float cameraSpeed = 10f;
 	private final float mouseSpeed = 0.2f;
 	private final Camera camera = new Camera();
@@ -52,21 +38,13 @@ public class SinglePlayerGame implements Driver{
 	public void dispose(){
 		GlError.out("Disposing single player driver.");
 		GlError.dumpError();
-		if(dynmap!=null)
-			dynmap.dispose();
-		if(skybox!=null)
-			skybox.dispose();
-		if(landscape!=null)
-			landscape.dispose();
-		if(entityDatabase!=null)
-			entityDatabase.dispose();
-		if(grassLands!=null)
-			grassLands.dispose();
-		if(particleBatch!=null)
-			particleBatch.dispose();
+		dynmap.dispose();
+		skybox.dispose();
+		landscape.dispose();
+		entityDatabase.dispose();
+		grassLands.dispose();
+		particleBatch.dispose();
 		loadingScreen.dispose();
-		WireframeCube.dipose();
-		GlError.dumpError();
 	}
 	public LoadingScreen getLoadingScreen(){
 		return loadingScreen;
@@ -88,30 +66,22 @@ public class SinglePlayerGame implements Driver{
 		camera.goalY = machine.getGroundLevel(4096, 4096)+6;
 		camera.goalX = camera.x = 4096;
 		camera.goalZ = camera.z = 4096;
-		if(LoadSkyboxes){
-			SkyboxClouds noise = LoadCloudBackdrop?new SkyboxClouds(true, 0.5f, 0):null;
-			SkyboxClouds[] noise2 = null;
-			if(LoadCloudForeground){
-				noise2 = new SkyboxClouds[SkyboxClouds.LayerCount];
-				for(int i = 0; i<SkyboxClouds.LayerCount; i++)
-					noise2[i] = new SkyboxClouds(false, (float)Math.random()*2, 0);
-			}
-			skybox = new SkyBox(noise, null, noise2);
-		}
-		if(LoadEntityDatabase)
-			entityDatabase = new EntityDatabase(camera);
-		if(LoadLandscape)
-			landscape = new LandscapeWorld(machine, entityDatabase, camera);
-		if(LoadDynmap)
-			dynmap = new Dynmap(machine, this);
-		if(LoadGrasslands)
-			grassLands = new Grasslands(landscape, camera);
-		if(LoadParticleEngine){
+		SkyboxClouds noise = new SkyboxClouds(true, 0.5f, 0);
+		SkyboxClouds[] noise2 = null;
+		noise2 = new SkyboxClouds[SkyboxClouds.LayerCount];
+		for(int i = 0; i<SkyboxClouds.LayerCount; i++)
+			noise2[i] = new SkyboxClouds(false, (float)Math.random()*2, 0);
+		skybox = new SkyBox(noise, null, noise2);
+		entityDatabase = new EntityDatabase(camera);
+		landscape = new LandscapeWorld(machine, entityDatabase, camera);
+		dynmap = new Dynmap(machine, this);
+		grassLands = new Grasslands(landscape, camera);
+		{
 			particleBatch = new ParticleBatch(camera);
 			PollenParticleEngine e = new PollenParticleEngine(particleBatch, camera, 32);
 			particleBatch.addEngine(e);
 		}
-		if(entityDatabase!=null){
+		{
 			entityDatabase.setLandscape(landscape);
 			StaticEntity e = new StaticEntity(EntityType.Other1);
 			e.moveTo(4096, machine.getGroundLevel(4096, 4096), 4096);
@@ -138,11 +108,9 @@ public class SinglePlayerGame implements Driver{
 			e.scaleTo(1/5f);
 			entityDatabase.addEntity(e);
 		}
-		if(landscape!=null)
-			landscape.setup(grassLands);
+		landscape.setup(grassLands);
 		loadingScreen = new LoadingScreen();
-		if(dynmap!=null)
-			dynmap.update(camera.x, camera.z);
+		dynmap.update(camera.x, camera.z);
 	}
 	public void onKey(int key, int action){
 		if(key==GLFW.GLFW_KEY_W){
@@ -190,12 +158,12 @@ public class SinglePlayerGame implements Driver{
 					GL11.glDisable(GL11.GL_CULL_FACE);
 				}
 				wireframeMode = !wireframeMode;
-				GlError.out("Wireframe mode now set to "+wireframeMode+".");
+				System.out.println("Wireframe mode now set to "+wireframeMode+".");
 			}
 		}else if(key==GLFW.GLFW_KEY_2){
 			if(action==GLFW.GLFW_PRESS){
 				grounded = !grounded;
-				GlError.out("Ground mode now set to "+grounded+".");
+				System.out.println("Ground mode now set to "+grounded+".");
 			}
 		}else if(key==GLFW.GLFW_KEY_ESCAPE){
 			if(action==GLFW.GLFW_PRESS)
@@ -203,35 +171,10 @@ public class SinglePlayerGame implements Driver{
 		}else if(key==GLFW.GLFW_KEY_3){
 			if(action==GLFW.GLFW_PRESS){
 				walkLock = !walkLock;
-				GlError.out("Walklock now set to "+walkLock+".");
-			}
-		}else if(key==GLFW.GLFW_KEY_5){
-			if(action==GLFW.GLFW_PRESS){
-				processBlocks = !processBlocks;
-				GlError.out("Block processing now set to "+processBlocks+".");
-			}
-		}else if(key==GLFW.GLFW_KEY_6){
-			if(action==GLFW.GLFW_PRESS){
-				processHeightmap = !processHeightmap;
-				GlError.out("Heightmap processing now set to "+processHeightmap+".");
-			}
-		}else if(key==GLFW.GLFW_KEY_7){
-			if(action==GLFW.GLFW_PRESS){
-				processMoveEvents = !processMoveEvents;
-				GlError.out("Move event processing now set to "+processMoveEvents+".");
-			}
-		}else if(key==GLFW.GLFW_KEY_8){
-			if(action==GLFW.GLFW_PRESS){
-				System.out.println("Loading all chunks...");
-				if(landscape!=null)
-					landscape.loadAllChunks();
+				System.out.println("Walklock now set to "+walkLock+".");
 			}
 		}else if(key==GLFW.GLFW_KEY_9){
 			if(action==GLFW.GLFW_PRESS){
-				if(entityDatabase==null){
-					GlError.out("Entity database not created. Could not clear entities.");
-					return;
-				}
 				entityDatabase.clear();
 				GlError.out("Entity database cleared.");
 				GlError.out("Testing entity mesh references:");
@@ -243,11 +186,6 @@ public class SinglePlayerGame implements Driver{
 						GlError.out("  -Reference count: "+e.getMeshRenferences());
 					}
 				}
-			}
-		}else if(key==GLFW.GLFW_KEY_0){
-			if(action==GLFW.GLFW_PRESS){
-				chunkLoading = !chunkLoading;
-				System.out.println("Chunk loading now set to "+chunkLoading+".");
 			}
 		}
 	}
@@ -285,33 +223,20 @@ public class SinglePlayerGame implements Driver{
 			loadingScreen.render();
 			return;
 		}
-		if(wireframeMode||skybox==null)
+		if(wireframeMode)
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
 		else
 			GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glPushMatrix();
 		updateCamera(frameDelta);
-		if(skybox!=null&&!wireframeMode)
+		if(!wireframeMode)
 			skybox.render(camera.x, camera.y, camera.z);
-		if(dynmap!=null){
-			dynmap.render();
-			GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
-		}else
-			MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
-				/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 0.5f, 10000);
-		if(processBlocks){
-			if(landscape!=null)
-				landscape.render();
-		}
-		if(entityDatabase!=null)
-			entityDatabase.render();
-		if(grassLands!=null)
-			grassLands.render();
-		if(particleBatch!=null)
-			particleBatch.render();
-		else
-			GL11.glEnable(GL11.GL_CULL_FACE);
-		WireframeCube.render();
+		dynmap.render();
+		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+		landscape.render();
+		entityDatabase.render();
+		grassLands.render();
+		particleBatch.render();
 		GL11.glPopMatrix();
 	}
 	public void update(double delta, double time){
@@ -325,19 +250,10 @@ public class SinglePlayerGame implements Driver{
 		// Check to see if we should or should not update the world. Then act
 		// accoringly.
 		// ---
-		if(processBlocks&&chunkLoading){
-			if(landscape!=null)
-				landscape.update();
-		}
-		// ---
-		// Skybox isn't visible in wireframe mode, so no need to update it.
-		// ---
-		if(!wireframeMode&&skybox!=null)
-			skybox.update(time);
-		if(particleBatch!=null)
-			particleBatch.update(delta, time);
-		if(grassLands!=null)
-			grassLands.update();
+		landscape.update();
+		skybox.update(time);
+		particleBatch.update(delta, time);
+		grassLands.update();
 	}
 	private void move(double delta){
 		delta *= cameraSpeed;
@@ -375,8 +291,6 @@ public class SinglePlayerGame implements Driver{
 		float x = camera.x;
 		float z = camera.z;
 		camera.update(delta);
-		if(!processMoveEvents)
-			return;
 		if(camera.x!=x||camera.z!=z){
 			if(dynmap!=null)
 				dynmap.update(camera.x, camera.z);
