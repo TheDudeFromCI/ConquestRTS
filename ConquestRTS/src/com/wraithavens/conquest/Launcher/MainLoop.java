@@ -16,7 +16,7 @@ import org.lwjgl.system.MemoryUtil;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 
 public class MainLoop{
-	static boolean FPS_SYNC = true;
+	public static boolean FPS_SYNC = true;
 	public static final LinkedBlockingQueue<Runnable> endLoopTasks = new LinkedBlockingQueue();
 	private GLFWCursorPosCallback cursorPosCallback;
 	private GLFWErrorCallback errorCallback;

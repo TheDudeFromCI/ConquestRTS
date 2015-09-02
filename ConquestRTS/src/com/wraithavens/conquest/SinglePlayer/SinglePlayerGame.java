@@ -18,6 +18,7 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyBox;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxClouds;
+import com.wraithavens.conquest.Utility.LoadingScreen;
 import com.wraithavens.conquest.Utility.WireframeCube;
 
 public class SinglePlayerGame implements Driver{
@@ -47,6 +48,7 @@ public class SinglePlayerGame implements Driver{
 	private Grasslands grassLands;
 	private ParticleBatch particleBatch;
 	private boolean initalized = false;
+	private LoadingScreen loadingScreen;
 	public void dispose(){
 		GlError.out("Disposing single player driver.");
 		GlError.dumpError();
@@ -62,8 +64,12 @@ public class SinglePlayerGame implements Driver{
 			grassLands.dispose();
 		if(particleBatch!=null)
 			particleBatch.dispose();
+		loadingScreen.dispose();
 		WireframeCube.dipose();
 		GlError.dumpError();
+	}
+	public LoadingScreen getLoadingScreen(){
+		return loadingScreen;
 	}
 	public void initalize(double time){
 		if(initalized)
@@ -134,6 +140,7 @@ public class SinglePlayerGame implements Driver{
 		}
 		if(landscape!=null)
 			landscape.setup(grassLands);
+		loadingScreen = new LoadingScreen();
 		if(dynmap!=null)
 			dynmap.update(camera.x, camera.z);
 	}
@@ -274,6 +281,10 @@ public class SinglePlayerGame implements Driver{
 	}
 	public void onMouseWheel(double x, double y){}
 	public void render(){
+		if(loadingScreen.hasTask()){
+			loadingScreen.render();
+			return;
+		}
 		if(wireframeMode||skybox==null)
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
 		else
@@ -304,6 +315,10 @@ public class SinglePlayerGame implements Driver{
 		GL11.glPopMatrix();
 	}
 	public void update(double delta, double time){
+		if(loadingScreen.hasTask()){
+			loadingScreen.update(time);
+			return;
+		}
 		frameDelta = delta;
 		move(delta);
 		// ---

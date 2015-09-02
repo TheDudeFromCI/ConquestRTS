@@ -64,7 +64,6 @@ public class WraithavensConquest extends EmptyLoop{
 	public static String saveFolder;
 	public static WraithavensConquest INSTANCE;
 	private Driver driver;
-	Driver newDriver;
 	private double currentTime;
 	private WraithavensConquest(WindowInitalizer init){
 		super(init);
@@ -121,17 +120,17 @@ public class WraithavensConquest extends EmptyLoop{
 	public void render(){
 		if(driver!=null)
 			driver.render();
-		if(newDriver!=null){
-			if(driver!=null)
-				driver.dispose();
-			driver = newDriver;
-			newDriver = null;
-			driver.initalize(currentTime);
-		}
 		GlError.dumpError();
 	}
-	public void setDriver(Driver driver){
-		newDriver = driver;
+	public void setDriver(Driver newDriver){
+		MainLoop.endLoopTasks.add(new Runnable(){
+			public void run(){
+				if(driver!=null)
+					driver.dispose();
+				driver = newDriver;
+				driver.initalize(currentTime);
+			}
+		});
 	}
 	@Override
 	public void update(double delta, double time){

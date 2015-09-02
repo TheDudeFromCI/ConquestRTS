@@ -8,15 +8,12 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
-import com.wraithavens.conquest.Launcher.MainLoop;
-import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.SinglePlayerGame;
 import com.wraithavens.conquest.SinglePlayer.Noise.Biome;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.Utility.Algorithms;
 import com.wraithavens.conquest.Utility.BinaryFile;
-import com.wraithavens.conquest.Utility.LoadingScreen;
 import com.wraithavens.conquest.Utility.LoadingScreenTask;
 
 public class DynmapTexture{
@@ -68,110 +65,105 @@ public class DynmapTexture{
 			GL11.GL_UNSIGNED_BYTE, data2);
 	}
 	private void generate(File file, WorldNoiseMachine machine, float posX, float posZ){
-		MainLoop.endLoopTasks.add(new Runnable(){
-			public void run(){
-				System.out.println("Generating heightmap.");
-				WraithavensConquest.INSTANCE.setDriver(new LoadingScreen(new LoadingScreenTask(){
-					private int stage = 0;
-					private BinaryFile bin;
-					private FloatBuffer data;
-					private ByteBuffer data2;
-					private float s;
-					private int x;
-					private int z;
-					private float height;
-					private float blockX;
-					private float blockZ;
-					private Vector3f normal = new Vector3f();
-					private byte red, green, blue;
-					private float[] tempHeight = new float[3];
-					private Biome biome;
-					public boolean runStep(){
-						switch(stage){
-							case 0:
-								start();
-								break;
-							case 1:
-								firstPass();
-								break;
-							case 2:
-								secondPass();
-								break;
-							case 3:
-								end();
-								return true;
-						}
-						return false;
+		System.out.println("Generating heightmap.");
+		singlePlayerGrame.getLoadingScreen().setTask(new LoadingScreenTask(){
+			private int stage = 0;
+			private BinaryFile bin;
+			private FloatBuffer data;
+			private ByteBuffer data2;
+			private float s;
+			private int x;
+			private int z;
+			private float height;
+			private float blockX;
+			private float blockZ;
+			private Vector3f normal = new Vector3f();
+			private byte red, green, blue;
+			private float[] tempHeight = new float[3];
+			private Biome biome;
+			public boolean runStep(){
+				switch(stage){
+					case 0:
+						start();
+						break;
+					case 1:
+						firstPass();
+						break;
+					case 2:
+						secondPass();
+						break;
+					case 3:
+						end();
+						return true;
+				}
+				return false;
+			}
+			private void end(){
+				bin.compress(new byte[28*1024*1024], false); // 28 Mb
+				bin.compile(file);
+				data.flip();
+				data2.flip();
+				compile(data, data2);
+				System.out.println("Heightmap generated.");
+			}
+			private void firstPass(){
+				if(z%10==0)
+					System.out.println(z+"/"+TextureDetail+" pixel rows complete. (Pass 1 of 2)");
+				for(x = 0; x<TextureDetail; x++){
+					blockX = x*s+posX;
+					blockZ = z*s+posZ;
+					height = machine.getGroundLevel(blockX, blockZ);
+					calculateNormal(blockX, blockZ, normal, machine);
+					data.put(normal.x);
+					data.put(normal.y);
+					data.put(normal.z);
+					data.put(height);
+					bin.addFloat(normal.x);
+					bin.addFloat(normal.y);
+					bin.addFloat(normal.z);
+					bin.addFloat(height);
+				}
+				z++;
+				if(z==TextureDetail){
+					stage = 2;
+					s = Dynmap.BlocksPerChunk/(TextureDetail2-1.0f);
+					z = 0;
+				}
+			}
+			private void secondPass(){
+				for(int i = 0; i<2; i++){
+					if(z%25==0)
+						System.out.println(z+"/"+TextureDetail2+" pixel rows complete. (Pass 2 of 2)");
+					for(x = 0; x<TextureDetail2; x++){
+						blockX = x*s+posX;
+						blockZ = z*s+posZ;
+						biome =
+							machine.getBiomeAt(blockX<0?(int)blockX-1:(int)blockX, blockZ<0?(int)blockZ-1
+								:(int)blockZ, tempHeight);
+						height =
+							machine.scaleHeight(tempHeight[0], tempHeight[1], tempHeight[2], blockX, blockZ);
+						WorldNoiseMachine.getBiomeColorAt(biome, tempHeight[0], tempHeight[1], normal);
+						data2.put(red = (byte)Math.round(normal.x*255));
+						data2.put(green = (byte)Math.round(normal.y*255));
+						data2.put(blue = (byte)Math.round(normal.z*255));
+						bin.addByte(red);
+						bin.addByte(green);
+						bin.addByte(blue);
 					}
-					private void end(){
-						bin.compress(new byte[28*1024*1024], false); // 28 Mb
-						bin.compile(file);
-						data.flip();
-						data2.flip();
-						compile(data, data2);
-						System.out.println("Heightmap generated.");
+					z++;
+					if(z==TextureDetail2){
+						stage = 3;
+						return;
 					}
-					private void firstPass(){
-						if(z%10==0)
-							System.out.println(z+"/"+TextureDetail+" pixel rows complete. (Pass 1 of 2)");
-						for(x = 0; x<TextureDetail; x++){
-							blockX = x*s+posX;
-							blockZ = z*s+posZ;
-							height = machine.getGroundLevel(blockX, blockZ);
-							calculateNormal(blockX, blockZ, normal, machine);
-							data.put(normal.x);
-							data.put(normal.y);
-							data.put(normal.z);
-							data.put(height);
-							bin.addFloat(normal.x);
-							bin.addFloat(normal.y);
-							bin.addFloat(normal.z);
-							bin.addFloat(height);
-						}
-						z++;
-						if(z==TextureDetail){
-							stage = 2;
-							s = Dynmap.BlocksPerChunk/(TextureDetail2-1.0f);
-							z = 0;
-						}
-					}
-					private void secondPass(){
-						if(z%25==0)
-							System.out.println(z+"/"+TextureDetail2+" pixel rows complete. (Pass 2 of 2)");
-						for(int i = 0; i<2; i++){
-							for(x = 0; x<TextureDetail2; x++){
-								blockX = x*s+posX;
-								blockZ = z*s+posZ;
-								biome =
-									machine.getBiomeAt(blockX<0?(int)blockX-1:(int)blockX, blockZ<0
-										?(int)blockZ-1:(int)blockZ, tempHeight);
-								height =
-									machine.scaleHeight(tempHeight[0], tempHeight[1], tempHeight[2], blockX,
-										blockZ);
-								WorldNoiseMachine.getBiomeColorAt(biome, tempHeight[0], tempHeight[1], normal);
-								data2.put(red = (byte)Math.round(normal.x*255));
-								data2.put(green = (byte)Math.round(normal.y*255));
-								data2.put(blue = (byte)Math.round(normal.z*255));
-								bin.addByte(red);
-								bin.addByte(green);
-								bin.addByte(blue);
-							}
-							z++;
-							if(z==TextureDetail2){
-								stage = 3;
-								return;
-							}
-						}
-					}
-					private void start(){
-						bin = new BinaryFile(TextureDetail*TextureDetail*16+TextureDetail2*TextureDetail2*3);
-						data = BufferUtils.createFloatBuffer(TextureDetail*TextureDetail*4);
-						data2 = BufferUtils.createByteBuffer(TextureDetail2*TextureDetail2*3);
-						s = Dynmap.BlocksPerChunk/(TextureDetail-1.0f);
-						stage = 1;
-						z = 0;
-					}
-				}, singlePlayerGrame));
+				}
+			}
+			private void start(){
+				bin = new BinaryFile(TextureDetail*TextureDetail*16+TextureDetail2*TextureDetail2*3);
+				data = BufferUtils.createFloatBuffer(TextureDetail*TextureDetail*4);
+				data2 = BufferUtils.createByteBuffer(TextureDetail2*TextureDetail2*3);
+				s = Dynmap.BlocksPerChunk/(TextureDetail-1.0f);
+				stage = 1;
+				z = 0;
 			}
 		});
 	}
