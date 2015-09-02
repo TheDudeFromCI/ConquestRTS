@@ -4,7 +4,6 @@ import java.util.HashMap;
 import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BiomeNoise.ArcstoneHillsNoise;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BiomeNoise.TayleaMeadowNoise;
-import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.Utility.CosineInterpolation;
 
 public class WorldNoiseMachine{
@@ -20,7 +19,6 @@ public class WorldNoiseMachine{
 	 *         requested conditions.
 	 */
 	public static WorldNoiseMachine generate(long[] seeds){
-		GlError.out("Making world noise machine.");
 		// ---
 		// This will be the main control over how the world is generated. Based
 		// on the seeds given, of course.

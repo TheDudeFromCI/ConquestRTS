@@ -4,7 +4,6 @@ import org.lwjgl.opengl.GL11;
 import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
-import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 
 public class StaticEntity extends Entity{
 	private final Vector3f position = new Vector3f();
@@ -60,7 +59,6 @@ public class StaticEntity extends Entity{
 		GL11.glScalef(scale, scale, scale);
 		mesh.drawStatic();
 		GL11.glPopMatrix();
-		GlError.dumpError();
 	}
 	public void scaleTo(float scale){
 		this.scale = scale;

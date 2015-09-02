@@ -5,11 +5,9 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL32;
-import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 
 abstract class EmptyLoop implements LoopObjective{
 	private static void setupOGL(){
-		GlError.out("Setting up OpenGL parameters.");
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glEnable(GL12.GL_TEXTURE_3D);
 		GL11.glEnable(GL11.GL_CULL_FACE);
@@ -23,7 +21,6 @@ abstract class EmptyLoop implements LoopObjective{
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0.0f);
 		GL11.glAlphaFunc(GL11.GL_GREATER, 0.0f);
-		GlError.dumpError();
 	}
 	protected final MainLoop mainLoop;
 	protected final WindowInitalizer init;
@@ -55,7 +52,6 @@ abstract class EmptyLoop implements LoopObjective{
 			String renderTime =
 				"Render MS: "+NumberFormat.getInstance().format(timePassed/frames*1000.0)+"  (~"
 					+Math.round(frames/timePassed)+" Fps)";
-			GlError.out(renderTime);
 			GLFW.glfwSetWindowTitle(WraithavensConquest.INSTANCE.getWindow(), "Talantra ["+renderTime+"]");
 			lastFpsDumpTime = time;
 			frames = 0;

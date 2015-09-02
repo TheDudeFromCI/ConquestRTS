@@ -15,7 +15,6 @@ import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeChunk;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
-import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 import com.wraithavens.conquest.Utility.Algorithms;
 
@@ -81,7 +80,6 @@ public class Grasslands{
 		GL20.glEnableVertexAttribArray(SwayAttribLocation);
 		GL20.glEnableVertexAttribArray(OffsetAttribLocation);
 		GL20.glEnableVertexAttribArray(RotScaleAttribLocation);
-		GlError.dumpError();
 		grassBook = new GrassBook(OffsetAttribLocation, RotScaleAttribLocation, patches, landscape);
 		lastX = Algorithms.groupLocation((int)camera.x, LandscapeChunk.LandscapeSize);
 		lastZ = Algorithms.groupLocation((int)camera.z, LandscapeChunk.LandscapeSize);
@@ -114,7 +112,6 @@ public class Grasslands{
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		GL33.glVertexAttribDivisor(OffsetAttribLocation, 0);
 		GL33.glVertexAttribDivisor(RotScaleAttribLocation, 0);
-		GlError.dumpError();
 	}
 	public void update(){
 		if(que.isEmpty()){
@@ -131,7 +128,6 @@ public class Grasslands{
 			}
 		que.clear();
 		checkCameraPos();
-		GlError.dumpError();
 	}
 	public void updateVisibility(){
 		grassBook.updateVisibility();

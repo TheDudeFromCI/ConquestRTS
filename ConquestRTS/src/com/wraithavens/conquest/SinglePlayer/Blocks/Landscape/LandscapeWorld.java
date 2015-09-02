@@ -8,7 +8,6 @@ import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
-import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 import com.wraithavens.conquest.Utility.Algorithms;
 
@@ -31,7 +30,6 @@ public class LandscapeWorld{
 	private int[] chunkLoadHeight = new int[5];
 	private ChunkHeightData chunkHeightDataTemp;
 	public LandscapeWorld(WorldNoiseMachine machine, EntityDatabase entityDatabase, Camera camera){
-		GlError.out("Building landscape.");
 		this.camera = camera;
 		this.entityDatabase = entityDatabase;
 		this.machine = machine;
@@ -43,7 +41,6 @@ public class LandscapeWorld{
 		shader.setUniform1I(0, 0);
 		ShadeAttribLocation = shader.getAttributeLocation("shade");
 		GL20.glEnableVertexAttribArray(ShadeAttribLocation);
-		GlError.dumpError();
 		spiral = new SpiralGridAlgorithm();
 		spiral.setMaxDistance(ViewDistance);
 		loadingLoop = new SecondaryLoop(camera, machine);
@@ -52,11 +49,9 @@ public class LandscapeWorld{
 	public void dispose(){
 		loadingLoop.dispose();
 		shader.dispose();
-		GlError.out("Disposing landscape.");
 		for(LandscapeChunk c : chunks)
 			c.dispose();
 		chunks.clear();
-		GlError.dumpError();
 	}
 	public LandscapeChunk getContainingChunk(int x, int y, int z, boolean load, ChunkHeightData heightData){
 		x = Algorithms.groupLocation(x, LandscapeChunk.LandscapeSize);
@@ -101,7 +96,6 @@ public class LandscapeWorld{
 				shader.setUniform3f(1, c.getX(), c.getY(), c.getZ());
 				c.render();
 			}
-		GlError.dumpError();
 	}
 	public void setup(Grasslands grassLands){
 		this.grassLands = grassLands;

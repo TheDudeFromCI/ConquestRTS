@@ -3,6 +3,7 @@ package com.wraithavens.conquest.SinglePlayer.Blocks.Landscape;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -15,11 +16,12 @@ import com.wraithavens.conquest.SinglePlayer.Entities.StaticEntity;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassPatch;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassTransform;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
-import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class LandscapeChunk{
 	public static final int LandscapeSize = 64;
+	private static long totalChunkLoadTime = 0;
+	private static int totalChunksLoaded = 0;
 	private final int x;
 	private final int y;
 	private final int z;
@@ -32,6 +34,7 @@ public class LandscapeChunk{
 	private final EntityDatabase entityDatabase;
 	private final Grasslands grassLands;
 	LandscapeChunk(EntityDatabase entityDatabase, Grasslands grassLands, int x, int y, int z, File file){
+		long time = System.nanoTime();
 		System.out.println("Chunk loaded.");
 		this.x = x;
 		this.y = y;
@@ -69,41 +72,32 @@ public class LandscapeChunk{
 			GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_STATIC_DRAW);
 			int plantLifeTypes = bin.getInt();
 			int locationCount;
+			StaticEntity e;
+			EntityType type;
 			for(i = 0; i<plantLifeTypes; i++){
-				EntityType type = EntityType.values()[bin.getInt()];
+				type = EntityType.values()[bin.getInt()];
 				locationCount = bin.getInt();
 				for(a = 0; a<locationCount; a++){
-					float vx = bin.getFloat();
-					float vy = bin.getFloat();
-					float vz = bin.getFloat();
-					float scale = bin.getFloat();
-					float yaw = bin.getFloat();
-					if(entityDatabase!=null){
-						StaticEntity e = new StaticEntity(type);
-						e.moveTo(vx, vy, vz);
-						e.scaleTo(scale);
-						e.setYaw(yaw);
-						plantLife.add(e);
-						entityDatabase.addEntity(e);
-					}
+					e = new StaticEntity(type);
+					e.moveTo(bin.getFloat(), bin.getFloat(), bin.getFloat());
+					e.scaleTo(bin.getFloat());
+					e.setYaw(bin.getFloat());
+					plantLife.add(e);
+					entityDatabase.addEntity(e);
 				}
 			}
 			int grassPatchCount = bin.getInt();
-			if(grassLands==null)
-				grassPatches = null;
-			else
-				grassPatches = new GrassPatch[grassPatchCount];
+			grassPatches = new GrassPatch[grassPatchCount];
+			ArrayList<GrassTransform> locations;
 			for(i = 0; i<grassPatchCount; i++){
-				ArrayList<GrassTransform> locations = new ArrayList();
-				EntityType grassType = EntityType.values()[bin.getInt()];
+				locations = new ArrayList();
+				type = EntityType.values()[bin.getInt()];
 				locationCount = bin.getInt();
 				for(a = 0; a<locationCount; a++)
 					locations.add(new GrassTransform(bin.getFloat(), bin.getFloat(), bin.getFloat(), bin
 						.getFloat(), bin.getFloat()));
-				if(grassLands!=null){
-					grassPatches[i] = new GrassPatch(grassType, locations, x, z);
-					grassLands.addPatch(grassPatches[i]);
-				}
+				grassPatches[i] = new GrassPatch(type, locations, x, z);
+				grassLands.addPatch(grassPatches[i]);
 			}
 			{
 				// ---
@@ -124,21 +118,21 @@ public class LandscapeChunk{
 					GL11.GL_UNSIGNED_BYTE, pixels);
 			}
 		}
-		GlError.dumpError();
+		totalChunkLoadTime += System.nanoTime()-time;
+		totalChunksLoaded++;
+		System.out.println("Average chunk load time: ~"
+			+NumberFormat.getInstance().format(totalChunkLoadTime/(double)totalChunksLoaded/1.0e+6)+" ms.");
 	}
 	void dispose(){
 		GL15.glDeleteBuffers(vbo);
 		GL15.glDeleteBuffers(ibo);
 		GL11.glDeleteTextures(textureId);
-		GlError.dumpError();
-		if(entityDatabase!=null)
-			for(StaticEntity batch : plantLife){
-				batch.dispose();
-				entityDatabase.removeEntity(batch);
-			}
-		if(grassPatches!=null)
-			for(GrassPatch patch : grassPatches)
-				grassLands.removePatch(patch);
+		for(StaticEntity batch : plantLife){
+			batch.dispose();
+			entityDatabase.removeEntity(batch);
+		}
+		for(GrassPatch patch : grassPatches)
+			grassLands.removePatch(patch);
 	}
 	int getX(){
 		return x;
@@ -156,6 +150,5 @@ public class LandscapeChunk{
 		GL11.glVertexPointer(3, GL11.GL_FLOAT, 13, 0);
 		GL20.glVertexAttribPointer(LandscapeWorld.ShadeAttribLocation, 1, GL11.GL_UNSIGNED_BYTE, true, 13, 12);
 		GL11.glDrawElements(GL11.GL_TRIANGLES, indexCount, GL11.GL_UNSIGNED_INT, 0);
-		GlError.dumpError();
 	}
 }

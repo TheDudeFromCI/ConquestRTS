@@ -9,7 +9,6 @@ import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
-import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 
 public class EntityDatabase{
@@ -33,7 +32,6 @@ public class EntityDatabase{
 	private boolean isColorBlended = false;
 	public EntityDatabase(Camera camera){
 		this.camera = camera;
-		GlError.out("Creating entity database.");
 		shader =
 			new ShaderProgram(new File(WraithavensConquest.assetFolder, "ModelShader.vert"), null, new File(
 				WraithavensConquest.assetFolder, "ModelShader.frag"));
@@ -42,7 +40,6 @@ public class EntityDatabase{
 			"uni_textureOffset", "uni_textureSize");
 		SingularShaderAttrib = shader.getAttributeLocation("shade");
 		GL20.glEnableVertexAttribArray(SingularShaderAttrib);
-		GlError.dumpError();
 	}
 	public void addEntity(Entity e){
 		entities.add(e);
@@ -52,14 +49,11 @@ public class EntityDatabase{
 		// VBOs multiple times per frame.
 		// ---
 		sort();
-		GlError.dumpError();
 	}
 	public void clear(){
-		GlError.out("Clearing entity database.");
 		for(Entity e : entities)
 			e.dispose();
 		entities.clear();
-		GlError.dumpError();
 	}
 	public void dispose(){
 		clear();
@@ -111,7 +105,6 @@ public class EntityDatabase{
 			shader.setUniform2f(1, e.getX(), e.getZ());
 			e.render();
 		}
-		GlError.dumpError();
 	}
 	public void setLandscape(LandscapeWorld landscape){
 		this.landscape = landscape;

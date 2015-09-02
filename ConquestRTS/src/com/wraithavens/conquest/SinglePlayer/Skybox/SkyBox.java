@@ -8,7 +8,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.MatrixUtils;
-import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 
 public class SkyBox{
@@ -30,21 +29,16 @@ public class SkyBox{
 		shader.bind();
 		shader.loadUniforms("texture");
 		shader.setUniform1I(0, 0);
-		GlError.dumpError();
 		vboId = GL15.glGenBuffers();
 		iboId = GL15.glGenBuffers();
 		buildVbo();
-		GlError.dumpError();
 	}
 	public void dispose(){
 		shader.dispose();
-		if(layer0!=null)
-			layer0.dispose();
-		if(layer1!=null)
-			layer1.dispose();
-		if(layer2!=null)
-			for(SkyboxClouds s : layer2)
-				s.dispose();
+		layer0.dispose();
+		layer1.dispose();
+		for(SkyboxClouds s : layer2)
+			s.dispose();
 	}
 	public void render(float cameraX, float cameraY, float cameraZ){
 		// ---
@@ -63,7 +57,6 @@ public class SkyBox{
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
 		GL11.glVertexPointer(3, GL11.GL_FLOAT, 12, 0);
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, iboId);
-		GlError.dumpError();
 		// ---
 		// Now render each layer in order.
 		// ---
@@ -79,7 +72,6 @@ public class SkyBox{
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glPopMatrix();
-		GlError.dumpError();
 	}
 	public void update(double time){
 		if(layer0!=null)
@@ -87,7 +79,6 @@ public class SkyBox{
 		if(layer2!=null)
 			for(SkyboxClouds s : layer2)
 				s.update(time);
-		GlError.dumpError();
 	}
 	private void buildVbo(){
 		ByteBuffer indexData = BufferUtils.createByteBuffer(24);
@@ -113,6 +104,5 @@ public class SkyBox{
 		vertexData.flip();
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertexData, GL15.GL_STATIC_DRAW);
-		GlError.dumpError();
 	}
 }

@@ -14,9 +14,9 @@ import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.Particles.ParticleBatch;
 import com.wraithavens.conquest.SinglePlayer.Particles.ParticleTypes.PollenParticleEngine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
-import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyBox;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxClouds;
+import com.wraithavens.conquest.SinglePlayer.Skybox.Sunbox;
 import com.wraithavens.conquest.Utility.LoadingScreen;
 
 public class SinglePlayerGame implements Driver{
@@ -36,8 +36,6 @@ public class SinglePlayerGame implements Driver{
 	private boolean initalized = false;
 	private LoadingScreen loadingScreen;
 	public void dispose(){
-		GlError.out("Disposing single player driver.");
-		GlError.dumpError();
 		dynmap.dispose();
 		skybox.dispose();
 		landscape.dispose();
@@ -53,7 +51,6 @@ public class SinglePlayerGame implements Driver{
 		if(initalized)
 			return;
 		initalized = true;
-		GlError.out("Initalizing single player driver.");
 		long[] seeds = new long[]{
 			0, 1, 2, 3, 4
 		};
@@ -61,7 +58,6 @@ public class SinglePlayerGame implements Driver{
 		// ---
 		// Setup the camera.
 		// ---
-		GlError.out("Preparing camera.");
 		camera.cameraMoveSpeed = 10.0f;
 		camera.goalY = machine.getGroundLevel(4096, 4096)+6;
 		camera.goalX = camera.x = 4096;
@@ -71,7 +67,7 @@ public class SinglePlayerGame implements Driver{
 		noise2 = new SkyboxClouds[SkyboxClouds.LayerCount];
 		for(int i = 0; i<SkyboxClouds.LayerCount; i++)
 			noise2[i] = new SkyboxClouds(false, (float)Math.random()*2, 0);
-		skybox = new SkyBox(noise, null, noise2);
+		skybox = new SkyBox(noise, new Sunbox(), noise2);
 		entityDatabase = new EntityDatabase(camera);
 		landscape = new LandscapeWorld(machine, entityDatabase, camera);
 		dynmap = new Dynmap(machine, this);
@@ -174,19 +170,8 @@ public class SinglePlayerGame implements Driver{
 				System.out.println("Walklock now set to "+walkLock+".");
 			}
 		}else if(key==GLFW.GLFW_KEY_9){
-			if(action==GLFW.GLFW_PRESS){
+			if(action==GLFW.GLFW_PRESS)
 				entityDatabase.clear();
-				GlError.out("Entity database cleared.");
-				GlError.out("Testing entity mesh references:");
-				for(EntityType e : EntityType.values()){
-					if(e.getMeshRenferences()==-1)
-						GlError.out("  "+e.fileName+" = No References");
-					else{
-						GlError.out(">>>Reference found for "+e.fileName+"!");
-						GlError.out("  -Reference count: "+e.getMeshRenferences());
-					}
-				}
-			}
 		}
 	}
 	public void onMouse(int button, int action){

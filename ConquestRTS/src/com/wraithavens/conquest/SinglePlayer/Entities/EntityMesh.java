@@ -12,7 +12,6 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.Vector3f;
-import com.wraithavens.conquest.SinglePlayer.RenderHelpers.GlError;
 import com.wraithavens.conquest.Utility.Algorithms;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
@@ -59,7 +58,6 @@ public class EntityMesh{
 				GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 				GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertexData, GL15.GL_STATIC_DRAW);
 				dataType = vertexCount<65536?GL11.GL_UNSIGNED_SHORT:GL11.GL_UNSIGNED_INT;
-				GlError.dumpError();
 			}
 			{
 				indexCount = bin.getInt();
@@ -145,11 +143,9 @@ public class EntityMesh{
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 		if(textureColorsId!=0)
 			GL11.glBindTexture(GL12.GL_TEXTURE_3D, textureColorsId);
-		GlError.dumpError();
 	}
 	void drawStatic(){
 		GL11.glDrawElements(GL11.GL_TRIANGLES, indexCount, dataType, 0);
-		GlError.dumpError();
 	}
 	Vector3f getAabbMax(){
 		return aabbMax;
@@ -175,6 +171,5 @@ public class EntityMesh{
 			dispose();
 			type.mesh = null;
 		}
-		GlError.dumpError();
 	}
 }
