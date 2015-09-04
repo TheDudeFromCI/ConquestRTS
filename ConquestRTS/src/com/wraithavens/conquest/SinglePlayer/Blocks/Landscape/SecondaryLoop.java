@@ -12,8 +12,11 @@ import com.wraithavens.conquest.SinglePlayer.BlockPopulators.ExtremeQuadOptimize
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Quad;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.QuadListener;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.QuadOptimizer;
+import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
+import com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities.DistantEntityHandler;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassTransform;
+import com.wraithavens.conquest.SinglePlayer.Heightmap.Dynmap;
 import com.wraithavens.conquest.SinglePlayer.Noise.Biome;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
@@ -95,9 +98,11 @@ public class SecondaryLoop implements Runnable{
 	private final int[][] tempStorage = new int[64][64];
 	private final VertexStorage vertices = new VertexStorage();
 	private final IndexStorage indices = new IndexStorage();
-	public SecondaryLoop(Camera camera, WorldNoiseMachine machine){
+	private final DistantEntityHandler distantEntityHandler;
+	public SecondaryLoop(Camera camera, WorldNoiseMachine machine, EntityDatabase entityDatabase, Dynmap dynmap){
 		this.camera = camera;
 		this.machine = machine;
+		distantEntityHandler = new DistantEntityHandler(entityDatabase, machine, dynmap);
 		spiral = new SpiralGridAlgorithm();
 		// ---
 		// And this should prevent the map from generating too many chunks will
@@ -114,13 +119,8 @@ public class SecondaryLoop implements Runnable{
 		running = false;
 	}
 	public void run(){
-		while(running){
-			try{
-				loadNext();
-			}catch(Exception exception){
-				exception.printStackTrace();
-			}
-		}
+		while(running)
+			loadNext();
 	}
 	private void attemptGenerateChunk(){
 		int x = spiral.getX()*LandscapeChunk.LandscapeSize;
@@ -444,11 +444,18 @@ public class SecondaryLoop implements Runnable{
 			new MassChunkHeightData(Algorithms.groupLocation(x, 128*64), Algorithms.groupLocation(z, 128*64));
 	}
 	private void loadNext(){
+		try{
+			Thread.sleep(1);
+		}catch(Exception exception){
+			exception.printStackTrace();
+		}
 		updateCameraLocation();
 		if(spiral.hasNext()){
 			spiral.next();
 			attemptGenerateChunk();
-		}else
+		}else if(!distantEntityHandler.isFullyLoaded())
+			distantEntityHandler.update();
+		else
 			try{
 				Thread.sleep(50);
 			}catch(InterruptedException e){

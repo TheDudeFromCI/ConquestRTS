@@ -56,6 +56,16 @@ public class Algorithms{
 		file.getParentFile().mkdirs();
 		return file;
 	}
+	public static File getDistantEntityGroupPath(int x, int z){
+		String s = WraithavensConquest.currentGameFolder+File.separatorChar+"Landscape";
+		int a1, b1;
+		a1 = Algorithms.groupLocation(x, 32768);
+		b1 = Algorithms.groupLocation(z, 32768);
+		s += File.separatorChar+(a1+","+b1);
+		File file = new File(s, x+","+z+"b.dat");
+		file.getParentFile().mkdirs();
+		return file;
+	}
 	/**
 	 * Gets the heightmap file inside it's correct directory.
 	 */

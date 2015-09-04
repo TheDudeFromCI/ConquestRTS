@@ -17,8 +17,12 @@ public abstract class Entity{
 		return mesh;
 	}
 	public abstract float getScale();
+	public EntityType getType(){
+		return mesh.getType();
+	}
 	public abstract float getX();
 	public abstract float getY();
+	public abstract float getYaw();
 	public abstract float getZ();
 	public abstract void render();
 	boolean isColorBlended(){

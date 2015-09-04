@@ -44,6 +44,10 @@ public class StaticEntity extends Entity{
 		return position.y;
 	}
 	@Override
+	public float getYaw(){
+		return yaw;
+	}
+	@Override
 	public float getZ(){
 		return position.z;
 	}

@@ -69,8 +69,8 @@ public class SinglePlayerGame implements Driver{
 			noise2[i] = new SkyboxClouds(false, (float)Math.random()*2, 0);
 		skybox = new SkyBox(noise, new Sunbox(), noise2);
 		entityDatabase = new EntityDatabase(camera);
-		landscape = new LandscapeWorld(machine, entityDatabase, camera);
 		dynmap = new Dynmap(machine, this);
+		landscape = new LandscapeWorld(machine, entityDatabase, camera, dynmap);
 		grassLands = new Grasslands(landscape, camera);
 		{
 			particleBatch = new ParticleBatch(camera);

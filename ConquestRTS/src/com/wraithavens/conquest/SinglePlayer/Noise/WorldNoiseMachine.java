@@ -136,6 +136,9 @@ public class WorldNoiseMachine{
 	public WorldNoiseMachine createInstance(){
 		return generate(seeds);
 	}
+	public Biome getBiomeAt(int x, int z){
+		return Biome.getFittingBiome(getHumidityRaw(x, z), getTempatureRaw(x, z), getLevelRaw(x, z));
+	}
 	public Biome getBiomeAt(int x, int z, float[] heightOut){
 		heightOut[0] = getHumidityRaw(x, z);
 		heightOut[1] = getTempatureRaw(x, z);

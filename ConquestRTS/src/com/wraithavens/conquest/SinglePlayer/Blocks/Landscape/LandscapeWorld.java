@@ -6,6 +6,7 @@ import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
+import com.wraithavens.conquest.SinglePlayer.Heightmap.Dynmap;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
@@ -13,7 +14,7 @@ import com.wraithavens.conquest.Utility.Algorithms;
 
 public class LandscapeWorld{
 	static int ShadeAttribLocation;
-	private static final int ViewDistance = 5;
+	private static final int ViewDistance = 2;
 	private final ArrayList<LandscapeChunk> chunks = new ArrayList();
 	private final ShaderProgram shader;
 	private final SpiralGridAlgorithm spiral;
@@ -29,7 +30,7 @@ public class LandscapeWorld{
 	private ChunkWorkerTask currentLoadingChunk;
 	private int[] chunkLoadHeight = new int[5];
 	private ChunkHeightData chunkHeightDataTemp;
-	public LandscapeWorld(WorldNoiseMachine machine, EntityDatabase entityDatabase, Camera camera){
+	public LandscapeWorld(WorldNoiseMachine machine, EntityDatabase entityDatabase, Camera camera, Dynmap dynmap){
 		this.camera = camera;
 		this.entityDatabase = entityDatabase;
 		this.machine = machine;
@@ -43,7 +44,7 @@ public class LandscapeWorld{
 		GL20.glEnableVertexAttribArray(ShadeAttribLocation);
 		spiral = new SpiralGridAlgorithm();
 		spiral.setMaxDistance(ViewDistance);
-		loadingLoop = new SecondaryLoop(camera, machine);
+		loadingLoop = new SecondaryLoop(camera, machine, entityDatabase, dynmap);
 		chunkLoadHeight[1] = 0;
 	}
 	public void dispose(){

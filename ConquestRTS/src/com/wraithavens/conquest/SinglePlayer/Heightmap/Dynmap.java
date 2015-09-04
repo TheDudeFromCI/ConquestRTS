@@ -51,6 +51,16 @@ public class Dynmap{
 			chunk.dispose();
 		shader.dispose();
 	}
+	public int getX(){
+		if(chunk==null)
+			return Integer.MAX_VALUE;
+		return chunk.getX();
+	}
+	public int getZ(){
+		if(chunk==null)
+			return Integer.MAX_VALUE;
+		return chunk.getZ();
+	}
 	public void render(){
 		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
 			/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 0.5f, 10000);
@@ -62,8 +72,6 @@ public class Dynmap{
 		chunk.render();
 	}
 	public void update(float x, float z){
-		// if(1<2)
-		// return;
 		int boardX = Algorithms.groupLocation((int)x, WalkingWrapDistance)-WalkingViewBuffer;
 		int boardZ = Algorithms.groupLocation((int)z, WalkingWrapDistance)-WalkingViewBuffer;
 		if(chunk==null||chunk.getX()!=boardX||chunk.getZ()!=boardZ){
