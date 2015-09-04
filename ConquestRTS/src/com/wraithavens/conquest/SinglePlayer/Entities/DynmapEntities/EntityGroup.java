@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import com.wraithavens.conquest.Launcher.MainLoop;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
-import com.wraithavens.conquest.SinglePlayer.Entities.StaticEntity;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.Utility.Algorithms;
 import com.wraithavens.conquest.Utility.BinaryFile;
@@ -13,7 +12,7 @@ import com.wraithavens.conquest.Utility.BinaryFile;
 public class EntityGroup{
 	private final int x;
 	private final int z;
-	private final ArrayList<StaticEntity> giantEntities = new ArrayList();
+	private final ArrayList<DynmapEntity> giantEntities = new ArrayList();
 	private final EntityDatabase database;
 	private EntityGroupLoadProtocol loadProtocol;
 	public EntityGroup(WorldNoiseMachine machine, EntityDatabase database, int x, int z){
@@ -27,21 +26,26 @@ public class EntityGroup{
 				BinaryFile bin = new BinaryFile(file);
 				bin.decompress(true);
 				int entityCount = bin.getInt();
-				StaticEntity e;
-				for(int i = 0; i<entityCount; i++){
-					e = new StaticEntity(EntityType.values()[bin.getInt()]);
-					e.moveTo(bin.getFloat(), bin.getFloat(), bin.getFloat());
-					e.scaleTo(bin.getFloat());
-					e.setYaw(bin.getFloat());
-					addEntity(e);
-				}
-				if(!bin.getBoolean())
-					loadProtocol = new EntityGroupLoadProtocol(machine, this, x, z, file, bin);
+				MainLoop.endLoopTasks.add(new Runnable(){
+					public void run(){
+						DynmapEntity e;
+						for(int i = 0; i<entityCount; i++){
+							e = new DynmapEntity(EntityType.values()[bin.getInt()]);
+							e.moveTo(bin.getFloat(), bin.getFloat(), bin.getFloat());
+							e.scaleTo(bin.getFloat());
+							e.setYaw(bin.getFloat());
+							addEntity(e);
+						}
+						if(!bin.getBoolean())
+							loadProtocol =
+								new EntityGroupLoadProtocol(machine, EntityGroup.this, x, z, file, bin);
+					}
+				});
 			}else
 				loadProtocol = new EntityGroupLoadProtocol(machine, this, x, z, file, null);
 		}
 	}
-	void addEntity(StaticEntity e){
+	void addEntity(DynmapEntity e){
 		synchronized(giantEntities){
 			giantEntities.add(e);
 		}
@@ -55,7 +59,7 @@ public class EntityGroup{
 		MainLoop.endLoopTasks.add(new Runnable(){
 			public void run(){
 				synchronized(giantEntities){
-					for(StaticEntity e : giantEntities)
+					for(DynmapEntity e : giantEntities)
 						database.removeEntity(e);
 				}
 			}
@@ -85,7 +89,7 @@ public class EntityGroup{
 	void saveEntities(BinaryFile bin){
 		bin.addInt(giantEntities.size());
 		synchronized(giantEntities){
-			for(StaticEntity e : giantEntities){
+			for(DynmapEntity e : giantEntities){
 				bin.addInt(e.getType().ordinal());
 				bin.addFloat(e.getX());
 				bin.addFloat(e.getY());

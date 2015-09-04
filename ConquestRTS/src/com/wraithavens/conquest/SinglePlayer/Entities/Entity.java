@@ -24,10 +24,10 @@ public abstract class Entity{
 	public abstract float getY();
 	public abstract float getYaw();
 	public abstract float getZ();
-	public abstract void render();
-	boolean isColorBlended(){
+	public boolean isColorBlended(){
 		return mesh.getType().colorBlended;
 	}
+	public abstract void render();
 	boolean sways(){
 		return mesh.getType().sways;
 	}

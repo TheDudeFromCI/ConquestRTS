@@ -125,6 +125,18 @@ public class EntityMesh{
 			System.out.println("Loaded entity: "+type.fileName+".  (~"+Algorithms.formatBytes(totalSize)+")");
 		}
 	}
+	public void drawStatic(){
+		GL11.glDrawElements(GL11.GL_TRIANGLES, indexCount, dataType, 0);
+	}
+	public Vector3f getAabbMax(){
+		return aabbMax;
+	}
+	public Vector3f getAabbMin(){
+		return aabbMin;
+	}
+	public EntityType getType(){
+		return type;
+	}
 	private void dispose(){
 		GL15.glDeleteBuffers(vbo);
 		GL15.glDeleteBuffers(ibo);
@@ -144,15 +156,6 @@ public class EntityMesh{
 		if(textureColorsId!=0)
 			GL11.glBindTexture(GL12.GL_TEXTURE_3D, textureColorsId);
 	}
-	void drawStatic(){
-		GL11.glDrawElements(GL11.GL_TRIANGLES, indexCount, dataType, 0);
-	}
-	Vector3f getAabbMax(){
-		return aabbMax;
-	}
-	Vector3f getAabbMin(){
-		return aabbMin;
-	}
 	int getId(){
 		return type.ordinal();
 	}
@@ -161,9 +164,6 @@ public class EntityMesh{
 	}
 	Vector3f getTextureSize3D(){
 		return textureSize3D;
-	}
-	EntityType getType(){
-		return type;
 	}
 	void removeReference(){
 		references--;

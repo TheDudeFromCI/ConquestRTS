@@ -3,7 +3,6 @@ package com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities;
 import java.io.File;
 import com.wraithavens.conquest.Launcher.MainLoop;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
-import com.wraithavens.conquest.SinglePlayer.Entities.StaticEntity;
 import com.wraithavens.conquest.SinglePlayer.Noise.Biome;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.Utility.BinaryFile;
@@ -53,7 +52,7 @@ public class EntityGroupLoadProtocol{
 		if(type!=null){
 			MainLoop.endLoopTasks.add(new Runnable(){
 				public void run(){
-					StaticEntity e = new StaticEntity(type);
+					DynmapEntity e = new DynmapEntity(type);
 					float height = machine.scaleHeight(tempOut[0], tempOut[1], tempOut[2], x, z);
 					e.moveTo(x, height, z);
 					e.scaleTo((float)(Math.random()*0.2f+0.9f));
