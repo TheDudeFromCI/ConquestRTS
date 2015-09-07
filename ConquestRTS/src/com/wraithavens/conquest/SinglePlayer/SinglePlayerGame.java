@@ -8,8 +8,8 @@ import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities.BatchList;
-import com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities.DynmapEntity;
 import com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities.DynmapEntityBatch;
+import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassTransform;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.SinglePlayer.Heightmap.Dynmap;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
@@ -115,15 +115,10 @@ public class SinglePlayerGame implements Driver{
 		// }
 		{
 			dynmapEntityBatches = new BatchList();
-			DynmapEntityBatch entityBatch = new DynmapEntityBatch(EntityType.TayleaFlower);
+			DynmapEntityBatch entityBatch = new DynmapEntityBatch(EntityType.Arcstone1);
 			for(int i = 0; i<10; i++){
-				DynmapEntity e = new DynmapEntity(EntityType.TayleaFlower);
 				int z = 4096+i*16;
-				e.moveTo(4096, machine.getGroundLevel(4096, z), z);
-				e.scaleTo(0.5f);
-				e.setYaw(0);
-				e.updateAABB();
-				entityBatch.addEntity(e);
+				entityBatch.addEntity(new GrassTransform(4096, machine.getGroundLevel(4096, z), z, 0.5f, 0));
 			}
 			entityBatch.rebuildBuffer();
 			dynmapEntityBatches.addBatch(entityBatch);

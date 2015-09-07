@@ -6,9 +6,10 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL15;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityMesh;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
+import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassTransform;
 
 public class DynmapEntityBatch{
-	private final ArrayList<DynmapEntity> entities = new ArrayList();
+	private final ArrayList<GrassTransform> entities = new ArrayList();
 	private final int instanceDataId;
 	private final EntityMesh mesh;
 	private FloatBuffer instanceData;
@@ -18,7 +19,7 @@ public class DynmapEntityBatch{
 		instanceDataId = GL15.glGenBuffers();
 		mesh = type.createReference();
 	}
-	public void addEntity(DynmapEntity e){
+	public void addEntity(GrassTransform e){
 		synchronized(entities){
 			entities.add(e);
 		}
@@ -31,11 +32,11 @@ public class DynmapEntityBatch{
 			int size = modelCount*5;
 			if(instanceData==null||instanceData.capacity()<size)
 				instanceData = BufferUtils.createFloatBuffer(size);
-			for(DynmapEntity e : entities){
+			for(GrassTransform e : entities){
 				instanceData.put(e.getX());
 				instanceData.put(e.getY());
 				instanceData.put(e.getZ());
-				instanceData.put(e.getYaw());
+				instanceData.put(e.getRotation());
 				instanceData.put(e.getScale());
 			}
 		}
@@ -48,8 +49,6 @@ public class DynmapEntityBatch{
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, instanceDataId);
 	}
 	void dispose(){
-		for(DynmapEntity e : entities)
-			e.dispose();
 		mesh.removeReference();
 		GL15.glDeleteBuffers(instanceDataId);
 	}
@@ -65,7 +64,7 @@ public class DynmapEntityBatch{
 	boolean needsRebuild(){
 		return needsRebuild;
 	}
-	void removeEntity(DynmapEntity e){
+	void removeEntity(GrassTransform e){
 		synchronized(entities){
 			entities.remove(e);
 		}
