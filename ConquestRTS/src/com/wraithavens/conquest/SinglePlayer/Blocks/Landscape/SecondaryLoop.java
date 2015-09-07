@@ -453,9 +453,10 @@ public class SecondaryLoop implements Runnable{
 		if(spiral.hasNext()){
 			spiral.next();
 			attemptGenerateChunk();
-		}else if(!distantEntityHandler.isFullyLoaded())
-			distantEntityHandler.update();
-		else
+			// }else if(!distantEntityHandler.isFullyLoaded())
+			// distantEntityHandler.update();
+			// else
+		}else
 			try{
 				Thread.sleep(50);
 			}catch(InterruptedException e){

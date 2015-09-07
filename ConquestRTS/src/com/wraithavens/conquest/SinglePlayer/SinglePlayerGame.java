@@ -7,7 +7,9 @@ import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
-import com.wraithavens.conquest.SinglePlayer.Entities.StaticEntity;
+import com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities.BatchList;
+import com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities.DynmapEntity;
+import com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities.DynmapEntityBatch;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.SinglePlayer.Heightmap.Dynmap;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
@@ -35,6 +37,7 @@ public class SinglePlayerGame implements Driver{
 	private ParticleBatch particleBatch;
 	private boolean initalized = false;
 	private LoadingScreen loadingScreen;
+	private BatchList dynmapEntityBatches;
 	public void dispose(){
 		dynmap.dispose();
 		skybox.dispose();
@@ -77,38 +80,53 @@ public class SinglePlayerGame implements Driver{
 			PollenParticleEngine e = new PollenParticleEngine(particleBatch, camera, 32);
 			particleBatch.addEngine(e);
 		}
+		entityDatabase.setLandscape(landscape);
+		// {
+		// StaticEntity e = new StaticEntity(EntityType.Other1);
+		// e.moveTo(4096, machine.getGroundLevel(4096, 4096), 4096);
+		// e.scaleTo(1/5f);
+		// e.updateAABB();
+		// entityDatabase.addEntity(e);
+		// e = new StaticEntity(EntityType.Other2);
+		// e.moveTo(4096, machine.getGroundLevel(4096, 4096+16), 4096+16);
+		// e.scaleTo(1/5f);
+		// e.updateAABB();
+		// entityDatabase.addEntity(e);
+		// e = new StaticEntity(EntityType.Other3);
+		// e.moveTo(4096, machine.getGroundLevel(4096, 4096+32), 4096+32);
+		// e.scaleTo(1/5f);
+		// e.updateAABB();
+		// entityDatabase.addEntity(e);
+		// e = new StaticEntity(EntityType.Other4);
+		// e.moveTo(4096, machine.getGroundLevel(4096, 4096+48), 4096+48);
+		// e.scaleTo(1/5f);
+		// e.updateAABB();
+		// entityDatabase.addEntity(e);
+		// e = new StaticEntity(EntityType.Other5);
+		// e.moveTo(4096, machine.getGroundLevel(4096, 4096+64), 4096+64);
+		// e.scaleTo(1/5f);
+		// e.updateAABB();
+		// entityDatabase.addEntity(e);
+		// e = new StaticEntity(EntityType.Other6);
+		// e.moveTo(4096, machine.getGroundLevel(4096, 4096+64+16), 4096+64+16);
+		// e.scaleTo(1/5f);
+		// e.updateAABB();
+		// entityDatabase.addEntity(e);
+		// }
 		{
-			entityDatabase.setLandscape(landscape);
-			StaticEntity e = new StaticEntity(EntityType.Other1);
-			e.moveTo(4096, machine.getGroundLevel(4096, 4096), 4096);
-			e.scaleTo(1/5f);
-			e.updateAABB();
-			entityDatabase.addEntity(e);
-			e = new StaticEntity(EntityType.Other2);
-			e.moveTo(4096, machine.getGroundLevel(4096, 4096+16), 4096+16);
-			e.scaleTo(1/5f);
-			e.updateAABB();
-			entityDatabase.addEntity(e);
-			e = new StaticEntity(EntityType.Other3);
-			e.moveTo(4096, machine.getGroundLevel(4096, 4096+32), 4096+32);
-			e.scaleTo(1/5f);
-			e.updateAABB();
-			entityDatabase.addEntity(e);
-			e = new StaticEntity(EntityType.Other4);
-			e.moveTo(4096, machine.getGroundLevel(4096, 4096+48), 4096+48);
-			e.scaleTo(1/5f);
-			e.updateAABB();
-			entityDatabase.addEntity(e);
-			e = new StaticEntity(EntityType.Other5);
-			e.moveTo(4096, machine.getGroundLevel(4096, 4096+64), 4096+64);
-			e.scaleTo(1/5f);
-			e.updateAABB();
-			entityDatabase.addEntity(e);
-			e = new StaticEntity(EntityType.Other6);
-			e.moveTo(4096, machine.getGroundLevel(4096, 4096+64+16), 4096+64+16);
-			e.scaleTo(1/5f);
-			e.updateAABB();
-			entityDatabase.addEntity(e);
+			dynmapEntityBatches = new BatchList();
+			DynmapEntityBatch entityBatch = new DynmapEntityBatch(EntityType.TayleaFlower);
+			for(int i = 0; i<10; i++){
+				DynmapEntity e = new DynmapEntity(EntityType.TayleaFlower);
+				int z = 4096+i*16;
+				e.moveTo(4096, machine.getGroundLevel(4096, z), z);
+				e.scaleTo(0.5f);
+				e.setYaw(0);
+				e.updateAABB();
+				entityBatch.addEntity(e);
+			}
+			entityBatch.rebuildBuffer();
+			dynmapEntityBatches.addBatch(entityBatch);
 		}
 		landscape.setup(grassLands);
 		loadingScreen = new LoadingScreen();
@@ -214,12 +232,12 @@ public class SinglePlayerGame implements Driver{
 			loadingScreen.render();
 			return;
 		}
+		GL11.glPushMatrix();
+		updateCamera(frameDelta);
 		if(wireframeMode)
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
 		else
 			GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
-		GL11.glPushMatrix();
-		updateCamera(frameDelta);
 		if(!wireframeMode)
 			skybox.render(camera.x, camera.y, camera.z);
 		dynmap.render();
@@ -228,6 +246,7 @@ public class SinglePlayerGame implements Driver{
 		entityDatabase.render();
 		grassLands.render();
 		particleBatch.render();
+		dynmapEntityBatches.render();
 		GL11.glPopMatrix();
 	}
 	public void update(double delta, double time){

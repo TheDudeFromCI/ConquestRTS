@@ -51,7 +51,6 @@ public class GrassBook{
 		this.landscape = landscape;
 	}
 	private int bindType(EntityType type){
-		assert types.containsKey(type);
 		GrassTypeData data = types.get(type);
 		data.bind();
 		GL20.glVertexAttribPointer(OffsetAttribLocation, 3, GL11.GL_FLOAT, false, 20, 0);
