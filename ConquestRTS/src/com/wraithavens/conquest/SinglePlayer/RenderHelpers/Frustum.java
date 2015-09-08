@@ -34,23 +34,55 @@ public class Frustum{
 		modelBuffer = BufferUtils.createFloatBuffer(16);
 		projectionBuffer = BufferUtils.createFloatBuffer(16);
 	}
-	public boolean cubeInFrustum(float x, float y, float z, float size){
+	public boolean boxInFrustum(float[] e){
+		// ---
+		// 0 = High X
+		// 1 = Low X
+		// 2 = High Y
+		// 3 = Low Y
+		// 4 = High Z
+		// 5 = Low Z
 		for(int i = 0; i<6; i++){
-			if(frustum[i][A]*(x-size)+frustum[i][B]*(y-size)+frustum[i][C]*(z-size)+frustum[i][D]>0)
+			if(frustum[i][A]*e[1]+frustum[i][B]*e[3]+frustum[i][C]*e[5]+frustum[i][D]>0)
 				continue;
-			if(frustum[i][A]*(x+size)+frustum[i][B]*(y-size)+frustum[i][C]*(z-size)+frustum[i][D]>0)
+			if(frustum[i][A]*e[0]+frustum[i][B]*e[3]+frustum[i][C]*e[5]+frustum[i][D]>0)
 				continue;
-			if(frustum[i][A]*(x-size)+frustum[i][B]*(y+size)+frustum[i][C]*(z-size)+frustum[i][D]>0)
+			if(frustum[i][A]*e[1]+frustum[i][B]*e[2]+frustum[i][C]*e[5]+frustum[i][D]>0)
 				continue;
-			if(frustum[i][A]*(x+size)+frustum[i][B]*(y+size)+frustum[i][C]*(z-size)+frustum[i][D]>0)
+			if(frustum[i][A]*e[0]+frustum[i][B]*e[2]+frustum[i][C]*e[5]+frustum[i][D]>0)
 				continue;
-			if(frustum[i][A]*(x-size)+frustum[i][B]*(y-size)+frustum[i][C]*(z+size)+frustum[i][D]>0)
+			if(frustum[i][A]*e[1]+frustum[i][B]*e[3]+frustum[i][C]*e[4]+frustum[i][D]>0)
 				continue;
-			if(frustum[i][A]*(x+size)+frustum[i][B]*(y-size)+frustum[i][C]*(z+size)+frustum[i][D]>0)
+			if(frustum[i][A]*e[0]+frustum[i][B]*e[3]+frustum[i][C]*e[4]+frustum[i][D]>0)
 				continue;
-			if(frustum[i][A]*(x-size)+frustum[i][B]*(y+size)+frustum[i][C]*(z+size)+frustum[i][D]>0)
+			if(frustum[i][A]*e[1]+frustum[i][B]*e[2]+frustum[i][C]*e[4]+frustum[i][D]>0)
 				continue;
-			if(frustum[i][A]*(x+size)+frustum[i][B]*(y+size)+frustum[i][C]*(z+size)+frustum[i][D]>0)
+			if(frustum[i][A]*e[0]+frustum[i][B]*e[2]+frustum[i][C]*e[4]+frustum[i][D]>0)
+				continue;
+			return false;
+		}
+		return true;
+	}
+	public boolean cubeInFrustum(float x, float y, float z, float size){
+		float a = x+size;
+		float b = y+size;
+		float c = z+size;
+		for(int i = 0; i<6; i++){
+			if(frustum[i][A]*x+frustum[i][B]*y+frustum[i][C]*z+frustum[i][D]>0)
+				continue;
+			if(frustum[i][A]*a+frustum[i][B]*y+frustum[i][C]*z+frustum[i][D]>0)
+				continue;
+			if(frustum[i][A]*x+frustum[i][B]*b+frustum[i][C]*z+frustum[i][D]>0)
+				continue;
+			if(frustum[i][A]*a+frustum[i][B]*b+frustum[i][C]*z+frustum[i][D]>0)
+				continue;
+			if(frustum[i][A]*x+frustum[i][B]*y+frustum[i][C]*c+frustum[i][D]>0)
+				continue;
+			if(frustum[i][A]*a+frustum[i][B]*y+frustum[i][C]*c+frustum[i][D]>0)
+				continue;
+			if(frustum[i][A]*x+frustum[i][B]*b+frustum[i][C]*c+frustum[i][D]>0)
+				continue;
+			if(frustum[i][A]*a+frustum[i][B]*b+frustum[i][C]*c+frustum[i][D]>0)
 				continue;
 			return false;
 		}
