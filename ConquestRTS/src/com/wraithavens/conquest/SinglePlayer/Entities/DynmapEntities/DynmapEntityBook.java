@@ -9,8 +9,12 @@ import com.wraithavens.conquest.Utility.BinaryFile;
 class DynmapEntityBook{
 	private final BatchList batchList;
 	private final HashMap<EntityType,DynmapEntityBatch> batches = new HashMap();
-	DynmapEntityBook(BatchList batchList){
+	private final int x;
+	private final int z;
+	DynmapEntityBook(BatchList batchList, int x, int z){
 		this.batchList = batchList;
+		this.x = x;
+		this.z = z;
 	}
 	void addEntity(EntityType type, GrassTransform transform, boolean update){
 		if(batches.containsKey(type)){
@@ -21,7 +25,7 @@ class DynmapEntityBook{
 		}else{
 			MainLoop.endLoopTasks.add(new Runnable(){
 				public void run(){
-					DynmapEntityBatch b = new DynmapEntityBatch(type);
+					DynmapEntityBatch b = new DynmapEntityBatch(type, x, z, 8192);
 					b.addEntity(transform);
 					batches.put(type, b);
 					batchList.addBatch(b);

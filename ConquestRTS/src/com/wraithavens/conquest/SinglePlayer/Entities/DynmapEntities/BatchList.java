@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL31;
 import org.lwjgl.opengl.GL33;
+import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 
 public class BatchList{
@@ -13,7 +14,9 @@ public class BatchList{
 	private final int rotScaleAttribLocation;
 	private final int shadeAttribLocation;
 	private final ShaderProgram shader;
-	public BatchList(){
+	private final Camera camera;
+	public BatchList(Camera camera){
+		this.camera = camera;
 		shader = new ShaderProgram("DynmapEntities");
 		shader.bind();
 		offsetAttribLocation = shader.getAttributeLocation("att_offset");
@@ -43,6 +46,8 @@ public class BatchList{
 		GL33.glVertexAttribDivisor(rotScaleAttribLocation, 1);
 		synchronized(batches){
 			for(DynmapEntityBatch batch : batches){
+				if(!batch.isVisible(camera))
+					continue;
 				batch.bind(shadeAttribLocation);
 				GL20.glVertexAttribPointer(offsetAttribLocation, 3, GL11.GL_FLOAT, false, 20, 0);
 				GL20.glVertexAttribPointer(rotScaleAttribLocation, 2, GL11.GL_FLOAT, false, 20, 12);

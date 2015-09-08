@@ -5,21 +5,26 @@ import java.util.ArrayList;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL15;
 import com.wraithavens.conquest.Launcher.MainLoop;
+import com.wraithavens.conquest.SinglePlayer.Entities.AABB;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityMesh;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassTransform;
+import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class DynmapEntityBatch{
 	private final ArrayList<GrassTransform> entities = new ArrayList();
 	private final int instanceDataId;
 	private final EntityMesh mesh;
+	private final AABB aabb;
 	private FloatBuffer instanceData;
 	private boolean needsRebuild;
 	private int modelCount;
-	DynmapEntityBatch(EntityType type){
+	DynmapEntityBatch(EntityType type, int x, int z, int size){
 		instanceDataId = GL15.glGenBuffers();
 		mesh = type.createReference();
+		aabb = new AABB();
+		aabb.set(x, -100000, x, x+size, 100000, z+size);
 	}
 	public void addEntity(GrassTransform e){
 		synchronized(entities){
@@ -71,6 +76,9 @@ public class DynmapEntityBatch{
 		synchronized(entities){
 			return entities.size();
 		}
+	}
+	boolean isVisible(Camera camera){
+		return aabb.visible(camera);
 	}
 	boolean needsRebuild(){
 		return needsRebuild;

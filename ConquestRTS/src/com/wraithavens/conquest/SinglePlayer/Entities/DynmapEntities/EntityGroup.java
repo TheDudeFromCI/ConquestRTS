@@ -15,7 +15,7 @@ public class EntityGroup{
 	private EntityGroupLoadProtocol loadProtocol;
 	public EntityGroup(WorldNoiseMachine machine, BatchList batchList, int x, int z){
 		System.out.println("Loaded entity group: ["+x+", "+z+"]");
-		book = new DynmapEntityBook(batchList);
+		book = new DynmapEntityBook(batchList, x, z);
 		this.x = x;
 		this.z = z;
 		{
