@@ -1,8 +1,8 @@
 package com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities;
 
 import java.io.File;
-import com.wraithavens.conquest.Launcher.MainLoop;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
+import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassTransform;
 import com.wraithavens.conquest.SinglePlayer.Noise.Biome;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.Utility.BinaryFile;
@@ -49,20 +49,10 @@ public class EntityGroupLoadProtocol{
 		float[] tempOut = new float[3];
 		Biome biome = machine.getBiomeAt(x, z, tempOut);
 		EntityType type = dictionary.randomEntity(biome);
-		if(type!=null){
-			MainLoop.endLoopTasks.add(new Runnable(){
-				public void run(){
-					DynmapEntity e = new DynmapEntity(type);
-					float height = machine.scaleHeight(tempOut[0], tempOut[1], tempOut[2], x, z);
-					e.moveTo(x, height, z);
-					e.scaleTo((float)(Math.random()*0.2f+0.9f));
-					e.setYaw((float)(Math.random()*360));
-					e.updateAABB();
-					group.addEntity(e);
-					System.out.println("  Generated entity.");
-				}
-			});
-		}
+		if(type!=null)
+			group.addEntity(type,
+				new GrassTransform(x, machine.scaleHeight(tempOut[0], tempOut[1], tempOut[2], x, z), z,
+					(float)(Math.random()*360), (float)(Math.random()*0.2f+0.9f)), true);
 		step++;
 		return step==dictionary.getSpawnRate();
 	}
@@ -113,7 +103,7 @@ public class EntityGroupLoadProtocol{
 						save(true);
 						return true;
 					}
-				System.out.println("  Generated "+step+" entities.");
+				System.out.println("  Generated "+step+"/"+dictionary.getSpawnRate()+" entities.");
 			}else{
 				for(int i = 0; i<100; i++)
 					if(loadPointAttempt()){
@@ -122,7 +112,7 @@ public class EntityGroupLoadProtocol{
 						break;
 					}
 				if(!loadingEntities)
-					System.out.println("  Generated "+step+" points.");
+					System.out.println("  Generated "+step+"/"+dictionary.getSpawnRate()+" points.");
 				else
 					System.out.println("  Generated all points.");
 			}

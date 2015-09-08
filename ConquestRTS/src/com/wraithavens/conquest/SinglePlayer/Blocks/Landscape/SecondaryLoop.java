@@ -12,8 +12,8 @@ import com.wraithavens.conquest.SinglePlayer.BlockPopulators.ExtremeQuadOptimize
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Quad;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.QuadListener;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.QuadOptimizer;
-import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
+import com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities.BatchList;
 import com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities.DistantEntityHandler;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassTransform;
 import com.wraithavens.conquest.SinglePlayer.Heightmap.Dynmap;
@@ -99,10 +99,10 @@ public class SecondaryLoop implements Runnable{
 	private final VertexStorage vertices = new VertexStorage();
 	private final IndexStorage indices = new IndexStorage();
 	private final DistantEntityHandler distantEntityHandler;
-	public SecondaryLoop(Camera camera, WorldNoiseMachine machine, EntityDatabase entityDatabase, Dynmap dynmap){
+	public SecondaryLoop(Camera camera, WorldNoiseMachine machine, Dynmap dynmap, BatchList batchList){
 		this.camera = camera;
 		this.machine = machine;
-		distantEntityHandler = new DistantEntityHandler(entityDatabase, machine, dynmap);
+		distantEntityHandler = new DistantEntityHandler(machine, dynmap, batchList);
 		spiral = new SpiralGridAlgorithm();
 		// ---
 		// And this should prevent the map from generating too many chunks will
@@ -453,10 +453,9 @@ public class SecondaryLoop implements Runnable{
 		if(spiral.hasNext()){
 			spiral.next();
 			attemptGenerateChunk();
-			// }else if(!distantEntityHandler.isFullyLoaded())
-			// distantEntityHandler.update();
-			// else
-		}else
+		}else if(!distantEntityHandler.isFullyLoaded())
+			distantEntityHandler.update();
+		else
 			try{
 				Thread.sleep(50);
 			}catch(InterruptedException e){

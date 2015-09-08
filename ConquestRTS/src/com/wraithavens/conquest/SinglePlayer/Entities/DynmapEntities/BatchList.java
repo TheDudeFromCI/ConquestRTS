@@ -24,20 +24,31 @@ public class BatchList{
 		GL20.glEnableVertexAttribArray(shadeAttribLocation);
 	}
 	public void addBatch(DynmapEntityBatch b){
-		batches.add(b);
+		synchronized(batches){
+			batches.add(b);
+		}
+	}
+	public void removeBatch(DynmapEntityBatch b){
+		synchronized(batches){
+			batches.remove(b);
+		}
 	}
 	public void render(){
-		if(batches.isEmpty())
-			return;
+		synchronized(batches){
+			if(batches.isEmpty())
+				return;
+		}
 		shader.bind();
 		GL33.glVertexAttribDivisor(offsetAttribLocation, 1);
 		GL33.glVertexAttribDivisor(rotScaleAttribLocation, 1);
-		for(DynmapEntityBatch batch : batches){
-			batch.bind(shadeAttribLocation);
-			GL20.glVertexAttribPointer(offsetAttribLocation, 3, GL11.GL_FLOAT, false, 20, 0);
-			GL20.glVertexAttribPointer(rotScaleAttribLocation, 2, GL11.GL_FLOAT, false, 20, 12);
-			GL31.glDrawElementsInstanced(GL11.GL_TRIANGLES, batch.getIndexCount(), batch.getDataType(), 0,
-				batch.getCount());
+		synchronized(batches){
+			for(DynmapEntityBatch batch : batches){
+				batch.bind(shadeAttribLocation);
+				GL20.glVertexAttribPointer(offsetAttribLocation, 3, GL11.GL_FLOAT, false, 20, 0);
+				GL20.glVertexAttribPointer(rotScaleAttribLocation, 2, GL11.GL_FLOAT, false, 20, 12);
+				GL31.glDrawElementsInstanced(GL11.GL_TRIANGLES, batch.getIndexCount(), batch.getDataType(), 0,
+					batch.getCount());
+			}
 		}
 		GL33.glVertexAttribDivisor(offsetAttribLocation, 0);
 		GL33.glVertexAttribDivisor(rotScaleAttribLocation, 0);

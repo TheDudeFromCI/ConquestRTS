@@ -1,21 +1,20 @@
 package com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities;
 
-import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Heightmap.Dynmap;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 
 public class DistantEntityHandler{
 	private final EntityGroup[] visibleEntities = new EntityGroup[16];
-	private final EntityDatabase database;
 	private final WorldNoiseMachine machine;
 	private final Dynmap dynmap;
+	private final BatchList batchList;
 	private boolean fullyLoaded = false;
 	private int dynmapX = Integer.MAX_VALUE;
 	private int dynmapZ = Integer.MAX_VALUE;
-	public DistantEntityHandler(EntityDatabase database, WorldNoiseMachine machine, Dynmap dynmap){
-		this.database = database;
+	public DistantEntityHandler(WorldNoiseMachine machine, Dynmap dynmap, BatchList batchList){
 		this.machine = machine;
 		this.dynmap = dynmap;
+		this.batchList = batchList;
 	}
 	public boolean isFullyLoaded(){
 		updateDynmap();
@@ -59,7 +58,7 @@ public class DistantEntityHandler{
 						continue groupFinder;
 				for(i = 0; i<16; i++)
 					if(visibleEntities[i]==null){
-						visibleEntities[i] = new EntityGroup(machine, database, a, b);
+						visibleEntities[i] = new EntityGroup(machine, batchList, a, b);
 						fullyLoaded = false;
 						continue groupFinder;
 					}
