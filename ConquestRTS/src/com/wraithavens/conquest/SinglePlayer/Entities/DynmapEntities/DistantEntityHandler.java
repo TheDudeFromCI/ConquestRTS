@@ -51,8 +51,10 @@ public class DistantEntityHandler{
 				visibleEntities[i] = null;
 			}
 		}
-		for(a = x; a<endX; a += 8192)
-			groupFinder:for(b = z; b<endZ; b += 8192){
+		endX -= 8192;
+		endZ -= 8192;
+		for(a = x+8192; a<endX; a += 4096)
+			groupFinder:for(b = z+8192; b<endZ; b += 4096){
 				for(i = 0; i<16; i++)
 					if(visibleEntities[i]!=null&&visibleEntities[i].getX()==a&&visibleEntities[i].getZ()==b)
 						continue groupFinder;

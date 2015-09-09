@@ -16,30 +16,30 @@ class DynmapEntityBook{
 		this.x = x;
 		this.z = z;
 	}
-	void addEntity(EntityType type, GrassTransform transform, boolean update){
+	private void addEntity2(EntityType type, GrassTransform transform, boolean update){
 		if(batches.containsKey(type)){
 			DynmapEntityBatch b = batches.get(type);
 			b.addEntity(transform);
 			if(update)
 				b.rebuildBuffer();
 		}else{
+			DynmapEntityBatch b = new DynmapEntityBatch(type, x, z, 8192);
+			b.addEntity(transform);
+			batches.put(type, b);
+			batchList.addBatch(b);
+			if(update)
+				b.rebuildBuffer();
+		}
+	}
+	void addEntity(EntityType type, GrassTransform transform, boolean update){
+		if(update){
 			MainLoop.endLoopTasks.add(new Runnable(){
 				public void run(){
-					DynmapEntityBatch b = new DynmapEntityBatch(type, x, z, 8192);
-					b.addEntity(transform);
-					batches.put(type, b);
-					batchList.addBatch(b);
-					if(update)
-						b.rebuildBuffer();
+					addEntity2(type, transform, update);
 				}
 			});
-			while(!batches.containsKey(type))
-				try{
-					Thread.sleep(1);
-				}catch(Exception exception){
-					exception.printStackTrace();
-				}
-		}
+		}else
+			addEntity2(type, transform, update);
 	}
 	void dispose(){
 		for(EntityType type : batches.keySet()){

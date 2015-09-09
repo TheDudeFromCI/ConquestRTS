@@ -20,6 +20,7 @@ public class DynmapEntityBatch{
 	private FloatBuffer instanceData;
 	private boolean needsRebuild;
 	private int modelCount;
+	private int visibility;
 	DynmapEntityBatch(EntityType type, int x, int z, int size){
 		instanceDataId = GL15.glGenBuffers();
 		mesh = type.createReference();
@@ -55,9 +56,24 @@ public class DynmapEntityBatch{
 			}
 		});
 	}
-	void bind(int shadeAttribLocation){
-		mesh.dynmapBatchBind(shadeAttribLocation);
+	void bind(){
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, instanceDataId);
+	}
+	void calculateVisibility(Camera camera, int dynmapX, int dynmapZ){
+		if(aabb.visible(camera)){
+			int x = (int)aabb.getX();
+			int z = (int)aabb.getZ();
+			int minX = dynmapX+4096*3;
+			int minZ = dynmapZ+4096*3;
+			if(x>=minX&&x<minX+8192&&z>=minZ&&z<minZ+8192)
+				visibility = 1;
+			else
+				visibility = 2;
+		}else
+			visibility = 0;
+	}
+	int compare(DynmapEntityBatch other){
+		return mesh==other.mesh?0:mesh.getType().ordinal()>other.mesh.getType().ordinal()?1:-1;
 	}
 	void dispose(){
 		mesh.removeReference();
@@ -72,13 +88,22 @@ public class DynmapEntityBatch{
 	int getIndexCount(){
 		return mesh.getIndexCount();
 	}
+	EntityMesh getMesh(){
+		return mesh;
+	}
 	int getRealCount(){
 		synchronized(entities){
 			return entities.size();
 		}
 	}
-	boolean isVisible(Camera camera){
-		return aabb.visible(camera);
+	EntityType getType(){
+		return mesh.getType();
+	}
+	boolean isCloslyVisible(){
+		return visibility==1;
+	}
+	boolean isDistantlyVisible(){
+		return visibility==2;
 	}
 	boolean needsRebuild(){
 		return needsRebuild;

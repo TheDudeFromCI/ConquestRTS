@@ -31,7 +31,7 @@ public class EntityGroupLoadProtocol{
 		this.machine = machine;
 		dictionary = new GiantEntityDictionary();
 		possibleEntityLocations = new int[dictionary.getSpawnRate()*2];
-		loadRange = 8192-dictionary.getMinDistance();
+		loadRange = 4096-dictionary.getMinDistance();
 		loadOffsetX = dictionary.getMinDistance()/2f+x;
 		loadOffsetZ = dictionary.getMinDistance()/2f+z;
 		if(bin!=null){

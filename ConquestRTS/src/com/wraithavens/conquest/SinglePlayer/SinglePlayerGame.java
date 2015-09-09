@@ -70,7 +70,7 @@ public class SinglePlayerGame implements Driver{
 		skybox = new SkyBox(noise, new Sunbox(), noise2);
 		entityDatabase = new EntityDatabase(camera);
 		dynmap = new Dynmap(machine, this);
-		dynmapEntityBatches = new BatchList(camera);
+		dynmapEntityBatches = new BatchList(camera, dynmap);
 		landscape = new LandscapeWorld(machine, entityDatabase, camera, dynmap, dynmapEntityBatches);
 		grassLands = new Grasslands(landscape, camera);
 		{

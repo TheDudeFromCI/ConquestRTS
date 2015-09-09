@@ -12,7 +12,7 @@ public class GiantEntityDictionary{
 		HashMap<Biome,TempDictionaryEntry> averageDistances = new HashMap();
 		averageDistances.put(Biome.ArcstoneHills, new TempDictionaryEntry(400.0, EntityType.Arcstone1, 7));
 		double a = rebuild(averageDistances);
-		spawnRate = (int)(8192/a*(8192/a));
+		spawnRate = (int)(4096/a*(4096/a));
 		minDistance = (float)(a/2);
 	}
 	private double rebuild(HashMap<Biome,TempDictionaryEntry> averageDistances){
