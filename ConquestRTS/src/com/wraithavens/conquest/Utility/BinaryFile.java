@@ -174,6 +174,9 @@ public class BinaryFile{
 	public int getPos(){
 		return pos;
 	}
+	public int getRemaining(){
+		return binary.length-pos;
+	}
 	public short getShort(){
 		short i = (short)(binary[pos]&0xFF|(binary[pos+1]&0xFF)<<8);
 		pos += 2;

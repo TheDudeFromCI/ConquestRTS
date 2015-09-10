@@ -75,7 +75,7 @@ public class DynmapEntityBatch{
 		return mesh.getDataType();
 	}
 	int getIndexCount(){
-		return mesh.getIndexCount();
+		return mesh.getDynmapIndexCount();
 	}
 	EntityMesh getMesh(){
 		return mesh;

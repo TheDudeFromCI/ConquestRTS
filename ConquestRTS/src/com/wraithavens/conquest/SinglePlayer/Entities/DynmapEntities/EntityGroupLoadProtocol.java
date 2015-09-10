@@ -52,7 +52,7 @@ public class EntityGroupLoadProtocol{
 		if(type!=null)
 			group.addEntity(type,
 				new EntityTransform(x, machine.scaleHeight(tempOut[0], tempOut[1], tempOut[2], x, z), z,
-					(float)(Math.random()*360), (float)(Math.random()*0.2f+0.9f), 0), true);
+					(float)(Math.random()*360), 1.0f, 0), true);
 		step++;
 		return step==dictionary.getSpawnRate();
 	}

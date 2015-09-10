@@ -20,13 +20,17 @@ public class EntityMesh{
 	int references = 0;
 	private final int vbo;
 	private final int ibo;
+	private final int vbo2;
+	private final int ibo2;
 	private final int textureColorsId;
 	private final int indexCount;
 	private final int dataType;
+	private final int dynmapIndices;
 	private final Vector3f aabbMin;
 	private final Vector3f aabbMax;
 	private final Vector3f textureOffset3D = new Vector3f();
 	private final Vector3f textureSize3D = new Vector3f();
+	private boolean dynmapBound = false;
 	EntityMesh(EntityType type){
 		this.type = type;
 		vbo = GL15.glGenBuffers();
@@ -37,11 +41,16 @@ public class EntityMesh{
 			bin.decompress(true);
 			// ---
 			// Get the type of mesh this TAL file represents.
-			// 0 = Normal Static Mesh
-			// 1 = Mesh with bones. (TODO)
-			// 2 = Giant Object. (Has 3D Color Texture.)
+			// 1 Bit = Has Bones? (TODO)
+			// 2 Bit = Is Color Blended?
+			// 4 Bit = Has Decimated Model?
+			// 8 Bit = Has Billboard Images? (TODO)
 			// ----
 			byte meshType = bin.getByte();
+			// boolean hasBones = (meshType&1)==1;
+			boolean isColorBlended = (meshType&2)==2;
+			boolean hasDecimatedModel = (meshType&4)==4;
+			// boolean hasBillboardImage = (meshType&8)==8;
 			int vertexCount = bin.getInt();
 			{
 				ByteBuffer vertexData = BufferUtils.createByteBuffer(vertexCount*16);
@@ -85,7 +94,7 @@ public class EntityMesh{
 				// ---
 				// Load the 3d texture, if it exists.
 				// ---
-				if(meshType==2){
+				if(isColorBlended){
 					textureColorsId = GL11.glGenTextures();
 					GL11.glBindTexture(GL12.GL_TEXTURE_3D, textureColorsId);
 					GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
@@ -121,7 +130,39 @@ public class EntityMesh{
 			}
 			aabbMin = new Vector3f(bin.getFloat(), bin.getFloat(), bin.getFloat());
 			aabbMax = new Vector3f(bin.getFloat(), bin.getFloat(), bin.getFloat());
-			long totalSize = vertexCount*16L+indexCount*(dataType==GL11.GL_UNSIGNED_SHORT?2L:4L)+byteCount;
+			int decimationSize = 0;
+			if(hasDecimatedModel){
+				int vc = bin.getInt();
+				int ic = bin.getInt();
+				decimationSize += vc*13+ic*2;
+				dynmapIndices = ic;
+				vbo2 = GL15.glGenBuffers();
+				ibo2 = GL15.glGenBuffers();
+				ByteBuffer vertexData = BufferUtils.createByteBuffer(vc*13);
+				ShortBuffer indexData = BufferUtils.createShortBuffer(ic);
+				int i;
+				for(i = 0; i<vc; i++){
+					vertexData.putFloat(bin.getFloat());
+					vertexData.putFloat(bin.getFloat());
+					vertexData.putFloat(bin.getFloat());
+					vertexData.put(bin.getByte());
+				}
+				for(i = 0; i<ic; i++)
+					indexData.put(bin.getShort());
+				vertexData.flip();
+				indexData.flip();
+				System.out.println("Entity Remaining: "+bin.getRemaining());
+				GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo2);
+				GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertexData, GL15.GL_STATIC_DRAW);
+				GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo2);
+				GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_STATIC_DRAW);
+			}else{
+				vbo2 = 0;
+				ibo2 = 0;
+				dynmapIndices = 0;
+			}
+			long totalSize =
+				vertexCount*16L+indexCount*(dataType==GL11.GL_UNSIGNED_SHORT?2L:4L)+byteCount+decimationSize;
 			System.out.println("Loaded entity: "+type.fileName+".  (~"+Algorithms.formatBytes(totalSize)+")");
 		}
 	}
@@ -131,18 +172,32 @@ public class EntityMesh{
 		GL20.glVertexAttribPointer(EntityDatabase.SingularShaderAttrib, 1, GL11.GL_UNSIGNED_BYTE, true, 16, 12);
 		GL11.glColorPointer(3, GL11.GL_UNSIGNED_BYTE, 16, 13);
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
-		if(textureColorsId!=0)
+		if(textureColorsId!=0){
 			GL11.glBindTexture(GL12.GL_TEXTURE_3D, textureColorsId);
+			if(dynmapBound){
+				dynmapBound = false;
+				GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL11.GL_TEXTURE_MIN_FILTER,
+					GL11.GL_NEAREST_MIPMAP_LINEAR);
+				GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+			}
+		}
 	}
 	public void drawStatic(){
 		GL11.glDrawElements(GL11.GL_TRIANGLES, indexCount, dataType, 0);
 	}
 	public void dynmapBatchBind(int shadeAtttribLocation){
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
-		GL11.glVertexPointer(3, GL11.GL_FLOAT, 16, 0);
-		GL20.glVertexAttribPointer(shadeAtttribLocation, 1, GL11.GL_UNSIGNED_BYTE, true, 16, 12);
-		GL11.glColorPointer(3, GL11.GL_UNSIGNED_BYTE, 16, 13);
-		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo2);
+		GL11.glVertexPointer(3, GL11.GL_FLOAT, 13, 0);
+		GL20.glVertexAttribPointer(shadeAtttribLocation, 1, GL11.GL_UNSIGNED_BYTE, true, 13, 12);
+		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo2);
+		GL11.glBindTexture(GL12.GL_TEXTURE_3D, textureColorsId);
+		// if(!dynmapBound){
+		// dynmapBound = true;
+		// GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL11.GL_TEXTURE_MIN_FILTER,
+		// GL11.GL_NEAREST_MIPMAP_NEAREST);
+		// GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL11.GL_TEXTURE_MAG_FILTER,
+		// GL11.GL_NEAREST);
+		// }
 	}
 	public Vector3f getAabbMax(){
 		return aabbMax;
@@ -153,8 +208,17 @@ public class EntityMesh{
 	public int getDataType(){
 		return dataType;
 	}
+	public int getDynmapIndexCount(){
+		return dynmapIndices;
+	}
 	public int getIndexCount(){
 		return indexCount;
+	}
+	public Vector3f getTextureOffset3D(){
+		return textureOffset3D;
+	}
+	public Vector3f getTextureSize3D(){
+		return textureSize3D;
 	}
 	public EntityType getType(){
 		return type;
@@ -169,6 +233,10 @@ public class EntityMesh{
 	private void dispose(){
 		GL15.glDeleteBuffers(vbo);
 		GL15.glDeleteBuffers(ibo);
+		if(vbo2!=0){
+			GL15.glDeleteBuffers(vbo2);
+			GL15.glDeleteBuffers(ibo2);
+		}
 		if(textureColorsId!=0)
 			GL11.glDeleteTextures(textureColorsId);
 		System.out.println(type.fileName+" disposed.");
@@ -178,11 +246,5 @@ public class EntityMesh{
 	}
 	int getId(){
 		return type.ordinal();
-	}
-	Vector3f getTextureOffset3D(){
-		return textureOffset3D;
-	}
-	Vector3f getTextureSize3D(){
-		return textureSize3D;
 	}
 }

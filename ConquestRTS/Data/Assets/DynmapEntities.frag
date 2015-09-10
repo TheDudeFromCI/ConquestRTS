@@ -1,5 +1,7 @@
-flat in vec3 color;
+uniform sampler3D texture;
+in float shade;
+in vec3 uv;
 
 void main(){
-	gl_FragColor = vec4(color, 1.0f);
+	gl_FragColor = vec4(texture(texture, uv).rgb*shade, 1.0f);
 }

@@ -6,6 +6,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL31;
 import org.lwjgl.opengl.GL33;
+import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
@@ -26,6 +27,8 @@ public class BatchList{
 	public BatchList(){
 		shader = new ShaderProgram("DynmapEntities");
 		shader.bind();
+		shader.loadUniforms("texture", "uni_textureOffset", "uni_textureSize");
+		shader.setUniform1I(0, 0);
 		offsetAttribLocation = shader.getAttributeLocation("att_offset");
 		rotScaleAttribLocation = shader.getAttributeLocation("att_rotScale");
 		shadeAttribLocation = shader.getAttributeLocation("att_shade");
@@ -51,17 +54,22 @@ public class BatchList{
 			GL33.glVertexAttribDivisor(offsetAttribLocation, 1);
 			GL33.glVertexAttribDivisor(rotScaleAttribLocation, 1);
 			EntityType boundType = null;
+			Vector3f textureOffset3d, textureSize3D;
 			synchronized(batches){
 				for(DynmapEntityBatch batch : batches){
 					if(boundType==null||boundType!=batch.getType()){
 						boundType = batch.getType();
 						batch.getMesh().dynmapBatchBind(shadeAttribLocation);
+						textureOffset3d = batch.getMesh().getTextureOffset3D();
+						textureSize3D = batch.getMesh().getTextureSize3D();
+						shader.setUniform3f(1, textureOffset3d.x, textureOffset3d.y, textureOffset3d.z);
+						shader.setUniform3f(2, textureSize3D.x, textureSize3D.y, textureSize3D.z);
 					}
 					batch.bind();
 					GL20.glVertexAttribPointer(offsetAttribLocation, 3, GL11.GL_FLOAT, false, 20, 0);
 					GL20.glVertexAttribPointer(rotScaleAttribLocation, 2, GL11.GL_FLOAT, false, 20, 12);
-					GL31.glDrawElementsInstanced(GL11.GL_TRIANGLES, batch.getIndexCount(), batch.getDataType(),
-						0, batch.getCount());
+					GL31.glDrawElementsInstanced(GL11.GL_TRIANGLES, batch.getIndexCount(),
+						GL11.GL_UNSIGNED_SHORT, 0, batch.getCount());
 				}
 			}
 			GL33.glVertexAttribDivisor(offsetAttribLocation, 0);
