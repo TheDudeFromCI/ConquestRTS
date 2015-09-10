@@ -25,7 +25,6 @@ public class DistantEntityHandler{
 		x += (32768-8192)/2;
 		z += (32768-8192)/2;
 		if(visibleEntities==null||visibleEntities.getX()!=x||visibleEntities.getZ()!=z){
-			System.out.println("Updated dynmap entities to dynmap: ["+x+", "+z+"]");
 			if(visibleEntities!=null)
 				visibleEntities.dispose();
 			visibleEntities = new EntityGroup(machine, book, x, z);

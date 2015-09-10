@@ -1,6 +1,7 @@
 package com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities;
 
 import java.io.File;
+import org.lwjgl.glfw.GLFW;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.Noise.Biome;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
@@ -10,8 +11,7 @@ public class EntityGroupLoadProtocol{
 	private static double square(double d){
 		return d*d;
 	}
-	// The number of updates between each save.
-	private final static int SaveRate = 500;
+	private double lastSave;
 	@SuppressWarnings("unused")
 	private final File file;
 	private final EntityGroup group;
@@ -25,7 +25,6 @@ public class EntityGroupLoadProtocol{
 	private int step;
 	private int framesSinceSave = 0;
 	EntityGroupLoadProtocol(WorldNoiseMachine machine, EntityGroup group, int x, int z, File file, BinaryFile bin){
-		System.out.println("Not fully generated, however.");
 		this.group = group;
 		this.file = file;
 		this.machine = machine;
@@ -42,6 +41,7 @@ public class EntityGroupLoadProtocol{
 				possibleEntityLocations[i*2+1] = bin.getInt();
 			}
 		}
+		lastSave = GLFW.glfwGetTime();
 	}
 	private boolean loadEntityAttempt(){
 		int x = possibleEntityLocations[step*2];
@@ -88,7 +88,6 @@ public class EntityGroupLoadProtocol{
 		// bin.compress(true);
 		// bin.compile(file);
 		// TODO
-		System.out.println("  Saved progress.");
 	}
 	void dispose(){
 		if(framesSinceSave==0)
@@ -96,16 +95,13 @@ public class EntityGroupLoadProtocol{
 		save(false);
 	}
 	boolean update(){
-		System.out.println("Updating dynmap entity group.");
 		{
 			if(loadingEntities){
 				for(int i = 0; i<10; i++)
 					if(loadEntityAttempt()){
-						System.out.println("  Fully generated.");
 						save(true);
 						return true;
 					}
-				System.out.println("  Generated "+step+"/"+dictionary.getSpawnRate()+" entities.");
 			}else{
 				for(int i = 0; i<100; i++)
 					if(loadPointAttempt()){
@@ -113,15 +109,16 @@ public class EntityGroupLoadProtocol{
 						step = 0;
 						break;
 					}
-				if(!loadingEntities)
-					System.out.println("  Generated "+step+"/"+dictionary.getSpawnRate()+" points.");
-				else
-					System.out.println("  Generated all points.");
 			}
 		}
 		framesSinceSave++;
-		if(framesSinceSave==SaveRate)
-			save(false);
+		if(framesSinceSave%1000==0){
+			double time = GLFW.glfwGetTime();
+			if(time-lastSave>5){
+				lastSave = time;
+				save(false);
+			}
+		}
 		return false;
 	}
 }
