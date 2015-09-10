@@ -31,6 +31,7 @@ public class LandscapeWorld{
 	private ChunkWorkerTask currentLoadingChunk;
 	private int[] chunkLoadHeight = new int[5];
 	private ChunkHeightData chunkHeightDataTemp;
+	private ChunkListener listener;
 	public LandscapeWorld(
 		WorldNoiseMachine machine, EntityDatabase entityDatabase, Camera camera, Dynmap dynmap,
 		BatchList batchList){
@@ -101,8 +102,14 @@ public class LandscapeWorld{
 				c.render();
 			}
 	}
+	public void setListener(ChunkListener listener){
+		this.listener = listener;
+	}
 	public void setup(Grasslands grassLands){
 		this.grassLands = grassLands;
+	}
+	public void start(){
+		loadingLoop.start();
 	}
 	public void update(){
 		// ---
@@ -151,13 +158,17 @@ public class LandscapeWorld{
 		}
 	}
 	private void clearDistanceChunks(){
+		boolean updated = false;
 		for(int i = 0; i<chunks.size();){
 			if(shouldRemove(chunks.get(i))){
 				chunks.get(i).dispose();
 				chunks.remove(i);
+				updated = true;
 			}else
 				i++;
 		}
+		if(updated)
+			updateListener();
 	}
 	private boolean isWithinView(LandscapeChunk c, int distance){
 		int x = Algorithms.groupLocation((int)camera.x, LandscapeChunk.LandscapeSize);
@@ -168,6 +179,7 @@ public class LandscapeWorld{
 	private LandscapeChunk loadChunk(int x, int y, int z, File file){
 		LandscapeChunk c = new LandscapeChunk(entityDatabase, grassLands, x, y, z, file);
 		chunks.add(c);
+		updateListener();
 		if(grassLands!=null)
 			grassLands.updateVisibility();
 		return c;
@@ -205,5 +217,10 @@ public class LandscapeWorld{
 	}
 	private boolean shouldRemove(LandscapeChunk chunk){
 		return !isWithinView(chunk, ViewDistance+3);
+	}
+	private void updateListener(){
+		if(listener==null)
+			return;
+		listener.chunksChanged();
 	}
 }

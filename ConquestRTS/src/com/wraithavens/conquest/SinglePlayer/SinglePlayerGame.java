@@ -70,61 +70,20 @@ public class SinglePlayerGame implements Driver{
 		skybox = new SkyBox(noise, new Sunbox(), noise2);
 		entityDatabase = new EntityDatabase(camera);
 		dynmap = new Dynmap(machine, this);
-		dynmapEntityBatches = new BatchList(camera, dynmap);
+		dynmapEntityBatches = new BatchList();
 		landscape = new LandscapeWorld(machine, entityDatabase, camera, dynmap, dynmapEntityBatches);
+		dynmapEntityBatches.setup(camera, landscape);
 		grassLands = new Grasslands(landscape, camera);
+		entityDatabase.setLandscape(landscape);
+		landscape.setup(grassLands);
+		loadingScreen = new LoadingScreen();
+		dynmap.update(camera.x, camera.z);
 		{
 			particleBatch = new ParticleBatch(camera);
 			PollenParticleEngine e = new PollenParticleEngine(particleBatch, camera, 32);
 			particleBatch.addEngine(e);
 		}
-		entityDatabase.setLandscape(landscape);
-		// {
-		// StaticEntity e = new StaticEntity(EntityType.Other1);
-		// e.moveTo(4096, machine.getGroundLevel(4096, 4096), 4096);
-		// e.scaleTo(1/5f);
-		// e.updateAABB();
-		// entityDatabase.addEntity(e);
-		// e = new StaticEntity(EntityType.Other2);
-		// e.moveTo(4096, machine.getGroundLevel(4096, 4096+16), 4096+16);
-		// e.scaleTo(1/5f);
-		// e.updateAABB();
-		// entityDatabase.addEntity(e);
-		// e = new StaticEntity(EntityType.Other3);
-		// e.moveTo(4096, machine.getGroundLevel(4096, 4096+32), 4096+32);
-		// e.scaleTo(1/5f);
-		// e.updateAABB();
-		// entityDatabase.addEntity(e);
-		// e = new StaticEntity(EntityType.Other4);
-		// e.moveTo(4096, machine.getGroundLevel(4096, 4096+48), 4096+48);
-		// e.scaleTo(1/5f);
-		// e.updateAABB();
-		// entityDatabase.addEntity(e);
-		// e = new StaticEntity(EntityType.Other5);
-		// e.moveTo(4096, machine.getGroundLevel(4096, 4096+64), 4096+64);
-		// e.scaleTo(1/5f);
-		// e.updateAABB();
-		// entityDatabase.addEntity(e);
-		// e = new StaticEntity(EntityType.Other6);
-		// e.moveTo(4096, machine.getGroundLevel(4096, 4096+64+16), 4096+64+16);
-		// e.scaleTo(1/5f);
-		// e.updateAABB();
-		// entityDatabase.addEntity(e);
-		// }
-		{
-			// DynmapEntityBatch entityBatch = new
-			// DynmapEntityBatch(EntityType.Arcstone1);
-			// for(int i = 0; i<10; i++){
-			// int z = 4096+i*16;
-			// entityBatch.addEntity(new GrassTransform(4096,
-			// machine.getGroundLevel(4096, z), z, 0.5f, 0));
-			// }
-			// entityBatch.rebuildBuffer();
-			// dynmapEntityBatches.addBatch(entityBatch);
-		}
-		landscape.setup(grassLands);
-		loadingScreen = new LoadingScreen();
-		dynmap.update(camera.x, camera.z);
+		landscape.start();
 	}
 	public void onKey(int key, int action){
 		if(key==GLFW.GLFW_KEY_W){

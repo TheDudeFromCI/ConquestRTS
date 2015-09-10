@@ -2,7 +2,6 @@ package com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities;
 
 import java.io.File;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
-import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassTransform;
 import com.wraithavens.conquest.SinglePlayer.Noise.Biome;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.Utility.BinaryFile;
@@ -12,7 +11,8 @@ public class EntityGroupLoadProtocol{
 		return d*d;
 	}
 	// The number of updates between each save.
-	private final static int SaveRate = 50;
+	private final static int SaveRate = 500;
+	@SuppressWarnings("unused")
 	private final File file;
 	private final EntityGroup group;
 	private final GiantEntityDictionary dictionary;
@@ -31,7 +31,7 @@ public class EntityGroupLoadProtocol{
 		this.machine = machine;
 		dictionary = new GiantEntityDictionary();
 		possibleEntityLocations = new int[dictionary.getSpawnRate()*2];
-		loadRange = 4096-dictionary.getMinDistance();
+		loadRange = 8192-dictionary.getMinDistance();
 		loadOffsetX = dictionary.getMinDistance()/2f+x;
 		loadOffsetZ = dictionary.getMinDistance()/2f+z;
 		if(bin!=null){
@@ -51,8 +51,8 @@ public class EntityGroupLoadProtocol{
 		EntityType type = dictionary.randomEntity(biome);
 		if(type!=null)
 			group.addEntity(type,
-				new GrassTransform(x, machine.scaleHeight(tempOut[0], tempOut[1], tempOut[2], x, z), z,
-					(float)(Math.random()*360), (float)(Math.random()*0.2f+0.9f)), true);
+				new EntityTransform(x, machine.scaleHeight(tempOut[0], tempOut[1], tempOut[2], x, z), z,
+					(float)(Math.random()*360), (float)(Math.random()*0.2f+0.9f), 0), true);
 		step++;
 		return step==dictionary.getSpawnRate();
 	}
@@ -68,24 +68,26 @@ public class EntityGroupLoadProtocol{
 		step++;
 		return step==dictionary.getSpawnRate();
 	}
+	@SuppressWarnings("unused")
 	private void save(boolean done){
 		framesSinceSave = 0;
-		int totalBytes = group.getEntityCount()*24+5;
-		if(!done)
-			totalBytes += 5+step*8;
-		BinaryFile bin = new BinaryFile(totalBytes);
-		group.saveEntities(bin);
-		bin.addBoolean(done);
-		if(!done){
-			bin.addBoolean(loadingEntities);
-			bin.addInt(step);
-			for(int i = 0; i<step; i++){
-				bin.addInt(possibleEntityLocations[i*2]);
-				bin.addInt(possibleEntityLocations[i*2+1]);
-			}
-		}
-		bin.compress(true);
-		bin.compile(file);
+		// int totalBytes = group.getEntityCount()*7*4+5;
+		// if(!done)
+		// totalBytes += 5+step*8;
+		// BinaryFile bin = new BinaryFile(totalBytes);
+		// group.saveEntities(bin);
+		// bin.addBoolean(done);
+		// if(!done){
+		// bin.addBoolean(loadingEntities);
+		// bin.addInt(step);
+		// for(int i = 0; i<step; i++){
+		// bin.addInt(possibleEntityLocations[i*2]);
+		// bin.addInt(possibleEntityLocations[i*2+1]);
+		// }
+		// }
+		// bin.compress(true);
+		// bin.compile(file);
+		// TODO
 		System.out.println("  Saved progress.");
 	}
 	void dispose(){

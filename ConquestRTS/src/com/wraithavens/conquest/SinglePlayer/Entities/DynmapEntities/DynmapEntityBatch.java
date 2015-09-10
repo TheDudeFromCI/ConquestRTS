@@ -5,44 +5,46 @@ import java.util.ArrayList;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL15;
 import com.wraithavens.conquest.Launcher.MainLoop;
-import com.wraithavens.conquest.SinglePlayer.Entities.AABB;
+import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityMesh;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
-import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassTransform;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
-import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class DynmapEntityBatch{
-	private final ArrayList<GrassTransform> entities = new ArrayList();
+	private final ArrayList<EntityTransform> entities = new ArrayList();
 	private final int instanceDataId;
 	private final EntityMesh mesh;
-	private final AABB aabb;
-	private FloatBuffer instanceData;
 	private boolean needsRebuild;
 	private int modelCount;
-	private int visibility;
-	DynmapEntityBatch(EntityType type, int x, int z, int size){
+	private boolean hasCloslyVisible;
+	private boolean hasDistantlyVisible;
+	DynmapEntityBatch(EntityType type){
 		instanceDataId = GL15.glGenBuffers();
 		mesh = type.createReference();
-		aabb = new AABB();
-		aabb.set(x, -100000, x, x+size, 100000, z+size);
 	}
-	public void addEntity(GrassTransform e){
+	public void addEntity(EntityTransform e){
 		synchronized(entities){
 			entities.add(e);
 		}
 		needsRebuild = true;
 	}
 	public void rebuildBuffer(){
+		if(!needsRebuild)
+			return;
 		MainLoop.endLoopTasks.add(new Runnable(){
 			public void run(){
 				needsRebuild = false;
+				int size = 0;
+				FloatBuffer instanceData;
 				synchronized(entities){
-					modelCount = entities.size();
-					int size = modelCount*5;
-					if(instanceData==null||instanceData.capacity()<size)
-						instanceData = BufferUtils.createFloatBuffer(size);
-					for(GrassTransform e : entities){
+					for(EntityTransform e : entities)
+						if(e.getVisibilityLevel()==1)
+							size++;
+					modelCount = size;
+					instanceData = BufferUtils.createFloatBuffer(size*5);
+					for(EntityTransform e : entities){
+						if(e.getVisibilityLevel()!=1)
+							continue;
 						instanceData.put(e.getX());
 						instanceData.put(e.getY());
 						instanceData.put(e.getZ());
@@ -58,19 +60,6 @@ public class DynmapEntityBatch{
 	}
 	void bind(){
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, instanceDataId);
-	}
-	void calculateVisibility(Camera camera, int dynmapX, int dynmapZ){
-		if(aabb.visible(camera)){
-			int x = (int)aabb.getX();
-			int z = (int)aabb.getZ();
-			int minX = dynmapX+4096*3;
-			int minZ = dynmapZ+4096*3;
-			if(x>=minX&&x<minX+8192&&z>=minZ&&z<minZ+8192)
-				visibility = 1;
-			else
-				visibility = 2;
-		}else
-			visibility = 0;
 	}
 	int compare(DynmapEntityBatch other){
 		return mesh==other.mesh?0:mesh.getType().ordinal()>other.mesh.getType().ordinal()?1:-1;
@@ -99,30 +88,50 @@ public class DynmapEntityBatch{
 	EntityType getType(){
 		return mesh.getType();
 	}
-	boolean isCloslyVisible(){
-		return visibility==1;
+	boolean hasCloslyVisible(){
+		return hasCloslyVisible;
 	}
-	boolean isDistantlyVisible(){
-		return visibility==2;
+	boolean hasDistantlyVisible(){
+		return hasDistantlyVisible;
 	}
 	boolean needsRebuild(){
 		return needsRebuild;
 	}
-	void removeEntity(GrassTransform e){
+	void removeEntity(EntityTransform e){
 		synchronized(entities){
 			entities.remove(e);
 		}
 		needsRebuild = true;
 	}
-	void save(BinaryFile bin){
+	void updateVisibility(Camera camera, LandscapeWorld landscape){
+		double d;
+		int i;
+		hasCloslyVisible = false;
+		hasDistantlyVisible = false;
 		synchronized(entities){
-			for(GrassTransform t : entities){
-				bin.addInt(mesh.getType().ordinal());
-				bin.addFloat(t.getX());
-				bin.addFloat(t.getY());
-				bin.addFloat(t.getZ());
-				bin.addFloat(t.getRotation());
-				bin.addFloat(t.getScale());
+			for(EntityTransform t : entities){
+				i = t.getVisibilityLevel();
+				if(landscape.isWithinView((int)t.getX(), (int)t.getZ())){
+					if(i!=0){
+						t.setVisibilityLevel(0);
+						needsRebuild = true;
+					}
+					continue;
+				}
+				d = camera.distanceSquared(t.getX(), t.getY(), t.getZ());
+				if(d<1000*1000){
+					hasCloslyVisible = true;
+					if(i!=1){
+						t.setVisibilityLevel(1);
+						needsRebuild = true;
+					}
+				}else{
+					hasDistantlyVisible = true;
+					if(i!=2){
+						t.setVisibilityLevel(2);
+						needsRebuild = true;
+					}
+				}
 			}
 		}
 	}

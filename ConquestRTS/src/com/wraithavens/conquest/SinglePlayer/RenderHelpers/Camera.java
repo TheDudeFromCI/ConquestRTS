@@ -11,6 +11,12 @@ public class Camera{
 	public volatile float z;
 	public float rx;
 	public float ry;
+	public double distanceSquared(float x, float y, float z){
+		x -= this.x;
+		y -= this.y;
+		z -= this.z;
+		return x*x+y*y+z*z;
+	}
 	public Frustum getFrustum(){
 		return frustum;
 	}

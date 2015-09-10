@@ -7,7 +7,6 @@ public class GrassTransform{
 	private float r;
 	private float s;
 	public GrassTransform(float x, float y, float z, float r, float s){
-		super();
 		this.x = x;
 		this.y = y;
 		this.z = z;

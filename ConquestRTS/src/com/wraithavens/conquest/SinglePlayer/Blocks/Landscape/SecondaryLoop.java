@@ -98,11 +98,15 @@ public class SecondaryLoop implements Runnable{
 	private final int[][] tempStorage = new int[64][64];
 	private final VertexStorage vertices = new VertexStorage();
 	private final IndexStorage indices = new IndexStorage();
-	private final DistantEntityHandler distantEntityHandler;
+	private DistantEntityHandler distantEntityHandler;
+	private Thread t;
+	private final Dynmap dynmap;
+	private final BatchList batchList;
 	public SecondaryLoop(Camera camera, WorldNoiseMachine machine, Dynmap dynmap, BatchList batchList){
 		this.camera = camera;
 		this.machine = machine;
-		distantEntityHandler = new DistantEntityHandler(machine, dynmap, batchList);
+		this.dynmap = dynmap;
+		this.batchList = batchList;
 		spiral = new SpiralGridAlgorithm();
 		// ---
 		// And this should prevent the map from generating too many chunks will
@@ -110,10 +114,9 @@ public class SecondaryLoop implements Runnable{
 		// ---
 		spiral.setMaxDistance(6);
 		que = new ChunkWorkerQue();
-		Thread t = new Thread(this);
+		t = new Thread(this);
 		t.setName("Secondary Loading Thread");
 		t.setDaemon(true);
-		t.start();
 	}
 	public void dispose(){
 		running = false;
@@ -476,5 +479,10 @@ public class SecondaryLoop implements Runnable{
 	}
 	ChunkWorkerQue getQue(){
 		return que;
+	}
+	void start(){
+		distantEntityHandler = new DistantEntityHandler(machine, dynmap, batchList);
+		t.start();
+		t = null;
 	}
 }
