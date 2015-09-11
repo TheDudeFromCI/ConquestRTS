@@ -42,7 +42,7 @@ public class DynmapTexture{
 		build(machine, x, z);
 	}
 	private void build(WorldNoiseMachine machine, int x, int z){
-		File file = Algorithms.getHeightmapFile(x, z);
+		File file = Algorithms.getDynmapFile(x-(32768-8192)/2, z-(32768-8192)/2);
 		if(file.exists()&&file.length()>0)
 			load(file);
 		else

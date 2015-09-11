@@ -6,7 +6,6 @@ import java.util.HashMap;
 import com.wraithavens.conquest.Launcher.MainLoop;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
-import com.wraithavens.conquest.Utility.Algorithms;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class EntityGroup{
@@ -21,7 +20,8 @@ public class EntityGroup{
 		this.x = x;
 		this.z = z;
 		{
-			File file = Algorithms.getDistantEntityGroupPath(x, z);
+			// File file = Algorithms.getDistantEntityGroupPath(x, z);
+			File file = new File(".");
 			if(file.exists()&&file.length()>0){
 				BinaryFile bin = new BinaryFile(file);
 				bin.decompress(true);
