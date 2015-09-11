@@ -14,6 +14,6 @@ void main(){
 		gl_Vertex.x*r.y+gl_Vertex.z*r.x
 	)*att_rotScale.y;
 	gl_Position = gl_ModelViewProjectionMatrix*vec4(pos+att_offset, 1.0f);
-	uv = (gl_Vertex.xyz-uni_textureOffset)/uni_textureSize;
+	uv = (gl_Vertex.xyz-uni_textureOffset+vec3(0.5f))/uni_textureSize;
 	shade = att_shade;
 }
