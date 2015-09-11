@@ -7,7 +7,6 @@ import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities.BatchList;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
-import com.wraithavens.conquest.SinglePlayer.Heightmap.Dynmap;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
@@ -33,8 +32,7 @@ public class LandscapeWorld{
 	private ChunkHeightData chunkHeightDataTemp;
 	private ChunkListener listener;
 	public LandscapeWorld(
-		WorldNoiseMachine machine, EntityDatabase entityDatabase, Camera camera, Dynmap dynmap,
-		BatchList batchList){
+		WorldNoiseMachine machine, EntityDatabase entityDatabase, Camera camera, BatchList batchList){
 		this.camera = camera;
 		this.entityDatabase = entityDatabase;
 		this.machine = machine;
@@ -48,7 +46,7 @@ public class LandscapeWorld{
 		GL20.glEnableVertexAttribArray(ShadeAttribLocation);
 		spiral = new SpiralGridAlgorithm();
 		spiral.setMaxDistance(ViewDistance);
-		loadingLoop = new SecondaryLoop(camera, machine, dynmap, batchList);
+		loadingLoop = new SecondaryLoop(camera, machine, batchList);
 		chunkLoadHeight[1] = 0;
 	}
 	public void dispose(){

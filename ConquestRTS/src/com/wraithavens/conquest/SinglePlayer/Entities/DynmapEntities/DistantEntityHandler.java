@@ -1,20 +1,22 @@
 package com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities;
 
-import com.wraithavens.conquest.SinglePlayer.Heightmap.Dynmap;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
+import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
+import com.wraithavens.conquest.Utility.Algorithms;
 
 public class DistantEntityHandler{
 	private EntityGroup visibleEntities;
 	private final WorldNoiseMachine machine;
-	private final Dynmap dynmap;
+	private final Camera camera;
 	private final DynmapEntityBook book;
-	public DistantEntityHandler(WorldNoiseMachine machine, Dynmap dynmap, BatchList batchList){
+	public DistantEntityHandler(WorldNoiseMachine machine, Camera camera, BatchList batchList){
 		this.machine = machine;
-		this.dynmap = dynmap;
+		this.camera = camera;
 		book = batchList.getBook();
 	}
 	public boolean isFullyLoaded(){
-		updateDynmap(dynmap.getX(), dynmap.getZ());
+		updateDynmap(Algorithms.groupLocation((int)camera.x, 2048),
+			Algorithms.groupLocation((int)camera.z, 2048));
 		return visibleEntities.isFullyLoaded();
 	}
 	public void update(){

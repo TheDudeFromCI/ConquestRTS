@@ -16,7 +16,6 @@ import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities.BatchList;
 import com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities.DistantEntityHandler;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassTransform;
-import com.wraithavens.conquest.SinglePlayer.Heightmap.Dynmap;
 import com.wraithavens.conquest.SinglePlayer.Noise.Biome;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
@@ -100,12 +99,10 @@ public class SecondaryLoop implements Runnable{
 	private final IndexStorage indices = new IndexStorage();
 	private DistantEntityHandler distantEntityHandler;
 	private Thread t;
-	private final Dynmap dynmap;
 	private final BatchList batchList;
-	public SecondaryLoop(Camera camera, WorldNoiseMachine machine, Dynmap dynmap, BatchList batchList){
+	public SecondaryLoop(Camera camera, WorldNoiseMachine machine, BatchList batchList){
 		this.camera = camera;
 		this.machine = machine;
-		this.dynmap = dynmap;
 		this.batchList = batchList;
 		spiral = new SpiralGridAlgorithm();
 		// ---
@@ -481,7 +478,7 @@ public class SecondaryLoop implements Runnable{
 		return que;
 	}
 	void start(){
-		distantEntityHandler = new DistantEntityHandler(machine, dynmap, batchList);
+		distantEntityHandler = new DistantEntityHandler(machine, camera, batchList);
 		t.start();
 		t = null;
 	}

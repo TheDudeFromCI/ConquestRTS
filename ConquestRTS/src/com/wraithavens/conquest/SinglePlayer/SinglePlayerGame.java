@@ -71,7 +71,7 @@ public class SinglePlayerGame implements Driver{
 		entityDatabase = new EntityDatabase(camera);
 		dynmap = new Dynmap(machine, this);
 		dynmapEntityBatches = new BatchList();
-		landscape = new LandscapeWorld(machine, entityDatabase, camera, dynmap, dynmapEntityBatches);
+		landscape = new LandscapeWorld(machine, entityDatabase, camera, dynmapEntityBatches);
 		dynmapEntityBatches.setup(camera, landscape);
 		grassLands = new Grasslands(landscape, camera);
 		entityDatabase.setLandscape(landscape);
