@@ -8,7 +8,7 @@ import com.wraithavens.conquest.WorldGeneration.World;
 import com.wraithavens.conquest.WorldGeneration.BiomeHandle.BiomeType;
 
 public class ChunkProcessor{
-	private static final int LoadingLayers = 2;
+	private static final int LoadingLayers = 9;
 	private static final float[] tempHT = new float[2];
 	private final World world;
 	private final SpiralGridAlgorithm[] algorithms;
@@ -16,6 +16,7 @@ public class ChunkProcessor{
 	private int stage;
 	private int originX;
 	private int originZ;
+	private int generationDataPass = 0;
 	public ChunkProcessor(World world){
 		this.world = world;
 		algorithms = new SpiralGridAlgorithm[LoadingLayers];
@@ -29,25 +30,58 @@ public class ChunkProcessor{
 		return originZ;
 	}
 	public boolean isWorking(){
-		return stage<LoadingLayers;
+		return stage<LoadingLayers&&generationDataPass<generationData.size();
 	}
 	public void setLoadRange(int loadRange, int originX, int originZ){
 		this.originX = originX;
 		this.originZ = originZ;
 		stage = 0;
+		generationDataPass = 0;
 		for(int i = 0; i<algorithms.length; i++){
 			algorithms[i].reset();
 			algorithms[i].setMaxDistance(loadRange);
 		}
 	}
 	public void update(){
-		if(stage==LoadingLayers)
+		if(stage==LoadingLayers){
+			if(generationDataPass<generationData.size()){
+				ChunkGenerationData data = generationData.get(generationDataPass);
+				if(canUpdate(data.getX(), data.getZ(), data.getLayer())){
+					updateChunkLayer(data.getX(), data.getZ(), data.getLayer());
+					data.updateLayer();
+					if(data.getLayer()==LoadingLayers)
+						generationData.remove(data);
+					generationDataPass = 0;
+				}else
+					generationDataPass++;
+			}
 			return;
+		}
 		updateChunk(algorithms[stage].getX()*64+originX, algorithms[stage].getY()*64+originZ, stage);
 		if(algorithms[stage].hasNext())
 			algorithms[stage].next();
 		else
 			stage++;
+	}
+	private boolean canUpdate(int x, int z, int stage){
+		int a, b;
+		for(a = -stage; a<=stage; a++)
+			for(b = -stage; b<=stage; b++){
+				if(a==0&&b==0)
+					continue;
+				if(getLayer(a+x, b+z)<stage-Math.max(Math.abs(a), Math.abs(b)))
+					return false;
+			}
+		return true;
+	}
+	private int getLayer(int x, int z){
+		for(ChunkGenerationData data : generationData)
+			if(data.getX()==x&&data.getZ()==z)
+				return data.getLayer();
+		File file = world.getWorldFiles().getChunkStack(x, z);
+		if(file.exists()&&file.length()>0)
+			return LoadingLayers;
+		return 0;
 	}
 	private void updateChunk(int x, int z, int stage){
 		// ---
@@ -74,8 +108,12 @@ public class ChunkProcessor{
 		if(stage==LoadingLayers-1)
 			generationData.remove(chunkData);
 		// ---
-		// Now generate each chunk based on it's stage.
+		// Now update the chunk based on it's stage.
 		// ---
+		if(canUpdate(x, z, stage))
+			updateChunkLayer(x, z, stage);
+	}
+	private void updateChunkLayer(int x, int z, int stage){
 		if(stage==0){
 			File file = world.getWorldFiles().getTempChunkLayer(x, z, stage);
 			BinaryFile bin = new BinaryFile(64*64+64*64*2*4);
@@ -93,7 +131,21 @@ public class ChunkProcessor{
 			bin.compress(true);
 			bin.compile(file);
 		}else if(stage==1){
-			// TODO
+			// TODO Inital Height
+		}else if(stage==2){
+			// TODO Smooth Height
+		}else if(stage==3){
+			// TODO Special Landscape Effects
+		}else if(stage==4){
+			// TODO Colors
+		}else if(stage==5){
+			// TODO Giant Entities
+		}else if(stage==6){
+			// TODO Small Entities
+		}else if(stage==7){
+			// TODO Grass
+		}else if(stage==8){
+			// TODO Compile
 		}
 	}
 }

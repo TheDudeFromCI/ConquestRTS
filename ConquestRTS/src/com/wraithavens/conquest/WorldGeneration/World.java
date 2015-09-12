@@ -3,6 +3,7 @@ package com.wraithavens.conquest.WorldGeneration;
 import java.util.Random;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.Utility.Algorithms;
+import com.wraithavens.conquest.WorldGeneration.BiomeHandle.BiomePainter;
 import com.wraithavens.conquest.WorldGeneration.ChunkGeneration.ChunkProcessor;
 
 public class World{
@@ -39,9 +40,9 @@ public class World{
 	private static WorldGeneratorProperties getDefaultProperties(String seed, Camera camera){
 		long[] s;
 		if(seed==null||seed.isEmpty())
-			s = randomSeeds(2);
+			s = randomSeeds(3);
 		else
-			s = generateSeeds(seed, 2);
+			s = generateSeeds(seed, 3);
 		return new WorldGeneratorProperties(Runtime.getRuntime().availableProcessors()>1, s, 5, camera);
 	}
 	private static long[] randomSeeds(int count){
@@ -85,7 +86,7 @@ public class World{
 			seeds = props.getSeeds();
 			camera = props.getCamera();
 			setDuelCoreLoading(props.hasDuelCoreLoading());
-			biomePainter.setSeeds(seeds[0], seeds[1]);
+			biomePainter.setSeeds(seeds[0], seeds[1], seeds[2]);
 		}
 	}
 	public BiomePainter getBiomePainter(){
