@@ -1,21 +1,26 @@
 package com.wraithavens.conquest.WorldGeneration.ChunkGeneration;
 
+import java.io.File;
+import java.util.ArrayList;
+import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.SpiralGridAlgorithm;
+import com.wraithavens.conquest.Utility.BinaryFile;
 import com.wraithavens.conquest.WorldGeneration.World;
+import com.wraithavens.conquest.WorldGeneration.BiomeHandle.BiomeType;
 
 public class ChunkProcessor{
-	private static final int LoadingLayers = 1;
+	private static final int LoadingLayers = 2;
+	private static final float[] tempHT = new float[2];
 	private final World world;
-	private int loadRange;
-	private int viewRange;
-	private int viewLength;
-	private ChunkStub[] stubs;
+	private final SpiralGridAlgorithm[] algorithms;
+	private final ArrayList<ChunkGenerationData> generationData = new ArrayList();
+	private int stage;
 	private int originX;
 	private int originZ;
-	private int posX;
-	private int posZ;
-	private int pass;
 	public ChunkProcessor(World world){
 		this.world = world;
+		algorithms = new SpiralGridAlgorithm[LoadingLayers];
+		for(int i = 0; i<algorithms.length; i++)
+			algorithms[i] = new SpiralGridAlgorithm();
 	}
 	public int getOriginX(){
 		return originX;
@@ -23,76 +28,72 @@ public class ChunkProcessor{
 	public int getOriginZ(){
 		return originZ;
 	}
+	public boolean isWorking(){
+		return stage<LoadingLayers;
+	}
 	public void setLoadRange(int loadRange, int originX, int originZ){
-		int previousX = this.originX;
-		int previousZ = this.originZ;
-		int previousRange = this.loadRange;
-		this.loadRange = loadRange;
 		this.originX = originX;
 		this.originZ = originZ;
-		viewRange = loadRange+LoadingLayers-1;
-		viewLength = viewRange*2+1;
-		posX = -viewRange;
-		posZ = -viewRange;
-		pass = 0;
-		stubs = buildNewStubs(previousX, previousZ, previousRange);
+		stage = 0;
+		for(int i = 0; i<algorithms.length; i++){
+			algorithms[i].reset();
+			algorithms[i].setMaxDistance(loadRange);
+		}
 	}
 	public void update(){
-		if(pass==LoadingLayers)
+		if(stage==LoadingLayers)
 			return;
-		while(update2());
+		updateChunk(algorithms[stage].getX()*64+originX, algorithms[stage].getY()*64+originZ, stage);
+		if(algorithms[stage].hasNext())
+			algorithms[stage].next();
+		else
+			stage++;
 	}
-	private ChunkStub[] buildNewStubs(int previousX, int previousZ, int previousRange){
-		ChunkStub[] s = new ChunkStub[viewLength*viewLength];
-		if(stubs==null){
-			int x, z, tempX, tempZ, tempZIndex;
-			for(z = -viewRange; z<=viewRange; z++){
-				tempZ = z*64+originZ;
-				tempZIndex = z*viewLength;
-				for(x = -viewRange; x<=viewRange; x++){
-					tempX = x*64+originX;
-					s[tempZIndex+x] =
-						new ChunkStub(world, tempX, tempZ, world.getWorldFiles().getChunkStack(tempX, tempZ));
+	private void updateChunk(int x, int z, int stage){
+		// ---
+		// Make sure we are loading the right chunk layer, and that we actually
+		// can load it. (And cleaning up any old data along the way. :P)
+		// ---
+		ChunkGenerationData chunkData = null;
+		for(ChunkGenerationData data : generationData)
+			if(data.getX()==x&&data.getZ()==z){
+				if(data.getLayer()!=stage)
+					return;
+				data.updateLayer();
+				chunkData = data;
+				break;
+			}
+		if(stage>0&&chunkData==null)
+			return;
+		if(chunkData==null){
+			File file = world.getWorldFiles().getChunkStack(x, z);
+			if(file.exists()&&file.length()>0)
+				return;
+			generationData.add(chunkData = new ChunkGenerationData(x, z));
+		}
+		if(stage==LoadingLayers-1)
+			generationData.remove(chunkData);
+		// ---
+		// Now generate each chunk based on it's stage.
+		// ---
+		if(stage==0){
+			File file = world.getWorldFiles().getTempChunkLayer(x, z, stage);
+			BinaryFile bin = new BinaryFile(64*64+64*64*2*4);
+			int a, b;
+			int tempB;
+			for(b = 0; b<64; b++){
+				tempB = b+z;
+				for(a = 0; a<64; a++){
+					world.getBiomePainter().getHT(x+a, tempB, tempHT);
+					bin.addFloat(tempHT[0]);
+					bin.addFloat(tempHT[1]);
+					bin.addByte((byte)BiomeType.getFittingType(tempHT[0], tempHT[1]).ordinal());
 				}
 			}
-		}else{
-			int x, z, tempX, tempZ, a, b, tempZIndex;
-			int previousLength = previousRange*2+1;
-			for(z = -viewRange; z<=viewRange; z++){
-				tempZ = z*64+originZ;
-				tempZIndex = z*viewLength;
-				for(x = -viewRange; x<=viewRange; x++){
-					tempX = x*64+originX;
-					a = (tempX-previousX)/64;
-					b = (tempZ-previousZ)/64;
-					if(Math.abs(a)>previousRange||Math.abs(b)>previousRange)
-						s[tempZIndex+x] =
-							new ChunkStub(world, tempX, tempZ, world.getWorldFiles().getChunkStack(tempX, tempZ));
-					else
-						s[tempZIndex+x] = stubs[a*previousLength+b];
-				}
-			}
+			bin.compress(true);
+			bin.compile(file);
+		}else if(stage==1){
+			// TODO
 		}
-		return s;
-	}
-	private boolean update2(){
-		int index = posZ*viewLength+posX;
-		int pass = this.pass;
-		int x = posX;
-		int z = posZ;
-		posX++;
-		if(posX>viewRange){
-			posZ++;
-			if(posZ>viewRange){
-				this.pass++;
-				viewRange--;
-				posZ = -viewRange;
-			}
-			posX = -viewRange;
-		}
-		if(stubs[index].getLayer()>=pass)
-			return true;
-		stubs[index].update(stubs, x, z, viewLength);
-		return false;
 	}
 }

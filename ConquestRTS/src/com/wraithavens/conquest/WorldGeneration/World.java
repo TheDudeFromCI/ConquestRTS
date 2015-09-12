@@ -132,7 +132,7 @@ public class World{
 			int chunkZ = Algorithms.groupLocation((int)camera.z, 64);
 			if(chunkX!=chunkProcessor.getOriginX()||chunkZ!=chunkProcessor.getOriginZ())
 				chunkProcessor.setLoadRange(loadRange, chunkX, chunkZ);
-			else
+			else if(chunkProcessor.isWorking())
 				chunkProcessor.update();
 		}
 	}

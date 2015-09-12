@@ -9,15 +9,23 @@ public class WorldFiles{
 	public File getChunkStack(int x, int z){
 		newFile();
 		findDirectory(x, z, 64);
-		end(x, z, 'a');
+		end(x, z, "a");
 		return compile();
+	}
+	public File getTempChunkLayer(int x, int z, int stage){
+		newFile();
+		findDirectory(x, z, 64);
+		end(x, z, "Temp"+stage);
+		File file = compile();
+		file.deleteOnExit();
+		return file;
 	}
 	private File compile(){
 		File file = new File(sb.toString());
 		file.getParentFile().mkdirs();
 		return file;
 	}
-	private void end(int x, int z, char id){
+	private void end(int x, int z, String id){
 		sb.append(x);
 		sb.append(',');
 		sb.append(z);
