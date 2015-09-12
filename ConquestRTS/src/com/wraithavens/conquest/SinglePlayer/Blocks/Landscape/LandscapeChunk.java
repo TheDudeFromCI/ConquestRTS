@@ -96,22 +96,23 @@ public class LandscapeChunk{
 				grassLands.addPatch(grassPatches[i]);
 			}
 			{
-				// ---
-				// Now load the 3D texture.
-				// ---
-				GL11.glBindTexture(GL12.GL_TEXTURE_3D, textureId);
-				GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
-				GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
-				GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL12.GL_TEXTURE_WRAP_R, GL12.GL_CLAMP_TO_EDGE);
-				GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-				GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-				int byteCount = 64*64*64*3;
-				ByteBuffer pixels = BufferUtils.createByteBuffer(byteCount);
-				for(i = 0; i<byteCount; i++)
-					pixels.put(bin.getByte());
-				pixels.flip();
-				GL12.glTexImage3D(GL12.GL_TEXTURE_3D, 0, GL11.GL_RGB8, 64, 64, 64, 0, GL11.GL_RGB,
-					GL11.GL_UNSIGNED_BYTE, pixels);
+				{
+					// ---
+					// Now load the 2D texture.
+					// ---
+					GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
+					GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
+					GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
+					GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+					GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+					int byteCount = 64*64*3;
+					ByteBuffer pixels = BufferUtils.createByteBuffer(byteCount);
+					for(i = 0; i<byteCount; i++)
+						pixels.put(bin.getByte());
+					pixels.flip();
+					GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB8, 64, 64, 0, GL11.GL_RGB,
+						GL11.GL_UNSIGNED_BYTE, pixels);
+				}
 			}
 		}
 	}
@@ -136,7 +137,7 @@ public class LandscapeChunk{
 		return z;
 	}
 	void render(){
-		GL11.glBindTexture(GL12.GL_TEXTURE_3D, textureId);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 		GL11.glVertexPointer(3, GL11.GL_FLOAT, 13, 0);

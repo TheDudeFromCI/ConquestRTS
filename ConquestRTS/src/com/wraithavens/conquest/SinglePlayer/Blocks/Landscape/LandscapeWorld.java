@@ -40,7 +40,7 @@ public class LandscapeWorld{
 			new ShaderProgram(new File(WraithavensConquest.assetFolder, "Landscape.vert"), null, new File(
 				WraithavensConquest.assetFolder, "Landscape.frag"));
 		shader.bind();
-		shader.loadUniforms("texture", "offset");
+		shader.loadUniforms("colorMap", "offset");
 		shader.setUniform1I(0, 0);
 		ShadeAttribLocation = shader.getAttributeLocation("shade");
 		GL20.glEnableVertexAttribArray(ShadeAttribLocation);
@@ -96,7 +96,7 @@ public class LandscapeWorld{
 		for(LandscapeChunk c : chunks)
 			if(isWithinView(c, ViewDistance)
 				&&camera.getFrustum().cubeInFrustum(c.getX(), c.getY(), c.getZ(), LandscapeChunk.LandscapeSize)){
-				shader.setUniform3f(1, c.getX(), c.getY(), c.getZ());
+				shader.setUniform2f(1, c.getX(), c.getZ());
 				c.render();
 			}
 	}

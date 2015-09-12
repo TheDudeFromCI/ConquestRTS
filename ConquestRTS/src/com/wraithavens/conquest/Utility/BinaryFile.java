@@ -182,6 +182,9 @@ public class BinaryFile{
 		pos += 2;
 		return i;
 	}
+	public int getUnsignedByte(){
+		return getByte()&0xFF;
+	}
 	public int length(){
 		return binary.length;
 	}

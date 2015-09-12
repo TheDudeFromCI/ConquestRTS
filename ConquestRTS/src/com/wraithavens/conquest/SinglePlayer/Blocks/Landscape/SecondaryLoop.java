@@ -354,7 +354,7 @@ public class SecondaryLoop implements Runnable{
 		// ---
 		// Compile and save.
 		// ---
-		BinaryFile bin = new BinaryFile(vertices.size()*13+indices.size()*4+8+bytes+64*64*64*3);
+		BinaryFile bin = new BinaryFile(vertices.size()*13+indices.size()*4+8+bytes+64*64*3);
 		bin.addInt(vertices.size());
 		bin.addInt(indices.size());
 		Vertex v;
@@ -398,33 +398,28 @@ public class SecondaryLoop implements Runnable{
 			}
 		}
 		{
-			// ---
-			// Now load the 3D texture.
-			// ---
 			{
 				// ---
-				// Generate biome colors.
+				// Now paint the biome colors.
 				// ---
-				int blockX, blockY, blockZ;
+				int blockX, blockZ;
 				byte red, green, blue;
 				int tempX, tempZ;
 				Vector3f colors = new Vector3f();
 				for(blockZ = 0; blockZ<64; blockZ++)
-					for(blockY = 0; blockY<64; blockY++)
-						for(blockX = 0; blockX<64; blockX++){
-							tempX = blockX+x;
-							tempZ = blockZ+z;
-							heightData.getBiome(tempX, tempZ);
-							WorldNoiseMachine.getBiomeColorAt(heightData.getBiome(tempX, tempZ),
-								heightData.getHumidity(tempX, tempZ), heightData.getTempature(tempX, tempZ),
-								colors);
-							red = (byte)Math.round(colors.x*255);
-							green = (byte)Math.round(colors.y*255);
-							blue = (byte)Math.round(colors.z*255);
-							bin.addByte(red);
-							bin.addByte(green);
-							bin.addByte(blue);
-						}
+					for(blockX = 0; blockX<64; blockX++){
+						tempX = blockX+x;
+						tempZ = blockZ+z;
+						heightData.getBiome(tempX, tempZ);
+						WorldNoiseMachine.getBiomeColorAt(heightData.getBiome(tempX, tempZ),
+							heightData.getHumidity(tempX, tempZ), heightData.getTempature(tempX, tempZ), colors);
+						red = (byte)Math.round(colors.x*255);
+						green = (byte)Math.round(colors.y*255);
+						blue = (byte)Math.round(colors.z*255);
+						bin.addByte(red);
+						bin.addByte(green);
+						bin.addByte(blue);
+					}
 			}
 		}
 		bin.compress(false);
