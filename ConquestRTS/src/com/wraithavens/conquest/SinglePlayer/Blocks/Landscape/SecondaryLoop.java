@@ -64,8 +64,6 @@ public class SecondaryLoop implements Runnable{
 				return EntityType.getVariation(EntityType.VallaFlower, (int)(Math.random()*4));
 			if(biome==Biome.TayleaMeadow&&Math.random()<0.005)
 				return EntityType.values()[EntityType.TayleaMeadowRock1.ordinal()+(int)(Math.random()*3)];
-			if(biome==Biome.ArcstoneHills&&Math.random()<0.0002)
-				return EntityType.values()[EntityType.Arcstone1.ordinal()+(int)(Math.random()*1)];
 			int i = (int)(Math.random()*8);
 			switch(biome){
 				case TayleaMeadow:

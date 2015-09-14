@@ -4,7 +4,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class ChunkWorkerQue{
 	private LinkedBlockingQueue<ChunkWorkerTask> taskList = new LinkedBlockingQueue();
-	void addTask(int x, int y, int z, ChunkHeightData heightData){
+	public void addTask(int x, int y, int z, ChunkHeightData heightData){
 		taskList.add(new ChunkWorkerTask(x, y, z, heightData));
 	}
 	ChunkWorkerTask place(int x, int y, int z, ChunkHeightData heightData){

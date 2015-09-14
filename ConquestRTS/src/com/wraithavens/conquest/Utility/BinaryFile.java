@@ -96,6 +96,9 @@ public class BinaryFile{
 		binary[pos+1] = (byte)(n>>8&0xFF);
 		pos += 2;
 	}
+	public void allocateBytes(int bytes){
+		binary = Arrays.copyOf(binary, binary.length+bytes);
+	}
 	public void compile(File file){
 		if(!file.exists()){
 			try{
