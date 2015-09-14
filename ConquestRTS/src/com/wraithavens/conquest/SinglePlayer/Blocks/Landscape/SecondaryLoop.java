@@ -100,7 +100,7 @@ public class SecondaryLoop implements Runnable{
 	private DistantEntityHandler distantEntityHandler;
 	private Thread t;
 	private final BatchList batchList;
-	public SecondaryLoop(Camera camera, WorldNoiseMachine machine, BatchList batchList){
+	public SecondaryLoop(Camera camera, WorldNoiseMachine machine, BatchList batchList, int maxLoadDistance){
 		this.camera = camera;
 		this.machine = machine;
 		this.batchList = batchList;
@@ -109,7 +109,7 @@ public class SecondaryLoop implements Runnable{
 		// And this should prevent the map from generating too many chunks will
 		// AFK.
 		// ---
-		spiral.setMaxDistance(6);
+		spiral.setMaxDistance(maxLoadDistance);
 		que = new ChunkWorkerQue();
 		t = new Thread(this);
 		t.setName("Secondary Loading Thread");

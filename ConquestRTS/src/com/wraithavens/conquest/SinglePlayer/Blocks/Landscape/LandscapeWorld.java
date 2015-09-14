@@ -14,7 +14,7 @@ import com.wraithavens.conquest.Utility.Algorithms;
 
 public class LandscapeWorld{
 	static int ShadeAttribLocation;
-	private static final int ViewDistance = 2;
+	private static final int ViewDistance = 8;
 	private final ArrayList<LandscapeChunk> chunks = new ArrayList();
 	private final ShaderProgram shader;
 	private final SpiralGridAlgorithm spiral;
@@ -46,7 +46,7 @@ public class LandscapeWorld{
 		GL20.glEnableVertexAttribArray(ShadeAttribLocation);
 		spiral = new SpiralGridAlgorithm();
 		spiral.setMaxDistance(ViewDistance);
-		loadingLoop = new SecondaryLoop(camera, machine, batchList);
+		loadingLoop = new SecondaryLoop(camera, machine, batchList, ViewDistance+3);
 		chunkLoadHeight[1] = 0;
 	}
 	public void dispose(){
