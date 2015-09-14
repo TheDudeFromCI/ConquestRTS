@@ -12,7 +12,15 @@ public class BiomePainter{
 	private NoiseMachine humidity;
 	private NoiseMachine tempature;
 	public int getHeight(int x, int z){
-		return cheapFloor(worldHeight.noise(cheapFloor(x), cheapFloor(z)));
+		return getHeight(x, z, humidity.noise(x, z));
+	}
+	public int getHeight(int x, int z, float h){
+		float height = worldHeight.noise(cheapFloor(x), cheapFloor(z));
+		h -= 0.5f;
+		h *= 4;
+		height *= h;
+		height *= 10000;
+		return cheapFloor(height);
 	}
 	public void getHT(int x, int z, float[] out){
 		out[0] = humidity.noise(x, z);

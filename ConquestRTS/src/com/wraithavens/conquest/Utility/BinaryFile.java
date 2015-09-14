@@ -166,6 +166,10 @@ public class BinaryFile{
 	public float getFloat(){
 		return Float.intBitsToFloat(getInt());
 	}
+	public float getFloatAt(int pos){
+		int i = binary[pos]&0xFF|(binary[pos+1]&0xFF)<<8|(binary[pos+2]&0xFF)<<16|(binary[pos+3]&0xFF)<<24;
+		return Float.intBitsToFloat(i);
+	}
 	public int getInt(){
 		int i = binary[pos]&0xFF|(binary[pos+1]&0xFF)<<8|(binary[pos+2]&0xFF)<<16|(binary[pos+3]&0xFF)<<24;
 		pos += 4;

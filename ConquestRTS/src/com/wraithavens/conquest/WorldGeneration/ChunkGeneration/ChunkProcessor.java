@@ -115,7 +115,7 @@ public class ChunkProcessor{
 	}
 	private void updateChunkLayer(int x, int z, int stage){
 		if(stage==0){
-			File file = world.getWorldFiles().getTempChunkLayer(x, z, stage);
+			File file = world.getWorldFiles().getGenChunkLayer(x, z, stage);
 			BinaryFile bin = new BinaryFile(64*64+64*64*2*4);
 			int a, b;
 			int tempB;
@@ -131,7 +131,23 @@ public class ChunkProcessor{
 			bin.compress(true);
 			bin.compile(file);
 		}else if(stage==1){
-			// TODO Inital Height
+			BinaryFile bin1 = new BinaryFile(world.getWorldFiles().getGenChunkLayer(x, z, 0));
+			bin1.get
+			File file = world.getWorldFiles().getGenChunkLayer(x, z, stage);
+			BinaryFile bin = new BinaryFile(64*64*4);
+			int a, b;
+			int tempB;
+			for(b = 0; b<64; b++){
+				tempB = b+z;
+				for(a = 0; a<64; a++){
+					world.getBiomePainter().getHT(x+a, tempB, tempHT);
+					bin.addFloat(tempHT[0]);
+					bin.addFloat(tempHT[1]);
+					bin.addByte((byte)BiomeType.getFittingType(tempHT[0], tempHT[1]).ordinal());
+				}
+			}
+			bin.compress(true);
+			bin.compile(file);
 		}else if(stage==2){
 			// TODO Smooth Height
 		}else if(stage==3){

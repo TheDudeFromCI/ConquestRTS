@@ -12,13 +12,11 @@ public class WorldFiles{
 		end(x, z, "a");
 		return compile();
 	}
-	public File getTempChunkLayer(int x, int z, int stage){
+	public File getGenChunkLayer(int x, int z, int stage){
 		newFile();
 		findDirectory(x, z, 64);
-		end(x, z, "Temp"+stage);
-		File file = compile();
-		file.deleteOnExit();
-		return file;
+		end(x, z, "G"+stage);
+		return compile();
 	}
 	private File compile(){
 		File file = new File(sb.toString());
