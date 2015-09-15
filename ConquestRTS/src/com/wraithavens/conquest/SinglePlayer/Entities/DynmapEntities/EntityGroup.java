@@ -1,68 +1,49 @@
 package com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-import com.wraithavens.conquest.Launcher.MainLoop;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
+import com.wraithavens.conquest.SinglePlayer.Noise.PointGenerator2D;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
-import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class EntityGroup{
 	private final int x;
 	private final int z;
 	private final DynmapEntityBook book;
-	private final HashMap<EntityType,ArrayList<EntityTransform>> entities = new HashMap();
-	private EntityGroupLoadProtocol loadProtocol;
+	private final GiantEntityList list;
 	public EntityGroup(WorldNoiseMachine machine, DynmapEntityBook book, int x, int z){
 		System.out.println("Loaded entity group: ["+x+", "+z+"]");
 		this.book = book;
 		this.x = x;
 		this.z = z;
+		list = new GiantEntityList();
 		{
-			// File file = Algorithms.getDistantEntityGroupPath(x, z);
-			File file = new File(".");
-			if(file.exists()&&file.length()>0){
-				BinaryFile bin = new BinaryFile(file);
-				bin.decompress(true);
-				int entityCount = bin.getInt();
-				MainLoop.endLoopTasks.add(new Runnable(){
-					public void run(){
-						for(int i = 0; i<entityCount; i++)
-							addEntity(
-								EntityType.values()[bin.getInt()],
-								new EntityTransform(bin.getFloat(), bin.getFloat(), bin.getFloat(), bin
-									.getFloat(), bin.getFloat(), bin.getInt()), false);
-						book.rebuildBuffers();
-						if(!bin.getBoolean())
-							loadProtocol =
-								new EntityGroupLoadProtocol(machine, EntityGroup.this, x, z, file, bin);
-					}
-				});
-			}else
-				loadProtocol = new EntityGroupLoadProtocol(machine, this, x, z, file, null);
-		}
-	}
-	void addEntity(EntityType type, EntityTransform e, boolean update){
-		book.addEntity(type, e, update);
-		if(entities.containsKey(type))
-			entities.get(type).add(e);
-		else{
-			ArrayList<EntityTransform> list = new ArrayList();
-			list.add(e);
-			entities.put(type, list);
+			list.load(x, z);
+			if(list.isEmpty()){
+				GiantEntityDictionary dictionary = new GiantEntityDictionary();
+				PointGenerator2D pointGen =
+					PointGenerator2D.build(machine.getGiantEntitySeed(), dictionary.getMinDistance()*2, 2048);
+				ArrayList<float[]> locs = new ArrayList();
+				pointGen.noise(x, z, locs);
+				EntityType type;
+				float[] htl = new float[3];
+				for(float[] loc : locs){
+					type = dictionary.randomEntity(machine.getBiomeAt((int)loc[0], (int)loc[1], htl));
+					if(type==null)
+						continue;
+					list.addEntity(loc[0], machine.scaleHeight(htl[0], htl[1], htl[2], loc[0], loc[1]), loc[1],
+						(float)(Math.random()*Math.PI*2), (float)(Math.random()*0.2+0.9), type, false);
+				}
+				list.save();
+				System.out.println("  Generated "+list.size()+" entities.");
+			}
+			for(GiantEntityListEntry e : list.getList())
+				book.addEntity(e.getType(), new EntityTransform(e.getX(), e.getY(), e.getZ(), e.getR(),
+					e.getS(), 0));
+			book.rebuildBuffers();
 		}
 	}
 	void dispose(){
-		if(loadProtocol!=null){
-			loadProtocol.dispose();
-			loadProtocol = null;
-		}
-		for(EntityType type : entities.keySet())
-			for(EntityTransform t : entities.get(type)){
-				book.removeEntity(type, t);
-			}
-		book.rebuildBuffers();
+		book.clear();
 	}
 	int getEntityCount(){
 		return book.getTotalSize();
@@ -74,26 +55,9 @@ public class EntityGroup{
 		return z;
 	}
 	boolean isFullyLoaded(){
-		return loadProtocol==null;
+		return !list.needsUpdate();
 	}
 	void loadStep(){
-		if(loadProtocol.update())
-			loadProtocol = null;
-	}
-	void saveEntities(BinaryFile bin){
-		int i = 0;
-		for(EntityType type : entities.keySet())
-			i += entities.get(type).size();
-		bin.addInt(i);
-		for(EntityType type : entities.keySet())
-			for(EntityTransform t : entities.get(type)){
-				bin.addInt(type.ordinal());
-				bin.addFloat(t.getX());
-				bin.addFloat(t.getY());
-				bin.addFloat(t.getZ());
-				bin.addFloat(t.getRotation());
-				bin.addFloat(t.getScale());
-				bin.addInt(t.getVisibilityLevel());
-			}
+		list.update();
 	}
 }

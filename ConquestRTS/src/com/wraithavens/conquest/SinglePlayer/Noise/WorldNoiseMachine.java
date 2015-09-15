@@ -124,14 +124,22 @@ public class WorldNoiseMachine{
 	private final ArcstoneHillsNoise arcstoneHillsNoise;
 	private final long[] seeds;
 	private final float[] tempHTL = new float[3];
+	/**
+	 * Seed Format: <br>
+	 * 0 = Base World Height <br>
+	 * 1 = Humidity <br>
+	 * 2 = Tempature <br>
+	 * 3 = Giant Entity Seed <br>
+	 * 4-5 = Biome specific noise.
+	 */
 	private WorldNoiseMachine(
 		long[] seeds, AdvancedNoise worldHeight, AdvancedNoise humidity, AdvancedNoise tempature){
 		this.seeds = seeds;
 		this.worldHeight = worldHeight;
 		this.humidity = humidity;
 		this.tempature = tempature;
-		tayleaMeadowNoise = new TayleaMeadowNoise(seeds[3]);
-		arcstoneHillsNoise = new ArcstoneHillsNoise(seeds[4]);
+		tayleaMeadowNoise = new TayleaMeadowNoise(seeds[4]);
+		arcstoneHillsNoise = new ArcstoneHillsNoise(seeds[5]);
 	}
 	public WorldNoiseMachine createInstance(){
 		return generate(seeds);
@@ -144,6 +152,9 @@ public class WorldNoiseMachine{
 		heightOut[1] = getTempatureRaw(x, z);
 		heightOut[2] = getLevelRaw(x, z);
 		return Biome.getFittingBiome(heightOut[0], heightOut[1], heightOut[2]);
+	}
+	public long getGiantEntitySeed(){
+		return seeds[3];
 	}
 	public int getGroundLevel(float x, float z){
 		return getGroundLevel(cheapFloor(x), cheapFloor(z));

@@ -3,11 +3,7 @@ package com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.ChunkHeightData;
-import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.ChunkWorkerQue;
-import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.MassChunkHeightData;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
-import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.Utility.Algorithms;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
@@ -92,28 +88,8 @@ public class GiantEntityList{
 	}
 	private final ArrayList<GiantEntityListEntry> list = new ArrayList();
 	private final ArrayList<GiantEntityListEntry> tempList = new ArrayList();
-	private final ChunkWorkerQue que;
-	private final WorldNoiseMachine machine;
 	private int x;
 	private int z;
-	GiantEntityList(ChunkWorkerQue que, WorldNoiseMachine machine){
-		this.que = que;
-		this.machine = machine;
-	}
-	private void save(){
-		File file = Algorithms.getDistantEntityListPath(x, z);
-		BinaryFile bin = new BinaryFile(list.size()*22);
-		for(GiantEntityListEntry e : list){
-			bin.addShort((short)e.getType().ordinal());
-			bin.addFloat(e.getX());
-			bin.addFloat(e.getY());
-			bin.addFloat(e.getZ());
-			bin.addFloat(e.getR());
-			bin.addFloat(e.getS());
-		}
-		bin.compress(false);
-		bin.compile(file);
-	}
 	void addEntity(float x, float y, float z, float r, float s, EntityType type, boolean save){
 		GiantEntityListEntry entity = new GiantEntityListEntry(type, x, y, z, r, s);
 		list.add(entity);
@@ -125,11 +101,6 @@ public class GiantEntityList{
 		File file = Algorithms.getChunkPath(blockX, blockY, blockZ);
 		if(file.exists()&&file.length()>0)
 			addEntityToChunk(entity, file);
-		else{
-			tempList.add(entity);
-			que.addTask(blockX, blockY, blockZ, new ChunkHeightData(machine, blockX, blockZ,
-				new MassChunkHeightData(blockX, blockZ)));
-		}
 	}
 	void getEntitiesInChunk(int x, int y, int z, ArrayList<GiantEntityListEntry> out){
 		int a, b, c;
@@ -141,15 +112,47 @@ public class GiantEntityList{
 				out.add(e);
 		}
 	}
+	ArrayList<GiantEntityListEntry> getList(){
+		return list;
+	}
+	boolean isEmpty(){
+		return list.isEmpty();
+	}
 	void load(int x, int z){
 		this.x = x;
 		this.z = z;
 		list.clear();
 		File file = Algorithms.getDistantEntityListPath(x, z);
 		BinaryFile bin = new BinaryFile(file);
-		while(bin.getRemaining()>0)
+		int size = bin.getInt();
+		for(int i = 0; i<size; i++)
 			list.add(new GiantEntityListEntry(EntityType.values()[bin.getShort()], bin.getFloat(), bin
 				.getFloat(), bin.getFloat(), bin.getFloat(), bin.getFloat()));
+		while(bin.getRemaining()>0)
+			tempList.add(list.get(bin.getInt()));
+	}
+	boolean needsUpdate(){
+		return tempList.size()>0;
+	}
+	void save(){
+		File file = Algorithms.getDistantEntityListPath(x, z);
+		BinaryFile bin = new BinaryFile(list.size()*22);
+		bin.addInt(list.size());
+		for(GiantEntityListEntry e : list){
+			bin.addShort((short)e.getType().ordinal());
+			bin.addFloat(e.getX());
+			bin.addFloat(e.getY());
+			bin.addFloat(e.getZ());
+			bin.addFloat(e.getR());
+			bin.addFloat(e.getS());
+		}
+		for(GiantEntityListEntry e : tempList)
+			bin.addInt(list.indexOf(e));
+		bin.compress(false);
+		bin.compile(file);
+	}
+	int size(){
+		return list.size();
 	}
 	void update(){
 		if(tempList.isEmpty())

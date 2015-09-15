@@ -1,7 +1,6 @@
 package com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities;
 
 import java.util.HashMap;
-import com.wraithavens.conquest.Launcher.MainLoop;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.ChunkListener;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
@@ -22,32 +21,23 @@ class DynmapEntityBook{
 			}
 		});
 	}
-	private void addEntity2(EntityType type, EntityTransform transform, boolean update){
+	void addEntity(EntityType type, EntityTransform transform){
 		synchronized(batches){
 			if(batches.containsKey(type)){
 				DynmapEntityBatch b = batches.get(type);
 				b.addEntity(transform);
-				if(update)
-					b.rebuildBuffer();
 			}else{
 				DynmapEntityBatch b = new DynmapEntityBatch(type);
 				b.addEntity(transform);
 				batches.put(type, b);
 				batchList.addBatch(b);
-				if(update)
-					b.rebuildBuffer();
 			}
 		}
 	}
-	void addEntity(EntityType type, EntityTransform transform, boolean update){
-		if(update){
-			MainLoop.endLoopTasks.add(new Runnable(){
-				public void run(){
-					addEntity2(type, transform, update);
-				}
-			});
-		}else
-			addEntity2(type, transform, update);
+	void clear(){
+		for(EntityType type : batches.keySet())
+			batches.get(type).dispose();
+		batches.clear();
 	}
 	void dispose(){
 		synchronized(batches){

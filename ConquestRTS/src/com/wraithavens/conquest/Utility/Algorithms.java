@@ -21,7 +21,7 @@ public class Algorithms{
 		return getLandscapePath(x, y, z, 64, ChunkId);
 	}
 	public static File getDistantEntityListPath(int x, int z){
-		return getLandscapePath(x, z, 32768, DistantEntityListId);
+		return getLandscapePath(x, z, 2048, DistantEntityListId);
 	}
 	public static File getDynmapFile(int x, int z){
 		return getLandscapePath(x, z, 8192, DynmapId);
