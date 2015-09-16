@@ -6,18 +6,15 @@ import com.wraithavens.conquest.SinglePlayer.Noise.Biome;
 
 public class GiantEntityDictionary{
 	private final HashMap<Biome,DictionaryEntry> biomes = new HashMap();
-	private final int spawnRate;
-	private final float minDistance;
+	private final float averageDistanceApart;
 	GiantEntityDictionary(){
 		HashMap<Biome,TempDictionaryEntry> averageDistances = new HashMap();
-		averageDistances.put(Biome.ArcstoneHills, new TempDictionaryEntry(200.0, EntityType.Arcstone1, 1));
-		double a = rebuild(averageDistances);
-		spawnRate = (int)(8192/a*(8192/a));
-		minDistance = (float)(a/2);
+		averageDistances.put(Biome.ArcstoneHills, new TempDictionaryEntry(200f, EntityType.Arcstone1, 1));
+		averageDistanceApart = rebuild(averageDistances)*2;
 	}
-	private double rebuild(HashMap<Biome,TempDictionaryEntry> averageDistances){
-		double minDistance = Integer.MAX_VALUE;
-		double d;
+	private float rebuild(HashMap<Biome,TempDictionaryEntry> averageDistances){
+		float minDistance = Float.MAX_VALUE;
+		float d;
 		for(Biome biome : averageDistances.keySet()){
 			d = averageDistances.get(biome).getAverageDistance();
 			if(d<minDistance)
@@ -31,11 +28,11 @@ public class GiantEntityDictionary{
 		}
 		return minDistance;
 	}
-	float getMinDistance(){
-		return minDistance;
+	float getAverageDistance(){
+		return averageDistanceApart;
 	}
-	int getSpawnRate(){
-		return spawnRate;
+	float getMinDistance(){
+		return averageDistanceApart/2;
 	}
 	EntityType randomEntity(Biome biome){
 		DictionaryEntry e = biomes.get(biome);

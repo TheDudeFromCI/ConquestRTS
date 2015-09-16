@@ -21,7 +21,7 @@ public class EntityGroup{
 			if(list.isEmpty()){
 				GiantEntityDictionary dictionary = new GiantEntityDictionary();
 				PointGenerator2D pointGen =
-					new PointGenerator2D(machine.getGiantEntitySeed(), dictionary.getMinDistance()*2,
+					new PointGenerator2D(machine.getGiantEntitySeed(), dictionary.getAverageDistance(),
 						dictionary.getMinDistance(), 1.0f);
 				ArrayList<float[]> locs = new ArrayList();
 				pointGen.noise(x, z, 8192, locs);

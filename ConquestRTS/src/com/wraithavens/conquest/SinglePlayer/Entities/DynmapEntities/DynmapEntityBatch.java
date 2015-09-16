@@ -12,15 +12,15 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 
 public class DynmapEntityBatch{
 	private final ArrayList<EntityTransform> entities = new ArrayList();
-	private final int instanceDataId;
-	private final EntityMesh mesh;
+	private int instanceDataId = -1;
+	private EntityMesh mesh;
 	private boolean needsRebuild;
 	private int modelCount;
 	private boolean hasCloslyVisible;
 	private boolean hasDistantlyVisible;
+	private final EntityType type;
 	DynmapEntityBatch(EntityType type){
-		instanceDataId = GL15.glGenBuffers();
-		mesh = type.createReference();
+		this.type = type;
 	}
 	public void addEntity(EntityTransform e){
 		synchronized(entities){
@@ -43,6 +43,10 @@ public class DynmapEntityBatch{
 	}
 	private void rebuildBuffer(){
 		needsRebuild = false;
+		if(instanceDataId==-1){
+			instanceDataId = GL15.glGenBuffers();
+			mesh = type.createReference();
+		}
 		int size = 0;
 		FloatBuffer instanceData;
 		synchronized(entities){

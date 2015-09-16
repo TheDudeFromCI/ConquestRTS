@@ -126,12 +126,15 @@ public class GiantEntityList{
 		this.z = z;
 		list.clear();
 		File file = Algorithms.getDistantEntityListPath(x, z);
+		if(!(file.exists()&&file.length()>0))
+			return;
 		BinaryFile bin = new BinaryFile(file);
 		int size = bin.getInt();
 		for(int i = 0; i<size; i++)
 			list.add(new GiantEntityListEntry(EntityType.values()[bin.getShort()], bin.getFloat(), bin
 				.getFloat(), bin.getFloat(), bin.getFloat(), bin.getFloat()));
-		while(bin.getRemaining()>0)
+		size = bin.getInt();
+		for(int i = 0; i<size; i++)
 			tempList.add(list.get(bin.getInt()));
 	}
 	boolean needsUpdate(){
@@ -139,7 +142,7 @@ public class GiantEntityList{
 	}
 	void save(){
 		File file = Algorithms.getDistantEntityListPath(x, z);
-		BinaryFile bin = new BinaryFile(list.size()*22);
+		BinaryFile bin = new BinaryFile(list.size()*22+8+tempList.size()*4);
 		bin.addInt(list.size());
 		for(GiantEntityListEntry e : list){
 			bin.addShort((short)e.getType().ordinal());
@@ -149,6 +152,7 @@ public class GiantEntityList{
 			bin.addFloat(e.getR());
 			bin.addFloat(e.getS());
 		}
+		bin.addInt(tempList.size());
 		for(GiantEntityListEntry e : tempList)
 			bin.addInt(list.indexOf(e));
 		bin.compress(false);

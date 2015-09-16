@@ -22,6 +22,7 @@ public class PointGenerator2D{
 	public void noise(float x, float y, float size, ArrayList<float[]> points){
 		x /= averageDistanceApart;
 		y /= averageDistanceApart;
+		size /= averageDistanceApart;
 		int startX = floor(x)-1;
 		int startY = floor(y)-1;
 		int endX = floor(x+size)+1;
