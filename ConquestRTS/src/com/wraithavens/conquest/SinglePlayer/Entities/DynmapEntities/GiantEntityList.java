@@ -56,6 +56,13 @@ public class GiantEntityList{
 				}
 				if(entityData.containsKey(entity.getType())){
 					list = entityData.get(entity.getType());
+					// ---
+					// This just checks to see if we already added this entity
+					// to this chunk. If we did, then just return.
+					// ---
+					for(float[] f : list)
+						if(f[0]==entity.getX()&&f[1]==entity.getY()&&f[2]==entity.getZ())
+							return;
 					bin2.allocateBytes(8);
 				}else{
 					list = new ArrayList();
@@ -96,14 +103,12 @@ public class GiantEntityList{
 		int blockX = Algorithms.groupLocation((int)x, 64);
 		int blockY = Algorithms.groupLocation((int)y, 64);
 		int blockZ = Algorithms.groupLocation((int)z, 64);
-		if(blockX-this.x>=(8192-2048)/2&&blockZ-this.z>=(8192-2048)/2&&blockX-this.x<(8192-2048)/2+2048
-			&&blockZ-this.z<(8192-2048)/2+2048){
-			File file = Algorithms.getChunkPath(blockX, blockY, blockZ);
-			if(file.exists()&&file.length()>0)
-				addEntityToChunk(entity, file);
-			else
-				tempList.add(entity);
-		}
+		File file = Algorithms.getChunkPath(blockX, blockY, blockZ);
+		if(file.exists()&&file.length()>0){
+			addEntityToChunk(entity, file);
+			System.out.println("Added giant entity to already made chunk.");
+		}else
+			tempList.add(entity);
 	}
 	void getEntitiesInChunk(int x, int y, int z, ArrayList<GiantEntityListEntry> out){
 		int a, b, c;
@@ -129,6 +134,7 @@ public class GiantEntityList{
 		if(!(file.exists()&&file.length()>0))
 			return;
 		BinaryFile bin = new BinaryFile(file);
+		bin.decompress(false);
 		int size = bin.getInt();
 		for(int i = 0; i<size; i++)
 			list.add(new GiantEntityListEntry(EntityType.values()[bin.getShort()], bin.getFloat(), bin
@@ -174,6 +180,7 @@ public class GiantEntityList{
 			if(file.exists()&&file.length()>0){
 				tempList.remove(i);
 				addEntityToChunk(e, file);
+				System.out.println("Added giant entity to chunk. ("+tempList.size()+" Remain)");
 				return;
 			}
 			try{

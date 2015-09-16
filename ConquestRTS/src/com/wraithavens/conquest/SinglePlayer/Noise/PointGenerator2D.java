@@ -17,24 +17,25 @@ public class PointGenerator2D{
 		this.seed = seed;
 		this.averageDistanceApart = averageDistanceApart;
 		this.consistancy = consistancy;
-		maxShift = minDistanceApart/averageDistanceApart;
+		maxShift = 1-minDistanceApart/averageDistanceApart;
 	}
 	public void noise(float x, float y, float size, ArrayList<float[]> points){
-		x /= averageDistanceApart;
-		y /= averageDistanceApart;
-		size /= averageDistanceApart;
-		int startX = floor(x)-1;
-		int startY = floor(y)-1;
-		int endX = floor(x+size)+1;
-		int endY = floor(y+size)+1;
+		int startX = floor(x/averageDistanceApart)-1;
+		int startY = floor(y/averageDistanceApart)-1;
+		int endX = floor(x/averageDistanceApart+size/averageDistanceApart)+1;
+		int endY = floor(y/averageDistanceApart+size/averageDistanceApart)+1;
 		int a, b;
+		float tempX, tempZ;
 		for(a = startX; a<=endX; a++)
 			for(b = startY; b<=endY; b++){
 				if(random(a, b, 0)>=consistancy)
 					continue;
-				points.add(new float[]{
-					a+(random(a, b, 1)*2-1)*maxShift, b+(random(a, b, 2)*2-1)*maxShift
-				});
+				tempX = (a+(random(a, b, 1)*2-1)*maxShift)*averageDistanceApart;
+				tempZ = (b+(random(a, b, 2)*2-1)*maxShift)*averageDistanceApart;
+				if(tempX>=x&&tempZ>=y&&tempX<x+size&&tempZ<y+size)
+					points.add(new float[]{
+						tempX, tempZ
+					});
 			}
 	}
 	private float random(int x, int y, int z){

@@ -14,7 +14,7 @@ import com.wraithavens.conquest.Utility.Algorithms;
 
 public class LandscapeWorld{
 	static int ShadeAttribLocation;
-	private static final int ViewDistance = 8;
+	private static final int ViewDistance = 2;
 	private final ArrayList<LandscapeChunk> chunks = new ArrayList();
 	private final ShaderProgram shader;
 	private final SpiralGridAlgorithm spiral;

@@ -24,10 +24,11 @@ public class EntityGroup{
 					new PointGenerator2D(machine.getGiantEntitySeed(), dictionary.getAverageDistance(),
 						dictionary.getMinDistance(), 1.0f);
 				ArrayList<float[]> locs = new ArrayList();
-				pointGen.noise(x, z, 8192, locs);
+				pointGen.noise(x-(8192-2048)/2, z-(8192-2048)/2, 8192, locs);
 				EntityType type;
 				float[] htl = new float[3];
 				for(float[] loc : locs){
+					System.out.println("Placed entity at: ("+loc[0]+", "+loc[1]+")");
 					type = dictionary.randomEntity(machine.getBiomeAt((int)loc[0], (int)loc[1], htl));
 					if(type==null)
 						continue;
@@ -35,7 +36,7 @@ public class EntityGroup{
 						(float)(Math.random()*Math.PI*2), (float)(Math.random()*0.2+0.9), type);
 				}
 				list.save();
-				System.out.println("  Generated "+list.size()+" entities.");
+				System.out.println("Generated "+list.size()+" giant entities.");
 			}
 			for(GiantEntityListEntry e : list.getList())
 				book.addEntity(e.getType(), new EntityTransform(e.getX(), e.getY(), e.getZ(), e.getR(),

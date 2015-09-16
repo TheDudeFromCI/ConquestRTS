@@ -24,8 +24,6 @@ public class DistantEntityHandler{
 			visibleEntities.loadStep();
 	}
 	private void updateDynmap(int x, int z){
-		x += (32768-8192)/2;
-		z += (32768-8192)/2;
 		if(visibleEntities==null||visibleEntities.getX()!=x||visibleEntities.getZ()!=z){
 			if(visibleEntities!=null)
 				visibleEntities.dispose();

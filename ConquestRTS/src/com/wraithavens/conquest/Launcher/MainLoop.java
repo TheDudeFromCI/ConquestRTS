@@ -116,7 +116,7 @@ public class MainLoop{
 		}
 	}
 	private void sync(){
-		long sleepTime = 1000000000/60;
+		long sleepTime = 1000000000/30;
 		long yieldTime = Math.min(sleepTime, variableYieldTime+sleepTime%(1000*1000));
 		long overSleep = 0;
 		try{

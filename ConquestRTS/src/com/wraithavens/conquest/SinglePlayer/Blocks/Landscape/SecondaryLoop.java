@@ -98,6 +98,7 @@ public class SecondaryLoop implements Runnable{
 	private DistantEntityHandler distantEntityHandler;
 	private Thread t;
 	private final BatchList batchList;
+	private boolean working;
 	public SecondaryLoop(Camera camera, WorldNoiseMachine machine, BatchList batchList, int maxLoadDistance){
 		this.camera = camera;
 		this.machine = machine;
@@ -443,17 +444,21 @@ public class SecondaryLoop implements Runnable{
 			exception.printStackTrace();
 		}
 		updateCameraLocation();
-		if(spiral.hasNext()){
+		if(!distantEntityHandler.isFullyLoaded()){
+			updateWorkingState(true);
+			distantEntityHandler.update();
+		}else if(spiral.hasNext()){
+			updateWorkingState(true);
 			spiral.next();
 			attemptGenerateChunk();
-		}else if(!distantEntityHandler.isFullyLoaded())
-			distantEntityHandler.update();
-		else
+		}else{
+			updateWorkingState(false);
 			try{
 				Thread.sleep(50);
 			}catch(InterruptedException e){
 				e.printStackTrace();
 			}
+		}
 	}
 	private void updateCameraLocation(){
 		int x =
@@ -466,6 +471,15 @@ public class SecondaryLoop implements Runnable{
 			spiral.setOrigin(lastX, lastZ);
 			spiral.reset();
 		}
+	}
+	private void updateWorkingState(boolean state){
+		if(state==working)
+			return;
+		working = state;
+		if(working)
+			System.out.println("Generator is now working.");
+		else
+			System.out.println("Generator is now resting.");
 	}
 	ChunkWorkerQue getQue(){
 		return que;

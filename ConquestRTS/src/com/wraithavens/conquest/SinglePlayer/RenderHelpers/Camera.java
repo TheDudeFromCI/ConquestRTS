@@ -11,7 +11,7 @@ public class Camera{
 	public volatile float z;
 	public float rx;
 	public float ry;
-	public double distanceSquared(float x, float y, float z){
+	public double distanceSquared(double x, double y, double z){
 		x -= this.x;
 		y -= this.y;
 		z -= this.z;

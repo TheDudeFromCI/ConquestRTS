@@ -73,11 +73,15 @@ public class DynmapEntityBatch{
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, instanceDataId);
 	}
 	int compare(DynmapEntityBatch other){
-		return mesh==other.mesh?0:mesh.getType().ordinal()>other.mesh.getType().ordinal()?1:-1;
+		return type==other.type?0:type.ordinal()>other.type.ordinal()?1:-1;
 	}
 	void dispose(){
-		mesh.removeReference();
-		GL15.glDeleteBuffers(instanceDataId);
+		MainLoop.endLoopTasks.add(new Runnable(){
+			public void run(){
+				mesh.removeReference();
+				GL15.glDeleteBuffers(instanceDataId);
+			}
+		});
 	}
 	int getCount(){
 		return modelCount;
