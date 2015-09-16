@@ -90,17 +90,20 @@ public class GiantEntityList{
 	private final ArrayList<GiantEntityListEntry> tempList = new ArrayList();
 	private int x;
 	private int z;
-	void addEntity(float x, float y, float z, float r, float s, EntityType type, boolean save){
+	void addEntity(float x, float y, float z, float r, float s, EntityType type){
 		GiantEntityListEntry entity = new GiantEntityListEntry(type, x, y, z, r, s);
 		list.add(entity);
-		if(save)
-			save();
 		int blockX = Algorithms.groupLocation((int)x, 64);
 		int blockY = Algorithms.groupLocation((int)y, 64);
 		int blockZ = Algorithms.groupLocation((int)z, 64);
-		File file = Algorithms.getChunkPath(blockX, blockY, blockZ);
-		if(file.exists()&&file.length()>0)
-			addEntityToChunk(entity, file);
+		if(blockX-this.x>=(8192-2048)/2&&blockZ-this.z>=(8192-2048)/2&&blockX-this.x<(8192-2048)/2+2048
+			&&blockZ-this.z<(8192-2048)/2+2048){
+			File file = Algorithms.getChunkPath(blockX, blockY, blockZ);
+			if(file.exists()&&file.length()>0)
+				addEntityToChunk(entity, file);
+			else
+				tempList.add(entity);
+		}
 	}
 	void getEntitiesInChunk(int x, int y, int z, ArrayList<GiantEntityListEntry> out){
 		int a, b, c;

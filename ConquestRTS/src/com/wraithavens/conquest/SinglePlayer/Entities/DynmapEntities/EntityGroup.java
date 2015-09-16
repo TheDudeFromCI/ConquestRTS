@@ -21,9 +21,10 @@ public class EntityGroup{
 			if(list.isEmpty()){
 				GiantEntityDictionary dictionary = new GiantEntityDictionary();
 				PointGenerator2D pointGen =
-					PointGenerator2D.build(machine.getGiantEntitySeed(), dictionary.getMinDistance()*2, 2048);
+					new PointGenerator2D(machine.getGiantEntitySeed(), dictionary.getMinDistance()*2,
+						dictionary.getMinDistance(), 1.0f);
 				ArrayList<float[]> locs = new ArrayList();
-				pointGen.noise(x, z, locs);
+				pointGen.noise(x, z, 8192, locs);
 				EntityType type;
 				float[] htl = new float[3];
 				for(float[] loc : locs){
@@ -31,7 +32,7 @@ public class EntityGroup{
 					if(type==null)
 						continue;
 					list.addEntity(loc[0], machine.scaleHeight(htl[0], htl[1], htl[2], loc[0], loc[1]), loc[1],
-						(float)(Math.random()*Math.PI*2), (float)(Math.random()*0.2+0.9), type, false);
+						(float)(Math.random()*Math.PI*2), (float)(Math.random()*0.2+0.9), type);
 				}
 				list.save();
 				System.out.println("  Generated "+list.size()+" entities.");
@@ -39,7 +40,7 @@ public class EntityGroup{
 			for(GiantEntityListEntry e : list.getList())
 				book.addEntity(e.getType(), new EntityTransform(e.getX(), e.getY(), e.getZ(), e.getR(),
 					e.getS(), 0));
-			book.rebuildBuffers();
+			book.rebuildBuffers(false);
 		}
 	}
 	void dispose(){

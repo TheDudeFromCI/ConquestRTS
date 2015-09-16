@@ -52,7 +52,7 @@ public class SinglePlayerGame implements Driver{
 			return;
 		initalized = true;
 		long[] seeds = new long[]{
-			0, 1, 2, 3, 4
+			0, 1, 2, 3, 4, 5
 		};
 		machine = WorldNoiseMachine.generate(seeds);
 		// ---

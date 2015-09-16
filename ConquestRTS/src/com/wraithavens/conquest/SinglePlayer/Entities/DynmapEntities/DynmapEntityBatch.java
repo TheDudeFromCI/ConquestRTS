@@ -28,35 +28,42 @@ public class DynmapEntityBatch{
 		}
 		needsRebuild = true;
 	}
-	public void rebuildBuffer(){
+	public void rebuildBuffer(boolean mainLoop){
 		if(!needsRebuild)
 			return;
-		MainLoop.endLoopTasks.add(new Runnable(){
-			public void run(){
-				needsRebuild = false;
-				int size = 0;
-				FloatBuffer instanceData;
-				synchronized(entities){
-					for(EntityTransform e : entities)
-						if(e.getVisibilityLevel()==1)
-							size++;
-					modelCount = size;
-					instanceData = BufferUtils.createFloatBuffer(size*5);
-					for(EntityTransform e : entities){
-						if(e.getVisibilityLevel()!=1)
-							continue;
-						instanceData.put(e.getX());
-						instanceData.put(e.getY());
-						instanceData.put(e.getZ());
-						instanceData.put(e.getRotation());
-						instanceData.put(e.getScale());
-					}
+		if(mainLoop)
+			rebuildBuffer();
+		else{
+			MainLoop.endLoopTasks.add(new Runnable(){
+				public void run(){
+					rebuildBuffer();
 				}
-				instanceData.flip();
-				GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, instanceDataId);
-				GL15.glBufferData(GL15.GL_ARRAY_BUFFER, instanceData, GL15.GL_DYNAMIC_DRAW);
+			});
+		}
+	}
+	private void rebuildBuffer(){
+		needsRebuild = false;
+		int size = 0;
+		FloatBuffer instanceData;
+		synchronized(entities){
+			for(EntityTransform e : entities)
+				if(e.getVisibilityLevel()==1)
+					size++;
+			modelCount = size;
+			instanceData = BufferUtils.createFloatBuffer(size*5);
+			for(EntityTransform e : entities){
+				if(e.getVisibilityLevel()!=1)
+					continue;
+				instanceData.put(e.getX());
+				instanceData.put(e.getY());
+				instanceData.put(e.getZ());
+				instanceData.put(e.getRotation());
+				instanceData.put(e.getScale());
 			}
-		});
+		}
+		instanceData.flip();
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, instanceDataId);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, instanceData, GL15.GL_DYNAMIC_DRAW);
 	}
 	void bind(){
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, instanceDataId);

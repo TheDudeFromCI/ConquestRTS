@@ -72,15 +72,15 @@ class DynmapEntityBook{
 		}
 		return false;
 	}
-	void rebuildBuffer(EntityType type){
+	void rebuildBuffer(EntityType type, boolean mainLoop){
 		synchronized(batches){
-			batches.get(type).rebuildBuffer();
+			batches.get(type).rebuildBuffer(mainLoop);
 		}
 	}
-	void rebuildBuffers(){
+	void rebuildBuffers(boolean mainLoop){
 		synchronized(batches){
 			for(EntityType type : batches.keySet())
-				batches.get(type).rebuildBuffer();
+				batches.get(type).rebuildBuffer(mainLoop);
 		}
 	}
 	void removeEntity(EntityType type, EntityTransform transform){
@@ -93,6 +93,6 @@ class DynmapEntityBook{
 			for(EntityType type : batches.keySet())
 				batches.get(type).updateVisibility(camera, landscape);
 		}
-		rebuildBuffers();
+		rebuildBuffers(true);
 	}
 }

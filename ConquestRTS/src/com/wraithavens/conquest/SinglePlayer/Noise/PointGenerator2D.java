@@ -4,45 +4,47 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class PointGenerator2D{
-	public static PointGenerator2D build(long seed, float averageDistance, float unitSize){
-		int passes = Math.round(unitSize/averageDistance);
-		float rate = unitSize/passes/averageDistance;
-		passes *= 2;
-		rate /= 2;
-		float seperation = 0.5f;
-		return new PointGenerator2D(seed, rate, passes, unitSize, seperation);
+	private static int floor(float x){
+		return x>=0?(int)x:(int)x-1;
 	}
 	private static final long s = 4294967291L;
-	private final float rate;
-	private final int passes;
-	private final float unitSize;
 	private final long seed;
-	private final float seperation;
+	private final float averageDistanceApart;
+	private final float maxShift;
+	private final float consistancy;
 	private Random r = new Random();
-	public PointGenerator2D(long seed, float rate, int passes, float unitSize, float seperation){
+	public PointGenerator2D(long seed, float averageDistanceApart, float minDistanceApart, float consistancy){
 		this.seed = seed;
-		this.rate = rate;
-		this.passes = passes;
-		this.unitSize = unitSize;
-		this.seperation = 1-seperation;
+		this.averageDistanceApart = averageDistanceApart;
+		this.consistancy = consistancy;
+		maxShift = minDistanceApart/averageDistanceApart;
 	}
-	public void noise(int x, int y, ArrayList<float[]> points){
-		{
-			long t = seed;
-			t = t*s+x;
-			t = t*s+y;
-			t += x*x+s;
-			t += y*y+s;
-			r.setSeed(t);
-		}
+	public void noise(float x, float y, float size, ArrayList<float[]> points){
+		x /= averageDistanceApart;
+		y /= averageDistanceApart;
+		int startX = floor(x)-1;
+		int startY = floor(y)-1;
+		int endX = floor(x+size)+1;
+		int endY = floor(y+size)+1;
 		int a, b;
-		float size = unitSize/passes;
-		for(a = 0; a<passes; a++)
-			for(b = 0; b<passes; b++)
-				if(r.nextFloat()<rate)
-					points.add(new float[]{
-						a*size+x+(r.nextFloat()-0.5f)*size*seperation,
-						b*size+y+(r.nextFloat()-0.5f)*size*seperation
-					});
+		for(a = startX; a<=endX; a++)
+			for(b = startY; b<=endY; b++){
+				if(random(a, b, 0)>=consistancy)
+					continue;
+				points.add(new float[]{
+					a+(random(a, b, 1)*2-1)*maxShift, b+(random(a, b, 2)*2-1)*maxShift
+				});
+			}
+	}
+	private float random(int x, int y, int z){
+		long t = seed;
+		t = t*s+x;
+		t = t*s+y;
+		t = t*s+z;
+		t += x*x+s;
+		t += y*y+s;
+		t += z*z+s;
+		r.setSeed(t);
+		return r.nextFloat();
 	}
 }
