@@ -75,8 +75,8 @@ public class LandscapeChunk{
 				for(a = 0; a<locationCount; a++){
 					e = new StaticEntity(type);
 					e.moveTo(bin.getFloat(), bin.getFloat(), bin.getFloat());
-					e.scaleTo(bin.getFloat());
 					e.setYaw(bin.getFloat());
+					e.scaleTo(bin.getFloat());
 					e.updateAABB();
 					plantLife.add(e);
 					entityDatabase.addEntity(e);

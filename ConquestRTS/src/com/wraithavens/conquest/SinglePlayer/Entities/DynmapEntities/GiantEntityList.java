@@ -8,7 +8,7 @@ import com.wraithavens.conquest.Utility.Algorithms;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class GiantEntityList{
-	private static void addEntityToChunk(GiantEntityListEntry entity, File file){
+	private static void addEntityToChunk(EntityTransform entity, File file){
 		BinaryFile bin = new BinaryFile(file);
 		bin.decompress(false);
 		BinaryFile bin2 = new BinaryFile(bin.size()+5*4);
@@ -61,7 +61,8 @@ public class GiantEntityList{
 					// to this chunk. If we did, then just return.
 					// ---
 					for(float[] f : list)
-						if(f[0]==entity.getX()&&f[1]==entity.getY()&&f[2]==entity.getZ())
+						if((int)f[0]==(int)entity.getX()&&(int)f[1]==(int)entity.getY()
+							&&(int)f[2]==(int)entity.getZ())
 							return;
 					bin2.allocateBytes(8);
 				}else{
@@ -93,12 +94,12 @@ public class GiantEntityList{
 		bin2.compress(false);
 		bin2.compile(file);
 	}
-	private final ArrayList<GiantEntityListEntry> list = new ArrayList();
-	private final ArrayList<GiantEntityListEntry> tempList = new ArrayList();
+	private final ArrayList<EntityTransform> list = new ArrayList();
+	private final ArrayList<EntityTransform> tempList = new ArrayList();
 	private int x;
 	private int z;
 	void addEntity(float x, float y, float z, float r, float s, EntityType type){
-		GiantEntityListEntry entity = new GiantEntityListEntry(type, x, y, z, r, s);
+		EntityTransform entity = new EntityTransform(type, x, y, z, r, s, 0);
 		list.add(entity);
 		int blockX = Algorithms.groupLocation((int)x, 64);
 		int blockY = Algorithms.groupLocation((int)y, 64);
@@ -110,17 +111,20 @@ public class GiantEntityList{
 		}else
 			tempList.add(entity);
 	}
-	void getEntitiesInChunk(int x, int y, int z, ArrayList<GiantEntityListEntry> out){
+	void getEntitiesInChunk(int x, int y, int z, ArrayList<EntityTransform> out){
 		int a, b, c;
-		for(GiantEntityListEntry e : list){
+		for(EntityTransform e : list){
 			a = Algorithms.groupLocation((int)e.getX(), 64);
 			b = Algorithms.groupLocation((int)e.getY(), 64);
 			c = Algorithms.groupLocation((int)e.getZ(), 64);
-			if(x==a&&y==b&&z==c)
+			if(x==a&&y==b&&z==c){
 				out.add(e);
+				if(tempList.contains(e))
+					tempList.remove(e);
+			}
 		}
 	}
-	ArrayList<GiantEntityListEntry> getList(){
+	ArrayList<EntityTransform> getList(){
 		return list;
 	}
 	boolean isEmpty(){
@@ -137,8 +141,8 @@ public class GiantEntityList{
 		bin.decompress(false);
 		int size = bin.getInt();
 		for(int i = 0; i<size; i++)
-			list.add(new GiantEntityListEntry(EntityType.values()[bin.getShort()], bin.getFloat(), bin
-				.getFloat(), bin.getFloat(), bin.getFloat(), bin.getFloat()));
+			list.add(new EntityTransform(EntityType.values()[bin.getShort()], bin.getFloat(), bin.getFloat(),
+				bin.getFloat(), bin.getFloat(), bin.getFloat(), 0));
 		size = bin.getInt();
 		for(int i = 0; i<size; i++)
 			tempList.add(list.get(bin.getInt()));
@@ -150,7 +154,7 @@ public class GiantEntityList{
 		File file = Algorithms.getDistantEntityListPath(x, z);
 		BinaryFile bin = new BinaryFile(list.size()*22+8+tempList.size()*4);
 		bin.addInt(list.size());
-		for(GiantEntityListEntry e : list){
+		for(EntityTransform e : list){
 			bin.addShort((short)e.getType().ordinal());
 			bin.addFloat(e.getX());
 			bin.addFloat(e.getY());
@@ -159,7 +163,7 @@ public class GiantEntityList{
 			bin.addFloat(e.getS());
 		}
 		bin.addInt(tempList.size());
-		for(GiantEntityListEntry e : tempList)
+		for(EntityTransform e : tempList)
 			bin.addInt(list.indexOf(e));
 		bin.compress(false);
 		bin.compile(file);
@@ -168,21 +172,26 @@ public class GiantEntityList{
 		return list.size();
 	}
 	void update(){
+		System.out.println("Begin update. (SIZE = "+tempList.size()+")");
 		if(tempList.isEmpty())
 			return;
 		File file;
-		GiantEntityListEntry e;
+		EntityTransform e;
+		// System.out.println("Begin update. (2)");
 		for(int i = 0; i<tempList.size(); i++){
 			e = tempList.get(i);
 			file =
 				Algorithms.getChunkPath(Algorithms.groupLocation((int)e.getY(), 64),
 					Algorithms.groupLocation((int)e.getX(), 64), Algorithms.groupLocation((int)e.getZ(), 64));
+			// System.out.println("Begin update. (3)");
 			if(file.exists()&&file.length()>0){
 				tempList.remove(i);
 				addEntityToChunk(e, file);
 				System.out.println("Added giant entity to chunk. ("+tempList.size()+" Remain)");
+				// System.out.println("Begin update. (3.5)");
 				return;
 			}
+			// System.out.println("Begin update. (4)");
 			try{
 				Thread.sleep(1);
 			}catch(Exception exception){

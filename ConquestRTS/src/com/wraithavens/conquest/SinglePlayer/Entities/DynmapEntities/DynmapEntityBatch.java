@@ -61,8 +61,8 @@ public class DynmapEntityBatch{
 				instanceData.put(e.getX());
 				instanceData.put(e.getY());
 				instanceData.put(e.getZ());
-				instanceData.put(e.getRotation());
-				instanceData.put(e.getScale());
+				instanceData.put(e.getR());
+				instanceData.put(e.getS());
 			}
 		}
 		instanceData.flip();
@@ -78,8 +78,10 @@ public class DynmapEntityBatch{
 	void dispose(){
 		MainLoop.endLoopTasks.add(new Runnable(){
 			public void run(){
-				mesh.removeReference();
-				GL15.glDeleteBuffers(instanceDataId);
+				if(mesh!=null){
+					mesh.removeReference();
+					GL15.glDeleteBuffers(instanceDataId);
+				}
 			}
 		});
 	}

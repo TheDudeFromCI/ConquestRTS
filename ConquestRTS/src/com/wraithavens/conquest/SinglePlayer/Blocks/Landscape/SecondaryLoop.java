@@ -15,6 +15,7 @@ import com.wraithavens.conquest.SinglePlayer.BlockPopulators.QuadOptimizer;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities.BatchList;
 import com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities.DistantEntityHandler;
+import com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities.EntityTransform;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassTransform;
 import com.wraithavens.conquest.SinglePlayer.Noise.Biome;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
@@ -302,7 +303,7 @@ public class SecondaryLoop implements Runnable{
 		// Load plantlife.
 		// ---
 		HashMap<EntityType,ArrayList<GrassTransform>> grassLocations = new HashMap();
-		HashMap<EntityType,ArrayList<Vector3f>> plantLocations = new HashMap();
+		HashMap<EntityType,ArrayList<EntityTransform>> entityLocations = new HashMap();
 		EntityType entity;
 		for(a = 0; a<LandscapeChunk.LandscapeSize; a++)
 			for(b = 0; b<LandscapeChunk.LandscapeSize; b++){
@@ -330,21 +331,35 @@ public class SecondaryLoop implements Runnable{
 							grassLocations.put(entity, locs);
 						}
 					}else{
-						Vector3f loc = new Vector3f(tempA+0.5f, heightData.getHeight(tempA, tempB), tempB+0.5f);
-						if(plantLocations.containsKey(entity))
-							plantLocations.get(entity).add(loc);
+						EntityTransform loc =
+							new EntityTransform(null, tempA+0.5f, heightData.getHeight(tempA, tempB),
+								tempB+0.5f, (float)(Math.random()*0.1f+0.15f), (float)(Math.random()*Math.PI*2),
+								0);
+						if(entityLocations.containsKey(entity))
+							entityLocations.get(entity).add(loc);
 						else{
-							ArrayList<Vector3f> locs = new ArrayList();
+							ArrayList<EntityTransform> locs = new ArrayList();
 							locs.add(loc);
-							plantLocations.put(entity, locs);
+							entityLocations.put(entity, locs);
 						}
 					}
 				}
 			}
+		ArrayList<EntityTransform> giants = distantEntityHandler.getGiantsInChunk(x, y, z);
+		ArrayList<EntityTransform> locs;
+		for(EntityTransform g : giants){
+			if(entityLocations.containsKey(g.getType()))
+				locs = entityLocations.get(g.getType());
+			else{
+				locs = new ArrayList();
+				entityLocations.put(g.getType(), locs);
+			}
+			locs.add(g);
+		}
 		int bytes = 8;
-		for(EntityType type : plantLocations.keySet()){
+		for(EntityType type : entityLocations.keySet()){
 			bytes += 8;
-			bytes += plantLocations.get(type).size()*5*4;
+			bytes += entityLocations.get(type).size()*5*4;
 		}
 		for(EntityType type : grassLocations.keySet()){
 			bytes += 8;
@@ -367,28 +382,28 @@ public class SecondaryLoop implements Runnable{
 		}
 		for(i = 0; i<indices.size(); i++)
 			bin.addInt(indices.get(i));
-		bin.addInt(plantLocations.size());
-		Vector3f loc;
-		for(EntityType type : plantLocations.keySet()){
+		bin.addInt(entityLocations.size());
+		EntityTransform loc;
+		for(EntityType type : entityLocations.keySet()){
 			bin.addInt(type.ordinal());
-			ArrayList<Vector3f> locs = plantLocations.get(type);
+			locs = entityLocations.get(type);
 			bin.addInt(locs.size());
 			for(i = 0; i<locs.size(); i++){
 				loc = locs.get(i);
-				bin.addFloat(loc.x);
-				bin.addFloat(type.isGiant?loc.y-5.1f:loc.y);
-				bin.addFloat(loc.z);
-				bin.addFloat(type.isGiant?(float)(Math.random()*0.1f+0.95f):(float)(Math.random()*0.1f+0.15f));
-				bin.addFloat((float)(Math.random()*360));
+				bin.addFloat(loc.getX());
+				bin.addFloat(loc.getY());
+				bin.addFloat(loc.getZ());
+				bin.addFloat(loc.getR());
+				bin.addFloat(loc.getS());
 			}
 		}
 		bin.addInt(grassLocations.size());
-		ArrayList<GrassTransform> locs;
+		ArrayList<GrassTransform> locs1;
 		for(EntityType type : grassLocations.keySet()){
 			bin.addInt(type.ordinal());
-			locs = grassLocations.get(type);
-			bin.addInt(locs.size());
-			for(GrassTransform transform : locs){
+			locs1 = grassLocations.get(type);
+			bin.addInt(locs1.size());
+			for(GrassTransform transform : locs1){
 				bin.addFloat(transform.getX());
 				bin.addFloat(transform.getY());
 				bin.addFloat(transform.getZ());
@@ -443,14 +458,15 @@ public class SecondaryLoop implements Runnable{
 		}catch(Exception exception){
 			exception.printStackTrace();
 		}
+		boolean giantEntityFullyLoaded = distantEntityHandler.isFullyLoaded();
 		updateCameraLocation();
-		if(!distantEntityHandler.isFullyLoaded()){
-			updateWorkingState(true);
-			distantEntityHandler.update();
-		}else if(spiral.hasNext()){
+		if(spiral.hasNext()){
 			updateWorkingState(true);
 			spiral.next();
 			attemptGenerateChunk();
+		}else if(!giantEntityFullyLoaded){
+			updateWorkingState(true);
+			distantEntityHandler.update();
 		}else{
 			updateWorkingState(false);
 			try{

@@ -33,14 +33,14 @@ public class EntityGroup{
 					if(type==null)
 						continue;
 					list.addEntity(loc[0], machine.scaleHeight(htl[0], htl[1], htl[2], loc[0], loc[1]), loc[1],
-						(float)(Math.random()*Math.PI*2), (float)(Math.random()*0.2+0.9), type);
+						loc[2], loc[3], type);
 				}
 				list.save();
 				System.out.println("Generated "+list.size()+" giant entities.");
 			}
-			for(GiantEntityListEntry e : list.getList())
-				book.addEntity(e.getType(), new EntityTransform(e.getX(), e.getY(), e.getZ(), e.getR(),
-					e.getS(), 0));
+			for(EntityTransform e : list.getList())
+				book.addEntity(e.getType(),
+					new EntityTransform(e.getType(), e.getX(), e.getY(), e.getZ(), e.getR(), e.getS(), 0));
 			book.rebuildBuffers(false);
 		}
 	}
@@ -49,6 +49,9 @@ public class EntityGroup{
 	}
 	int getEntityCount(){
 		return book.getTotalSize();
+	}
+	GiantEntityList getList(){
+		return list;
 	}
 	int getX(){
 		return x;

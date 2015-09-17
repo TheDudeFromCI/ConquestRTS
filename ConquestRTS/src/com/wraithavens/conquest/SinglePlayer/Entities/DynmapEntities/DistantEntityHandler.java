@@ -1,5 +1,6 @@
 package com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities;
 
+import java.util.ArrayList;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.Utility.Algorithms;
@@ -13,6 +14,11 @@ public class DistantEntityHandler{
 		this.machine = machine;
 		this.camera = camera;
 		book = batchList.getBook();
+	}
+	public ArrayList<EntityTransform> getGiantsInChunk(int x, int y, int z){
+		ArrayList<EntityTransform> l = new ArrayList();
+		visibleEntities.getList().getEntitiesInChunk(x, y, z, l);
+		return l;
 	}
 	public boolean isFullyLoaded(){
 		updateDynmap(Algorithms.groupLocation((int)camera.x, 2048),
