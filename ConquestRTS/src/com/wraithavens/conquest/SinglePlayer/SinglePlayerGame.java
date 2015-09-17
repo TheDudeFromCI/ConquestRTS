@@ -195,7 +195,7 @@ public class SinglePlayerGame implements Driver{
 			skybox.render(camera.x, camera.y, camera.z);
 		dynmap.render();
 		dynmapEntityBatches.render();
-		// GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 		landscape.render();
 		entityDatabase.render();
 		grassLands.render();

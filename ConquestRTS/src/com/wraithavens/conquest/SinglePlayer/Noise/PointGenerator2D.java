@@ -28,26 +28,27 @@ public class PointGenerator2D{
 		int endX = floor(subX+subSize)+1;
 		int endY = floor(subY+subSize)+1;
 		int a, b;
-		float tempX, tempZ;
+		float tempX, tempY;
+		long t;
 		for(a = startX; a<=endX; a++)
 			for(b = startY; b<=endY; b++){
-				if(random(a, b)>=consistancy)
+				{
+					t = seed;
+					t = t*s+a;
+					t = t*s+b;
+					t += a*a+s;
+					t += b*b+s;
+					r.setSeed(t);
+				}
+				if(r.nextFloat()>=consistancy)
 					continue;
 				tempX = (a+(r.nextFloat()*2-1)*maxShift)*averageDistanceApart;
-				tempZ = (b+(r.nextFloat()*2-1)*maxShift)*averageDistanceApart;
-				if(tempX>=x&&tempZ>=y&&tempX<x+size&&tempZ<y+size)
+				tempY = (b+(r.nextFloat()*2-1)*maxShift)*averageDistanceApart;
+				if(tempX>=x&&tempY>=y&&tempX<x+size&&tempY<y+size)
 					points.add(new float[]{
-						tempX, tempZ, (float)(r.nextFloat()*Math.PI*2), r.nextFloat()*0.2f+0.9f
-					});
+						tempX, tempY, (float)(r.nextFloat()*Math.PI*2), r.nextFloat()*0.2f+0.9f
+					// tempX, tempY, (float)(Math.PI*0.5f), 1
+						});
 			}
-	}
-	private float random(int x, int y){
-		long t = seed;
-		t = t*s+x;
-		t = t*s+y;
-		t += x*x+s;
-		t += y*y+s;
-		r.setSeed(t);
-		return r.nextFloat();
 	}
 }

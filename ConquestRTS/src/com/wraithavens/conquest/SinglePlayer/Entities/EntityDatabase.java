@@ -35,7 +35,7 @@ public class EntityDatabase{
 				WraithavensConquest.assetFolder, "ModelShader.frag"));
 		shader.bind();
 		shader.loadUniforms("uni_swayAmount", "uni_meshCenter", "uni_time", "uni_colorBlended",
-			"uni_textureOffset", "uni_textureSize");
+			"uni_textureOffset", "uni_textureSize", "uni_rotScale");
 		SingularShaderAttrib = shader.getAttributeLocation("shade");
 		GL20.glEnableVertexAttribArray(SingularShaderAttrib);
 	}
@@ -108,7 +108,8 @@ public class EntityDatabase{
 						shader.setUniform3f(5, textureSize3D.x, textureSize3D.y, textureSize3D.z);
 					}
 				}
-				shader.setUniform2f(1, e.getX(), e.getZ());
+				shader.setUniform3f(1, e.getX(), e.getY(), e.getZ());
+				shader.setUniform2f(6, e.getYaw(), e.getScale());
 				e.render();
 			}
 		}

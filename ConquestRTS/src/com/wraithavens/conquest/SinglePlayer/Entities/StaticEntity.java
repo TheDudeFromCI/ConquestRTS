@@ -1,6 +1,5 @@
 package com.wraithavens.conquest.SinglePlayer.Entities;
 
-import org.lwjgl.opengl.GL11;
 import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
@@ -56,12 +55,7 @@ public class StaticEntity extends Entity{
 	}
 	@Override
 	public void render(){
-		GL11.glPushMatrix();
-		GL11.glTranslatef(position.x, position.y, position.z);
-		GL11.glRotatef(yaw, 0, 1, 0);
-		GL11.glScalef(scale, scale, scale);
 		mesh.drawStatic();
-		GL11.glPopMatrix();
 	}
 	public void scaleTo(float scale){
 		this.scale = scale;
