@@ -21,15 +21,15 @@ class DynmapEntityBook{
 			}
 		});
 	}
-	void addEntity(EntityType type, EntityTransform transform){
+	void addEntity(EntityTransform transform){
 		synchronized(batches){
-			if(batches.containsKey(type)){
-				DynmapEntityBatch b = batches.get(type);
+			if(batches.containsKey(transform.getType())){
+				DynmapEntityBatch b = batches.get(transform.getType());
 				b.addEntity(transform);
 			}else{
-				DynmapEntityBatch b = new DynmapEntityBatch(type);
+				DynmapEntityBatch b = new DynmapEntityBatch(transform.getType());
 				b.addEntity(transform);
-				batches.put(type, b);
+				batches.put(transform.getType(), b);
 				batchList.addBatch(b);
 			}
 		}
@@ -72,17 +72,6 @@ class DynmapEntityBook{
 		}
 		return false;
 	}
-	void rebuildBuffer(EntityType type, boolean mainLoop){
-		synchronized(batches){
-			batches.get(type).rebuildBuffer(mainLoop);
-		}
-	}
-	void rebuildBuffers(boolean mainLoop){
-		synchronized(batches){
-			for(EntityType type : batches.keySet())
-				batches.get(type).rebuildBuffer(mainLoop);
-		}
-	}
 	void removeEntity(EntityType type, EntityTransform transform){
 		synchronized(batches){
 			batches.get(type).removeEntity(transform);
@@ -93,6 +82,5 @@ class DynmapEntityBook{
 			for(EntityType type : batches.keySet())
 				batches.get(type).updateVisibility(camera, landscape);
 		}
-		rebuildBuffers(true);
 	}
 }

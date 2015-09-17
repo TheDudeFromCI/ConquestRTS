@@ -18,7 +18,7 @@ public class StaticEntity extends Entity{
 	}
 	@Override
 	public boolean canRender(LandscapeWorld landscape, Camera camera){
-		if(!mesh.getType().isGiant&&!landscape.isWithinView((int)position.x, (int)position.z))
+		if(!landscape.isWithinView((int)position.x, (int)position.z))
 			return false;
 		lod = mesh.getType().lodRadius.getLod(camera, position);
 		if(lod==-1)

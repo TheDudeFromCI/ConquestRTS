@@ -62,7 +62,7 @@ public class GiantEntityList{
 					// ---
 					for(float[] f : list)
 						if((int)f[0]==(int)entity.getX()&&(int)f[1]==(int)entity.getY()
-							&&(int)f[2]==(int)entity.getZ())
+						&&(int)f[2]==(int)entity.getZ())
 							return;
 					bin2.allocateBytes(8);
 				}else{
@@ -98,12 +98,11 @@ public class GiantEntityList{
 	private final ArrayList<EntityTransform> tempList = new ArrayList();
 	private int x;
 	private int z;
-	void addEntity(float x, float y, float z, float r, float s, EntityType type){
-		EntityTransform entity = new EntityTransform(type, x, y, z, r, s, 0);
+	void addEntity(EntityTransform entity){
 		list.add(entity);
-		int blockX = Algorithms.groupLocation((int)x, 64);
-		int blockY = Algorithms.groupLocation((int)y, 64);
-		int blockZ = Algorithms.groupLocation((int)z, 64);
+		int blockX = Algorithms.groupLocation((int)entity.getX(), 64);
+		int blockY = Algorithms.groupLocation((int)entity.getY(), 64);
+		int blockZ = Algorithms.groupLocation((int)entity.getZ(), 64);
 		File file = Algorithms.getChunkPath(blockX, blockY, blockZ);
 		if(file.exists()&&file.length()>0){
 			addEntityToChunk(entity, file);

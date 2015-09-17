@@ -76,20 +76,13 @@ public class LandscapeWorld{
 		return loadChunk(x, y, z, file);
 	}
 	public boolean isWithinView(int x, int z){
-		int cx = Algorithms.groupLocation((int)camera.x, LandscapeChunk.LandscapeSize);
-		int cz = Algorithms.groupLocation((int)camera.z, LandscapeChunk.LandscapeSize);
-		x = Algorithms.groupLocation(x, LandscapeChunk.LandscapeSize);
-		z = Algorithms.groupLocation(z, LandscapeChunk.LandscapeSize);
-		return Math.abs(x-cx)<=ViewDistance*LandscapeChunk.LandscapeSize
-			&&Math.abs(z-cz)<=ViewDistance*LandscapeChunk.LandscapeSize;
-	}
-	public void loadAllChunks(){
-		while(spiral.hasNext()){
-			spiral.next();
-			loadChunks(spiral.getX()*LandscapeChunk.LandscapeSize+chunkX, spiral.getY()
-				*LandscapeChunk.LandscapeSize+chunkZ);
-		}
-		System.out.println("All chunks loaded.");
+		x = Algorithms.groupLocation(x, 64);
+		z = Algorithms.groupLocation(z, 64);
+		for(LandscapeChunk c : chunks)
+			if(c.getX()==x&&c.getZ()==z){
+				return isWithinView(c, ViewDistance);
+			}
+		return false;
 	}
 	public void render(){
 		shader.bind();
@@ -169,10 +162,9 @@ public class LandscapeWorld{
 			updateListener();
 	}
 	private boolean isWithinView(LandscapeChunk c, int distance){
-		int x = Algorithms.groupLocation((int)camera.x, LandscapeChunk.LandscapeSize);
-		int z = Algorithms.groupLocation((int)camera.z, LandscapeChunk.LandscapeSize);
-		return Math.abs(x-c.getX())<=distance*LandscapeChunk.LandscapeSize
-			&&Math.abs(z-c.getZ())<=distance*LandscapeChunk.LandscapeSize;
+		int x = Algorithms.groupLocation((int)camera.x, 64)/64;
+		int z = Algorithms.groupLocation((int)camera.z, 64)/64;
+		return Math.abs(x-c.getX()/64)<=distance&&Math.abs(z-c.getZ()/64)<=distance;
 	}
 	private LandscapeChunk loadChunk(int x, int y, int z, File file){
 		LandscapeChunk c = new LandscapeChunk(entityDatabase, grassLands, x, y, z, file);
