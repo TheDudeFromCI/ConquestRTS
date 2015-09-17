@@ -333,7 +333,7 @@ public class SecondaryLoop implements Runnable{
 					}else{
 						EntityTransform loc =
 							new EntityTransform(null, tempA+0.5f, heightData.getHeight(tempA, tempB),
-								tempB+0.5f, (float)(Math.random()*0.1f+0.15f), (float)(Math.random()*Math.PI*2),
+								tempB+0.5f, (float)(Math.random()*Math.PI*2), (float)(Math.random()*0.1f+0.15f),
 								0);
 						if(entityLocations.containsKey(entity))
 							entityLocations.get(entity).add(loc);

@@ -172,26 +172,21 @@ public class GiantEntityList{
 		return list.size();
 	}
 	void update(){
-		System.out.println("Begin update. (SIZE = "+tempList.size()+")");
 		if(tempList.isEmpty())
 			return;
 		File file;
 		EntityTransform e;
-		// System.out.println("Begin update. (2)");
 		for(int i = 0; i<tempList.size(); i++){
 			e = tempList.get(i);
 			file =
 				Algorithms.getChunkPath(Algorithms.groupLocation((int)e.getY(), 64),
 					Algorithms.groupLocation((int)e.getX(), 64), Algorithms.groupLocation((int)e.getZ(), 64));
-			// System.out.println("Begin update. (3)");
 			if(file.exists()&&file.length()>0){
 				tempList.remove(i);
 				addEntityToChunk(e, file);
 				System.out.println("Added giant entity to chunk. ("+tempList.size()+" Remain)");
-				// System.out.println("Begin update. (3.5)");
 				return;
 			}
-			// System.out.println("Begin update. (4)");
 			try{
 				Thread.sleep(1);
 			}catch(Exception exception){

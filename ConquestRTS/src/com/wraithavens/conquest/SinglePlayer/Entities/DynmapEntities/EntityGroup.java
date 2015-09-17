@@ -28,15 +28,16 @@ public class EntityGroup{
 				EntityType type;
 				float[] htl = new float[3];
 				for(float[] loc : locs){
-					System.out.println("Placed entity at: ("+loc[0]+", "+loc[1]+")");
-					type = dictionary.randomEntity(machine.getBiomeAt((int)loc[0], (int)loc[1], htl));
+					type =
+						dictionary.randomEntity(machine.getBiomeAt((int)loc[0], (int)loc[1], htl),
+							machine.getGiantEntitySeed()+1, (int)loc[0], (int)loc[1]);
 					if(type==null)
 						continue;
 					list.addEntity(loc[0], machine.scaleHeight(htl[0], htl[1], htl[2], loc[0], loc[1]), loc[1],
 						loc[2], loc[3], type);
 				}
 				list.save();
-				System.out.println("Generated "+list.size()+" giant entities.");
+				System.out.println("  Generated "+list.size()+" giant entities.");
 			}
 			for(EntityTransform e : list.getList())
 				book.addEntity(e.getType(),
