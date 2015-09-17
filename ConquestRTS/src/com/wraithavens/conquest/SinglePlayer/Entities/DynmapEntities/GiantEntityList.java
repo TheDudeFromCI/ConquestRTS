@@ -62,7 +62,7 @@ public class GiantEntityList{
 					// ---
 					for(float[] f : list)
 						if((int)f[0]==(int)entity.getX()&&(int)f[1]==(int)entity.getY()
-						&&(int)f[2]==(int)entity.getZ())
+							&&(int)f[2]==(int)entity.getZ())
 							return;
 					bin2.allocateBytes(8);
 				}else{
@@ -88,7 +88,7 @@ public class GiantEntityList{
 			// ---
 			// Copy rest of data.
 			// ---
-			while(bin.getRemaining()>0)
+			while(bin2.getRemaining()>0)
 				bin2.addByte(bin.getByte());
 		}
 		bin2.compress(false);
