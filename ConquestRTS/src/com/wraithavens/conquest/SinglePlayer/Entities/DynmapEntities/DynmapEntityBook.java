@@ -64,14 +64,6 @@ class DynmapEntityBook{
 		}
 		return false;
 	}
-	boolean hasDistantlyVisible(){
-		synchronized(batches){
-			for(EntityType type : batches.keySet())
-				if(batches.get(type).hasDistantlyVisible())
-					return true;
-		}
-		return false;
-	}
 	void removeEntity(EntityType type, EntityTransform transform){
 		synchronized(batches){
 			batches.get(type).removeEntity(transform);

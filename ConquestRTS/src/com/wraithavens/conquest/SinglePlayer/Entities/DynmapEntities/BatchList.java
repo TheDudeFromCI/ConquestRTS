@@ -75,9 +75,6 @@ public class BatchList{
 			GL33.glVertexAttribDivisor(offsetAttribLocation, 0);
 			GL33.glVertexAttribDivisor(rotScaleAttribLocation, 0);
 		}
-		if(book.hasDistantlyVisible()){
-			// TODO
-		}
 	}
 	public void setup(Camera camera, LandscapeWorld landscape){
 		book = new DynmapEntityBook(this, camera, landscape);

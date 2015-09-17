@@ -16,8 +16,8 @@ public class DynmapEntityBatch{
 	private EntityMesh mesh;
 	private int modelCount;
 	private boolean hasCloslyVisible;
-	private boolean hasDistantlyVisible;
 	private final EntityType type;
+	private FloatBuffer instanceData;
 	DynmapEntityBatch(EntityType type){
 		this.type = type;
 	}
@@ -25,33 +25,6 @@ public class DynmapEntityBatch{
 		synchronized(entities){
 			entities.add(e);
 		}
-	}
-	public void rebuildBuffer(){
-		if(instanceDataId==-1){
-			instanceDataId = GL15.glGenBuffers();
-			mesh = type.createReference();
-		}
-		int size = 0;
-		FloatBuffer instanceData;
-		synchronized(entities){
-			for(EntityTransform e : entities)
-				if(e.getVisibilityLevel()==1)
-					size++;
-			modelCount = size;
-			instanceData = BufferUtils.createFloatBuffer(size*5);
-			for(EntityTransform e : entities){
-				if(e.getVisibilityLevel()!=1)
-					continue;
-				instanceData.put(e.getX());
-				instanceData.put(e.getY());
-				instanceData.put(e.getZ());
-				instanceData.put(e.getR());
-				instanceData.put(e.getS());
-			}
-		}
-		instanceData.flip();
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, instanceDataId);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, instanceData, GL15.GL_STREAM_DRAW);
 	}
 	void bind(){
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, instanceDataId);
@@ -92,9 +65,6 @@ public class DynmapEntityBatch{
 	boolean hasCloslyVisible(){
 		return hasCloslyVisible;
 	}
-	boolean hasDistantlyVisible(){
-		return hasDistantlyVisible;
-	}
 	void removeEntity(EntityTransform e){
 		synchronized(entities){
 			entities.remove(e);
@@ -102,22 +72,44 @@ public class DynmapEntityBatch{
 	}
 	void updateVisibility(Camera camera, LandscapeWorld landscape){
 		hasCloslyVisible = false;
-		hasDistantlyVisible = false;
 		synchronized(entities){
 			for(EntityTransform t : entities){
-				if(landscape.isWithinView((int)t.getX(), (int)t.getZ())){
-					t.setVisibilityLevel(0);
+				if(landscape.isWithinView((int)t.getX(), (int)t.getZ())
+					&&camera.distanceSquared(t.getX(), t.getY(), t.getZ())<1000*1000){
+					t.setVisibilityLevel(1);
+					hasCloslyVisible = true;
 					continue;
 				}
-				if(camera.distanceSquared(t.getX(), t.getY(), t.getZ())<1000*1000){
-					hasCloslyVisible = true;
-					t.setVisibilityLevel(1);
-				}else{
-					hasDistantlyVisible = true;
-					t.setVisibilityLevel(2);
-				}
+				t.setVisibilityLevel(0);
 			}
 		}
-		rebuildBuffer();
+		if(instanceDataId==-1){
+			instanceDataId = GL15.glGenBuffers();
+			mesh = type.createReference();
+		}
+		int size = 0;
+		synchronized(entities){
+			for(EntityTransform e : entities)
+				if(e.getVisibilityLevel()==1)
+					size++;
+			modelCount = size;
+			size *= 5;
+			if(instanceData==null||instanceData.capacity()<size)
+				instanceData = BufferUtils.createFloatBuffer(size);
+			else
+				instanceData.clear();
+			for(EntityTransform e : entities){
+				if(e.getVisibilityLevel()!=1)
+					continue;
+				instanceData.put(e.getX());
+				instanceData.put(e.getY());
+				instanceData.put(e.getZ());
+				instanceData.put(e.getR());
+				instanceData.put(e.getS());
+			}
+		}
+		instanceData.flip();
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, instanceDataId);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, instanceData, GL15.GL_STREAM_DRAW);
 	}
 }

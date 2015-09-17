@@ -24,7 +24,7 @@ public class EntityGroup{
 					new PointGenerator2D(machine.getGiantEntitySeed(), dictionary.getAverageDistance(),
 						dictionary.getMinDistance(), 1.0f);
 				ArrayList<float[]> locs = new ArrayList();
-				pointGen.noise(x-(8192-2048)/2, z-(8192-2048)/2, 8192, locs);
+				pointGen.noise(x-(4096-4096)/2, z-(4096-2048)/2, 4096, locs);
 				EntityType type;
 				float[] htl = new float[3];
 				for(float[] loc : locs){

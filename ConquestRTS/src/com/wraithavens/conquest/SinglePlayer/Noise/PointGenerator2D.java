@@ -47,8 +47,7 @@ public class PointGenerator2D{
 				if(tempX>=x&&tempY>=y&&tempX<x+size&&tempY<y+size)
 					points.add(new float[]{
 						tempX, tempY, (float)(r.nextFloat()*Math.PI*2), r.nextFloat()*0.2f+0.9f
-					// tempX, tempY, (float)(Math.PI*0.5f), 1
-						});
+					});
 			}
 	}
 }
