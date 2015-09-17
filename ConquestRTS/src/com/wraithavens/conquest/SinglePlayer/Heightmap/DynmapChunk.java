@@ -83,7 +83,7 @@ public class DynmapChunk{
 		placeTriangleIndex(getIndex(tree, p3));
 	}
 	private static final int MountainResolution = 5;
-	private static final int TreeUpdateForgiveness = 500;
+	private static final int TreeUpdateForgiveness = Dynmap.BlocksPerChunk/(Dynmap.VertexCount-1);
 	private static int[] triangleIndices = new int[100];
 	private static int triangleIndexLocation;
 	private final int ibo;

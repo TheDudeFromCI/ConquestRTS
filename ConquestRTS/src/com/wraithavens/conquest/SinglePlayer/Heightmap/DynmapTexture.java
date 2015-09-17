@@ -30,7 +30,7 @@ public class DynmapTexture{
 			-z0-2.0f*z1-z2));
 		out.normalize();
 	}
-	private static final int TextureDetail = 1024;
+	private static final int TextureDetail = Dynmap.VertexCount-1;
 	private static final int TextureDetail2 = 2048;
 	private final int textureId;
 	private final int colorTextureId;
@@ -42,7 +42,7 @@ public class DynmapTexture{
 		build(machine, x, z);
 	}
 	private void build(WorldNoiseMachine machine, int x, int z){
-		File file = Algorithms.getDynmapFile(x-(32768-8192)/2, z-(32768-8192)/2);
+		File file = Algorithms.getDynmapFile(x-(Dynmap.BlocksPerChunk-8192)/2, z-(Dynmap.BlocksPerChunk-8192)/2);
 		if(file.exists()&&file.length()>0)
 			load(file);
 		else
