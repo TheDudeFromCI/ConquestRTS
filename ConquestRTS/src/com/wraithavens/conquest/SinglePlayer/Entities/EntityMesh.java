@@ -30,7 +30,6 @@ public class EntityMesh{
 	private final Vector3f aabbMax;
 	private final Vector3f textureOffset3D = new Vector3f();
 	private final Vector3f textureSize3D = new Vector3f();
-	private boolean dynmapBound = false;
 	EntityMesh(EntityType type){
 		this.type = type;
 		vbo = GL15.glGenBuffers();
@@ -44,7 +43,6 @@ public class EntityMesh{
 			// 1 Bit = Has Bones? (TODO)
 			// 2 Bit = Is Color Blended?
 			// 4 Bit = Has Decimated Model?
-			// 8 Bit = Has Billboard Images? (TODO)
 			// ----
 			byte meshType = bin.getByte();
 			// boolean hasBones = (meshType&1)==1;
@@ -171,15 +169,8 @@ public class EntityMesh{
 		GL20.glVertexAttribPointer(EntityDatabase.SingularShaderAttrib, 1, GL11.GL_UNSIGNED_BYTE, true, 16, 12);
 		GL11.glColorPointer(3, GL11.GL_UNSIGNED_BYTE, 16, 13);
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
-		if(textureColorsId!=0){
+		if(textureColorsId!=0)
 			GL11.glBindTexture(GL12.GL_TEXTURE_3D, textureColorsId);
-			if(dynmapBound){
-				dynmapBound = false;
-				GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL11.GL_TEXTURE_MIN_FILTER,
-					GL11.GL_NEAREST_MIPMAP_LINEAR);
-				GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-			}
-		}
 	}
 	public void drawStatic(){
 		GL11.glDrawElements(GL11.GL_TRIANGLES, indexCount, dataType, 0);
@@ -190,13 +181,6 @@ public class EntityMesh{
 		GL20.glVertexAttribPointer(shadeAtttribLocation, 1, GL11.GL_UNSIGNED_BYTE, true, 13, 12);
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo2);
 		GL11.glBindTexture(GL12.GL_TEXTURE_3D, textureColorsId);
-		// if(!dynmapBound){
-		// dynmapBound = true;
-		// GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL11.GL_TEXTURE_MIN_FILTER,
-		// GL11.GL_NEAREST_MIPMAP_NEAREST);
-		// GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL11.GL_TEXTURE_MAG_FILTER,
-		// GL11.GL_NEAREST);
-		// }
 	}
 	public Vector3f getAabbMax(){
 		return aabbMax;

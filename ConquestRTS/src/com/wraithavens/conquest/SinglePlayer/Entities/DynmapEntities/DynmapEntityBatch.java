@@ -45,9 +45,6 @@ public class DynmapEntityBatch{
 	int getCount(){
 		return modelCount;
 	}
-	int getDataType(){
-		return mesh.getDataType();
-	}
 	int getIndexCount(){
 		return mesh.getDynmapIndexCount();
 	}
@@ -72,12 +69,14 @@ public class DynmapEntityBatch{
 	}
 	void updateVisibility(Camera camera, LandscapeWorld landscape){
 		hasCloslyVisible = false;
+		int size = 0;
 		synchronized(entities){
 			for(EntityTransform t : entities){
-				if(landscape.isWithinView((int)t.getX(), (int)t.getZ())
-					&&camera.distanceSquared(t.getX(), t.getY(), t.getZ())<1000*1000){
+				if(!landscape.isWithinView((int)t.getX(), (int)t.getZ())
+					&&camera.distanceSquared(t.getX(), t.getY(), t.getZ())<2000*2000){
 					t.setVisibilityLevel(1);
 					hasCloslyVisible = true;
+					size++;
 					continue;
 				}
 				t.setVisibilityLevel(0);
@@ -87,20 +86,17 @@ public class DynmapEntityBatch{
 			instanceDataId = GL15.glGenBuffers();
 			mesh = type.createReference();
 		}
-		int size = 0;
+		size *= 5;
+		if(instanceData==null||instanceData.capacity()<size)
+			instanceData = BufferUtils.createFloatBuffer(size);
+		else
+			instanceData.clear();
+		modelCount = 0;
 		synchronized(entities){
-			for(EntityTransform e : entities)
-				if(e.getVisibilityLevel()==1)
-					size++;
-			modelCount = size;
-			size *= 5;
-			if(instanceData==null||instanceData.capacity()<size)
-				instanceData = BufferUtils.createFloatBuffer(size);
-			else
-				instanceData.clear();
 			for(EntityTransform e : entities){
 				if(e.getVisibilityLevel()!=1)
 					continue;
+				modelCount++;
 				instanceData.put(e.getX());
 				instanceData.put(e.getY());
 				instanceData.put(e.getZ());

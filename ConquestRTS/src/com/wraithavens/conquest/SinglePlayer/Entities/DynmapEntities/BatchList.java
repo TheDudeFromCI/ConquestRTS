@@ -57,6 +57,8 @@ public class BatchList{
 			Vector3f textureOffset3d, textureSize3D;
 			synchronized(batches){
 				for(DynmapEntityBatch batch : batches){
+					if(!batch.hasCloslyVisible())
+						continue;
 					if(boundType==null||boundType!=batch.getType()){
 						boundType = batch.getType();
 						batch.getMesh().dynmapBatchBind(shadeAttribLocation);

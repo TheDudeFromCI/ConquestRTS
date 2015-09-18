@@ -10,14 +10,13 @@ public class EntityTransform{
 	private float s;
 	private EntityType type;
 	private int visibilityLevel;
-	public EntityTransform(EntityType type, float x, float y, float z, float r, float s, int visibilityLevel){
+	public EntityTransform(EntityType type, float x, float y, float z, float r, float s){
 		this.x = x;
 		this.y = y;
 		this.z = z;
 		this.r = r;
 		this.s = s;
 		this.type = type;
-		this.visibilityLevel = visibilityLevel;
 	}
 	public float getR(){
 		return r;

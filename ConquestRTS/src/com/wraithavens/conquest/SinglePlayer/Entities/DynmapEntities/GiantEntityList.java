@@ -64,8 +64,8 @@ public class GiantEntityList{
 						if((int)f[0]==(int)entity.getX()&&(int)f[1]==(int)entity.getY()
 							&&(int)f[2]==(int)entity.getZ())
 							return;
-					bin2.allocateBytes(8);
 				}else{
+					bin2.allocateBytes(8);
 					list = new ArrayList();
 					entityData.put(entity.getType(), list);
 				}
@@ -86,9 +86,29 @@ public class GiantEntityList{
 		}
 		{
 			// ---
-			// Copy rest of data.
+			// Copy grass data.
 			// ---
-			while(bin2.getRemaining()>0)
+			int grassSize = bin.getInt();
+			int locationCount;
+			bin2.addInt(grassSize);
+			for(i = 0; i<grassSize; i++){
+				bin2.addInt(bin.getInt());
+				locationCount = bin.getInt();
+				bin2.addInt(locationCount);
+				for(a = 0; a<locationCount; a++){
+					bin2.addFloat(bin.getFloat());
+					bin2.addFloat(bin.getFloat());
+					bin2.addFloat(bin.getFloat());
+					bin2.addFloat(bin.getFloat());
+					bin2.addFloat(bin.getFloat());
+				}
+			}
+		}
+		{
+			// ---
+			// Copy color data.
+			// ---
+			for(i = 0; i<64*64*3; i++)
 				bin2.addByte(bin.getByte());
 		}
 		bin2.compress(false);
@@ -141,7 +161,7 @@ public class GiantEntityList{
 		int size = bin.getInt();
 		for(int i = 0; i<size; i++)
 			list.add(new EntityTransform(EntityType.values()[bin.getShort()], bin.getFloat(), bin.getFloat(),
-				bin.getFloat(), bin.getFloat(), bin.getFloat(), 0));
+				bin.getFloat(), bin.getFloat(), bin.getFloat()));
 		size = bin.getInt();
 		for(int i = 0; i<size; i++)
 			tempList.add(list.get(bin.getInt()));
