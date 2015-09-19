@@ -14,7 +14,7 @@ public class VertexStorage{
 	public int indexOf(float x, float y, float z, byte shade){
 		for(int i = 0; i<size; i++)
 			if(vertices[i].getX()==x&&vertices[i].getY()==y&&vertices[i].getZ()==z
-				&&vertices[i].getShade()==shade)
+			&&vertices[i].getShade()==shade)
 				return i;
 		if(size==vertices.length)
 			vertices = Arrays.copyOf(vertices, vertices.length+100);

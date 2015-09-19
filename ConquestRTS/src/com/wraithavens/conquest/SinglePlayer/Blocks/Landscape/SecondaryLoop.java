@@ -160,6 +160,8 @@ public class SecondaryLoop implements Runnable{
 		// Prepare the quad building algorithm.
 		// ---
 		quadList.clear();
+		indices.clear();
+		vertices.clear();
 		QuadListener listener = new QuadListener(){
 			public void addQuad(Quad q){
 				quadList.add(q);
