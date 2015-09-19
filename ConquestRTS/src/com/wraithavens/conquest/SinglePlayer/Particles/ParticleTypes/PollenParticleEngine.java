@@ -8,6 +8,7 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 
 public class PollenParticleEngine implements ParticleEngine{
 	private static final int ParticlesPerSecond = 90;
+	private static final int MaxParticlesPerFrame = 60;
 	private final float r;
 	private final ParticleBatch batch;
 	private long generated = 0;
@@ -22,6 +23,8 @@ public class PollenParticleEngine implements ParticleEngine{
 	public void update(double time){
 		long particles = (long)((time-creationTime)*ParticlesPerSecond)-generated;
 		generated += particles;
+		if(particles>MaxParticlesPerFrame)
+			particles = MaxParticlesPerFrame;
 		for(int i = 0; i<particles; i++)
 			batch.addParticle(newParticle(time));
 	}
