@@ -39,12 +39,11 @@ public class EntityGroup{
 				list.save();
 				System.out.println("  Generated "+list.size()+" giant entities.");
 			}
-			for(EntityTransform e : list.getList())
-				book.addEntity(e);
+			book.setEntities(list.getList());
 		}
 	}
 	void dispose(){
-		book.clear();
+		book.dispose();
 	}
 	int getEntityCount(){
 		return book.getTotalSize();

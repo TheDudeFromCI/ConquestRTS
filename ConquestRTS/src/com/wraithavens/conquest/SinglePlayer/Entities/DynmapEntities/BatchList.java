@@ -37,17 +37,15 @@ public class BatchList{
 		GL20.glEnableVertexAttribArray(shadeAttribLocation);
 	}
 	public void addBatch(DynmapEntityBatch b){
-		synchronized(batches){
-			batches.add(b);
-			batches.sort(batchSorter);
-		}
+		batches.add(b);
+		batches.sort(batchSorter);
 	}
-	public void removeBatch(DynmapEntityBatch b){
-		synchronized(batches){
-			batches.remove(b);
-		}
+	public void clearBatches(){
+		batches.clear();
 	}
 	public void render(){
+		if(batches.isEmpty())
+			return;
 		book.updateVisibility();
 		if(book.hasCloselyVisible()){
 			shader.bind();

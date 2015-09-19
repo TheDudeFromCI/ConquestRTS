@@ -62,7 +62,7 @@ public class GiantEntityList{
 					// ---
 					for(float[] f : list)
 						if((int)f[0]==(int)entity.getX()&&(int)f[1]==(int)entity.getY()
-							&&(int)f[2]==(int)entity.getZ())
+						&&(int)f[2]==(int)entity.getZ())
 							return;
 				}else{
 					bin2.allocateBytes(8);
@@ -203,6 +203,7 @@ public class GiantEntityList{
 			if(file.exists()&&file.length()>0){
 				tempList.remove(i);
 				addEntityToChunk(e, file);
+				save();
 				System.out.println("Added giant entity to chunk. ("+tempList.size()+" Remain)");
 				return;
 			}

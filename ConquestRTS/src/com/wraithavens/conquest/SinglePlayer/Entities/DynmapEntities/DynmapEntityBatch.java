@@ -4,7 +4,6 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL15;
-import com.wraithavens.conquest.Launcher.MainLoop;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityMesh;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
@@ -22,9 +21,7 @@ public class DynmapEntityBatch{
 		this.type = type;
 	}
 	public void addEntity(EntityTransform e){
-		synchronized(entities){
-			entities.add(e);
-		}
+		entities.add(e);
 	}
 	void bind(){
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, instanceDataId);
@@ -33,14 +30,8 @@ public class DynmapEntityBatch{
 		return type==other.type?0:type.ordinal()>other.type.ordinal()?1:-1;
 	}
 	void dispose(){
-		MainLoop.endLoopTasks.add(new Runnable(){
-			public void run(){
-				if(mesh!=null){
-					mesh.removeReference();
-					GL15.glDeleteBuffers(instanceDataId);
-				}
-			}
-		});
+		mesh.removeReference();
+		GL15.glDeleteBuffers(instanceDataId);
 	}
 	int getCount(){
 		return modelCount;
@@ -52,9 +43,7 @@ public class DynmapEntityBatch{
 		return mesh;
 	}
 	int getRealCount(){
-		synchronized(entities){
-			return entities.size();
-		}
+		return entities.size();
 	}
 	EntityType getType(){
 		return mesh.getType();
@@ -62,25 +51,18 @@ public class DynmapEntityBatch{
 	boolean hasCloslyVisible(){
 		return hasCloslyVisible;
 	}
-	void removeEntity(EntityTransform e){
-		synchronized(entities){
-			entities.remove(e);
-		}
-	}
 	void updateVisibility(Camera camera, LandscapeWorld landscape){
 		hasCloslyVisible = false;
 		int size = 0;
-		synchronized(entities){
-			for(EntityTransform t : entities){
-				if(!landscape.isWithinView((int)t.getX(), (int)t.getZ())
-					&&camera.distanceSquared(t.getX(), t.getY(), t.getZ())<2000*2000){
-					t.setVisibilityLevel(1);
-					hasCloslyVisible = true;
-					size++;
-					continue;
-				}
-				t.setVisibilityLevel(0);
+		for(EntityTransform t : entities){
+			if(!landscape.isWithinView((int)t.getX(), (int)t.getZ())
+				&&camera.distanceSquared(t.getX(), t.getY(), t.getZ())<2000*2000){
+				t.setVisibilityLevel(1);
+				hasCloslyVisible = true;
+				size++;
+				continue;
 			}
+			t.setVisibilityLevel(0);
 		}
 		if(instanceDataId==-1){
 			instanceDataId = GL15.glGenBuffers();
@@ -94,7 +76,7 @@ public class DynmapEntityBatch{
 		modelCount = 0;
 		synchronized(entities){
 			for(EntityTransform e : entities){
-				if(e.getVisibilityLevel()!=1)
+				if(e.getVisibilityLevel()==0)
 					continue;
 				modelCount++;
 				instanceData.put(e.getX());
