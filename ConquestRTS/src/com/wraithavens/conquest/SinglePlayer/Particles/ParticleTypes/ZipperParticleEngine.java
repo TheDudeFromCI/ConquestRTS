@@ -8,7 +8,7 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 
 public class ZipperParticleEngine extends ChunkParticleEngine{
 	public ZipperParticleEngine(ParticleBatch batch, ChunkHeightData chunkHeights, Camera camera){
-		super(batch, chunkHeights, camera, 2, 10);
+		super(batch, chunkHeights, camera, 1, 10);
 	}
 	public void dispose(){}
 	@Override
@@ -22,23 +22,17 @@ public class ZipperParticleEngine extends ChunkParticleEngine{
 		z += chunkHeights.getZ();
 		if(camera.distanceSquared(x, y, z)>=100*100)
 			return;
-		int length = (int)(Math.random()*5+5);
+		int length = (int)(Math.random()*5+5)*4;
 		Vector3f origin = new Vector3f(x, y, z);
 		Vector3f direction =
-			new Vector3f((float)(Math.random()*2-1), (float)(Math.random()*2-1)*0.1f, (float)(Math.random()*2-1));
+			new Vector3f((float)(Math.random()*2-1), (float)Math.random()*0.01f, (float)(Math.random()*2-1));
 		direction.normalize();
-		float speed = (float)(Math.random()*2+0.5f);
-		float waveRate = (float)(Math.random()*0.5f+0.1f);
+		float speed = (float)(Math.random()*2+0.5f)+20;
+		float waveRate = (float)(Math.random()*0.1f+0.1f);
 		float waveSize = (float)(Math.random()*0.3f+0.2f);
 		float life = (float)(Math.random()*10+6);
-		boolean snake = Math.random()>=0.5;
-		if(snake){
-			waveRate *= 1.5f;
-			speed *= 2;
-		}else
-			waveRate *= 0.5f;
 		for(int i = 0; i<length; i++)
-			batch.addParticle(new Zipper(origin, direction, speed, waveRate, waveSize, life, i*0.1f, time, snake
-				?0.7f:1-i/(length-2f), snake));
+			batch.addParticle(new Zipper(origin, direction, speed, waveRate, waveSize, life, i*0.02f, time, 1-i
+				/(length-2f), i==0?batch:null));
 	}
 }
