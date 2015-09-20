@@ -30,7 +30,7 @@ public class ZipperParticleEngine extends ChunkParticleEngine{
 		direction.normalize();
 		float speed = (float)(Math.random()*2+0.5f)+20;
 		float waveRate = (float)(Math.random()*0.1f+0.1f)*1.7f;
-		float waveSize = (float)(Math.random()*0.6f+0.2f);
+		float waveSize = (float)(Math.random()*0.6f+0.2f)*3;
 		float life = (float)(Math.random()*10+6);
 		int randomColor = (int)(Math.random()*5);
 		float red, green, blue;
