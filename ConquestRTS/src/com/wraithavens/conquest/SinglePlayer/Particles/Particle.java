@@ -18,10 +18,10 @@ public abstract class Particle{
 	final Vector4f getColor(){
 		return color;
 	}
-	Vector3f getLocation(){
+	final Vector3f getLocation(){
 		return location;
 	}
-	Vector2f getScale(){
+	final Vector2f getScale(){
 		return scale;
 	}
 	final void setCameraDistance(Camera camera){
