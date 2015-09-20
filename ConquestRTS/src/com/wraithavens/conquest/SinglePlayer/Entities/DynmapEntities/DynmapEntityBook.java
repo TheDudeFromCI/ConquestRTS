@@ -12,7 +12,6 @@ class DynmapEntityBook{
 	private final HashMap<EntityType,DynmapEntityBatch> batches = new HashMap();
 	private final Camera camera;
 	private final LandscapeWorld landscape;
-	private int totalSize;
 	DynmapEntityBook(BatchList batchList, Camera camera, LandscapeWorld landscape){
 		this.batchList = batchList;
 		this.camera = camera;
@@ -30,9 +29,6 @@ class DynmapEntityBook{
 			}
 		});
 	}
-	int getTotalSize(){
-		return totalSize;
-	}
 	boolean hasCloselyVisible(){
 		for(EntityType type : batches.keySet())
 			if(batches.get(type).hasCloslyVisible())
@@ -42,7 +38,7 @@ class DynmapEntityBook{
 	void setEntities(ArrayList<EntityTransform> transforms){
 		MainLoop.endLoopTasks.add(new Runnable(){
 			public void run(){
-				totalSize = transforms.size();
+				transforms.size();
 				for(EntityTransform transform : transforms){
 					if(batches.containsKey(transform.getType())){
 						DynmapEntityBatch b = batches.get(transform.getType());

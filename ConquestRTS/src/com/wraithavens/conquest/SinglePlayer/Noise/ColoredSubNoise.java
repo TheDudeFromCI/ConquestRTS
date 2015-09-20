@@ -13,7 +13,7 @@ public class ColoredSubNoise{
 			maxColorWeight);
 	}
 	private final NoiseGenerator noise;
-	final float amplitude;
+	private final float amplitude;
 	private final float offset;
 	private final Vector4f minColor;
 	private final Vector4f maxColor;

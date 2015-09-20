@@ -11,7 +11,4 @@ public enum Block{
 		this.green = green;
 		this.blue = blue;
 	}
-	byte id(){
-		return (byte)(ordinal()-ID_SHIFT);
-	}
 }

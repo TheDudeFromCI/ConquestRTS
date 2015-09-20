@@ -19,9 +19,9 @@ import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxClouds;
 import com.wraithavens.conquest.Utility.BinaryFile;
 import com.wraithavens.conquest.Utility.PowerInterpolation;
 
+@SuppressWarnings("ucd")
 public class CloudGenerator{
 	public static void main(String[] args){
-		// buildPreview();
 		final int type = 1;
 		System.out.println("Generating clouds. Type = "+getTypeName(type));
 		long time;

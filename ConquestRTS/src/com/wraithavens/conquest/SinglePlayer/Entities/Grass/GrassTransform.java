@@ -1,11 +1,11 @@
 package com.wraithavens.conquest.SinglePlayer.Entities.Grass;
 
 public class GrassTransform{
-	private float x;
-	private float y;
-	private float z;
-	private float r;
-	private float s;
+	private final float x;
+	private final float y;
+	private final float z;
+	private final float r;
+	private final float s;
 	public GrassTransform(float x, float y, float z, float r, float s){
 		this.x = x;
 		this.y = y;

@@ -160,9 +160,6 @@ public class WorldNoiseMachine{
 	public float getLevelRaw(float x, float y){
 		return worldHeight.noise(x, y)/worldHeight.getMaxHeight();
 	}
-	public float getTempatureRaw(float x, float z){
-		return tempature.noise(x, z);
-	}
 	public int scaleHeight(float h, float t, float l, float x, float z){
 		final float mapSize = 50;
 		h *= mapSize;
@@ -226,5 +223,8 @@ public class WorldNoiseMachine{
 	}
 	private float getHumidityRaw(float x, float z){
 		return humidity.noise(x, z);
+	}
+	private float getTempatureRaw(float x, float z){
+		return tempature.noise(x, z);
 	}
 }

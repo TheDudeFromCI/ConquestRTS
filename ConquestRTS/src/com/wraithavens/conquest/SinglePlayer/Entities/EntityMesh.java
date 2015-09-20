@@ -17,7 +17,7 @@ import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class EntityMesh{
 	private final EntityType type;
-	int references = 0;
+	private int references = 0;
 	private final int vbo;
 	private final int ibo;
 	private final int vbo2;
@@ -170,20 +170,8 @@ public class EntityMesh{
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo2);
 		GL11.glBindTexture(GL12.GL_TEXTURE_3D, textureColorsId);
 	}
-	public Vector3f getAabbMax(){
-		return aabbMax;
-	}
-	public Vector3f getAabbMin(){
-		return aabbMin;
-	}
-	public int getDataType(){
-		return dataType;
-	}
 	public int getDynmapIndexCount(){
 		return dynmapIndices;
-	}
-	public int getIndexCount(){
-		return indexCount;
 	}
 	public Vector3f getTextureOffset3D(){
 		return textureOffset3D;
@@ -226,6 +214,12 @@ public class EntityMesh{
 	}
 	void drawStatic(){
 		GL11.glDrawElements(GL11.GL_TRIANGLES, indexCount, dataType, 0);
+	}
+	Vector3f getAabbMax(){
+		return aabbMax;
+	}
+	Vector3f getAabbMin(){
+		return aabbMin;
 	}
 	int getId(){
 		return type.ordinal();

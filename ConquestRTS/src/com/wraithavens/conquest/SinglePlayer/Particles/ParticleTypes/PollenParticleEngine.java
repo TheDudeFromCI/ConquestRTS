@@ -6,6 +6,7 @@ import com.wraithavens.conquest.SinglePlayer.Particles.ParticleBatch;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 
 public class PollenParticleEngine extends ChunkParticleEngine{
+	@SuppressWarnings("ucd")
 	public PollenParticleEngine(ParticleBatch batch, ChunkHeightData chunkHeights, Camera camera){
 		super(batch, chunkHeights, camera, 90, 30);
 	}

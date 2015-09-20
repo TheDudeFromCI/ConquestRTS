@@ -68,9 +68,6 @@ public class ParticleBatch{
 		GL15.glDeleteBuffers(particleBuffer);
 		shader.dispose();
 	}
-	public void removeEngine(ParticleEngine engine){
-		engines.remove(engine);
-	}
 	public void render(){
 		if(particles.size()==0)
 			return;
@@ -137,5 +134,8 @@ public class ParticleBatch{
 	}
 	void addEngine(ParticleEngine engine){
 		engines.add(engine);
+	}
+	void removeEngine(ParticleEngine engine){
+		engines.remove(engine);
 	}
 }

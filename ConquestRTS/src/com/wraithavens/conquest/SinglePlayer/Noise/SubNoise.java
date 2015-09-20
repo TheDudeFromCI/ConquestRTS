@@ -20,7 +20,4 @@ class SubNoise{
 	double noise(float x, float y){
 		return noise.noise(x, y)*amplitude+offset;
 	}
-	double noise(float x, float y, float z){
-		return noise.noise(x, y, z)*amplitude+offset;
-	}
 }

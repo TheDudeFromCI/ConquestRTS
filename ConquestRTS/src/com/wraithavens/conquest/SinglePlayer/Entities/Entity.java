@@ -14,18 +14,15 @@ abstract class Entity{
 	}
 	public abstract int getLod();
 	public abstract float getScale();
-	public EntityType getType(){
-		return mesh.getType();
-	}
 	public abstract float getX();
 	public abstract float getY();
 	public abstract float getYaw();
 	public abstract float getZ();
-	public boolean isColorBlended(){
+	public final boolean isColorBlended(){
 		return mesh.getType().colorBlended;
 	}
 	public abstract void render();
-	EntityMesh getMesh(){
+	final EntityMesh getMesh(){
 		return mesh;
 	}
 	final boolean sways(){

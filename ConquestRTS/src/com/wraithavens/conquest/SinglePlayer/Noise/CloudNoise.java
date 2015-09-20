@@ -9,9 +9,6 @@ public class CloudNoise{
 	public void addSubNoise(ColoredSubNoise subnoise){
 		noise.add(subnoise);
 	}
-	public void clear(){
-		noise.clear();
-	}
 	public float noise(float x, float y, float z, Vector4f out){
 		// ---
 		// Check to make sure that we have dice to roll.
