@@ -26,7 +26,7 @@ public class ZipperDust extends Particle{
 		location.x += randomX*delta;
 		location.y += speed;
 		location.z += randomZ*delta;
-		color.w = (float)Math.sin(Math.pow((endOfLife-time)/2, 0.25f)*Math.PI);
+		color.w = (float)Math.sin(Math.pow((endOfLife-time)/2, 0.25f)*Math.PI)*0.5f;
 		if(time>=endOfLife)
 			endOfLife = -1;
 	}

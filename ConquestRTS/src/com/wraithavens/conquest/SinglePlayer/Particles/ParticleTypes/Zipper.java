@@ -20,7 +20,8 @@ public class Zipper extends Particle{
 	private int generated;
 	Zipper(
 		Vector3f origin, Vector3f direction, float speed, float waveRate, float waveSize, float life,
-		float timerOffset, double creationTime, float scalePercent, ParticleBatch batch){
+		float timerOffset, double creationTime, float scalePercent, ParticleBatch batch, float red, float green,
+		float blue){
 		this.batch = batch;
 		this.direction = direction;
 		this.speed = speed;
@@ -31,8 +32,7 @@ public class Zipper extends Particle{
 		this.origin = origin;
 		this.creationTime = creationTime;
 		scale.set(2/8f*scalePercent, 2/8f*scalePercent);
-		color.set(90/255f, 110/255f, 20/255f, 0);
-		color.scale(1.3f);
+		color.set(red, green, blue, 0);
 	}
 	@Override
 	public boolean isAlive(){

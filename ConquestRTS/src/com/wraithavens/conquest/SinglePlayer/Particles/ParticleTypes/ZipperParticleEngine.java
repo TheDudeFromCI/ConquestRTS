@@ -8,7 +8,7 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 
 public class ZipperParticleEngine extends ChunkParticleEngine{
 	public ZipperParticleEngine(ParticleBatch batch, ChunkHeightData chunkHeights, Camera camera){
-		super(batch, chunkHeights, camera, 1, 10);
+		super(batch, chunkHeights, camera, 1.5f, 10);
 	}
 	public void dispose(){}
 	@Override
@@ -31,8 +31,43 @@ public class ZipperParticleEngine extends ChunkParticleEngine{
 		float waveRate = (float)(Math.random()*0.1f+0.1f);
 		float waveSize = (float)(Math.random()*0.3f+0.2f);
 		float life = (float)(Math.random()*10+6);
+		int randomColor = (int)(Math.random()*5);
+		float red, green, blue;
+		switch(randomColor){
+			case 0:
+				red = 90/255f*1.3f;
+				green = 110/255f*1.3f;
+				blue = 20/255f*1.3f;
+				break;
+			case 1:
+				red = 220/255f;
+				green = 190/255f;
+				blue = 20/255f;
+				break;
+			case 2:
+				red = 120/255f;
+				green = 120/255f;
+				blue = 120/255f;
+				break;
+			case 3:
+				red = 160/255f;
+				green = 160/255f;
+				blue = 160/255f;
+				break;
+			case 4:
+				red = 70/255f;
+				green = 70/255f;
+				blue = 70/255f;
+				break;
+			default:
+				red = 0;
+				green = 0;
+				blue = 0;
+				break;
+		}
+		int generator = length/2;
 		for(int i = 0; i<length; i++)
 			batch.addParticle(new Zipper(origin, direction, speed, waveRate, waveSize, life, i*0.02f, time, 1-i
-				/(length-2f), i==0?batch:null));
+				/(length-2f), i==generator?batch:null, red, green, blue));
 	}
 }
