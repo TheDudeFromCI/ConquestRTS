@@ -2,6 +2,7 @@ package com.wraithavens.conquest.SinglePlayer.Noise;
 
 import com.wraithavens.conquest.SinglePlayer.Particles.ParticleEngine;
 import com.wraithavens.conquest.SinglePlayer.Particles.ParticleTypes.PollenParticleEngine;
+import com.wraithavens.conquest.SinglePlayer.Particles.ParticleTypes.ZipperParticleEngine;
 
 public enum Biome{
 	// Oceans biomes. Catch all, but only under sea-level. (Plus beach)
@@ -11,7 +12,7 @@ public enum Biome{
 	// Beach(0, 100, 0, 100, 50, 50.05f),
 	// Other biomes.
 	TayleaMeadow(0.0f, 1.0f, 0.5f, 1.0f, 0.0f, 1.0f, 2, PollenParticleEngine.class),
-	ArcstoneHills(0.0f, 1.0f, 0.0f, 0.5f, 0.0f, 1.0f, 2, null),
+	ArcstoneHills(0.0f, 1.0f, 0.0f, 0.5f, 0.0f, 1.0f, 2, ZipperParticleEngine.class),
 	// And finally, a catch-all. This should never be hit.
 	Void(0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0, null);
 	public static Biome getFittingBiome(double h, double t, double l){
