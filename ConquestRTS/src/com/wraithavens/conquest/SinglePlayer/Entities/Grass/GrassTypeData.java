@@ -5,7 +5,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
-public class GrassTypeData{
+class GrassTypeData{
 	private final int buffer;
 	private final int texture;
 	private FloatBuffer data;

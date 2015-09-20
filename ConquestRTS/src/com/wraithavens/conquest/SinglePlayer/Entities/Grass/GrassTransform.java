@@ -28,19 +28,4 @@ public class GrassTransform{
 	public float getZ(){
 		return z;
 	}
-	public void setRotation(float r){
-		this.r = r;
-	}
-	public void setScale(float s){
-		this.s = s;
-	}
-	public void setX(float x){
-		this.x = x;
-	}
-	public void setY(float y){
-		this.y = y;
-	}
-	public void setZ(float z){
-		this.z = z;
-	}
 }

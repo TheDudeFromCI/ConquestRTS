@@ -2,12 +2,9 @@ package com.wraithavens.conquest.SinglePlayer.Blocks.Landscape;
 
 import java.util.Arrays;
 
-public class VertexStorage{
+class VertexStorage{
 	private Vertex[] vertices = new Vertex[100];
 	private int size;
-	public void clear(){
-		size = 0;
-	}
 	public Vertex get(int index){
 		return vertices[index];
 	}
@@ -25,5 +22,8 @@ public class VertexStorage{
 	}
 	public int size(){
 		return size;
+	}
+	void clear(){
+		size = 0;
 	}
 }

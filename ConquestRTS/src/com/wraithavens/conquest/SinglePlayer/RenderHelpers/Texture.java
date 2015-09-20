@@ -68,7 +68,7 @@ public class Texture{
 		textureId = Texture.loadTexture(buf);
 		file = "";
 	}
-	public Texture(File file){
+	private Texture(File file){
 		System.out.println("Loading file "+file+".");
 		textureId = Texture.loadTexture(Texture.loadImage(file));
 		textures.add(this);

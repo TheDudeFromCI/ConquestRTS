@@ -58,9 +58,6 @@ public class ParticleBatch{
 		GL20.glEnableVertexAttribArray(scaleAttribLocation);
 		GL20.glEnableVertexAttribArray(colorAttribLocation);
 	}
-	public void addEngine(ParticleEngine engine){
-		engines.add(engine);
-	}
 	public void addParticle(Particle particle){
 		if(particles.size()==MaxParticleCount)
 			return;
@@ -137,5 +134,8 @@ public class ParticleBatch{
 		particleData.flip();
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, particleBuffer);
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, particleData, GL15.GL_STREAM_DRAW);
+	}
+	void addEngine(ParticleEngine engine){
+		engines.add(engine);
 	}
 }

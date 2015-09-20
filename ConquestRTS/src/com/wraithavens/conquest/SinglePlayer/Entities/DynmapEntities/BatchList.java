@@ -36,13 +36,6 @@ public class BatchList{
 		GL20.glEnableVertexAttribArray(rotScaleAttribLocation);
 		GL20.glEnableVertexAttribArray(shadeAttribLocation);
 	}
-	public void addBatch(DynmapEntityBatch b){
-		batches.add(b);
-		batches.sort(batchSorter);
-	}
-	public void clearBatches(){
-		batches.clear();
-	}
 	public void render(){
 		if(batches.isEmpty())
 			return;
@@ -78,6 +71,13 @@ public class BatchList{
 	}
 	public void setup(Camera camera, LandscapeWorld landscape){
 		book = new DynmapEntityBook(this, camera, landscape);
+	}
+	void addBatch(DynmapEntityBatch b){
+		batches.add(b);
+		batches.sort(batchSorter);
+	}
+	void clearBatches(){
+		batches.clear();
 	}
 	DynmapEntityBook getBook(){
 		return book;

@@ -11,7 +11,6 @@ import com.wraithavens.conquest.SinglePlayer.BlockPopulators.ChunkZQuadCounter;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.ExtremeQuadOptimizer;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Quad;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.QuadListener;
-import com.wraithavens.conquest.SinglePlayer.BlockPopulators.QuadOptimizer;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities.BatchList;
 import com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities.DistantEntityHandler;
@@ -24,7 +23,7 @@ import com.wraithavens.conquest.Utility.Algorithms;
 import com.wraithavens.conquest.Utility.BinaryFile;
 import com.wraithavens.conquest.Utility.QuadList;
 
-public class SecondaryLoop implements Runnable{
+class SecondaryLoop implements Runnable{
 	private static Biome randomBiomeObject(float h, float t){
 		final float mapSize = 100;
 		h *= mapSize;
@@ -100,7 +99,7 @@ public class SecondaryLoop implements Runnable{
 	private Thread t;
 	private final BatchList batchList;
 	private boolean working;
-	public SecondaryLoop(Camera camera, WorldNoiseMachine machine, BatchList batchList, int maxLoadDistance){
+	SecondaryLoop(Camera camera, WorldNoiseMachine machine, BatchList batchList, int maxLoadDistance){
 		this.camera = camera;
 		this.machine = machine;
 		this.batchList = batchList;
@@ -114,9 +113,6 @@ public class SecondaryLoop implements Runnable{
 		t = new Thread(this);
 		t.setName("Secondary Loading Thread");
 		t.setDaemon(true);
-	}
-	public void dispose(){
-		running = false;
 	}
 	public void run(){
 		while(running)
@@ -223,7 +219,7 @@ public class SecondaryLoop implements Runnable{
 					if(q==0)
 						continue;
 					xCounter.setup(x, y, z, a, j, listener, Block.GRASS);
-					QuadOptimizer.countQuads(xCounter, storage, 64, 64, q);
+					ExtremeQuadOptimizer.countQuads(xCounter, storage, 64, 64, q);
 				}
 			}else if(j==2){
 				for(b = minHeight; b<maxHeight; b++){
@@ -248,7 +244,7 @@ public class SecondaryLoop implements Runnable{
 					if(q==0)
 						continue;
 					yCounter.setup(x, y, z, b, j, listener, Block.GRASS);
-					QuadOptimizer.countQuads(yCounter, storage, 64, 64, q);
+					ExtremeQuadOptimizer.countQuads(yCounter, storage, 64, 64, q);
 				}
 			}else{
 				for(c = 0; c<64; c++){
@@ -275,7 +271,7 @@ public class SecondaryLoop implements Runnable{
 					if(q==0)
 						continue;
 					zCounter.setup(x, y, z, c, j, listener, Block.GRASS);
-					QuadOptimizer.countQuads(zCounter, storage, 64, 64, q);
+					ExtremeQuadOptimizer.countQuads(zCounter, storage, 64, 64, q);
 				}
 			}
 		}
@@ -497,6 +493,9 @@ public class SecondaryLoop implements Runnable{
 			System.out.println("Generator is now working.");
 		else
 			System.out.println("Generator is now resting.");
+	}
+	void dispose(){
+		running = false;
 	}
 	ChunkWorkerQue getQue(){
 		return que;

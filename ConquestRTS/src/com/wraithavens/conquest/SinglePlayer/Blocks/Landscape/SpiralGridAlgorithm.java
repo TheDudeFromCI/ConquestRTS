@@ -1,6 +1,6 @@
 package com.wraithavens.conquest.SinglePlayer.Blocks.Landscape;
 
-public class SpiralGridAlgorithm{
+class SpiralGridAlgorithm{
 	private int x;
 	private int y;
 	private int dir;
@@ -10,12 +10,6 @@ public class SpiralGridAlgorithm{
 	private int maxDistance;
 	private int tempX;
 	private int tempY;
-	public int getDistance(){
-		return dis;
-	}
-	public int getX(){
-		return tempX;
-	}
 	public int getY(){
 		return tempY;
 	}
@@ -59,5 +53,8 @@ public class SpiralGridAlgorithm{
 	public void setOrigin(int x, int y){
 		centerX = x;
 		centerY = y;
+	}
+	int getX(){
+		return tempX;
 	}
 }

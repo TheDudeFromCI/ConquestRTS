@@ -19,9 +19,6 @@ public class GrassPatch{
 	int getCount(){
 		return grassBlades.size();
 	}
-	ArrayList<GrassTransform> getGrassBlades(){
-		return grassBlades;
-	}
 	EntityType getType(){
 		return grassType;
 	}

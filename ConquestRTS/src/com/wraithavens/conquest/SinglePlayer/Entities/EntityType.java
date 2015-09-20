@@ -77,9 +77,4 @@ public enum EntityType{
 		mesh.addReference();
 		return mesh;
 	}
-	public int getMeshRenferences(){
-		if(mesh==null)
-			return -1;
-		return mesh.references;
-	}
 }

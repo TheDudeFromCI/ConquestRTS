@@ -2,9 +2,9 @@ package com.wraithavens.conquest.SinglePlayer.Noise;
 
 import java.util.ArrayList;
 
-public class AdvancedNoise{
+class AdvancedNoise{
 	private final ArrayList<SubNoise> noise = new ArrayList();
-	public void addSubNoise(SubNoise subnoise){
+	void addSubNoise(SubNoise subnoise){
 		noise.add(subnoise);
 	}
 	float getMaxHeight(){

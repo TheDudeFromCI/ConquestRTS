@@ -4,7 +4,7 @@ import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
-public class Frustum{
+class Frustum{
 	private static void normalizePlane(float[][] frustum, int side){
 		float magnitude =
 			(float)Math.sqrt(frustum[side][A]*frustum[side][A]+frustum[side][B]*frustum[side][B]

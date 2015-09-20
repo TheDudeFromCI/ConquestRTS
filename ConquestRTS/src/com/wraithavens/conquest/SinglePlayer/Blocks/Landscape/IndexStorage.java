@@ -2,12 +2,9 @@ package com.wraithavens.conquest.SinglePlayer.Blocks.Landscape;
 
 import java.util.Arrays;
 
-public class IndexStorage{
+class IndexStorage{
 	private int[] indices = new int[100];
 	private int size;
-	public void clear(){
-		size = 0;
-	}
 	public int get(int index){
 		return indices[index];
 	}
@@ -19,5 +16,8 @@ public class IndexStorage{
 	}
 	public int size(){
 		return size;
+	}
+	void clear(){
+		size = 0;
 	}
 }

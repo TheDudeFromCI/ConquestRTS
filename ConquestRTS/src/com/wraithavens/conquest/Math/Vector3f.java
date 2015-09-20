@@ -10,11 +10,6 @@ public class Vector3f extends Vector{
 	public Vector3f(float x, float y, float z){
 		set(x, y, z);
 	}
-	public void divide(float v){
-		x /= v;
-		y /= v;
-		z /= v;
-	}
 	@Override
 	public boolean equals(Object obj){
 		if(this==obj)
@@ -63,11 +58,6 @@ public class Vector3f extends Vector{
 		this.x = x;
 		this.y = y;
 		this.z = z;
-	}
-	public void set(Vector3f v){
-		x = v.x;
-		y = v.y;
-		z = v.z;
 	}
 	@Override
 	public Vector store(FloatBuffer buf){

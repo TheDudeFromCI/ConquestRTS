@@ -7,7 +7,7 @@ import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.Utility.Algorithms;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
-public class GiantEntityList{
+class GiantEntityList{
 	private static void addEntityToChunk(EntityTransform entity, File file){
 		BinaryFile bin = new BinaryFile(file);
 		bin.decompress(false);
@@ -62,7 +62,7 @@ public class GiantEntityList{
 					// ---
 					for(float[] f : list)
 						if((int)f[0]==(int)entity.getX()&&(int)f[1]==(int)entity.getY()
-						&&(int)f[2]==(int)entity.getZ())
+							&&(int)f[2]==(int)entity.getZ())
 							return;
 				}else{
 					bin2.allocateBytes(8);

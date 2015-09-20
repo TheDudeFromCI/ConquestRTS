@@ -32,7 +32,7 @@ public class LandscapeWorld{
 	private Grasslands grassLands;
 	private MassChunkHeightData massChunkHeightData;
 	private ChunkWorkerTask currentLoadingChunk;
-	private int[] chunkLoadHeight = new int[5];
+	private final int[] chunkLoadHeight = new int[5];
 	private ChunkHeightData chunkHeightDataTemp;
 	public LandscapeWorld(
 		WorldNoiseMachine machine, EntityDatabase entityDatabase, Camera camera, BatchList batchList,
@@ -61,25 +61,6 @@ public class LandscapeWorld{
 			c.dispose();
 		chunks.clear();
 	}
-	public LandscapeChunk getContainingChunk(int x, int y, int z, boolean load, ChunkHeightData heightData){
-		x = Algorithms.groupLocation(x, LandscapeChunk.LandscapeSize);
-		y = Algorithms.groupLocation(y, LandscapeChunk.LandscapeSize);
-		z = Algorithms.groupLocation(z, LandscapeChunk.LandscapeSize);
-		for(LandscapeChunk c : chunks)
-			if(c.getX()==x&&c.getY()==y&&c.getZ()==z)
-				return c;
-		if(!load)
-			return null;
-		// ---
-		// If it's current generating the chunk we want, wait until it's done.
-		// ---
-		File file = Algorithms.getChunkPath(x, y, z);
-		if(!(file.exists()&&file.length()>0)){
-			currentLoadingChunk = loadingLoop.getQue().place(x, y, z, heightData);
-			return null;
-		}
-		return loadChunk(x, y, z, file);
-	}
 	public boolean isWithinView(int x, int z){
 		x = Algorithms.groupLocation(x, 64);
 		z = Algorithms.groupLocation(z, 64);
@@ -93,7 +74,7 @@ public class LandscapeWorld{
 		shader.bind();
 		for(LandscapeChunk c : chunks)
 			if(isWithinView(c, ViewDistance)
-				&&camera.getFrustum().cubeInFrustum(c.getX(), c.getY(), c.getZ(), LandscapeChunk.LandscapeSize)){
+				&&camera.cubeInView(c.getX(), c.getY(), c.getZ(), LandscapeChunk.LandscapeSize)){
 				shader.setUniform2f(1, c.getX(), c.getZ());
 				c.render();
 			}
@@ -166,13 +147,32 @@ public class LandscapeWorld{
 				for(a = 0; a<biomeParticleEngines.size(); a++)
 					if(biomeParticleEngines.get(a).getX()==ch.getX()
 						&&biomeParticleEngines.get(a).getZ()==ch.getZ()){
-						biomeParticleEngines.remove(a);
+						biomeParticleEngines.remove(a).dispose();
 						continue clearer;
 					}
 				throw new AssertionError();
 			}
 			i++;
 		}
+	}
+	private LandscapeChunk getContainingChunk(int x, int y, int z, boolean load, ChunkHeightData heightData){
+		x = Algorithms.groupLocation(x, LandscapeChunk.LandscapeSize);
+		y = Algorithms.groupLocation(y, LandscapeChunk.LandscapeSize);
+		z = Algorithms.groupLocation(z, LandscapeChunk.LandscapeSize);
+		for(LandscapeChunk c : chunks)
+			if(c.getX()==x&&c.getY()==y&&c.getZ()==z)
+				return c;
+		if(!load)
+			return null;
+		// ---
+		// If it's current generating the chunk we want, wait until it's done.
+		// ---
+		File file = Algorithms.getChunkPath(x, y, z);
+		if(!(file.exists()&&file.length()>0)){
+			currentLoadingChunk = loadingLoop.getQue().place(x, y, z, heightData);
+			return null;
+		}
+		return loadChunk(x, y, z, file);
 	}
 	private boolean isWithinView(LandscapeChunk c, int distance){
 		int x = Algorithms.groupLocation((int)camera.x, 64)/64;
@@ -199,10 +199,8 @@ public class LandscapeWorld{
 				place = false;
 				break;
 			}
-		if(place){
-			BiomeParticleEngine bp = new BiomeParticleEngine(x, z, particleBatch, chunkHeightDataTemp, camera);
-			biomeParticleEngines.add(bp);
-		}
+		if(place)
+			biomeParticleEngines.add(new BiomeParticleEngine(x, z, particleBatch, chunkHeightDataTemp, camera));
 		loadNextChunkHeight();
 	}
 	private void loadMassChunkHeightData(int x, int z){

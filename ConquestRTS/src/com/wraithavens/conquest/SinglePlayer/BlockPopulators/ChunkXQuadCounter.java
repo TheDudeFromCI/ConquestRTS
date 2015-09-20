@@ -5,7 +5,6 @@ public class ChunkXQuadCounter implements QuadCounter{
 	private static final float[] COLORS = new float[3];
 	private QuadListener listener;
 	private int x, side, startX, startY, startZ;
-	private short blockId;
 	public void addQuad(int y, int z, int w, int h){
 		float smallX = startX+x;
 		float smallY = startY+y;
@@ -40,7 +39,7 @@ public class ChunkXQuadCounter implements QuadCounter{
 			QUAD_POINTS[10] = bigY;
 			QUAD_POINTS[11] = smallZ;
 		}
-		listener.addQuad(new Quad(QUAD_POINTS, COLORS, side, blockId));
+		listener.addQuad(new Quad(QUAD_POINTS, COLORS, side));
 	}
 	public void setup(int startX, int startY, int startZ, int x, int side, QuadListener listener, Block block){
 		this.x = x;
@@ -52,6 +51,5 @@ public class ChunkXQuadCounter implements QuadCounter{
 		COLORS[0] = block.red;
 		COLORS[1] = block.green;
 		COLORS[2] = block.blue;
-		blockId = block.id();
 	}
 }

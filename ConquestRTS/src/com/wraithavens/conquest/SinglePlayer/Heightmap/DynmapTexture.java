@@ -16,7 +16,7 @@ import com.wraithavens.conquest.Utility.Algorithms;
 import com.wraithavens.conquest.Utility.BinaryFile;
 import com.wraithavens.conquest.Utility.LoadingScreenTask;
 
-public class DynmapTexture{
+class DynmapTexture{
 	private static void calculateNormal(float x, float z, Vector3f out, WorldNoiseMachine machine){
 		double z0 = machine.getLevelRaw(x-1, z+1);
 		double z1 = machine.getLevelRaw(x, z+1);
@@ -35,7 +35,7 @@ public class DynmapTexture{
 	private final int textureId;
 	private final int colorTextureId;
 	private final SinglePlayerGame singlePlayerGrame;
-	public DynmapTexture(WorldNoiseMachine machine, int x, int z, SinglePlayerGame singlePlayerGame){
+	DynmapTexture(WorldNoiseMachine machine, int x, int z, SinglePlayerGame singlePlayerGame){
 		singlePlayerGrame = singlePlayerGame;
 		textureId = GL11.glGenTextures();
 		colorTextureId = GL11.glGenTextures();

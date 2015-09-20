@@ -1,6 +1,6 @@
 package com.wraithavens.conquest.SinglePlayer.Blocks.Landscape;
 
-public class ChunkWorkerTask{
+class ChunkWorkerTask{
 	private final int x;
 	private final int y;
 	private final int z;

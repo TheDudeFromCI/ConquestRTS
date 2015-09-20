@@ -15,9 +15,9 @@ import com.wraithavens.conquest.Utility.Algorithms;
 
 public class Dynmap{
 	static final int VertexCount = 1025;
-	public static final int BlocksPerChunk = 16768;
+	static final int BlocksPerChunk = 16768;
 	static final int MaxDepth = Integer.numberOfTrailingZeros(VertexCount-1)-1;
-	public static final int WalkingWrapDistance = 8192;
+	private static final int WalkingWrapDistance = 8192;
 	private static final int WalkingViewBuffer = (BlocksPerChunk-WalkingWrapDistance)/2;
 	private final int vbo;
 	private DynmapChunk chunk;
@@ -50,16 +50,6 @@ public class Dynmap{
 		if(chunk!=null)
 			chunk.dispose();
 		shader.dispose();
-	}
-	public int getX(){
-		if(chunk==null)
-			return Integer.MAX_VALUE;
-		return chunk.getX();
-	}
-	public int getZ(){
-		if(chunk==null)
-			return Integer.MAX_VALUE;
-		return chunk.getZ();
 	}
 	public void render(){
 		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()

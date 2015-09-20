@@ -163,18 +163,6 @@ public class EntityMesh{
 			System.out.println("Loaded entity: "+type.fileName+".  (~"+Algorithms.formatBytes(totalSize)+")");
 		}
 	}
-	public void bind(){
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
-		GL11.glVertexPointer(3, GL11.GL_FLOAT, 16, 0);
-		GL20.glVertexAttribPointer(EntityDatabase.SingularShaderAttrib, 1, GL11.GL_UNSIGNED_BYTE, true, 16, 12);
-		GL11.glColorPointer(3, GL11.GL_UNSIGNED_BYTE, 16, 13);
-		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
-		if(textureColorsId!=0)
-			GL11.glBindTexture(GL12.GL_TEXTURE_3D, textureColorsId);
-	}
-	public void drawStatic(){
-		GL11.glDrawElements(GL11.GL_TRIANGLES, indexCount, dataType, 0);
-	}
 	public void dynmapBatchBind(int shadeAtttribLocation){
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo2);
 		GL11.glVertexPointer(3, GL11.GL_FLOAT, 13, 0);
@@ -226,6 +214,18 @@ public class EntityMesh{
 	}
 	void addReference(){
 		references++;
+	}
+	void bind(){
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
+		GL11.glVertexPointer(3, GL11.GL_FLOAT, 16, 0);
+		GL20.glVertexAttribPointer(EntityDatabase.SingularShaderAttrib, 1, GL11.GL_UNSIGNED_BYTE, true, 16, 12);
+		GL11.glColorPointer(3, GL11.GL_UNSIGNED_BYTE, 16, 13);
+		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
+		if(textureColorsId!=0)
+			GL11.glBindTexture(GL12.GL_TEXTURE_3D, textureColorsId);
+	}
+	void drawStatic(){
+		GL11.glDrawElements(GL11.GL_TRIANGLES, indexCount, dataType, 0);
 	}
 	int getId(){
 		return type.ordinal();

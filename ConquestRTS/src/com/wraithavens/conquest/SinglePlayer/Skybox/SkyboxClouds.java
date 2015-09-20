@@ -27,7 +27,7 @@ public class SkyboxClouds{
 		GL11.glTexImage2D(i, 0, backdrop?GL11.GL_RGB8:GL11.GL_RGBA8, TextureSize, TextureSize, 0, backdrop
 			?GL11.GL_RGB:GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, data);
 	}
-	static void load(boolean backdrop, int weatherType){
+	private static void load(boolean backdrop, int weatherType){
 		int skyId = (int)(Math.random()*CloudCombinationCount);
 		File file =
 			new File(WraithavensConquest.assetFolder+File.separatorChar+"Sky", skyId+(backdrop?"b":"a")
@@ -47,7 +47,7 @@ public class SkyboxClouds{
 	public static final int CloudCombinationCount = 5;
 	public static final int LayerCount = 0;
 	private final int textureId;
-	private float spinSpeed = 0.0f;
+	private final float spinSpeed;
 	private float angle = 0.0f;
 	public SkyboxClouds(boolean backdrop, float spinSpeed, int weatherType){
 		this.spinSpeed = spinSpeed;

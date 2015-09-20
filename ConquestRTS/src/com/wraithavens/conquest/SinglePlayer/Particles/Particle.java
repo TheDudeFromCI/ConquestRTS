@@ -10,9 +10,6 @@ public abstract class Particle{
 	protected final Vector2f scale = new Vector2f();
 	protected final Vector4f color = new Vector4f();
 	private double camDistance;
-	public Vector4f getColor(){
-		return color;
-	}
 	public Vector3f getLocation(){
 		return location;
 	}
@@ -24,7 +21,10 @@ public abstract class Particle{
 	double getCameraDistance(){
 		return camDistance;
 	}
-	void setCameraDistance(Camera camera){
+	Vector4f getColor(){
+		return color;
+	}
+	final void setCameraDistance(Camera camera){
 		double x = camera.x-location.x;
 		double y = camera.y-location.y;
 		double z = camera.z-location.z;

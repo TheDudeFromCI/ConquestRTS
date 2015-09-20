@@ -6,15 +6,15 @@ import com.wraithavens.conquest.SinglePlayer.Particles.ParticleBatch;
 import com.wraithavens.conquest.SinglePlayer.Particles.ParticleEngine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 
-public abstract class ChunkParticleEngine implements ParticleEngine{
+abstract class ChunkParticleEngine implements ParticleEngine{
 	protected final ChunkHeightData chunkHeights;
 	protected final ParticleBatch batch;
-	protected final double creationTime;
+	private final double creationTime;
 	protected final Camera camera;
 	private final double particlesPerSecond;
 	private final int maxParticlesPerFrame;
-	protected long generated = 0;
-	public ChunkParticleEngine(
+	private long generated = 0;
+	ChunkParticleEngine(
 		ParticleBatch batch, ChunkHeightData chunkHeights, Camera camera, double particlesPerSecond,
 		int maxParticlesPerFrame){
 		this.chunkHeights = chunkHeights;

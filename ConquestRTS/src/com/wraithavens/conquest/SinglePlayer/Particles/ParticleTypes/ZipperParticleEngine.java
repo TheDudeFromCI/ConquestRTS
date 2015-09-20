@@ -7,6 +7,7 @@ import com.wraithavens.conquest.SinglePlayer.Particles.ParticleBatch;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 
 public class ZipperParticleEngine extends ChunkParticleEngine{
+	@SuppressWarnings("ucd")
 	public ZipperParticleEngine(ParticleBatch batch, ChunkHeightData chunkHeights, Camera camera){
 		super(batch, chunkHeights, camera, 1.5f, 10);
 	}

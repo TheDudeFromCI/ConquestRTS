@@ -11,14 +11,17 @@ public class Camera{
 	public volatile float z;
 	public float rx;
 	public float ry;
+	public boolean boxInView(float[] e){
+		return frustum.boxInFrustum(e);
+	}
+	public boolean cubeInView(float x, float y, float z, float size){
+		return frustum.cubeInFrustum(x, y, z, size);
+	}
 	public double distanceSquared(double x, double y, double z){
 		x -= this.x;
 		y -= this.y;
 		z -= this.z;
 		return x*x+y*y+z*z;
-	}
-	public Frustum getFrustum(){
-		return frustum;
 	}
 	public void update(double delta){
 		// ---

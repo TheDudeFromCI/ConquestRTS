@@ -44,19 +44,13 @@ public enum Biome{
 		this.biomeType = biomeType;
 		this.particleEngine = particleEngine;
 	}
-	public float averageHumidity(){
-		return (maxH+minH)/2;
-	}
-	public float averageTempature(){
-		return (maxT+minT)/2;
-	}
 	public Class<? extends ParticleEngine> getParticleEngine(){
 		return particleEngine;
 	}
-	public int getType(){
-		return biomeType;
-	}
 	private boolean fitsIn(double h, double t, double l){
 		return h>=minH&&h<=maxH&&t>=minT&&t<=maxT&&l>=minL&&l<=maxL;
+	}
+	int getType(){
+		return biomeType;
 	}
 }

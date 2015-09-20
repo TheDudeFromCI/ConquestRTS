@@ -51,7 +51,8 @@ public class BinaryFile{
 		}
 	}
 	private static final Object HDD_LOCK = 0;
-	private static byte[] CompressionBuffer = new byte[3*1024*1024]; // 3 Mb.
+	private final static byte[] CompressionBuffer = new byte[3*1024*1024]; // 3
+	// Mb.
 	private byte[] binary;
 	private int pos;
 	/**
@@ -72,14 +73,6 @@ public class BinaryFile{
 	public void addByte(byte n){
 		binary[pos] = n;
 		pos++;
-	}
-	public void addBytes(byte[] bytes){
-		addBytes(bytes, 0, bytes.length);
-	}
-	public void addBytes(byte[] bytes, int offset, int length){
-		for(int i = offset; i<offset+length; i++)
-			binary[pos+i-offset] = bytes[i];
-		pos += length;
 	}
 	public void addFloat(float n){
 		addInt(Float.floatToIntBits(n));
@@ -200,5 +193,10 @@ public class BinaryFile{
 	}
 	public void skip(int bytes){
 		pos += bytes;
+	}
+	private void addBytes(byte[] bytes, int offset, int length){
+		for(int i = offset; i<offset+length; i++)
+			binary[pos+i-offset] = bytes[i];
+		pos += length;
 	}
 }

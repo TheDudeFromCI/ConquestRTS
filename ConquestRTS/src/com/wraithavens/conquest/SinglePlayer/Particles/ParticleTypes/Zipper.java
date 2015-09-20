@@ -4,7 +4,7 @@ import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.Particles.Particle;
 import com.wraithavens.conquest.SinglePlayer.Particles.ParticleBatch;
 
-public class Zipper extends Particle{
+class Zipper extends Particle{
 	private final double DustPerSecond = 7;
 	private final int MaxDustPerFrame = 3;
 	private final Vector3f direction;
@@ -47,7 +47,7 @@ public class Zipper extends Particle{
 			location.set((float)(direction.x*(age-timerOffset)*speed+origin.x), (float)(direction.y
 				*(age-timerOffset)*speed+origin.y)
 				+(float)Math.sin((age-timerOffset)/waveRate)*waveSize, (float)(direction.z*(age-timerOffset)
-				*speed+origin.z));
+					*speed+origin.z));
 			if(batch!=null){
 				long particles = (long)((time-creationTime)*DustPerSecond)-generated;
 				generated += particles;

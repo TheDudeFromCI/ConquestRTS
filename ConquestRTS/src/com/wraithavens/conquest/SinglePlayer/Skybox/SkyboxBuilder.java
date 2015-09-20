@@ -36,11 +36,6 @@ public class SkyboxBuilder{
 		addPart();
 		part = new SubNoisePart();
 	}
-	public void reset(){
-		part = null;
-		noise.clear();
-		newSubNoise();
-	}
 	public void setAmplitude(float amplitude){
 		part.amplitude = amplitude;
 	}
@@ -58,15 +53,6 @@ public class SkyboxBuilder{
 	}
 	public void setMaxColorWeight(float maxColorWeight){
 		part.maxColorWeight = maxColorWeight;
-	}
-	public void setMinColor(Vector4f minColor){
-		part.minColor = minColor;
-	}
-	public void setMinColorWeight(float minColorWeight){
-		part.minColorWeight = minColorWeight;
-	}
-	public void setOffset(float offset){
-		part.offset = offset;
 	}
 	public void setSeed(long seed){
 		part.seed = seed;

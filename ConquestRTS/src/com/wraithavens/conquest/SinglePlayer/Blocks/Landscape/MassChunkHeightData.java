@@ -4,11 +4,11 @@ import java.io.File;
 import com.wraithavens.conquest.Utility.Algorithms;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
-public class MassChunkHeightData{
+class MassChunkHeightData{
 	private final short[] heightRanges = new short[128*128*2];
 	private final int x;
 	private final int z;
-	public MassChunkHeightData(int x, int z){
+	MassChunkHeightData(int x, int z){
 		this.x = x;
 		this.z = z;
 		File file = Algorithms.getMassChunkHeightsPath(x, z);

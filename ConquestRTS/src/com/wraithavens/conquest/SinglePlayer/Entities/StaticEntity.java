@@ -8,7 +8,7 @@ public class StaticEntity extends Entity{
 	private final Vector3f position = new Vector3f();
 	private float scale = 1/5f;
 	private float yaw;
-	private AABB aabb;
+	private final AABB aabb;
 	private int lod;
 	public StaticEntity(EntityType type){
 		super(type);

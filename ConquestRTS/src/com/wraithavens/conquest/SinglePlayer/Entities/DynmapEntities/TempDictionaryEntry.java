@@ -2,7 +2,7 @@ package com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities;
 
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 
-public class TempDictionaryEntry{
+class TempDictionaryEntry{
 	private final float averageDistance;
 	private final EntityType mainEntity;
 	private final int entityVariations;

@@ -9,7 +9,7 @@ import com.wraithavens.conquest.SinglePlayer.Entities.EntityMesh;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 
-public class DynmapEntityBatch{
+class DynmapEntityBatch{
 	private final ArrayList<EntityTransform> entities = new ArrayList();
 	private int instanceDataId = -1;
 	private EntityMesh mesh;
@@ -20,7 +20,7 @@ public class DynmapEntityBatch{
 	DynmapEntityBatch(EntityType type){
 		this.type = type;
 	}
-	public void addEntity(EntityTransform e){
+	void addEntity(EntityTransform e){
 		entities.add(e);
 	}
 	void bind(){
@@ -41,9 +41,6 @@ public class DynmapEntityBatch{
 	}
 	EntityMesh getMesh(){
 		return mesh;
-	}
-	int getRealCount(){
-		return entities.size();
 	}
 	EntityType getType(){
 		return mesh.getType();

@@ -37,10 +37,4 @@ public class CloudNoise{
 		// ---
 		return h/noise.size();
 	}
-	double getMaxHeight(){
-		double f = 0;
-		for(ColoredSubNoise n : noise)
-			f += n.amplitude;
-		return f;
-	}
 }

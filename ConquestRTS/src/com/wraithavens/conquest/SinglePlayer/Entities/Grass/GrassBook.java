@@ -16,7 +16,7 @@ import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
-public class GrassBook{
+class GrassBook{
 	private static int loadTexture(EntityType type){
 		File file = new File(WraithavensConquest.modelFolder, type.fileName);
 		BinaryFile bin = new BinaryFile(file);

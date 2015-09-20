@@ -4,7 +4,7 @@ import org.lwjgl.opengl.GL11;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Texture;
 
-public class UiElement{
+class UiElement{
 	Texture texture;
 	float x;
 	float y;
@@ -12,7 +12,7 @@ public class UiElement{
 	float h;
 	float r;
 	float a = 1;
-	public UiElement(Texture texture){
+	UiElement(Texture texture){
 		this.texture = texture;
 	}
 	private void drawPoint(float x, float y, float sin, float cos){
@@ -24,7 +24,7 @@ public class UiElement{
 		y = newY+this.y;
 		GL11.glVertex3f(x, y, 0);
 	}
-	void render(ShaderProgram shader){
+	final void render(ShaderProgram shader){
 		shader.setUniform1f(1, a);
 		texture.bind();
 		GL11.glBegin(GL11.GL_QUADS);

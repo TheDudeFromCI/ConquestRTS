@@ -2,7 +2,7 @@ package com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities;
 
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 
-public class DictionaryEntry{
+class DictionaryEntry{
 	private final float spawnChance;
 	private final EntityType entity;
 	private final int variations;

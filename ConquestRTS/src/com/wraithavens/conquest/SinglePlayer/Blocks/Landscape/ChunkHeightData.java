@@ -14,7 +14,7 @@ public class ChunkHeightData{
 	private final int maxHeight;
 	private final int x;
 	private final int z;
-	public ChunkHeightData(WorldNoiseMachine machine, int x, int z, MassChunkHeightData massChunkHeightData){
+	ChunkHeightData(WorldNoiseMachine machine, int x, int z, MassChunkHeightData massChunkHeightData){
 		this.x = x;
 		this.z = z;
 		File file = Algorithms.getChunkHeightsPath(x, z);
@@ -76,9 +76,6 @@ public class ChunkHeightData{
 		getChunkHeight(h);
 		massChunkHeightData.setHeight(x, z, h);
 	}
-	public Biome getBiome(int x, int z){
-		return Biome.values()[biomes[(z-this.z)*64+x-this.x]&0xFF];
-	}
 	public Biome getBiomeRaw(int x, int z){
 		return Biome.values()[biomes[z*64+x]&0xFF];
 	}
@@ -108,5 +105,8 @@ public class ChunkHeightData{
 	}
 	public int getZ(){
 		return z;
+	}
+	Biome getBiome(int x, int z){
+		return Biome.values()[biomes[(z-this.z)*64+x-this.x]&0xFF];
 	}
 }

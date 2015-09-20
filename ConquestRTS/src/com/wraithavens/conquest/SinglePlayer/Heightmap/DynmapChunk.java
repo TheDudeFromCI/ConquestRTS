@@ -8,7 +8,7 @@ import org.lwjgl.opengl.GL15;
 import com.wraithavens.conquest.SinglePlayer.SinglePlayerGame;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 
-public class DynmapChunk{
+class DynmapChunk{
 	private static void breakDown(QuadTree t, float x, float z, int depth){
 		double d = distance(t, x, z);
 		t.clearChildren();
@@ -98,19 +98,10 @@ public class DynmapChunk{
 		this.x = x;
 		this.z = z;
 		ibo = GL15.glGenBuffers();
-		tree = new QuadTree(0, 0, Dynmap.VertexCount-1, null);
+		tree = new QuadTree(0, 0, Dynmap.VertexCount-1);
 		texture = new DynmapTexture(machine, x, z, singlePlayerGame);
 		updateIndices();
 		System.out.println("New dynmap loaded.");
-	}
-	public void update(float x, float z){
-		if(Math.abs(x-lastTreeUpdateX)>TreeUpdateForgiveness||Math.abs(z-lastTreeUpdateZ)>TreeUpdateForgiveness){
-			lastTreeUpdateX = x;
-			lastTreeUpdateZ = z;
-		}else
-			return;
-		breakDown(tree, x-this.x, z-this.z, 0);
-		updateIndices();
 	}
 	private void countIndices(){
 		indexCounts = 0;
@@ -286,6 +277,14 @@ public class DynmapChunk{
 			tri(tree, 4, 0, 2);
 		return i;
 	}
+	private void updateIndices(){
+		countIndices();
+		IntBuffer indexData = BufferUtils.createIntBuffer(indexCounts);
+		indexData.put(triangleIndices, 0, indexCounts);
+		indexData.flip();
+		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
+		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_DYNAMIC_DRAW);
+	}
 	void dispose(){
 		GL15.glDeleteBuffers(ibo);
 		texture.dispose();
@@ -308,12 +307,13 @@ public class DynmapChunk{
 		texture.bind();
 		GL11.glDrawElements(GL11.GL_TRIANGLES, indexCounts, GL11.GL_UNSIGNED_INT, 0);
 	}
-	void updateIndices(){
-		countIndices();
-		IntBuffer indexData = BufferUtils.createIntBuffer(indexCounts);
-		indexData.put(triangleIndices, 0, indexCounts);
-		indexData.flip();
-		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
-		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_DYNAMIC_DRAW);
+	void update(float x, float z){
+		if(Math.abs(x-lastTreeUpdateX)>TreeUpdateForgiveness||Math.abs(z-lastTreeUpdateZ)>TreeUpdateForgiveness){
+			lastTreeUpdateX = x;
+			lastTreeUpdateZ = z;
+		}else
+			return;
+		breakDown(tree, x-this.x, z-this.z, 0);
+		updateIndices();
 	}
 }

@@ -5,12 +5,12 @@ import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.Noise.PointGenerator2D;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 
-public class EntityGroup{
+class EntityGroup{
 	private final int x;
 	private final int z;
 	private final DynmapEntityBook book;
 	private final GiantEntityList list;
-	public EntityGroup(WorldNoiseMachine machine, DynmapEntityBook book, int x, int z){
+	EntityGroup(WorldNoiseMachine machine, DynmapEntityBook book, int x, int z){
 		System.out.println("Loaded entity group: ["+x+", "+z+"]");
 		this.book = book;
 		this.x = x;
@@ -44,9 +44,6 @@ public class EntityGroup{
 	}
 	void dispose(){
 		book.dispose();
-	}
-	int getEntityCount(){
-		return book.getTotalSize();
 	}
 	GiantEntityList getList(){
 		return list;

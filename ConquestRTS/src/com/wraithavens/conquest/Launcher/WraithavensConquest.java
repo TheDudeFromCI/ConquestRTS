@@ -56,7 +56,7 @@ public class WraithavensConquest extends EmptyLoop{
 	public static String currentGameFolder;
 	public static String loadingScreenImagesFolder;
 	public static String modelFolder;
-	public static String saveFolder;
+	static String saveFolder;
 	public static WraithavensConquest INSTANCE;
 	private Driver driver;
 	private double currentTime;

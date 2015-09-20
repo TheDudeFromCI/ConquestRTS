@@ -17,10 +17,10 @@ public class NoiseGenerator{
 	private InterpolationFunction function;
 	private final float maxHeight;
 	private int[] reals, edge, c;
-	private int[] layerSeeds;
+	private final int[] layerSeeds;
 	private final long seed;
 	private final float smoothness;
-	private Random r = new Random();
+	private final Random r = new Random();
 	public NoiseGenerator(long seed, float smoothness, int detail){
 		this.seed = seed;
 		this.smoothness = smoothness;

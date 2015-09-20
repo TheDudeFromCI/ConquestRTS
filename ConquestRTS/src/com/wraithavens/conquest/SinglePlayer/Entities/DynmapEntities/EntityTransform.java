@@ -3,12 +3,12 @@ package com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 
 public class EntityTransform{
-	private float x;
-	private float y;
-	private float z;
-	private float r;
-	private float s;
-	private EntityType type;
+	private final float x;
+	private final float y;
+	private final float z;
+	private final float r;
+	private final float s;
+	private final EntityType type;
 	private int visibilityLevel;
 	public EntityTransform(EntityType type, float x, float y, float z, float r, float s){
 		this.x = x;

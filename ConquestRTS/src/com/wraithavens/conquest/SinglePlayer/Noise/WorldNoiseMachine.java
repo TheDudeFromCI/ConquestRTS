@@ -141,12 +141,6 @@ public class WorldNoiseMachine{
 		tayleaMeadowNoise = new TayleaMeadowNoise(seeds[4]);
 		arcstoneHillsNoise = new ArcstoneHillsNoise(seeds[5]);
 	}
-	public WorldNoiseMachine createInstance(){
-		return generate(seeds);
-	}
-	public Biome getBiomeAt(int x, int z){
-		return Biome.getFittingBiome(getHumidityRaw(x, z), getTempatureRaw(x, z), getLevelRaw(x, z));
-	}
 	public Biome getBiomeAt(int x, int z, float[] heightOut){
 		heightOut[0] = getHumidityRaw(x, z);
 		heightOut[1] = getTempatureRaw(x, z);
@@ -162,9 +156,6 @@ public class WorldNoiseMachine{
 	public synchronized int getGroundLevel(int x, int z){
 		getBiomeAt(x, z, tempHTL);
 		return scaleHeight(tempHTL[0], tempHTL[1], tempHTL[2], x, z);
-	}
-	public float getHumidityRaw(float x, float z){
-		return humidity.noise(x, z);
 	}
 	public float getLevelRaw(float x, float y){
 		return worldHeight.noise(x, y)/worldHeight.getMaxHeight();
@@ -232,5 +223,8 @@ public class WorldNoiseMachine{
 			default:
 				throw new AssertionError();
 		}
+	}
+	private float getHumidityRaw(float x, float z){
+		return humidity.noise(x, z);
 	}
 }

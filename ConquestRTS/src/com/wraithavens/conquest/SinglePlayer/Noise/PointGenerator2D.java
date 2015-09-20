@@ -12,7 +12,7 @@ public class PointGenerator2D{
 	private final float averageDistanceApart;
 	private final float maxShift;
 	private final float consistancy;
-	private Random r = new Random();
+	private final Random r = new Random();
 	public PointGenerator2D(long seed, float averageDistanceApart, float minDistanceApart, float consistancy){
 		this.seed = seed;
 		this.averageDistanceApart = averageDistanceApart;

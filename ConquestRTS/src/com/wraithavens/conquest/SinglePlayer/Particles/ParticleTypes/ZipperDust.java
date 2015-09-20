@@ -2,12 +2,12 @@ package com.wraithavens.conquest.SinglePlayer.Particles.ParticleTypes;
 
 import com.wraithavens.conquest.SinglePlayer.Particles.Particle;
 
-public class ZipperDust extends Particle{
+class ZipperDust extends Particle{
 	private float endOfLife;
 	private float speed;
-	private float randomX;
-	private float randomZ;
-	public ZipperDust(float x, float y, float z, double time){
+	private final float randomX;
+	private final float randomZ;
+	ZipperDust(float x, float y, float z, double time){
 		location.set(x, y, z);
 		scale.set(1/12f, 1/12f);
 		endOfLife = (float)(time+1);

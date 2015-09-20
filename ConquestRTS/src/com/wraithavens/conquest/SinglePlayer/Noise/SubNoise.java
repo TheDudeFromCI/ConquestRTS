@@ -2,8 +2,8 @@ package com.wraithavens.conquest.SinglePlayer.Noise;
 
 import com.wraithavens.conquest.Utility.InterpolationFunction;
 
-public class SubNoise{
-	public static SubNoise build(long seed, float smoothness, int detail, InterpolationFunction function,
+class SubNoise{
+	static SubNoise build(long seed, float smoothness, int detail, InterpolationFunction function,
 		float amplitude, float offset){
 		NoiseGenerator n = new NoiseGenerator(seed, smoothness, detail);
 		n.setFunction(function);

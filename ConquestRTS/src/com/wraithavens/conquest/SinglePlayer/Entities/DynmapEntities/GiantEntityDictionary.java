@@ -5,7 +5,7 @@ import java.util.Random;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.Noise.Biome;
 
-public class GiantEntityDictionary{
+class GiantEntityDictionary{
 	private static final long s = 4294967291L;
 	private final HashMap<Biome,DictionaryEntry> biomes = new HashMap();
 	private final float averageDistanceApart;
