@@ -11,7 +11,6 @@ import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.SinglePlayer.Heightmap.Dynmap;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.Particles.ParticleBatch;
-import com.wraithavens.conquest.SinglePlayer.Particles.ParticleTypes.PollenParticleEngine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyBox;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxClouds;
@@ -71,18 +70,14 @@ public class SinglePlayerGame implements Driver{
 		entityDatabase = new EntityDatabase(camera);
 		dynmap = new Dynmap(machine, this);
 		dynmapEntityBatches = new BatchList();
-		landscape = new LandscapeWorld(machine, entityDatabase, camera, dynmapEntityBatches);
+		particleBatch = new ParticleBatch(camera);
+		landscape = new LandscapeWorld(machine, entityDatabase, camera, dynmapEntityBatches, particleBatch);
 		dynmapEntityBatches.setup(camera, landscape);
 		grassLands = new Grasslands(landscape, camera);
 		entityDatabase.setLandscape(landscape);
 		landscape.setup(grassLands);
 		loadingScreen = new LoadingScreen();
 		dynmap.update(camera.x, camera.z);
-		{
-			particleBatch = new ParticleBatch(camera);
-			PollenParticleEngine e = new PollenParticleEngine(particleBatch, camera, 32);
-			particleBatch.addEngine(e);
-		}
 		landscape.start();
 	}
 	public void onKey(int key, int action){
@@ -209,11 +204,7 @@ public class SinglePlayerGame implements Driver{
 		}
 		frameDelta = delta;
 		move(delta);
-		// ---
-		// Check to see if we should or should not update the world. Then act
-		// accoringly.
-		// ---
-		landscape.update();
+		landscape.update(time);
 		skybox.update(time);
 		particleBatch.update(delta, time);
 		grassLands.update();

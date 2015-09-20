@@ -1,5 +1,8 @@
 package com.wraithavens.conquest.SinglePlayer.Noise;
 
+import com.wraithavens.conquest.SinglePlayer.Particles.ParticleEngine;
+import com.wraithavens.conquest.SinglePlayer.Particles.ParticleTypes.PollenParticleEngine;
+
 public enum Biome{
 	// Oceans biomes. Catch all, but only under sea-level. (Plus beach)
 	// DeepWater(0, 100, 0, 100, 0, 35),
@@ -7,10 +10,10 @@ public enum Biome{
 	// ShallowOcean(0, 100, 0, 100, 45, 50),
 	// Beach(0, 100, 0, 100, 50, 50.05f),
 	// Other biomes.
-	TayleaMeadow(0, 100, 50, 100, 2),
-	ArcstoneHills(0, 100, 0, 50, 2),
+	TayleaMeadow(0.0f, 1.0f, 0.5f, 1.0f, 0.0f, 1.0f, 2, PollenParticleEngine.class),
+	ArcstoneHills(0.0f, 1.0f, 0.0f, 0.5f, 0.0f, 1.0f, 2, null),
 	// And finally, a catch-all. This should never be hit.
-	Void(0, 100, 0, 100, 0, 100, 0);
+	Void(0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0, null);
 	public static Biome getFittingBiome(double h, double t, double l){
 		for(Biome b : values())
 			if(b.fitsIn(h, t, l))
@@ -27,7 +30,10 @@ public enum Biome{
 	private final float minL;
 	private final float maxL;
 	private final int biomeType;
-	private Biome(float minH, float maxH, float minT, float maxT, float minL, float maxL, int biomeType){
+	private final Class<? extends ParticleEngine> particleEngine;
+	private Biome(
+		float minH, float maxH, float minT, float maxT, float minL, float maxL, int biomeType,
+		Class<? extends ParticleEngine> particleEngine){
 		this.minH = minH;
 		this.maxH = maxH;
 		this.minT = minT;
@@ -35,18 +41,16 @@ public enum Biome{
 		this.minL = minL;
 		this.maxL = maxL;
 		this.biomeType = biomeType;
-	}
-	private Biome(int minH, int maxH, int minT, int maxT, float minL, float maxL, int biomeType){
-		this(minH*0.01f, maxH*0.01f, minT*0.01f, maxT*0.01f, minL*0.01f, maxL*0.01f, biomeType);
-	}
-	private Biome(int minH, int maxH, int minT, int maxT, int biomeType){
-		this(minH*0.01f, maxH*0.01f, minT*0.01f, maxT*0.01f, 0.0f, 1.0f, biomeType);
+		this.particleEngine = particleEngine;
 	}
 	public float averageHumidity(){
 		return (maxH+minH)/2;
 	}
 	public float averageTempature(){
 		return (maxT+minT)/2;
+	}
+	public Class<? extends ParticleEngine> getParticleEngine(){
+		return particleEngine;
 	}
 	public int getType(){
 		return biomeType;

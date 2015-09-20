@@ -8,6 +8,8 @@ import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities.BatchList;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
+import com.wraithavens.conquest.SinglePlayer.Particles.BiomeParticleEngine;
+import com.wraithavens.conquest.SinglePlayer.Particles.ParticleBatch;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 import com.wraithavens.conquest.Utility.Algorithms;
@@ -22,6 +24,8 @@ public class LandscapeWorld{
 	private final EntityDatabase entityDatabase;
 	private final SecondaryLoop loadingLoop;
 	private final WorldNoiseMachine machine;
+	private final ArrayList<BiomeParticleEngine> biomeParticleEngines = new ArrayList();
+	private final ParticleBatch particleBatch;
 	private int chunkX;
 	private int chunkZ;
 	private int frame = 0;
@@ -30,12 +34,13 @@ public class LandscapeWorld{
 	private ChunkWorkerTask currentLoadingChunk;
 	private int[] chunkLoadHeight = new int[5];
 	private ChunkHeightData chunkHeightDataTemp;
-	private ChunkListener listener;
 	public LandscapeWorld(
-		WorldNoiseMachine machine, EntityDatabase entityDatabase, Camera camera, BatchList batchList){
+		WorldNoiseMachine machine, EntityDatabase entityDatabase, Camera camera, BatchList batchList,
+		ParticleBatch particleBatch){
 		this.camera = camera;
 		this.entityDatabase = entityDatabase;
 		this.machine = machine;
+		this.particleBatch = particleBatch;
 		shader =
 			new ShaderProgram(new File(WraithavensConquest.assetFolder, "Landscape.vert"), null, new File(
 				WraithavensConquest.assetFolder, "Landscape.frag"));
@@ -93,16 +98,15 @@ public class LandscapeWorld{
 				c.render();
 			}
 	}
-	public void setListener(ChunkListener listener){
-		this.listener = listener;
-	}
 	public void setup(Grasslands grassLands){
 		this.grassLands = grassLands;
 	}
 	public void start(){
 		loadingLoop.start();
 	}
-	public void update(){
+	public void update(double time){
+		for(BiomeParticleEngine bp : biomeParticleEngines)
+			bp.update(time);
 		// ---
 		// First, make sure we are loading from the camera's location.
 		// ---
@@ -149,17 +153,26 @@ public class LandscapeWorld{
 		}
 	}
 	private void clearDistanceChunks(){
-		boolean updated = false;
-		for(int i = 0; i<chunks.size();){
-			if(shouldRemove(chunks.get(i))){
-				chunks.get(i).dispose();
+		LandscapeChunk ch;
+		int a;
+		clearer:for(int i = 0; i<chunks.size();){
+			ch = chunks.get(i);
+			if(shouldRemove(ch)){
+				ch.dispose();
 				chunks.remove(i);
-				updated = true;
-			}else
-				i++;
+				for(LandscapeChunk c : chunks)
+					if(c.getX()==ch.getX()&&c.getZ()==ch.getZ())
+						continue clearer;
+				for(a = 0; a<biomeParticleEngines.size(); a++)
+					if(biomeParticleEngines.get(a).getX()==ch.getX()
+						&&biomeParticleEngines.get(a).getZ()==ch.getZ()){
+						biomeParticleEngines.remove(a);
+						continue clearer;
+					}
+				throw new AssertionError();
+			}
+			i++;
 		}
-		if(updated)
-			updateListener();
 	}
 	private boolean isWithinView(LandscapeChunk c, int distance){
 		int x = Algorithms.groupLocation((int)camera.x, 64)/64;
@@ -169,7 +182,6 @@ public class LandscapeWorld{
 	private LandscapeChunk loadChunk(int x, int y, int z, File file){
 		LandscapeChunk c = new LandscapeChunk(entityDatabase, grassLands, x, y, z, file);
 		chunks.add(c);
-		updateListener();
 		if(grassLands!=null)
 			grassLands.updateVisibility();
 		return c;
@@ -181,6 +193,16 @@ public class LandscapeWorld{
 		chunkLoadHeight[2] = x;
 		chunkLoadHeight[3] = z;
 		chunkLoadHeight[4] = 0;
+		boolean place = true;
+		for(BiomeParticleEngine bp : biomeParticleEngines)
+			if(bp.getX()==x&&bp.getZ()==z){
+				place = false;
+				break;
+			}
+		if(place){
+			BiomeParticleEngine bp = new BiomeParticleEngine(x, z, particleBatch, chunkHeightDataTemp, camera);
+			biomeParticleEngines.add(bp);
+		}
 		loadNextChunkHeight();
 	}
 	private void loadMassChunkHeightData(int x, int z){
@@ -207,10 +229,5 @@ public class LandscapeWorld{
 	}
 	private boolean shouldRemove(LandscapeChunk chunk){
 		return !isWithinView(chunk, ViewDistance+3);
-	}
-	private void updateListener(){
-		if(listener==null)
-			return;
-		listener.chunksChanged();
 	}
 }
