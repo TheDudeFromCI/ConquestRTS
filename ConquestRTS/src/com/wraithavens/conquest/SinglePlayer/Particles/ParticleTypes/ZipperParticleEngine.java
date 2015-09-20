@@ -29,8 +29,8 @@ public class ZipperParticleEngine extends ChunkParticleEngine{
 			new Vector3f((float)(Math.random()*2-1), (float)Math.random()*0.01f, (float)(Math.random()*2-1));
 		direction.normalize();
 		float speed = (float)(Math.random()*2+0.5f)+20;
-		float waveRate = (float)(Math.random()*0.1f+0.1f);
-		float waveSize = (float)(Math.random()*0.3f+0.2f);
+		float waveRate = (float)(Math.random()*0.1f+0.1f)*1.7f;
+		float waveSize = (float)(Math.random()*0.6f+0.2f);
 		float life = (float)(Math.random()*10+6);
 		int randomColor = (int)(Math.random()*5);
 		float red, green, blue;
