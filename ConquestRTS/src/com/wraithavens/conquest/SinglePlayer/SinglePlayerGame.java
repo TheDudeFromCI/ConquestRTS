@@ -234,12 +234,15 @@ public class SinglePlayerGame implements Driver{
 			camera.goalZ -= delta*(float)Math.cos(Math.toRadians(camera.ry+90));
 			cameraMoved = true;
 		}
-		if(space)
-			camera.goalY += delta;
-		if(shift)
-			camera.goalY -= delta;
-		if(cameraMoved&&grounded)
-			camera.goalY = machine.getGroundLevel((int)camera.goalX, (int)camera.goalZ)+6;
+		if(grounded){
+			if(cameraMoved)
+				camera.goalY = machine.getGroundLevel((int)camera.goalX, (int)camera.goalZ)+6;
+		}else{
+			if(space)
+				camera.goalY += delta;
+			if(shift)
+				camera.goalY -= delta;
+		}
 	}
 	private void updateCamera(double delta){
 		float x = camera.x;
