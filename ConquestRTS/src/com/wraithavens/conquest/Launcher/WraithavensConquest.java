@@ -33,6 +33,7 @@ public class WraithavensConquest extends EmptyLoop{
 	}
 	private static void printContextInfo(){
 		System.out.println("Version info:");
+		System.out.println("  Talantra Version: "+Version);
 		System.out.println("  OpenGL version: "+GL11.glGetString(GL11.GL_VERSION));
 		System.out.println("  LWJGL version: "+Sys.VERSION_MAJOR+"."+Sys.VERSION_MINOR);
 		System.out.println("  LWJGL revision: "+Sys.VERSION_REVISION);
@@ -58,6 +59,15 @@ public class WraithavensConquest extends EmptyLoop{
 	public static String modelFolder;
 	static String saveFolder;
 	public static WraithavensConquest INSTANCE;
+	/**
+	 * Version Breakdown: <br>
+	 * Major Version - The major version release. 0 For pre-release, or 1 for
+	 * offical release. <br>
+	 * Minor Version - The minor version. This is the milestone id.<br>
+	 * Progress Version - This the progress state for that milestone. <br>
+	 * Bugfix State - This is the current bugfix state for the progress version.
+	 */
+	public static final String Version = "v0.1.02.0";
 	private Driver driver;
 	private double currentTime;
 	private WraithavensConquest(WindowInitalizer init){
