@@ -12,7 +12,7 @@ class GiantEntityDictionary{
 	private final Random r = new Random();
 	GiantEntityDictionary(){
 		HashMap<Biome,TempDictionaryEntry> averageDistances = new HashMap();
-		averageDistances.put(Biome.ArcstoneHills, new TempDictionaryEntry(200f, EntityType.Arcstone1, 1));
+		averageDistances.put(Biome.ArcstoneHills, new TempDictionaryEntry(200f, EntityType.Arcstone, 30));
 		averageDistanceApart = rebuild(averageDistances)*2;
 	}
 	private float rebuild(HashMap<Biome,TempDictionaryEntry> averageDistances){
