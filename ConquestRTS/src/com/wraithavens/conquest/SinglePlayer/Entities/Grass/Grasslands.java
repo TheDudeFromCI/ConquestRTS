@@ -12,11 +12,9 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL33;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
-import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeChunk;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
-import com.wraithavens.conquest.Utility.Algorithms;
 
 public class Grasslands{
 	private final ArrayList<GrassPatch> patches = new ArrayList();
@@ -28,11 +26,11 @@ public class Grasslands{
 	private final int RotScaleAttribLocation;
 	private final GrassBook grassBook;
 	private final HashMap<GrassPatch,Boolean> que = new HashMap();
-	private final Camera camera;
-	private int lastX;
-	private int lastZ;
+	// private final Camera camera;
+	// private int lastX;
+	// private int lastZ;
 	public Grasslands(LandscapeWorld landscape, Camera camera){
-		this.camera = camera;
+		// this.camera = camera;
 		vbo = GL15.glGenBuffers();
 		ibo = GL15.glGenBuffers();
 		{
@@ -80,9 +78,11 @@ public class Grasslands{
 		GL20.glEnableVertexAttribArray(SwayAttribLocation);
 		GL20.glEnableVertexAttribArray(OffsetAttribLocation);
 		GL20.glEnableVertexAttribArray(RotScaleAttribLocation);
-		grassBook = new GrassBook(OffsetAttribLocation, RotScaleAttribLocation, patches, landscape);
-		lastX = Algorithms.groupLocation((int)camera.x, LandscapeChunk.LandscapeSize);
-		lastZ = Algorithms.groupLocation((int)camera.z, LandscapeChunk.LandscapeSize);
+		grassBook = new GrassBook(OffsetAttribLocation, RotScaleAttribLocation, patches, landscape, camera);
+		// lastX = Algorithms.groupLocation((int)camera.x,
+		// LandscapeChunk.LandscapeSize);
+		// lastZ = Algorithms.groupLocation((int)camera.z,
+		// LandscapeChunk.LandscapeSize);
 	}
 	public void addPatch(GrassPatch patch){
 		que.put(patch, true);
@@ -135,12 +135,14 @@ public class Grasslands{
 		grassBook.updateVisibility();
 	}
 	private void checkCameraPos(){
-		int x = Algorithms.groupLocation((int)camera.x, LandscapeChunk.LandscapeSize);
-		int z = Algorithms.groupLocation((int)camera.z, LandscapeChunk.LandscapeSize);
-		if(x!=lastX||z!=lastZ){
-			lastX = x;
-			lastZ = z;
-			grassBook.updateVisibility();
-		}
+		// int x = Algorithms.groupLocation((int)camera.x,
+		// LandscapeChunk.LandscapeSize);
+		// int z = Algorithms.groupLocation((int)camera.z,
+		// LandscapeChunk.LandscapeSize);
+		// if(x!=lastX||z!=lastZ){
+		// lastX = x;
+		// lastZ = z;
+		grassBook.updateVisibility();
+		// }
 	}
 }

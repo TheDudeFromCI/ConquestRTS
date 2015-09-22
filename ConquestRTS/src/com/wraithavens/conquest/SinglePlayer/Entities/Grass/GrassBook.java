@@ -14,6 +14,7 @@ import org.lwjgl.opengl.GL31;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
+import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
 class GrassBook{
@@ -42,13 +43,15 @@ class GrassBook{
 	private final int OffsetAttribLocation;
 	private final int RotScaleAttribLocation;
 	private final LandscapeWorld landscape;
+	private final Camera camera;
 	GrassBook(
 		int OffsetAttribLocation, int RotScaleAttribLocation, ArrayList<GrassPatch> patches,
-		LandscapeWorld landscape){
+		LandscapeWorld landscape, Camera camera){
 		this.OffsetAttribLocation = OffsetAttribLocation;
 		this.RotScaleAttribLocation = RotScaleAttribLocation;
 		this.patches = patches;
 		this.landscape = landscape;
+		this.camera = camera;
 	}
 	private int bindType(EntityType type){
 		GrassTypeData data = types.get(type);
@@ -59,13 +62,15 @@ class GrassBook{
 	}
 	private void rebuildDataBuffer(EntityType type){
 		int count = 0;
-		for(GrassPatch patch : patches)
-			if(patch.getType()==type&&patch.inView(landscape))
+		for(GrassPatch patch : patches){
+			patch.calculateView(landscape, camera);
+			if(patch.getType()==type&&patch.inView())
 				count += patch.getCount();
+		}
 		GrassTypeData grassType = types.get(type);
 		FloatBuffer data = grassType.allocateData(count);
 		for(GrassPatch patch : patches)
-			if(patch.getType()==type&&patch.inView(landscape))
+			if(patch.getType()==type&&patch.inView())
 				patch.store(data);
 		grassType.recompile();
 	}

@@ -41,7 +41,7 @@ class GrassTypeData{
 	void recompile(){
 		data.flip();
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, buffer);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, data, GL15.GL_DYNAMIC_DRAW);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, data, GL15.GL_STREAM_DRAW);
 	}
 	boolean removeReferences(){
 		references--;
