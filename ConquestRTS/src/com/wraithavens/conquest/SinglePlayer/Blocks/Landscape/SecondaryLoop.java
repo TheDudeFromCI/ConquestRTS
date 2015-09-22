@@ -350,13 +350,14 @@ class SecondaryLoop implements Runnable{
 			ArrayList<float[]> locations = new ArrayList();
 			giantEntitySpawner.noise(x, z, 64, locations);
 			EntityType type;
+			int fx, fz;
 			for(float[] f : locations){
+				fx = (int)Math.floor(f[0]);
+				fz = (int)Math.floor(f[1]);
 				type =
-					dictionary.randomEntity(heightData.getBiome((int)f[0], (int)f[1]),
-						machine.getGiantEntitySeed()+1, (int)f[0], (int)f[1]);
+					dictionary.randomEntity(heightData.getBiome(fx, fz), machine.getGiantEntitySeed()+1, fx, fz);
 				if(type!=null)
-					giants.add(new EntityTransform(type, f[0], heightData.getHeight((int)f[0], (int)f[1]), f[1],
-						f[2], f[3]));
+					giants.add(new EntityTransform(type, f[0], heightData.getHeight(fx, fz), f[1], f[2], f[3]));
 			}
 		}
 		ArrayList<EntityTransform> locs;
