@@ -40,78 +40,72 @@ public class EntityDatabase{
 		GL20.glEnableVertexAttribArray(SingularShaderAttrib);
 	}
 	public void addEntity(Entity e){
-		synchronized(entities){
-			entities.add(e);
-			// ---
-			// Let's sort them so that entities of the same type render
-			// together.
-			// This allows us to render batches, without have to rebind the same
-			// VBOs multiple times per frame.
-			// ---
-			sort();
-		}
+		entities.add(e);
+		// ---
+		// Let's sort them so that entities of the same type render
+		// together.
+		// This allows us to render batches, without have to rebind the same
+		// VBOs multiple times per frame.
+		// ---
+		sort();
 	}
 	public void clear(){
-		synchronized(entities){
-			for(Entity e : entities)
-				e.dispose();
-			entities.clear();
-		}
+		for(Entity e : entities)
+			e.dispose();
+		entities.clear();
 	}
 	public void dispose(){
 		clear();
 		shader.dispose();
 	}
 	public void removeEntity(Entity e){
-		synchronized(entities){
-			entities.remove(e);
-		}
+		entities.remove(e);
 	}
 	public void render(){
+		if(entities.isEmpty())
+			return;
 		// ---
 		// Render all entities. Switching mesh types as nessicary.
 		// ---
 		EntityMesh mesh = null;
 		boolean shaderBound = false;
 		Vector3f textureOffset3d, textureSize3D;
-		synchronized(entities){
-			for(Entity e : entities){
-				if(!e.canRender(landscape, camera))
-					continue;
-				if(e.getLod()>0){
-					// ---
-					// TODO Make object render more... eh, father away-ish.
-					// ---
-					continue;
-				}
-				if(!shaderBound){
-					shaderBound = true;
-					shader.bind();
-					shader.setUniform1f(2, (float)GLFW.glfwGetTime());
-					shader.setUniform1f(0, 0.0f);
-				}
-				if(mesh==null||e.getMesh()!=mesh){
-					mesh = e.getMesh();
-					mesh.bind();
-					if(mesh.getType().sways!=isSwaying){
-						isSwaying = mesh.getType().sways;
-						shader.setUniform1f(0, isSwaying?0.0375f:0.0f);
-					}
-					if(mesh.getType().colorBlended!=isColorBlended){
-						isColorBlended = mesh.getType().colorBlended;
-						shader.setUniform1I(3, isColorBlended?1:0);
-					}
-					if(isColorBlended){
-						textureOffset3d = mesh.getTextureOffset3D();
-						textureSize3D = mesh.getTextureSize3D();
-						shader.setUniform3f(4, textureOffset3d.x, textureOffset3d.y, textureOffset3d.z);
-						shader.setUniform3f(5, textureSize3D.x, textureSize3D.y, textureSize3D.z);
-					}
-				}
-				shader.setUniform3f(1, e.getX(), e.getY(), e.getZ());
-				shader.setUniform2f(6, e.getYaw(), e.getScale());
-				e.render();
+		for(Entity e : entities){
+			if(!e.canRender(landscape, camera))
+				continue;
+			if(e.getLod()>0){
+				// ---
+				// TODO Make object render more... eh, father away-ish.
+				// ---
+				continue;
 			}
+			if(!shaderBound){
+				shaderBound = true;
+				shader.bind();
+				shader.setUniform1f(2, (float)GLFW.glfwGetTime());
+				shader.setUniform1f(0, 0.0f);
+			}
+			if(mesh==null||e.getMesh()!=mesh){
+				mesh = e.getMesh();
+				mesh.bind();
+				if(mesh.getType().sways!=isSwaying){
+					isSwaying = mesh.getType().sways;
+					shader.setUniform1f(0, isSwaying?0.0375f:0.0f);
+				}
+				if(mesh.getType().colorBlended!=isColorBlended){
+					isColorBlended = mesh.getType().colorBlended;
+					shader.setUniform1I(3, isColorBlended?1:0);
+				}
+				if(isColorBlended){
+					textureOffset3d = mesh.getTextureOffset3D();
+					textureSize3D = mesh.getTextureSize3D();
+					shader.setUniform3f(4, textureOffset3d.x, textureOffset3d.y, textureOffset3d.z);
+					shader.setUniform3f(5, textureSize3D.x, textureSize3D.y, textureSize3D.z);
+				}
+			}
+			shader.setUniform3f(1, e.getX(), e.getY(), e.getZ());
+			shader.setUniform2f(6, e.getYaw(), e.getScale());
+			e.render();
 		}
 	}
 	public void setLandscape(LandscapeWorld landscape){

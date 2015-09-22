@@ -103,7 +103,7 @@ class SecondaryLoop implements Runnable{
 		dictionary = new GiantEntityDictionary();
 		giantEntitySpawner =
 			new PointGenerator2D(machine.getGiantEntitySeed(), dictionary.getAverageDistance(),
-				dictionary.getMinDistance(), 0.8f);
+				dictionary.getMinDistance(), 1.0f);
 		this.camera = camera;
 		this.machine = machine;
 		spiral = new SpiralGridAlgorithm();
