@@ -4,11 +4,10 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import com.wraithavens.conquest.Launcher.Driver;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
+import com.wraithavens.conquest.Math.MatrixUtils;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
-import com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities.BatchList;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
-import com.wraithavens.conquest.SinglePlayer.Heightmap.Dynmap;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.Particles.ParticleBatch;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
@@ -25,7 +24,6 @@ public class SinglePlayerGame implements Driver{
 	private final Camera camera = new Camera();
 	private double frameDelta;
 	private SkyBox skybox;
-	private Dynmap dynmap;
 	private WorldNoiseMachine machine;
 	private EntityDatabase entityDatabase;
 	private LandscapeWorld landscape;
@@ -33,9 +31,7 @@ public class SinglePlayerGame implements Driver{
 	private ParticleBatch particleBatch;
 	private boolean initalized = false;
 	private LoadingScreen loadingScreen;
-	private BatchList dynmapEntityBatches;
 	public void dispose(){
-		dynmap.dispose();
 		skybox.dispose();
 		landscape.dispose();
 		entityDatabase.dispose();
@@ -68,16 +64,12 @@ public class SinglePlayerGame implements Driver{
 			noise2[i] = new SkyboxClouds(false, (float)Math.random()*2, 0);
 		skybox = new SkyBox(noise, new Sunbox(), noise2);
 		entityDatabase = new EntityDatabase(camera);
-		dynmap = new Dynmap(machine, this);
-		dynmapEntityBatches = new BatchList();
 		particleBatch = new ParticleBatch(camera);
-		landscape = new LandscapeWorld(machine, entityDatabase, camera, dynmapEntityBatches, particleBatch);
-		dynmapEntityBatches.setup(camera, landscape);
+		landscape = new LandscapeWorld(machine, entityDatabase, camera, particleBatch);
 		grassLands = new Grasslands(landscape, camera);
 		entityDatabase.setLandscape(landscape);
 		landscape.setup(grassLands);
 		loadingScreen = new LoadingScreen();
-		dynmap.update(camera.x, camera.z);
 		landscape.start();
 	}
 	public void onKey(int key, int action){
@@ -181,16 +173,21 @@ public class SinglePlayerGame implements Driver{
 			return;
 		}
 		GL11.glPushMatrix();
-		updateCamera(frameDelta);
+		camera.update(frameDelta);
 		if(wireframeMode)
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
 		else
 			GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 		if(!wireframeMode)
 			skybox.render(camera.x, camera.y, camera.z);
-		dynmap.render();
-		dynmapEntityBatches.render();
-		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+		// dynmap.render();
+		// dynmapEntityBatches.render();
+		// GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+		{
+			// TODO
+			MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
+				/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 0.5f, 5000);
+		}
 		landscape.render();
 		entityDatabase.render();
 		grassLands.render();
@@ -242,15 +239,6 @@ public class SinglePlayerGame implements Driver{
 				camera.goalY += delta;
 			if(shift)
 				camera.goalY -= delta;
-		}
-	}
-	private void updateCamera(double delta){
-		float x = camera.x;
-		float z = camera.z;
-		camera.update(delta);
-		if(camera.x!=x||camera.z!=z){
-			if(dynmap!=null)
-				dynmap.update(camera.x, camera.z);
 		}
 	}
 }

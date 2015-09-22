@@ -5,15 +5,35 @@ import java.util.Random;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.Noise.Biome;
 
-class GiantEntityDictionary{
+public class GiantEntityDictionary{
 	private static final long s = 4294967291L;
 	private final HashMap<Biome,DictionaryEntry> biomes = new HashMap();
 	private final float averageDistanceApart;
 	private final Random r = new Random();
-	GiantEntityDictionary(){
+	public GiantEntityDictionary(){
 		HashMap<Biome,TempDictionaryEntry> averageDistances = new HashMap();
-		averageDistances.put(Biome.ArcstoneHills, new TempDictionaryEntry(200f, EntityType.Arcstone, 30));
+		averageDistances.put(Biome.ArcstoneHills, new TempDictionaryEntry(100f, EntityType.Arcstone, 30));
 		averageDistanceApart = rebuild(averageDistances)*2;
+	}
+	public float getAverageDistance(){
+		return averageDistanceApart;
+	}
+	public float getMinDistance(){
+		return averageDistanceApart/2;
+	}
+	public EntityType randomEntity(Biome biome, long seed, int x, int y){
+		long t = seed;
+		t = t*s+x;
+		t = t*s+y;
+		t += x*x+s;
+		t += y*y+s;
+		r.setSeed(t);
+		DictionaryEntry e = biomes.get(biome);
+		if(e==null)
+			return null;
+		if(r.nextFloat()>e.getSpawnChance())
+			return null;
+		return EntityType.getVariation(e.getEntity(), (int)(r.nextFloat()*e.getVariations()));
 	}
 	private float rebuild(HashMap<Biome,TempDictionaryEntry> averageDistances){
 		float minDistance = Float.MAX_VALUE;
@@ -30,25 +50,5 @@ class GiantEntityDictionary{
 				entry.getEntityVariations()));
 		}
 		return minDistance;
-	}
-	float getAverageDistance(){
-		return averageDistanceApart;
-	}
-	float getMinDistance(){
-		return averageDistanceApart/2;
-	}
-	EntityType randomEntity(Biome biome, long seed, int x, int y){
-		long t = seed;
-		t = t*s+x;
-		t = t*s+y;
-		t += x*x+s;
-		t += y*y+s;
-		r.setSeed(t);
-		DictionaryEntry e = biomes.get(biome);
-		if(e==null)
-			return null;
-		if(r.nextFloat()>e.getSpawnChance())
-			return null;
-		return EntityType.getVariation(e.getEntity(), (int)(r.nextFloat()*e.getVariations()));
 	}
 }

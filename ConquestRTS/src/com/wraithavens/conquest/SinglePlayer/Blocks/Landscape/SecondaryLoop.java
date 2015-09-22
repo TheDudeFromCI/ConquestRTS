@@ -11,12 +11,12 @@ import com.wraithavens.conquest.SinglePlayer.BlockPopulators.ChunkZQuadCounter;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.ExtremeQuadOptimizer;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Quad;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.QuadListener;
+import com.wraithavens.conquest.SinglePlayer.Entities.EntityTransform;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
-import com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities.BatchList;
-import com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities.DistantEntityHandler;
-import com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities.EntityTransform;
+import com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities.GiantEntityDictionary;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassTransform;
 import com.wraithavens.conquest.SinglePlayer.Noise.Biome;
+import com.wraithavens.conquest.SinglePlayer.Noise.PointGenerator2D;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.Utility.Algorithms;
@@ -95,14 +95,17 @@ class SecondaryLoop implements Runnable{
 	private final int[][] tempStorage = new int[64][64];
 	private final VertexStorage vertices = new VertexStorage();
 	private final IndexStorage indices = new IndexStorage();
-	private DistantEntityHandler distantEntityHandler;
+	private final GiantEntityDictionary dictionary;
+	private final PointGenerator2D giantEntitySpawner;
 	private Thread t;
-	private final BatchList batchList;
 	private boolean working;
-	SecondaryLoop(Camera camera, WorldNoiseMachine machine, BatchList batchList, int maxLoadDistance){
+	SecondaryLoop(Camera camera, WorldNoiseMachine machine, int maxLoadDistance){
+		dictionary = new GiantEntityDictionary();
+		giantEntitySpawner =
+			new PointGenerator2D(machine.getGiantEntitySeed(), dictionary.getAverageDistance(),
+				dictionary.getMinDistance(), 0.8f);
 		this.camera = camera;
 		this.machine = machine;
-		this.batchList = batchList;
 		spiral = new SpiralGridAlgorithm();
 		// ---
 		// And this should prevent the map from generating too many chunks will
@@ -342,7 +345,20 @@ class SecondaryLoop implements Runnable{
 					}
 				}
 			}
-		ArrayList<EntityTransform> giants = distantEntityHandler.getGiantsInChunk(x, y, z);
+		ArrayList<EntityTransform> giants = new ArrayList();
+		{
+			ArrayList<float[]> locations = new ArrayList();
+			giantEntitySpawner.noise(x, z, 64, locations);
+			EntityType type;
+			for(float[] f : locations){
+				type =
+					dictionary.randomEntity(heightData.getBiome((int)f[0], (int)f[1]),
+						machine.getGiantEntitySeed()+1, (int)f[0], (int)f[1]);
+				if(type!=null)
+					giants.add(new EntityTransform(type, f[0], heightData.getHeight((int)f[0], (int)f[1]), f[1],
+						f[2], f[3]));
+			}
+		}
 		ArrayList<EntityTransform> locs;
 		for(EntityTransform g : giants){
 			if(entityLocations.containsKey(g.getType()))
@@ -455,15 +471,11 @@ class SecondaryLoop implements Runnable{
 		}catch(Exception exception){
 			exception.printStackTrace();
 		}
-		boolean giantEntityFullyLoaded = distantEntityHandler.isFullyLoaded();
 		updateCameraLocation();
 		if(spiral.hasNext()){
 			updateWorkingState(true);
 			spiral.next();
 			attemptGenerateChunk();
-		}else if(!giantEntityFullyLoaded){
-			updateWorkingState(true);
-			distantEntityHandler.update();
 		}else{
 			updateWorkingState(false);
 			try{
@@ -501,7 +513,6 @@ class SecondaryLoop implements Runnable{
 		return que;
 	}
 	void start(){
-		distantEntityHandler = new DistantEntityHandler(machine, camera, batchList);
 		t.start();
 		t = null;
 	}

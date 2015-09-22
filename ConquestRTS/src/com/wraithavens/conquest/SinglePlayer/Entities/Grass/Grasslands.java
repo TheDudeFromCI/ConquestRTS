@@ -114,6 +114,8 @@ public class Grasslands{
 		GL33.glVertexAttribDivisor(RotScaleAttribLocation, 0);
 	}
 	public void update(){
+		// TODO Make grass stream like particles, and only render what's current
+		// in view.
 		if(que.isEmpty()){
 			checkCameraPos();
 			return;

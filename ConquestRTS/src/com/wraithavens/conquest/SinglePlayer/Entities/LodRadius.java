@@ -11,7 +11,7 @@ class LodRadius{
 	private final int lod4;
 	private final int lod5;
 	LodRadius(int r0, int r1, int r2, int r3, int r4, int r5){
-		lod0 = r0*r0;
+		lod0 = r0*r0+1000*1000;
 		lod1 = r1*r1;
 		lod2 = r2*r2;
 		lod3 = r3*r3;

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
-import com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities.BatchList;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.Particles.BiomeParticleEngine;
@@ -16,7 +15,8 @@ import com.wraithavens.conquest.Utility.Algorithms;
 
 public class LandscapeWorld{
 	static int ShadeAttribLocation;
-	private static final int ViewDistance = 2;
+	private static final int ViewDistance = 8;
+	private static final int ChunkPingRate = 2;
 	private final ArrayList<LandscapeChunk> chunks = new ArrayList();
 	private final ShaderProgram shader;
 	private final SpiralGridAlgorithm spiral;
@@ -35,8 +35,7 @@ public class LandscapeWorld{
 	private final int[] chunkLoadHeight = new int[5];
 	private ChunkHeightData chunkHeightDataTemp;
 	public LandscapeWorld(
-		WorldNoiseMachine machine, EntityDatabase entityDatabase, Camera camera, BatchList batchList,
-		ParticleBatch particleBatch){
+		WorldNoiseMachine machine, EntityDatabase entityDatabase, Camera camera, ParticleBatch particleBatch){
 		this.camera = camera;
 		this.entityDatabase = entityDatabase;
 		this.machine = machine;
@@ -51,7 +50,7 @@ public class LandscapeWorld{
 		GL20.glEnableVertexAttribArray(ShadeAttribLocation);
 		spiral = new SpiralGridAlgorithm();
 		spiral.setMaxDistance(ViewDistance);
-		loadingLoop = new SecondaryLoop(camera, machine, batchList, ViewDistance+3);
+		loadingLoop = new SecondaryLoop(camera, machine, ViewDistance+3);
 		chunkLoadHeight[1] = 0;
 	}
 	public void dispose(){
@@ -107,8 +106,8 @@ public class LandscapeWorld{
 		// the edge.
 		// ---
 		frame++;
-		if(frame%5==0){
-			if(frame%10==0){
+		if(frame%ChunkPingRate==0){
+			if(frame%(ChunkPingRate*2)==0){
 				if(currentLoadingChunk!=null){
 					if(currentLoadingChunk.isFinished()){
 						loadChunk(currentLoadingChunk.getX(), currentLoadingChunk.getY(),
