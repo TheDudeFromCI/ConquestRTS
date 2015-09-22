@@ -16,7 +16,7 @@ import com.wraithavens.conquest.Utility.Algorithms;
 public class LandscapeWorld{
 	static int ShadeAttribLocation;
 	private static final int ViewDistance = 8;
-	private static final int ChunkPingRate = 2;
+	private static final int ChunkPingRate = 5;
 	private final ArrayList<LandscapeChunk> chunks = new ArrayList();
 	private final ShaderProgram shader;
 	private final SpiralGridAlgorithm spiral;
@@ -145,7 +145,7 @@ public class LandscapeWorld{
 						continue clearer;
 				for(a = 0; a<biomeParticleEngines.size(); a++)
 					if(biomeParticleEngines.get(a).getX()==ch.getX()
-						&&biomeParticleEngines.get(a).getZ()==ch.getZ()){
+					&&biomeParticleEngines.get(a).getZ()==ch.getZ()){
 						biomeParticleEngines.remove(a).dispose();
 						continue clearer;
 					}

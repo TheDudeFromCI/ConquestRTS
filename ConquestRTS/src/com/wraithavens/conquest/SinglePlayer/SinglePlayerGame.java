@@ -180,14 +180,8 @@ public class SinglePlayerGame implements Driver{
 			GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 		if(!wireframeMode)
 			skybox.render(camera.x, camera.y, camera.z);
-		// dynmap.render();
-		// dynmapEntityBatches.render();
-		// GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
-		{
-			// TODO
-			MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
-				/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 0.5f, 5000);
-		}
+		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
+			/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 0.5f, 5000);
 		landscape.render();
 		entityDatabase.render();
 		grassLands.render();
