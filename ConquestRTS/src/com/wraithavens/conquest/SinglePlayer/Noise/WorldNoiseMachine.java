@@ -1,12 +1,15 @@
 package com.wraithavens.conquest.SinglePlayer.Noise;
 
-import java.util.HashMap;
 import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BiomeNoise.ArcstoneHillsNoise;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BiomeNoise.TayleaMeadowNoise;
 import com.wraithavens.conquest.Utility.CosineInterpolation;
 
 public class WorldNoiseMachine{
+	public static float blend(float a, float b, float frac){
+		frac = (float)((1-Math.cos(frac*Math.PI))/2);
+		return a*(1-frac)+b*frac;
+	}
 	/**
 	 * Created a world noise generation machine. The seeds determine how each
 	 * part of the noise machine functions. This includes world height,
@@ -25,8 +28,8 @@ public class WorldNoiseMachine{
 		// ---
 		CosineInterpolation cos = new CosineInterpolation();
 		SubNoise worldHeightNoise1 = SubNoise.build(seeds[0], 10000, 8, cos, 1500, 0);
-		SubNoise humidityNoise = SubNoise.build(seeds[1], 50000, 7, cos, 1, 0);
-		SubNoise tempatureNoise = SubNoise.build(seeds[2], 50000, 7, cos, 1, 0);
+		SubNoise humidityNoise = SubNoise.build(seeds[1], 10000, 7, cos, 1, 0);
+		SubNoise tempatureNoise = SubNoise.build(seeds[2], 10000, 7, cos, 1, 0);
 		// ---
 		// And compiling these together.
 		// ---
@@ -87,19 +90,8 @@ public class WorldNoiseMachine{
 		out[1] = a[1]*(1-c)+b[1]*c;
 		out[2] = a[2]*(1-c)+b[2]*c;
 	}
-	private static float blendCubic(float a, float b, float c, float d, float frac){
-		double mu2 = frac*frac;
-		double a0 = d-c-a+b;
-		double a1 = a-b-a0;
-		double a2 = c-a;
-		double a3 = b;
-		return (float)(a0*frac*mu2+a1*mu2+a2*frac+a3);
-	}
 	private static int cheapFloor(float x){
 		return x<0?(int)x-1:(int)x;
-	}
-	private static float clamp(float a, float b, float c){
-		return a<b?b:a>c?c:a;
 	}
 	private static void getTempBiomeColorAt(Biome biome, float[] out){
 		switch(biome){
@@ -161,55 +153,21 @@ public class WorldNoiseMachine{
 		return worldHeight.noise(x, y)/worldHeight.getMaxHeight();
 	}
 	public int scaleHeight(float h, float t, float l, float x, float z){
+		l -= 0.5f;
 		final float mapSize = 50;
 		h *= mapSize;
 		t *= mapSize;
-		Biome[] c = new Biome[16];
-		c[0] = Biome.getFittingBiome(clamp((int)(h-1)/mapSize, 0, 1), clamp((int)(t-1)/mapSize, 0, 1), l);
-		c[1] = Biome.getFittingBiome(clamp((int)h/mapSize, 0, 1), clamp((int)(t-1)/mapSize, 0, 1), l);
-		c[2] = Biome.getFittingBiome(clamp((int)(h+1)/mapSize, 0, 1), clamp((int)(t-1)/mapSize, 0, 1), l);
-		c[3] = Biome.getFittingBiome(clamp((int)(h+2)/mapSize, 0, 1), clamp((int)(t-1)/mapSize, 0, 1), l);
-		c[4] = Biome.getFittingBiome(clamp((int)(h-1)/mapSize, 0, 1), clamp((int)t/mapSize, 0, 1), l);
-		c[5] = Biome.getFittingBiome(clamp((int)h/mapSize, 0, 1), clamp((int)t/mapSize, 0, 1), l);
-		c[6] = Biome.getFittingBiome(clamp((int)(h+1)/mapSize, 0, 1), clamp((int)t/mapSize, 0, 1), l);
-		c[7] = Biome.getFittingBiome(clamp((int)(h+2)/mapSize, 0, 1), clamp((int)t/mapSize, 0, 1), l);
-		c[8] = Biome.getFittingBiome(clamp((int)(h-1)/mapSize, 0, 1), clamp((int)(t+1)/mapSize, 0, 1), l);
-		c[9] = Biome.getFittingBiome(clamp((int)h/mapSize, 0, 1), clamp((int)(t+1)/mapSize, 0, 1), l);
-		c[10] = Biome.getFittingBiome(clamp((int)(h+1)/mapSize, 0, 1), clamp((int)(t+1)/mapSize, 0, 1), l);
-		c[11] = Biome.getFittingBiome(clamp((int)(h+2)/mapSize, 0, 1), clamp((int)(t+1)/mapSize, 0, 1), l);
-		c[12] = Biome.getFittingBiome(clamp((int)(h-1)/mapSize, 0, 1), clamp((int)(t+2)/mapSize, 0, 1), l);
-		c[13] = Biome.getFittingBiome(clamp((int)h/mapSize, 0, 1), clamp((int)(t+2)/mapSize, 0, 1), l);
-		c[14] = Biome.getFittingBiome(clamp((int)(h+1)/mapSize, 0, 1), clamp((int)(t+2)/mapSize, 0, 1), l);
-		c[15] = Biome.getFittingBiome(clamp((int)(h+2)/mapSize, 0, 1), clamp((int)(t+2)/mapSize, 0, 1), l);
-		HashMap<Biome,Float> biomeHeights = new HashMap();
-		for(Biome biome : c)
-			if(!biomeHeights.containsKey(biome))
-				biomeHeights.put(biome, getBiomeTempHeight(biome, x, z));
-		float[] f = new float[16];
-		f[0] = biomeHeights.get(c[0]);
-		f[1] = biomeHeights.get(c[1]);
-		f[2] = biomeHeights.get(c[2]);
-		f[3] = biomeHeights.get(c[3]);
-		f[4] = biomeHeights.get(c[4]);
-		f[5] = biomeHeights.get(c[5]);
-		f[6] = biomeHeights.get(c[6]);
-		f[7] = biomeHeights.get(c[7]);
-		f[8] = biomeHeights.get(c[8]);
-		f[9] = biomeHeights.get(c[9]);
-		f[10] = biomeHeights.get(c[10]);
-		f[11] = biomeHeights.get(c[11]);
-		f[12] = biomeHeights.get(c[12]);
-		f[13] = biomeHeights.get(c[13]);
-		f[14] = biomeHeights.get(c[14]);
-		f[15] = biomeHeights.get(c[15]);
+		Biome c1 = Biome.getFittingBiome((int)h/mapSize, (int)t/mapSize, 1.0f);
+		Biome c2 = Biome.getFittingBiome((int)(h+1)/mapSize, (int)t/mapSize, 1.0f);
+		Biome c3 = Biome.getFittingBiome((int)h/mapSize, (int)(t+1)/mapSize, 1.0f);
+		Biome c4 = Biome.getFittingBiome((int)(h+1)/mapSize, (int)(t+1)/mapSize, 1.0f);
+		if(c1==c2&&c2==c3&&c3==c4)
+			return cheapFloor(l*getBiomeTempHeight(c1, x, z));
 		float a = h-(int)h;
-		float t1 = blendCubic(f[0], f[1], f[2], f[3], a);
-		float t2 = blendCubic(f[4], f[5], f[6], f[7], a);
-		float t3 = blendCubic(f[8], f[9], f[10], f[11], a);
-		float t4 = blendCubic(f[12], f[13], f[14], f[15], a);
-		l -= 0.5f;
-		l *= blendCubic(t1, t2, t3, t4, t-(int)t);
-		return cheapFloor(l);
+		float b = t-(int)t;
+		return cheapFloor(l
+			*blend(blend(getBiomeTempHeight(c1, x, z), getBiomeTempHeight(c2, x, z), a),
+				blend(getBiomeTempHeight(c3, x, z), getBiomeTempHeight(c4, x, z), a), b));
 	}
 	private float getBiomeTempHeight(Biome biome, float x, float z){
 		switch(biome){
