@@ -55,9 +55,9 @@ public class SinglePlayerGame implements Driver{
 		// Setup the camera.
 		// ---
 		camera.cameraMoveSpeed = 10.0f;
-		camera.goalY = machine.getGroundLevel(4096, 4096)+6;
-		camera.goalX = camera.x = 4096;
-		camera.goalZ = camera.z = 4096;
+		camera.goalX = camera.x = 0;
+		camera.goalZ = camera.z = 0;
+		camera.goalY = machine.getGroundLevel(camera.x, camera.z)+6;
 		SkyboxClouds noise = new SkyboxClouds(true, 0.5f, 0);
 		SkyboxClouds[] noise2 = null;
 		noise2 = new SkyboxClouds[SkyboxClouds.LayerCount];
