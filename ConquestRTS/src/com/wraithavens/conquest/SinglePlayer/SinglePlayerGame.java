@@ -31,6 +31,7 @@ public class SinglePlayerGame implements Driver{
 	private ParticleBatch particleBatch;
 	private boolean initalized = false;
 	private LoadingScreen loadingScreen;
+	private double lastLocationTime = 0;
 	public void dispose(){
 		skybox.dispose();
 		landscape.dispose();
@@ -193,12 +194,18 @@ public class SinglePlayerGame implements Driver{
 			loadingScreen.update(time);
 			return;
 		}
+		if(time-lastLocationTime>=1){
+			System.out.println("Camera Location: ["+Math.floor(camera.x)+", "+Math.floor(camera.y)+", "
+				+Math.floor(camera.z)+"]");
+			lastLocationTime = time;
+		}
 		frameDelta = delta;
 		move(delta);
 		landscape.update(time);
 		skybox.update(time);
 		particleBatch.update(delta, time);
 		grassLands.update();
+		entityDatabase.update(time);
 	}
 	private void move(double delta){
 		delta *= cameraSpeed;

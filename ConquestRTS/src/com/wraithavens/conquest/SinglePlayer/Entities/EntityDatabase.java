@@ -3,7 +3,6 @@ package com.wraithavens.conquest.SinglePlayer.Entities;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.Vector3f;
@@ -28,6 +27,7 @@ public class EntityDatabase{
 	private LandscapeWorld landscape;
 	private boolean isSwaying = false;
 	private boolean isColorBlended = false;
+	private double time;
 	public EntityDatabase(Camera camera){
 		this.camera = camera;
 		shader =
@@ -82,7 +82,7 @@ public class EntityDatabase{
 			if(!shaderBound){
 				shaderBound = true;
 				shader.bind();
-				shader.setUniform1f(2, (float)GLFW.glfwGetTime());
+				shader.setUniform1f(2, (float)time);
 				shader.setUniform1f(0, 0.0f);
 			}
 			if(mesh==null||e.getMesh()!=mesh){
@@ -110,6 +110,9 @@ public class EntityDatabase{
 	}
 	public void setLandscape(LandscapeWorld landscape){
 		this.landscape = landscape;
+	}
+	public void update(double time){
+		this.time = time;
 	}
 	private void sort(){
 		entities.sort(entitySorter);
