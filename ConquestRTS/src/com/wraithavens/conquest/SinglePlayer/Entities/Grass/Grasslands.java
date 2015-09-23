@@ -6,7 +6,6 @@ import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
@@ -26,6 +25,7 @@ public class Grasslands{
 	private final int RotScaleAttribLocation;
 	private final GrassBook grassBook;
 	private final HashMap<GrassPatch,Boolean> que = new HashMap();
+	private double time;
 	// private final Camera camera;
 	// private int lastX;
 	// private int lastZ;
@@ -107,13 +107,14 @@ public class Grasslands{
 		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 24, 12);
 		GL20.glVertexAttribPointer(SwayAttribLocation, 1, GL11.GL_FLOAT, false, 24, 20);
 		GL11.glDisable(GL11.GL_CULL_FACE);
-		shader.setUniform1f(1, (float)GLFW.glfwGetTime());
+		shader.setUniform1f(1, (float)time);
 		grassBook.render();
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		GL33.glVertexAttribDivisor(OffsetAttribLocation, 0);
 		GL33.glVertexAttribDivisor(RotScaleAttribLocation, 0);
 	}
-	public void update(){
+	public void update(double time){
+		this.time = time;
 		// TODO Make grass stream like particles, and only render what's current
 		// in view.
 		if(que.isEmpty()){

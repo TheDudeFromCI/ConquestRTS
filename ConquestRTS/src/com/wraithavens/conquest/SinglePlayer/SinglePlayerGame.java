@@ -204,7 +204,7 @@ public class SinglePlayerGame implements Driver{
 		landscape.update(time);
 		skybox.update(time);
 		particleBatch.update(delta, time);
-		grassLands.update();
+		grassLands.update(time);
 		entityDatabase.update(time);
 	}
 	private void move(double delta){

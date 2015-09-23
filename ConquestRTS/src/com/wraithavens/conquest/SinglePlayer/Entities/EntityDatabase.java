@@ -73,12 +73,8 @@ public class EntityDatabase{
 		for(Entity e : entities){
 			if(!e.canRender(landscape, camera))
 				continue;
-			if(e.getLod()>0){
-				// ---
-				// TODO Make object render more... eh, father away-ish.
-				// ---
+			if(e.getLod()>0)
 				continue;
-			}
 			if(!shaderBound){
 				shaderBound = true;
 				shader.bind();
