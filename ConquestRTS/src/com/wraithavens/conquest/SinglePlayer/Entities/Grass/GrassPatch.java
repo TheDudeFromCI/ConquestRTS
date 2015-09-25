@@ -46,9 +46,12 @@ public class GrassPatch{
 		centerZ = (view[4]+view[5])/2;
 	}
 	void calculateView(LandscapeWorld landscape, Camera camera){
-		inView =
-			camera.distanceSquared(centerX, centerY, centerZ)<250*250&&landscape.isWithinView(x, z)
-			&&camera.boxInView(view);
+		// TODO
+		// inView =
+		// camera.distanceSquared(centerX, centerY,
+		// centerZ)<250*250&&landscape.isWithinView(x, z)
+		// &&camera.boxInView(view);
+		inView = landscape.isWithinView(x, z)&&camera.boxInView(view);
 	}
 	int getCount(){
 		return grassBlades.size();

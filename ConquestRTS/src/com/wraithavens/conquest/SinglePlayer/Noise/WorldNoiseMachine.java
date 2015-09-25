@@ -1,6 +1,7 @@
 package com.wraithavens.conquest.SinglePlayer.Noise;
 
 import com.wraithavens.conquest.Math.Vector3f;
+import com.wraithavens.conquest.SinglePlayer.Blocks.BiomeNoise.AesiaFieldsNoise;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BiomeNoise.ArcstoneHillsNoise;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BiomeNoise.TayleaMeadowNoise;
 import com.wraithavens.conquest.Utility.CosineInterpolation;
@@ -105,8 +106,13 @@ public class WorldNoiseMachine{
 				out[1] = 110/255f;
 				out[2] = 20/255f;
 				return;
-			default:
+			case AesiaFields:
+				out[0] = 21/255f;
+				out[1] = 26/255f;
+				out[2] = 4/255f;
 				return;
+			default:
+				throw new AssertionError();
 		}
 	}
 	private final AdvancedNoise worldHeight;
@@ -114,6 +120,7 @@ public class WorldNoiseMachine{
 	private final AdvancedNoise humidity;
 	private final TayleaMeadowNoise tayleaMeadowNoise;
 	private final ArcstoneHillsNoise arcstoneHillsNoise;
+	private final AesiaFieldsNoise aesiaFieldsNoise;
 	private final long[] seeds;
 	private final float[] tempHTL = new float[3];
 	/**
@@ -132,6 +139,7 @@ public class WorldNoiseMachine{
 		this.tempature = tempature;
 		tayleaMeadowNoise = new TayleaMeadowNoise(seeds[4]);
 		arcstoneHillsNoise = new ArcstoneHillsNoise(seeds[5]);
+		aesiaFieldsNoise = new AesiaFieldsNoise(seeds[6]);
 	}
 	public Biome getBiomeAt(int x, int z, float[] heightOut){
 		heightOut[0] = getHumidityRaw(x, z);
@@ -175,6 +183,8 @@ public class WorldNoiseMachine{
 				return tayleaMeadowNoise.getHeight(x, z);
 			case ArcstoneHills:
 				return arcstoneHillsNoise.getHeight(x, z);
+			case AesiaFields:
+				return aesiaFieldsNoise.getHeight(x, z);
 			default:
 				throw new AssertionError();
 		}

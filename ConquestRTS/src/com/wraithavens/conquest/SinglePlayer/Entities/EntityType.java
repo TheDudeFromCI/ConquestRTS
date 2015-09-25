@@ -63,12 +63,14 @@ public enum EntityType{
 	Arcstone28("ArcstoneSmall14.tal", false, true, false, true, new LodRadius(300, 600, 900, 1200, 1500, 1800)),
 	Arcstone29("ArcstoneSmall15.tal", false, true, false, true, new LodRadius(300, 600, 900, 1200, 1500, 1800)),
 	Arcstone30("ArcstoneSmall16.tal", false, true, false, true, new LodRadius(300, 600, 900, 1200, 1500, 1800)),
-	Other1("Other1.tal", false, false, false, true, null),
-	Other2("Other2.tal", false, false, false, true, null),
-	Other3("Other3.tal", false, false, false, true, null),
-	Other4("Other4.tal", false, false, false, true, null),
-	Other5("Other5.tal", false, false, false, true, null),
-	Other6("Other6.tal", false, false, false, true, null);
+	AesiaFieldsGrass0("Aesia Fields Grass.tal_0", true, false, true, false, null),
+	AesiaFieldsGrass1("Aesia Fields Grass.tal_1", true, false, true, false, null),
+	AesiaFieldsGrass2("Aesia Fields Grass.tal_2", true, false, true, false, null),
+	AesiaFieldsGrass3("Aesia Fields Grass.tal_3", true, false, true, false, null),
+	AesiaFieldsGrass4("Aesia Fields Grass.tal_4", true, false, true, false, null),
+	AesiaFieldsGrass5("Aesia Fields Grass.tal_5", true, false, true, false, null),
+	AesiaFieldsGrass6("Aesia Fields Grass.tal_6", true, false, true, false, null),
+	AesiaFieldsGrass7("Aesia Fields Grass.tal_7", true, false, true, false, null);
 	public static EntityType getVariation(EntityType inital, int type){
 		return values()[inital.ordinal()+type];
 	}

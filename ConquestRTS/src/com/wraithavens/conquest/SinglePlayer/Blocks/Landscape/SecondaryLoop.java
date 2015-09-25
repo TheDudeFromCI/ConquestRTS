@@ -58,18 +58,19 @@ class SecondaryLoop implements Runnable{
 	private static EntityType randomPlant(float h, float t){
 		if(Math.random()<0.2){
 			Biome biome = randomBiomeObject(h, t);
-			if(biome==Biome.TayleaMeadow&&Math.random()<0.02)
-				return EntityType.getVariation(EntityType.TayleaFlower, (int)(Math.random()*6));
-			if(biome==Biome.TayleaMeadow&&Math.random()<0.0025)
-				return EntityType.getVariation(EntityType.VallaFlower, (int)(Math.random()*4));
-			if(biome==Biome.TayleaMeadow&&Math.random()<0.005)
-				return EntityType.values()[EntityType.TayleaMeadowRock1.ordinal()+(int)(Math.random()*3)];
-			int i = (int)(Math.random()*8);
 			switch(biome){
 				case TayleaMeadow:
-					return EntityType.values()[EntityType.TayleaMeadowGrass0.ordinal()+i];
+					if(Math.random()<0.02)
+						return EntityType.getVariation(EntityType.TayleaFlower, (int)(Math.random()*6));
+					if(Math.random()<0.0025)
+						return EntityType.getVariation(EntityType.VallaFlower, (int)(Math.random()*4));
+					if(Math.random()<0.005)
+						return EntityType.values()[EntityType.TayleaMeadowRock1.ordinal()+(int)(Math.random()*3)];
+					return EntityType.values()[EntityType.TayleaMeadowGrass0.ordinal()+(int)(Math.random()*8)];
 				case ArcstoneHills:
-					return EntityType.values()[EntityType.ArcstoneHillsGrass0.ordinal()+i];
+					return EntityType.values()[EntityType.ArcstoneHillsGrass0.ordinal()+(int)(Math.random()*8)];
+				case AesiaFields:
+					return EntityType.values()[EntityType.AesiaFieldsGrass0.ordinal()+(int)(Math.random()*8)];
 				default:
 					throw new AssertionError();
 			}
