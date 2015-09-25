@@ -17,6 +17,7 @@ import com.wraithavens.conquest.SinglePlayer.Skybox.Sunbox;
 import com.wraithavens.conquest.Utility.LoadingScreen;
 
 public class SinglePlayerGame implements Driver{
+	public static SinglePlayerGame INSTANCE;
 	private boolean w, a, s, d, shift, space, grounded = true, lockedMouse, walkLock, e;
 	private boolean wireframeMode;
 	private final float cameraSpeed = 10f;
@@ -33,6 +34,7 @@ public class SinglePlayerGame implements Driver{
 	private LoadingScreen loadingScreen;
 	private double lastLocationTime = 0;
 	public void dispose(){
+		INSTANCE = null;
 		skybox.dispose();
 		landscape.dispose();
 		entityDatabase.dispose();
@@ -40,12 +42,19 @@ public class SinglePlayerGame implements Driver{
 		particleBatch.dispose();
 		loadingScreen.dispose();
 	}
+	public Camera getCamera(){
+		return camera;
+	}
 	public LoadingScreen getLoadingScreen(){
 		return loadingScreen;
+	}
+	public WorldNoiseMachine getWorldNoiseMachine(){
+		return machine;
 	}
 	public void initalize(double time){
 		if(initalized)
 			return;
+		INSTANCE = this;
 		initalized = true;
 		long[] seeds = new long[]{
 			0, 1, 2, 3, 4, 5, 6

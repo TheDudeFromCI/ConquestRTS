@@ -14,7 +14,8 @@ public enum ChatColor{
 	GRAY('8', new Color(128, 128, 128)),
 	DARK_GRAY('9', new Color(70, 70, 70)),
 	PURPLE('A', new Color(255, 0, 255)),
-	BLACK('B', new Color(0, 0, 0));
+	BLACK('B', new Color(0, 0, 0)),
+	GOLD('C', new Color(255, 200, 0));
 	public static ChatColor getBySymbol(char symbol){
 		for(ChatColor c : values())
 			if(c.symbol==symbol)

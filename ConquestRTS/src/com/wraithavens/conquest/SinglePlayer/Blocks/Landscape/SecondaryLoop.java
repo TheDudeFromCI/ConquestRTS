@@ -440,9 +440,8 @@ class SecondaryLoop implements Runnable{
 					for(blockX = 0; blockX<64; blockX++){
 						tempX = blockX+x;
 						tempZ = blockZ+z;
-						heightData.getBiome(tempX, tempZ);
-						WorldNoiseMachine.getBiomeColorAt(heightData.getBiome(tempX, tempZ),
-							heightData.getHumidity(tempX, tempZ), heightData.getTempature(tempX, tempZ), colors);
+						WorldNoiseMachine.getBiomeColorAt(heightData.getHumidity(tempX, tempZ),
+							heightData.getTempature(tempX, tempZ), colors);
 						red = (byte)Math.round(colors.x*255);
 						green = (byte)Math.round(colors.y*255);
 						blue = (byte)Math.round(colors.z*255);
