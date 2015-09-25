@@ -62,14 +62,14 @@ public enum EntityType{
 	Arcstone28("ArcstoneSmall14.tal", false, true, false, true),
 	Arcstone29("ArcstoneSmall15.tal", false, true, false, true),
 	Arcstone30("ArcstoneSmall16.tal", false, true, false, true),
-	AesiaFieldsGrass0("AesiaFieldsGrass.tal_0", true, false, true, false),
-	AesiaFieldsGrass1("AesiaFieldsGrass.tal_1", true, false, true, false),
-	AesiaFieldsGrass2("AesiaFieldsGrass.tal_2", true, false, true, false),
-	AesiaFieldsGrass3("AesiaFieldsGrass.tal_3", true, false, true, false),
-	AesiaFieldsGrass4("AesiaFieldsGrass.tal_4", true, false, true, false),
-	AesiaFieldsGrass5("AesiaFieldsGrass.tal_5", true, false, true, false),
-	AesiaFieldsGrass6("AesiaFieldsGrass.tal_6", true, false, true, false),
-	AesiaFieldsGrass7("AesiaFieldsGrass.tal_7", true, false, true, false);
+	AesiaFieldsGrass0("AesiaGrass.tal_0", true, false, true, false),
+	AesiaFieldsGrass1("AesiaGrass.tal_1", true, false, true, false),
+	AesiaFieldsGrass2("AesiaGrass.tal_2", true, false, true, false),
+	AesiaFieldsGrass3("AesiaGrass.tal_3", true, false, true, false),
+	AesiaFieldsGrass4("AesiaGrass.tal_4", true, false, true, false),
+	AesiaFieldsGrass5("AesiaGrass.tal_5", true, false, true, false),
+	AesiaFieldsGrass6("AesiaGrass.tal_6", true, false, true, false),
+	AesiaFieldsGrass7("AesiaGrass.tal_7", true, false, true, false);
 	public static EntityType getVariation(EntityType inital, int type){
 		return values()[inital.ordinal()+type];
 	}

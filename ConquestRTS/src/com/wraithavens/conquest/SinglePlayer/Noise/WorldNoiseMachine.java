@@ -97,9 +97,9 @@ public class WorldNoiseMachine{
 				out[2] = 20/255f;
 				return;
 			case AesiaFields:
-				out[0] = 21/255f;
-				out[1] = 26/255f;
-				out[2] = 4/255f;
+				out[0] = 69/255f;
+				out[1] = 84/255f;
+				out[2] = 15/255f;
 				return;
 			default:
 				throw new AssertionError();
