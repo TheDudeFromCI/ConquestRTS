@@ -82,6 +82,9 @@ public class ChunkHeightData{
 	public byte[] getBiomes(){
 		return biomes;
 	}
+	public int getHeight(int x, int z){
+		return heights[(z-this.z)*64+x-this.x]+minHeight;
+	}
 	public int getHeightRaw(int x, int z){
 		return heights[z*64+x]+minHeight;
 	}
@@ -99,9 +102,6 @@ public class ChunkHeightData{
 		int maxHeight = Algorithms.groupLocation(this.maxHeight, LandscapeChunk.LandscapeSize);
 		out[0] = minHeight;
 		out[1] = (maxHeight-minHeight)/LandscapeChunk.LandscapeSize+1;
-	}
-	int getHeight(int x, int z){
-		return heights[(z-this.z)*64+x-this.x]+minHeight;
 	}
 	float getHumidity(int x, int z){
 		return weather[((z-this.z)*64+x-this.x)*2];

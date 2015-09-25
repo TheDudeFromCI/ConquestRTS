@@ -1,5 +1,7 @@
 package com.wraithavens.conquest.SinglePlayer.Entities;
 
+import com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities.GiantEntityGroundHits;
+
 public enum EntityType{
 	DupaiTree("DupaiTree.tal", false, false, false, true, null),
 	TayleaMeadowGrass0("Taylea Meadow Grass.tal_0", true, false, true, false, null),
@@ -77,6 +79,7 @@ public enum EntityType{
 	public final boolean sways;
 	public final boolean colorBlended;
 	public final LodRadius lodRadius;
+	public final GiantEntityGroundHits groundHits;
 	private EntityType(
 		String fileName, boolean isGrass, boolean isGiant, boolean sways, boolean colorBlended,
 		LodRadius lodRadius){
@@ -89,6 +92,7 @@ public enum EntityType{
 			this.lodRadius = new LodRadius(100, 200, 300, 400, 500, 600);
 		else
 			this.lodRadius = lodRadius;
+		groundHits = new GiantEntityGroundHits(this);
 	}
 	public EntityMesh createReference(){
 		if(mesh!=null){

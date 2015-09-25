@@ -156,6 +156,11 @@ public class BinaryFile{
 		pos++;
 		return b;
 	}
+	public void getBytes(byte[] bytes){
+		for(int i = 0; i<bytes.length; i++)
+			bytes[i] = binary[i+pos];
+		pos += bytes.length;
+	}
 	public float getFloat(){
 		return Float.intBitsToFloat(getInt());
 	}

@@ -357,7 +357,8 @@ class SecondaryLoop implements Runnable{
 				type =
 					dictionary.randomEntity(heightData.getBiome(fx, fz), machine.getGiantEntitySeed()+1, fx, fz);
 				if(type!=null)
-					giants.add(new EntityTransform(type, f[0], heightData.getHeight(fx, fz), f[1], f[2], f[3]));
+					giants.add(new EntityTransform(type, f[0], type.groundHits.getGround(machine, heightData,
+						f[0], f[1], f[2], f[3]), f[1], f[2], f[3]));
 			}
 		}
 		ArrayList<EntityTransform> locs;
