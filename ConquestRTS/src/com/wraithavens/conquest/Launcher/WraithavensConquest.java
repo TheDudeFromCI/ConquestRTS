@@ -9,9 +9,12 @@ import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import com.wraithavens.conquest.TitleScreen.TitleScreen;
+import com.wraithavens.conquest.Utility.Debug.ColorConsole;
+import com.wraithavens.conquest.Utility.Debug.ConsoleCommands;
 
 public class WraithavensConquest extends EmptyLoop{
 	public static void main(String[] args){
+		parseArgs(args);
 		programFolder = System.getProperty("user.dir")+File.separatorChar+"Data";
 		assetFolder = programFolder+File.separatorChar+"Assets";
 		saveFolder = programFolder+File.separatorChar+"Saves";
@@ -30,6 +33,15 @@ public class WraithavensConquest extends EmptyLoop{
 		JFileChooser fr = new JFileChooser();
 		FileSystemView fw = fr.getFileSystemView();
 		return fw.getDefaultDirectory().getAbsolutePath();
+	}
+	private static void parseArgs(String[] args){
+		for(String s : args){
+			if(s.equals("debug")){
+				ColorConsole console = new ColorConsole(true);
+				console.addConsoleListener(new ConsoleCommands(console));
+			}else
+				System.out.println("Recived unknown argument: '"+s+"'.");
+		}
 	}
 	private static void printContextInfo(){
 		System.out.println("Version info:");
