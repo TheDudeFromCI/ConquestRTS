@@ -44,6 +44,7 @@ public class LandscapeChunk{
 			// ---
 			// Load this chunk, or generate if nessicary.
 			// ---
+			// TODO Store index locations as shorts.
 			BinaryFile bin = new BinaryFile(file);
 			bin.decompress(false);
 			int vertexCount = bin.getInt();

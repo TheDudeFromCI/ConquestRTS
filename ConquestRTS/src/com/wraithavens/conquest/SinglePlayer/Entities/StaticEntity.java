@@ -9,7 +9,6 @@ public class StaticEntity extends Entity{
 	private float scale = 1/5f;
 	private float yaw;
 	private final AABB aabb;
-	private int lod;
 	public StaticEntity(EntityType type){
 		super(type);
 		aabb = new AABB();
@@ -17,18 +16,8 @@ public class StaticEntity extends Entity{
 	}
 	@Override
 	public boolean canRender(LandscapeWorld landscape, Camera camera){
-		if(!landscape.isWithinView((int)position.x, (int)position.z))
-			return false;
-		lod = mesh.getType().lodRadius.getLod(camera, position);
-		if(lod==-1)
-			return false;
-		if(!aabb.visible(camera))
-			return false;
-		return true;
-	}
-	@Override
-	public int getLod(){
-		return lod;
+		return mesh.getType().lodRadius.canSee(camera, position)
+			&&landscape.isWithinView((int)position.x, (int)position.z)&&aabb.visible(camera);
 	}
 	@Override
 	public float getScale(){

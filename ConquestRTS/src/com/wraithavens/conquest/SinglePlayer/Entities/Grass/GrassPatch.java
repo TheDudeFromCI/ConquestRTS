@@ -13,7 +13,6 @@ public class GrassPatch{
 	private final int z;
 	private final float[] view = new float[6];
 	private final float centerX;
-	private final float centerY;
 	private final float centerZ;
 	private boolean inView;
 	public GrassPatch(EntityType grassType, ArrayList<GrassTransform> grassBlades, int x, int z){
@@ -21,37 +20,21 @@ public class GrassPatch{
 		this.grassBlades = grassBlades;
 		this.x = x;
 		this.z = z;
-		view[0] = Float.MIN_VALUE;
-		view[1] = Float.MAX_VALUE;
-		view[2] = Float.MIN_VALUE;
-		view[3] = Float.MAX_VALUE;
-		view[4] = Float.MIN_VALUE;
-		view[5] = Float.MAX_VALUE;
-		for(GrassTransform t : grassBlades){
-			if(t.getX()>view[0])
-				view[0] = t.getX();
-			if(t.getX()<view[1])
-				view[1] = t.getX();
-			if(t.getY()>view[2])
-				view[2] = t.getY();
-			if(t.getY()<view[3])
-				view[3] = t.getY();
-			if(t.getZ()>view[4])
-				view[4] = t.getZ();
-			if(t.getZ()<view[5])
-				view[5] = t.getZ();
-		}
-		centerX = (view[0]+view[1])/2;
-		centerY = (view[2]+view[3])/2;
-		centerZ = (view[4]+view[5])/2;
+		view[0] = x+64;
+		view[1] = x;
+		view[2] = Integer.MAX_VALUE;
+		view[3] = Integer.MIN_VALUE;
+		view[4] = z+64;
+		view[5] = z;
+		centerX = x+32;
+		centerZ = z+32;
 	}
 	void calculateView(LandscapeWorld landscape, Camera camera){
 		// TODO
-		// inView =
-		// camera.distanceSquared(centerX, centerY,
-		// centerZ)<250*250&&landscape.isWithinView(x, z)
-		// &&camera.boxInView(view);
-		inView = landscape.isWithinView(x, z)&&camera.boxInView(view);
+		inView =
+			camera.distanceSquared(centerX, camera.y, centerZ)<250*250&&landscape.isWithinView(x, z)
+			&&camera.boxInView(view);
+		// inView = landscape.isWithinView(x, z)&&camera.boxInView(view);
 	}
 	int getCount(){
 		return grassBlades.size();

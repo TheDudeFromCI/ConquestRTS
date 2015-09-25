@@ -12,7 +12,6 @@ abstract class Entity{
 	public final void dispose(){
 		mesh.removeReference();
 	}
-	public abstract int getLod();
 	public abstract float getScale();
 	public abstract float getX();
 	public abstract float getY();
