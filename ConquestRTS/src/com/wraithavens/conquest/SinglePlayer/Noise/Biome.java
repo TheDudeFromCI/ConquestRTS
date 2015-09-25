@@ -11,11 +11,17 @@ public enum Biome{
 	// ShallowOcean(0, 100, 0, 100, 45, 50),
 	// Beach(0, 100, 0, 100, 50, 50.05f),
 	// Other biomes.
-	TayleaMeadow(0.0f, 1.0f, 0.5f, 1.0f, 0.0f, 1.0f, 2, PollenParticleEngine.class),
-	ArcstoneHills(0.0f, 1.0f, 0.0f, 0.5f, 0.0f, 1.0f, 2, ZipperParticleEngine.class),
-	AesiaFields(0.0f, 1.0f, 0.0f, 1.0f, 0.5f, 1.0f, 2, null),
+	TayleaMeadow(0.0f, 0.5f, 0.0f, 0.5f, 0.0f, 1.0f, 2, PollenParticleEngine.class),
+	ArcstoneHills(0.5f, 1.0f, 0.0f, 0.5f, 0.0f, 1.0f, 2, ZipperParticleEngine.class),
+	AesiaFields(0.0f, 1.0f, 0.5f, 1.0f, 0.0f, 1.0f, 2, null),
 	// And finally, a catch-all. This should never be hit.
 	Void(0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0, null);
+	public static Biome getByName(String name){
+		for(Biome biome : values())
+			if(biome.name().equalsIgnoreCase(name))
+				return biome;
+		return null;
+	}
 	public static Biome getFittingBiome(double h, double t, double l){
 		for(Biome b : values())
 			if(b.fitsIn(h, t, l))

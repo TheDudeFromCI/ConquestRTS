@@ -23,6 +23,11 @@ public class Camera{
 		z -= this.z;
 		return x*x+y*y+z*z;
 	}
+	public void teleport(float x, float y, float z){
+		goalX = this.x = x;
+		goalY = this.y = y;
+		goalZ = this.z = z;
+	}
 	public void update(double delta){
 		// ---
 		// The clamping is important to prevent the camera from "bouncing" or

@@ -29,8 +29,8 @@ public class WorldNoiseMachine{
 		// ---
 		CosineInterpolation cos = new CosineInterpolation();
 		SubNoise worldHeightNoise1 = SubNoise.build(seeds[0], 10000, 8, cos, 1500, 0);
-		SubNoise humidityNoise = SubNoise.build(seeds[1], 10000, 7, cos, 1, 0);
-		SubNoise tempatureNoise = SubNoise.build(seeds[2], 10000, 7, cos, 1, 0);
+		SubNoise humidityNoise = SubNoise.build(seeds[1], 10000, 4, cos, 1, 0);
+		SubNoise tempatureNoise = SubNoise.build(seeds[2], 10000, 4, cos, 1, 0);
 		// ---
 		// And compiling these together.
 		// ---
@@ -42,48 +42,38 @@ public class WorldNoiseMachine{
 		tempature.addSubNoise(tempatureNoise);
 		return new WorldNoiseMachine(seeds, worldHeight, humidity, tempature);
 	}
-	public static void getBiomeColorAt(Biome biome, float h, float t, Vector3f colorOut){
-		switch(biome.getType()){
-			case Biome.BiomeTypeNull:
-				throw new AssertionError();
-			case Biome.BiomeTypeOcean:
-				// ---
-				// TODO
-				// ---
-				return;
-			case Biome.BiomeTypeGrasslands:
-				final float mapSize = 100;
-				h *= mapSize;
-				t *= mapSize;
-				Biome c1 = Biome.getFittingBiome((int)h/mapSize, (int)t/mapSize, 1.0f);
-				Biome c2 = Biome.getFittingBiome((int)(h+1)/mapSize, (int)t/mapSize, 1.0f);
-				Biome c3 = Biome.getFittingBiome((int)h/mapSize, (int)(t+1)/mapSize, 1.0f);
-				Biome c4 = Biome.getFittingBiome((int)(h+1)/mapSize, (int)(t+1)/mapSize, 1.0f);
-				if(c1==c2&&c2==c3&&c3==c4){
-					float[] temp = new float[3];
-					getTempBiomeColorAt(c1, temp);
-					colorOut.set(temp[0], temp[1], temp[2]);
-					return;
-				}
-				float[] p1 = new float[3];
-				float[] p2 = new float[3];
-				float[] p3 = new float[3];
-				float[] p4 = new float[3];
-				getTempBiomeColorAt(c1, p1);
-				getTempBiomeColorAt(c2, p2);
-				getTempBiomeColorAt(c3, p3);
-				getTempBiomeColorAt(c4, p4);
-				float[] t1 = new float[3];
-				float[] t2 = new float[3];
-				float[] t3 = new float[3];
-				float a = h-(int)h;
-				float b = t-(int)t;
-				blend(p1, p2, a, t1);
-				blend(p3, p4, a, t2);
-				blend(t1, t2, b, t3);
-				colorOut.set(t3[0], t3[1], t3[2]);
-				return;
+	public static void getBiomeColorAt(float h, float t, Vector3f colorOut){
+		// TODO Make this more effiecient.
+		final float mapSize = 100;
+		h *= mapSize;
+		t *= mapSize;
+		Biome c1 = Biome.getFittingBiome((int)h/mapSize, (int)t/mapSize, 1.0f);
+		Biome c2 = Biome.getFittingBiome((int)(h+1)/mapSize, (int)t/mapSize, 1.0f);
+		Biome c3 = Biome.getFittingBiome((int)h/mapSize, (int)(t+1)/mapSize, 1.0f);
+		Biome c4 = Biome.getFittingBiome((int)(h+1)/mapSize, (int)(t+1)/mapSize, 1.0f);
+		if(c1==c2&&c2==c3&&c3==c4){
+			float[] temp = new float[3];
+			getTempBiomeColorAt(c1, temp);
+			colorOut.set(temp[0], temp[1], temp[2]);
+			return;
 		}
+		float[] p1 = new float[3];
+		float[] p2 = new float[3];
+		float[] p3 = new float[3];
+		float[] p4 = new float[3];
+		getTempBiomeColorAt(c1, p1);
+		getTempBiomeColorAt(c2, p2);
+		getTempBiomeColorAt(c3, p3);
+		getTempBiomeColorAt(c4, p4);
+		float[] t1 = new float[3];
+		float[] t2 = new float[3];
+		float[] t3 = new float[3];
+		float a = h-(int)h;
+		float b = t-(int)t;
+		blend(p1, p2, a, t1);
+		blend(p3, p4, a, t2);
+		blend(t1, t2, b, t3);
+		colorOut.set(t3[0], t3[1], t3[2]);
 	}
 	private static void blend(float[] a, float[] b, float c, float[] out){
 		c = (float)((1-Math.cos(c*Math.PI))/2);
