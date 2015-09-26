@@ -9,9 +9,9 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
+import com.wraithavens.conquest.SinglePlayer.Entities.Entity;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
-import com.wraithavens.conquest.SinglePlayer.Entities.StaticEntity;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassPatch;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassTransform;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
@@ -26,7 +26,7 @@ public class LandscapeChunk{
 	private final int ibo;
 	private final int textureId;
 	private final int indexCount;
-	private final ArrayList<StaticEntity> plantLife;
+	private final ArrayList<Entity> plantLife;
 	private final GrassPatch[] grassPatches;
 	private final EntityDatabase entityDatabase;
 	private final Grasslands grassLands;
@@ -68,13 +68,13 @@ public class LandscapeChunk{
 			GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_STATIC_DRAW);
 			int plantLifeTypes = bin.getInt();
 			int locationCount;
-			StaticEntity e;
+			Entity e;
 			EntityType type;
 			for(i = 0; i<plantLifeTypes; i++){
 				type = EntityType.values()[bin.getInt()];
 				locationCount = bin.getInt();
 				for(a = 0; a<locationCount; a++){
-					e = new StaticEntity(type);
+					e = new Entity(type);
 					e.moveTo(bin.getFloat(), bin.getFloat(), bin.getFloat());
 					e.setYaw(bin.getFloat());
 					e.scaleTo(bin.getFloat());
@@ -121,7 +121,7 @@ public class LandscapeChunk{
 		GL15.glDeleteBuffers(vbo);
 		GL15.glDeleteBuffers(ibo);
 		GL11.glDeleteTextures(textureId);
-		for(StaticEntity batch : plantLife){
+		for(Entity batch : plantLife){
 			batch.dispose();
 			entityDatabase.removeEntity(batch);
 		}
