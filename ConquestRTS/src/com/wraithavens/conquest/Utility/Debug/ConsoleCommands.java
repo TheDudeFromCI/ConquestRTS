@@ -2,6 +2,7 @@ package com.wraithavens.conquest.Utility.Debug;
 
 import java.util.ArrayList;
 import com.wraithavens.conquest.Utility.Debug.Commands.FindBiomeCommand;
+import com.wraithavens.conquest.Utility.Debug.Commands.HelpCommand;
 
 public class ConsoleCommands implements ConsoleListener{
 	private final ColorConsole console;
@@ -10,6 +11,7 @@ public class ConsoleCommands implements ConsoleListener{
 		this.console = console;
 		{
 			commands.add(new FindBiomeCommand(console));
+			commands.add(new HelpCommand(console, commands));
 		}
 	}
 	public void onCommandSent(String command){

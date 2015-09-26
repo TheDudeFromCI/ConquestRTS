@@ -18,6 +18,12 @@ public class FindBiomeCommand implements Command{
 	public String getCommandName(){
 		return "find_biome";
 	}
+	public String getDescription(){
+		return "Finds the nearest location with a biome of the requested type.";
+	}
+	public String getUsage(){
+		return "find_biome [biome] {-maxRange:#}";
+	}
 	public void parse(String[] args){
 		if(args.length<2){
 			console.println(ChatColor.RED+"Error! Unknown number of arguments.");
@@ -74,8 +80,5 @@ public class FindBiomeCommand implements Command{
 				console.println(ChatColor.GREEN+"Biome found.");
 			}
 		});
-	}
-	public void printHelp(){
-		// TODO
 	}
 }
