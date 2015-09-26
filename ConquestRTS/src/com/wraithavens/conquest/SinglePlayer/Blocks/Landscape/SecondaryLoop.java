@@ -70,6 +70,8 @@ class SecondaryLoop implements Runnable{
 				case ArcstoneHills:
 					return EntityType.values()[EntityType.ArcstoneHillsGrass0.ordinal()+(int)(Math.random()*8)];
 				case AesiaFields:
+					if(Math.random()<0.03)
+						return EntityType.getVariation(EntityType.AesiaStems, (int)(Math.random()*24));
 					return EntityType.values()[EntityType.AesiaFieldsGrass0.ordinal()+(int)(Math.random()*8)];
 				default:
 					throw new AssertionError();
@@ -336,6 +338,10 @@ class SecondaryLoop implements Runnable{
 						EntityTransform loc =
 							new EntityTransform(null, tempA+0.5f, heightData.getHeight(tempA, tempB),
 								tempB+0.5f, (float)(Math.random()*Math.PI*2), (float)(Math.random()*0.1f+0.15f));
+						// TODO Remove.
+						if(entity==EntityType.AesiaStems)
+							System.out.println("EntityLocation: ["+loc.getX()+", "+loc.getY()+", "+loc.getZ()
+								+"]");
 						if(entityLocations.containsKey(entity))
 							entityLocations.get(entity).add(loc);
 						else{

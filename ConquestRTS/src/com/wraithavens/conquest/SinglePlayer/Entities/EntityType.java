@@ -69,7 +69,31 @@ public enum EntityType{
 	AesiaFieldsGrass4("AesiaGrass.tal_4", true, false, true, false),
 	AesiaFieldsGrass5("AesiaGrass.tal_5", true, false, true, false),
 	AesiaFieldsGrass6("AesiaGrass.tal_6", true, false, true, false),
-	AesiaFieldsGrass7("AesiaGrass.tal_7", true, false, true, false);
+	AesiaFieldsGrass7("AesiaGrass.tal_7", true, false, true, false),
+	AesiaStems("AesiaStems1.tal", false, false, false, true),
+	AesiaStems2("AesiaStems2.tal", false, false, false, true),
+	AesiaStems3("AesiaStems3.tal", false, false, false, true),
+	AesiaStems4("AesiaStems4.tal", false, false, false, true),
+	AesiaStems5("AesiaStems5.tal", false, false, false, true),
+	AesiaStems6("AesiaStems6.tal", false, false, false, true),
+	AesiaStems7("AesiaStems7.tal", false, false, false, true),
+	AesiaStems8("AesiaStems8.tal", false, false, false, true),
+	AesiaStems9("AesiaStems9.tal", false, false, false, true),
+	AesiaStems10("AesiaStems10.tal", false, false, false, true),
+	AesiaStems11("AesiaStems11.tal", false, false, false, true),
+	AesiaStems12("AesiaStems12.tal", false, false, false, true),
+	AesiaStems13("AesiaStems13.tal", false, false, false, true),
+	AesiaStems14("AesiaStems14.tal", false, false, false, true),
+	AesiaStems15("AesiaStems15.tal", false, false, false, true),
+	AesiaStems16("AesiaStems16.tal", false, false, false, true),
+	AesiaStems17("AesiaStems17.tal", false, false, false, true),
+	AesiaStems18("AesiaStems18.tal", false, false, false, true),
+	AesiaStems19("AesiaStems19.tal", false, false, false, true),
+	AesiaStems20("AesiaStems20.tal", false, false, false, true),
+	AesiaStems21("AesiaStems21.tal", false, false, false, true),
+	AesiaStems22("AesiaStems22.tal", false, false, false, true),
+	AesiaStems23("AesiaStems23.tal", false, false, false, true),
+	AesiaStems24("AesiaStems24.tal", false, false, false, true);
 	public static EntityType getVariation(EntityType inital, int type){
 		return values()[inital.ordinal()+type];
 	}

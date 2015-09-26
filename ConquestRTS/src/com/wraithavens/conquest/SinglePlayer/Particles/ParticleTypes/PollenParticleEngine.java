@@ -15,8 +15,8 @@ public class PollenParticleEngine extends ChunkParticleEngine{
 	public void newParticle(double time){
 		float x = (float)Math.random()*64;
 		float z = (float)Math.random()*64;
-		int fx = (int)Math.floor(x);
-		int fz = (int)Math.floor(z);
+		int fx = (int)x;
+		int fz = (int)z;
 		if(chunkHeights.getBiomeRaw(fx, fz)!=Biome.TayleaMeadow)
 			return;
 		float y = chunkHeights.getHeightRaw(fx, fz)+1.5f;
