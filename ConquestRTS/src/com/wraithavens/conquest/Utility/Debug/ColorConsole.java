@@ -25,6 +25,7 @@ public class ColorConsole extends JFrame{
 	private static final Color SCROLL_BAR_BACKGROUND_COLOR = new Color(30, 30, 30);
 	private static final Color SCROLL_BAR_FOREGROUND_COLOR = new Color(70, 70, 70);
 	private static final int SCROLL_BAR_SIZE = 70;
+	private static final int MaxLineCount = 100;
 	private String text = "";
 	private String typed = "";
 	private int scroll;
@@ -159,7 +160,11 @@ public class ColorConsole extends JFrame{
 		repaint();
 	}
 	public void print(String msg){
-		text += ChatColor.WHITE+msg;
+		if(msg.startsWith("¥"))
+			text += msg;
+		else
+			text += ChatColor.WHITE+msg;
+		trimBuffer();
 		moveDownRequest = true;
 		repaint();
 	}
@@ -168,5 +173,30 @@ public class ColorConsole extends JFrame{
 	}
 	public void removeConsoleListener(ConsoleListener consoleListener){
 		consoleListeners.remove(consoleListener);
+	}
+	private int getLineCount(){
+		int i = 0;
+		for(char c : text.toCharArray())
+			if(c=='\n')
+				i++;
+		return i;
+	}
+	private void trimBuffer(){
+		int count = getLineCount();
+		System.out.println(count);
+		if(count>MaxLineCount){
+			int clear = MaxLineCount-count;
+			int cleared = 0;
+			int charactersOff = 0;
+			for(char c : text.toCharArray()){
+				charactersOff++;
+				if(c=='\n'){
+					cleared++;
+					if(cleared==clear)
+						break;
+				}
+			}
+			text = text.substring(charactersOff);
+		}
 	}
 }

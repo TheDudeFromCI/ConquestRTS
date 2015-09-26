@@ -16,8 +16,7 @@ public class FindBiomeCommand implements Command{
 		this.console = console;
 	}
 	public String getCommandName(){
-		// TODO Auto-generated method stub
-		return null;
+		return "find_biome";
 	}
 	public void parse(String[] args){
 		if(args.length<2){
@@ -77,6 +76,6 @@ public class FindBiomeCommand implements Command{
 		});
 	}
 	public void printHelp(){
-		// TODO Auto-generated method stub
+		// TODO
 	}
 }
