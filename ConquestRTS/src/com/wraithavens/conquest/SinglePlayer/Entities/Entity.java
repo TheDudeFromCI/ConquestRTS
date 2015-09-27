@@ -5,6 +5,22 @@ import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 
 public class Entity{
+	private static void updateMinMax(){
+		float x1 = tempMin.x;
+		float y1 = tempMin.y;
+		float z1 = tempMin.z;
+		float x2 = tempMax.x;
+		float y2 = tempMax.y;
+		float z2 = tempMax.z;
+		tempMin.x = Math.min(x1, x2);
+		tempMin.y = Math.min(y1, y2);
+		tempMin.z = Math.min(z1, z2);
+		tempMax.x = Math.max(x1, x2);
+		tempMax.y = Math.max(y1, y2);
+		tempMax.z = Math.max(z1, z2);
+	}
+	private static final Vector3f tempMin = new Vector3f();
+	private static final Vector3f tempMax = new Vector3f();
 	final EntityMesh mesh;
 	protected final Vector3f position = new Vector3f();
 	protected float scale = 1/5f;
@@ -53,7 +69,14 @@ public class Entity{
 		this.yaw = yaw;
 	}
 	public void updateAABB(){
-		aabb.calculate(mesh.getAabbMin(), mesh.getAabbMax(), scale, position);
+		tempMin.set(mesh.getAabbMin());
+		tempMax.set(mesh.getAabbMax());
+		double sin = Math.sin(yaw);
+		double cos = Math.cos(yaw);
+		tempMin.rotateYaw(sin, cos);
+		tempMax.rotateYaw(sin, cos);
+		updateMinMax();
+		aabb.calculate(tempMin, tempMax, scale, position);
 	}
 	final EntityMesh getMesh(){
 		return mesh;

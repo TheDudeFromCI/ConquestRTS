@@ -47,6 +47,12 @@ public class Vector3f extends Vector{
 		y /= mag;
 		z /= mag;
 	}
+	public void rotateYaw(double sin, double cos){
+		float nx = (float)(x*cos-z*sin);
+		float nz = (float)(x*sin+z*cos);
+		x = nx;
+		z = nz;
+	}
 	@Override
 	public Vector scale(float scale){
 		x *= scale;
@@ -58,6 +64,11 @@ public class Vector3f extends Vector{
 		this.x = x;
 		this.y = y;
 		this.z = z;
+	}
+	public void set(Vector3f other){
+		x = other.x;
+		y = other.y;
+		z = other.z;
 	}
 	@Override
 	public Vector store(FloatBuffer buf){
