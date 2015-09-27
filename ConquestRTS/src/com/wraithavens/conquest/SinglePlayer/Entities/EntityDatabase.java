@@ -77,7 +77,6 @@ public class EntityDatabase{
 				shaderBound = true;
 				shader.bind();
 				shader.setUniform1f(2, (float)time);
-				shader.setUniform1f(0, 0.0f);
 			}
 			if(mesh==null||e.getMesh()!=mesh){
 				mesh = e.getMesh();
