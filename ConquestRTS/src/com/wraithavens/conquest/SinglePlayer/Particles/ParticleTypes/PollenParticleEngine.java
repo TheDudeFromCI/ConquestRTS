@@ -4,6 +4,7 @@ import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.ChunkHeightData;
 import com.wraithavens.conquest.SinglePlayer.Noise.Biome;
 import com.wraithavens.conquest.SinglePlayer.Particles.ParticleBatch;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
+import com.wraithavens.conquest.Utility.Algorithms;
 
 public class PollenParticleEngine extends ChunkParticleEngine{
 	@SuppressWarnings("ucd")
@@ -13,8 +14,8 @@ public class PollenParticleEngine extends ChunkParticleEngine{
 	public void dispose(){}
 	@Override
 	public void newParticle(double time){
-		float x = (float)Math.random()*64;
-		float z = (float)Math.random()*64;
+		float x = Algorithms.random(64);
+		float z = Algorithms.random(64);
 		int fx = (int)x;
 		int fz = (int)z;
 		if(chunkHeights.getBiomeRaw(fx, fz)!=Biome.TayleaMeadow)

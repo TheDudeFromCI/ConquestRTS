@@ -32,6 +32,9 @@ public class Algorithms{
 	public static int groupLocation(int x, int w){
 		return x>=0?x/w*w:(x-(w-1))/w*w;
 	}
+	public static float random(float max){
+		return Math.min((float)(Math.random()*max), max-0.00001f);
+	}
 	private static File getLandscapePath(int x, int z, int size, char id){
 		String s = WraithavensConquest.currentGameFolder+File.separatorChar+"Landscape";
 		int a1, b1;
