@@ -25,7 +25,7 @@ import com.wraithavens.conquest.Utility.QuadList;
 
 class SecondaryLoop implements Runnable{
 	private static Biome randomBiomeObject(float h, float t){
-		final float mapSize = 100;
+		final float mapSize = WorldNoiseMachine.BiomeTransitionSize;
 		h *= mapSize;
 		t *= mapSize;
 		Biome c1 = Biome.getFittingBiome((int)h/mapSize, (int)t/mapSize, 1.0f);

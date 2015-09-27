@@ -44,7 +44,7 @@ public class WorldNoiseMachine{
 	}
 	public static void getBiomeColorAt(float h, float t, Vector3f colorOut){
 		// TODO Make this more effiecient.
-		final float mapSize = 100;
+		final float mapSize = BiomeTransitionSize;
 		h *= mapSize;
 		t *= mapSize;
 		Biome c1 = Biome.getFittingBiome((int)h/mapSize, (int)t/mapSize, 1.0f);
@@ -108,6 +108,7 @@ public class WorldNoiseMachine{
 				throw new AssertionError();
 		}
 	}
+	public static final int BiomeTransitionSize = 300;
 	private final AdvancedNoise worldHeight;
 	private final AdvancedNoise tempature;
 	private final AdvancedNoise humidity;
