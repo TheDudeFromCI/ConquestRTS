@@ -3,6 +3,7 @@ package com.wraithavens.conquest.SinglePlayer.Blocks.Landscape;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Block;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.ChunkXQuadCounter;
@@ -55,30 +56,44 @@ class SecondaryLoop implements Runnable{
 			return c3;
 		return c4;
 	}
-	private static EntityType randomPlant(float h, float t){
-		if(Math.random()<0.2){
+	private static EntityType randomPlant(float h, float t, int x, int z, long seed){
+		{
+			long tr = seed;
+			tr = tr*s+x;
+			tr = tr*s+z;
+			tr += x*x+s;
+			tr += z*z+s;
+			random.setSeed(tr);
+		}
+		if(random.nextFloat()<0.2){
 			Biome biome = randomBiomeObject(h, t);
 			switch(biome){
 				case TayleaMeadow:
-					if(Math.random()<0.02)
-						return EntityType.getVariation(EntityType.TayleaFlower, (int)(Math.random()*6));
-					if(Math.random()<0.0025)
-						return EntityType.getVariation(EntityType.VallaFlower, (int)(Math.random()*4));
-					if(Math.random()<0.005)
-						return EntityType.values()[EntityType.TayleaMeadowRock1.ordinal()+(int)(Math.random()*3)];
-					return EntityType.values()[EntityType.TayleaMeadowGrass0.ordinal()+(int)(Math.random()*8)];
+					if(random.nextFloat()<0.02)
+						return EntityType.getVariation(EntityType.TayleaFlower, (int)(random.nextFloat()*6));
+					if(random.nextFloat()<0.0025)
+						return EntityType.getVariation(EntityType.VallaFlower, (int)(random.nextFloat()*4));
+					if(random.nextFloat()<0.005)
+						return EntityType.values()[EntityType.TayleaMeadowRock1.ordinal()
+							+(int)(random.nextFloat()*3)];
+					return EntityType.values()[EntityType.TayleaMeadowGrass0.ordinal()
+						+(int)(random.nextFloat()*8)];
 				case ArcstoneHills:
-					return EntityType.values()[EntityType.ArcstoneHillsGrass0.ordinal()+(int)(Math.random()*8)];
+					return EntityType.values()[EntityType.ArcstoneHillsGrass0.ordinal()
+						+(int)(random.nextFloat()*8)];
 				case AesiaFields:
-					if(Math.random()<0.03)
-						return EntityType.getVariation(EntityType.AesiaStems, (int)(Math.random()*24));
-					return EntityType.values()[EntityType.AesiaFieldsGrass0.ordinal()+(int)(Math.random()*8)];
+					if(random.nextFloat()<0.03)
+						return EntityType.getVariation(EntityType.AesiaStems, (int)(random.nextFloat()*24));
+					return EntityType.values()[EntityType.AesiaFieldsGrass0.ordinal()
+						+(int)(random.nextFloat()*8)];
 				default:
 					throw new AssertionError();
 			}
 		}
 		return null;
 	}
+	private static final long s = 4294967291L;
+	private static final Random random = new Random();
 	private volatile boolean running = true;
 	private final SpiralGridAlgorithm spiral;
 	private volatile Camera camera;
@@ -321,7 +336,8 @@ class SecondaryLoop implements Runnable{
 				tempA = a+x;
 				tempB = b+z;
 				entity =
-					randomPlant(heightData.getHumidity(tempA, tempB), heightData.getTempature(tempA, tempB));
+					randomPlant(heightData.getHumidity(tempA, tempB), heightData.getTempature(tempA, tempB),
+						tempA, tempB, machine.getGiantEntitySeed()^100799);
 				if(entity!=null){
 					if(entity.isGrass){
 						GrassTransform loc =
