@@ -29,8 +29,8 @@ public class WorldNoiseMachine{
 		// ---
 		CosineInterpolation cos = new CosineInterpolation();
 		SubNoise worldHeightNoise1 = SubNoise.build(seeds[0], 10000, 8, cos, 1500, 0);
-		SubNoise humidityNoise = SubNoise.build(seeds[1], 10000, 4, cos, 1, 0);
-		SubNoise tempatureNoise = SubNoise.build(seeds[2], 10000, 4, cos, 1, 0);
+		SubNoise humidityNoise = SubNoise.build(seeds[1], 25000, 4, cos, 1, 0);
+		SubNoise tempatureNoise = SubNoise.build(seeds[2], 25000, 4, cos, 1, 0);
 		// ---
 		// And compiling these together.
 		// ---
