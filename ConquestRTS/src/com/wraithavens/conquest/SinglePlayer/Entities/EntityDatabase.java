@@ -107,6 +107,8 @@ public class EntityDatabase{
 	}
 	public void update(double time){
 		this.time = time;
+		for(Entity e : entities)
+			e.update(time);
 	}
 	private void sort(){
 		entities.sort(entitySorter);

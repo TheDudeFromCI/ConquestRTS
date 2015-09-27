@@ -48,6 +48,9 @@ public class SinglePlayerGame implements Driver{
 	public LoadingScreen getLoadingScreen(){
 		return loadingScreen;
 	}
+	public ParticleBatch getParticleBatch(){
+		return particleBatch;
+	}
 	public WorldNoiseMachine getWorldNoiseMachine(){
 		return machine;
 	}
@@ -212,9 +215,9 @@ public class SinglePlayerGame implements Driver{
 		move(delta);
 		landscape.update(time);
 		skybox.update(time);
-		particleBatch.update(delta, time);
 		grassLands.update(time);
 		entityDatabase.update(time);
+		particleBatch.update(delta, time);
 	}
 	private void move(double delta){
 		delta *= cameraSpeed;

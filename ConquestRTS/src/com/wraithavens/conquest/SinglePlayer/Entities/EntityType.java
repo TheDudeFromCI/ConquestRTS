@@ -123,4 +123,9 @@ public enum EntityType{
 		mesh.addReference();
 		return mesh;
 	}
+	public boolean isAesiaStemType(){
+		int o = ordinal();
+		int i = EntityType.AesiaStems.ordinal();
+		return o>=i&&o<i+24;
+	}
 }

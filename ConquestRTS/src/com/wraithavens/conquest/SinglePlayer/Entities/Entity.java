@@ -6,9 +6,9 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 
 public class Entity{
 	final EntityMesh mesh;
-	private final Vector3f position = new Vector3f();
-	private float scale = 1/5f;
-	private float yaw;
+	protected final Vector3f position = new Vector3f();
+	protected float scale = 1/5f;
+	protected float yaw;
 	private final AABB aabb;
 	public Entity(EntityType type){
 		mesh = type.createReference();
@@ -61,4 +61,6 @@ public class Entity{
 	final boolean sways(){
 		return mesh.getType().sways;
 	}
+	@SuppressWarnings("unused")
+	void update(double time){}
 }
