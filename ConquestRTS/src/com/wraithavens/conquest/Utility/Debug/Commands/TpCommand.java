@@ -10,19 +10,19 @@ import com.wraithavens.conquest.Utility.Debug.ChatColor;
 import com.wraithavens.conquest.Utility.Debug.ColorConsole;
 import com.wraithavens.conquest.Utility.Debug.Command;
 
-public class FindBiomeCommand implements Command{
+public class TpCommand implements Command{
 	private final ColorConsole console;
-	public FindBiomeCommand(ColorConsole console){
+	public TpCommand(ColorConsole console){
 		this.console = console;
 	}
 	public String getCommandName(){
-		return "find_biome";
+		return "tp";
 	}
 	public String getDescription(){
 		return "Finds the nearest location with a biome of the requested type.";
 	}
 	public String getUsage(){
-		return "find_biome [biome] {-maxRange:#}";
+		return "tp [biome] {-maxRange:#}";
 	}
 	public void parse(String[] args){
 		if(args.length<2){
