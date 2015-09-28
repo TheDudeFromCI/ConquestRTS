@@ -80,6 +80,7 @@ public class Settings{
 			fullScreen = bin.getBoolean();
 			particleCount = bin.getInt();
 			renderSky = bin.getBoolean();
+			System.out.println("Settings loaded.");
 		}else{
 			chunkRenderDistance = 4;
 			chunkCatcheDistance = 5;
@@ -92,6 +93,7 @@ public class Settings{
 			fullScreen = false;
 			particleCount = 5000;
 			renderSky = true;
+			System.out.println("Settings defaulted.");
 		}
 	}
 	public int getChunkCatcheDistance(){
@@ -145,6 +147,7 @@ public class Settings{
 		bin.addBoolean(renderSky);
 		bin.compress(false);
 		bin.compile(new File(WraithavensConquest.saveFolder, "Settings.dat"));
+		System.out.println("Settings saved.");
 	}
 	public void setChunkCatcheDistance(int chunkCatcheDistance){
 		this.chunkCatcheDistance = chunkCatcheDistance;
@@ -199,6 +202,7 @@ public class Settings{
 		}
 		if(request.getGeneratorSleeping()!=generatorSleeping){
 			// TODO
+			generatorSleeping = request.getGeneratorSleeping();
 			changed = true;
 		}
 		if(request.getChunkUpdateFrames()!=chunkUpdateFrames){
@@ -206,20 +210,24 @@ public class Settings{
 			changed = true;
 		}
 		if(request.getFpsCap()!=fpsCap){
+			System.out.println("Merp?");
 			fpsCap = request.getFpsCap();
 			MainLoop.FPS_SYNC = fpsCap;
 			changed = true;
 		}
 		if(request.getScreenResolution()!=screenResolution){
 			// TODO
+			screenResolution = request.getScreenResolution();
 			changed = true;
 		}
 		if(request.isvSync()!=vSync){
 			// TODO
+			vSync = request.isvSync();
 			changed = true;
 		}
 		if(request.isFullScreen()!=fullScreen){
 			// TODO
+			fullScreen = request.isFullScreen();
 			changed = true;
 		}
 		if(request.getParticleCount()!=particleCount){

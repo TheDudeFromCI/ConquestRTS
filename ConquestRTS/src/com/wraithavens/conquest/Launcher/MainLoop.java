@@ -15,7 +15,7 @@ import org.lwjgl.opengl.GLContext;
 import org.lwjgl.system.MemoryUtil;
 
 public class MainLoop{
-	public static int FPS_SYNC = 0;
+	public static int FPS_SYNC;
 	public static final LinkedBlockingQueue<Runnable> endLoopTasks = new LinkedBlockingQueue();
 	private GLFWCursorPosCallback cursorPosCallback;
 	private GLFWErrorCallback errorCallback;
@@ -27,6 +27,7 @@ public class MainLoop{
 	private long window;
 	private WindowInitalizer windowInitalizer;
 	private void init(){
+		FPS_SYNC = WraithavensConquest.Settings.getFpsCap();
 		GLFW.glfwSetErrorCallback(errorCallback = Callbacks.errorCallbackPrint(System.err));
 		if(GLFW.glfwInit()!=GL11.GL_TRUE)
 			throw new IllegalStateException("Unable to initialize GLFW");
