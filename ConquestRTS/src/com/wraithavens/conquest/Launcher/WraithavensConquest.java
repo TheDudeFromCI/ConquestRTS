@@ -9,6 +9,7 @@ import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import com.wraithavens.conquest.TitleScreen.TitleScreen;
+import com.wraithavens.conquest.Utility.Settings;
 import com.wraithavens.conquest.Utility.Debug.ColorConsole;
 import com.wraithavens.conquest.Utility.Debug.ConsoleCommands;
 
@@ -17,7 +18,6 @@ public class WraithavensConquest extends EmptyLoop{
 		parseArgs(args);
 		programFolder = System.getProperty("user.dir")+File.separatorChar+"Data";
 		assetFolder = programFolder+File.separatorChar+"Assets";
-		saveFolder = programFolder+File.separatorChar+"Saves";
 		saveFolder = defaultDirectory()+File.separatorChar+"Talantra Save Data";
 		modelFolder = programFolder+File.separatorChar+"Models";
 		loadingScreenImagesFolder = programFolder+File.separatorChar+"Loading Screen Images";
@@ -25,6 +25,7 @@ public class WraithavensConquest extends EmptyLoop{
 		// TODO Remove this later, once game saving and loading is in.
 		// ---
 		currentGameFolder = saveFolder+File.separatorChar+"Pre-Alpha";
+		settings = new Settings();
 		WindowInitalizerBuilder builder = new WindowInitalizerBuilder();
 		new WraithavensConquest(builder.build());
 		System.exit(0);
@@ -69,7 +70,7 @@ public class WraithavensConquest extends EmptyLoop{
 	public static String currentGameFolder;
 	public static String loadingScreenImagesFolder;
 	public static String modelFolder;
-	static String saveFolder;
+	public static String saveFolder;
 	public static WraithavensConquest INSTANCE;
 	/**
 	 * Version Breakdown: <br>
@@ -80,6 +81,7 @@ public class WraithavensConquest extends EmptyLoop{
 	 * Bugfix State - This is the current bugfix state for the progress version.
 	 */
 	public static final String Version = "v0.1.02.0";
+	public static Settings settings;
 	private Driver driver;
 	private double currentTime;
 	private WraithavensConquest(WindowInitalizer init){
