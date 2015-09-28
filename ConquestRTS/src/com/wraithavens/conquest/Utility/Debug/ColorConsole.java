@@ -16,6 +16,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.WindowConstants;
 
 public class ColorConsole extends JFrame{
 	private static final int EDGE_BUFFER = 3;
@@ -39,7 +40,7 @@ public class ColorConsole extends JFrame{
 		setSize(500, 500);
 		setLocationRelativeTo(null);
 		setTitle("Debug Console");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		setMinimumSize(new Dimension(200, 200));
 		addKeyListener(new KeyAdapter(){
 			@Override
