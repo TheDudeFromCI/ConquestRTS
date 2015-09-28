@@ -33,6 +33,7 @@ public class SinglePlayerGame implements Driver{
 	private boolean initalized = false;
 	private LoadingScreen loadingScreen;
 	private double lastLocationTime = 0;
+	private int renderedSky = 0;
 	public void dispose(){
 		INSTANCE = null;
 		skybox.dispose();
@@ -190,14 +191,17 @@ public class SinglePlayerGame implements Driver{
 		}
 		GL11.glPushMatrix();
 		camera.update(frameDelta);
-		if(wireframeMode)
+		if(wireframeMode||!WraithavensConquest.Settings.isRenderSky()){
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
-		else
-			GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
-		if(!wireframeMode)
+			renderedSky = 1;
+		}else{
 			skybox.render(camera.x, camera.y, camera.z);
-		MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
-			/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 0.5f, 5000);
+			GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+			renderedSky = 2;
+		}
+		if(renderedSky!=1)
+			MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
+				/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 0.5f, 5000);
 		landscape.render();
 		entityDatabase.render();
 		grassLands.render();

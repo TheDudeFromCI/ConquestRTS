@@ -227,7 +227,7 @@ public class Settings{
 			changed = true;
 		}
 		if(request.isRenderSky()!=renderSky){
-			// TODO
+			renderSky = request.isRenderSky();
 			changed = true;
 		}
 		if(changed)
