@@ -192,7 +192,9 @@ public class Settings{
 			changed = true;
 		}
 		if(request.getChunkLoadDistance()!=chunkLoadDistance){
-			// TODO
+			chunkLoadDistance = request.getChunkLoadDistance();
+			if(SinglePlayerGame.INSTANCE!=null)
+				SinglePlayerGame.INSTANCE.getLandscape().getLoadingLoop().setMaxLoadDistance(chunkLoadDistance);
 			changed = true;
 		}
 		if(request.getGeneratorSleeping()!=generatorSleeping){

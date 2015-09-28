@@ -59,6 +59,9 @@ public class LandscapeWorld{
 			c.dispose();
 		chunks.clear();
 	}
+	public SecondaryLoop getLoadingLoop(){
+		return loadingLoop;
+	}
 	public boolean isWithinView(int x, int z){
 		x = Algorithms.groupLocation(x, 64);
 		z = Algorithms.groupLocation(z, 64);
@@ -147,7 +150,7 @@ public class LandscapeWorld{
 						continue clearer;
 				for(a = 0; a<biomeParticleEngines.size(); a++)
 					if(biomeParticleEngines.get(a).getX()==ch.getX()
-						&&biomeParticleEngines.get(a).getZ()==ch.getZ()){
+					&&biomeParticleEngines.get(a).getZ()==ch.getZ()){
 						biomeParticleEngines.remove(a).dispose();
 						continue clearer;
 					}

@@ -24,7 +24,7 @@ import com.wraithavens.conquest.Utility.Algorithms;
 import com.wraithavens.conquest.Utility.BinaryFile;
 import com.wraithavens.conquest.Utility.QuadList;
 
-class SecondaryLoop implements Runnable{
+public class SecondaryLoop implements Runnable{
 	private static Biome randomBiomeObject(float h, float t){
 		final float mapSize = WorldNoiseMachine.BiomeTransitionSize;
 		h *= mapSize;
@@ -142,6 +142,9 @@ class SecondaryLoop implements Runnable{
 	public void run(){
 		while(running)
 			loadNext();
+	}
+	public void setMaxLoadDistance(int distance){
+		spiral.setMaxDistance(distance);
 	}
 	private void attemptGenerateChunk(){
 		int x = spiral.getX()*LandscapeChunk.LandscapeSize;
