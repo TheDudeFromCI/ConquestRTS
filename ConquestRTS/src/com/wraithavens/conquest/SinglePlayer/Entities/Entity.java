@@ -32,8 +32,10 @@ public class Entity{
 		updateAABB();
 	}
 	public boolean canRender(LandscapeWorld landscape, Camera camera){
-		return mesh.getType().lodRadius.canSee(camera, position)
-			&&landscape.isWithinView((int)position.x, (int)position.z)&&aabb.visible(camera);
+		return (mesh.getType().viewDistance==0||camera.distanceSquared(position.x, position.y, position.z)<mesh
+			.getType().viewDistance)
+			&&landscape.isWithinView((int)position.x, (int)position.z)
+			&&aabb.visible(camera);
 	}
 	public final void dispose(){
 		mesh.removeReference();

@@ -110,7 +110,7 @@ public enum EntityType{
 	public final boolean isGiant;
 	public final boolean sways;
 	public final boolean colorBlended;
-	public final LodRadius lodRadius;
+	public final int viewDistance;
 	public final GiantEntityGroundHits groundHits;
 	private EntityType(String fileName, boolean isGrass, boolean isGiant, boolean sways, boolean colorBlended){
 		this.fileName = fileName;
@@ -118,7 +118,7 @@ public enum EntityType{
 		this.isGiant = isGiant;
 		this.sways = sways;
 		this.colorBlended = colorBlended;
-		lodRadius = new LodRadius(isGiant?0:100);
+		viewDistance = isGiant?0:100*100;
 		groundHits = new GiantEntityGroundHits(this);
 	}
 	public EntityMesh createReference(){
