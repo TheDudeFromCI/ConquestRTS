@@ -71,7 +71,7 @@ public class ParticleBatch{
 		shader.dispose();
 	}
 	public void render(){
-		if(particles.size()==0)
+		if(particles.size()==0||maxParticleCount==0)
 			return;
 		shader.bind();
 		GL11.glEnable(GL11.GL_BLEND);
