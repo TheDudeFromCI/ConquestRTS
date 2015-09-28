@@ -25,7 +25,7 @@ public class WraithavensConquest extends EmptyLoop{
 		// TODO Remove this later, once game saving and loading is in.
 		// ---
 		currentGameFolder = saveFolder+File.separatorChar+"Pre-Alpha";
-		settings = new Settings();
+		// settings = new Settings();
 		WindowInitalizerBuilder builder = new WindowInitalizerBuilder();
 		new WraithavensConquest(builder.build());
 		System.exit(0);
