@@ -68,7 +68,7 @@ public class TpCommand implements Command{
 					x = grid.getX()*searchSize+(int)camera.x;
 					z = grid.getY()*searchSize+(int)camera.z;
 					if(machine.getBiomeAt(x, z, temp)==targetBiome){
-						camera.teleport(x, machine.getGroundLevel(x, z), z);
+						camera.teleport(x, machine.getGroundLevel(x, z)+6, z);
 						break;
 					}
 					if(!grid.hasNext()){
