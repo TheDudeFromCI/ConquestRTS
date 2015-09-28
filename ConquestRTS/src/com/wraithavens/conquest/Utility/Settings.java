@@ -202,7 +202,7 @@ public class Settings{
 			changed = true;
 		}
 		if(request.getChunkUpdateFrames()!=chunkUpdateFrames){
-			// TODO
+			chunkUpdateFrames = request.getChunkUpdateFrames();
 			changed = true;
 		}
 		if(request.getFpsCap()!=fpsCap){

@@ -15,7 +15,6 @@ import com.wraithavens.conquest.Utility.Algorithms;
 
 public class LandscapeWorld{
 	static int ShadeAttribLocation;
-	private static final int ChunkPingRate = 2;
 	private final ArrayList<LandscapeChunk> chunks = new ArrayList();
 	private final ShaderProgram shader;
 	private final SpiralGridAlgorithm spiral;
@@ -111,8 +110,8 @@ public class LandscapeWorld{
 		// the edge.
 		// ---
 		frame++;
-		if(frame%ChunkPingRate==0){
-			if(frame%(ChunkPingRate*2)==0){
+		if(frame%WraithavensConquest.Settings.getChunkUpdateFrames()==0){
+			if(frame%(WraithavensConquest.Settings.getChunkUpdateFrames()*2)==0){
 				if(currentLoadingChunk!=null){
 					if(currentLoadingChunk.isFinished()){
 						loadChunk(currentLoadingChunk.getX(), currentLoadingChunk.getY(),
