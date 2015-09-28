@@ -1,7 +1,9 @@
 package com.wraithavens.conquest.Utility;
 
 import java.io.File;
+import com.wraithavens.conquest.Launcher.MainLoop;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
+import com.wraithavens.conquest.SinglePlayer.SinglePlayerGame;
 
 public class Settings{
 	/**
@@ -10,6 +12,13 @@ public class Settings{
 	 * even be playable.
 	 */
 	private int chunkRenderDistance;
+	/**
+	 * This is the radius of the chunks around the player which will be kept in
+	 * memory after being loaded. Higher values will use more memory, but chunk
+	 * loading while moving around the same area will be much quicker. This
+	 * value must be atleast as high as chunk render distance.
+	 */
+	private int chunkCatcheDistance;
 	/**
 	 * This is the radius of the range that chunks will generate around the
 	 * player, not counting the chunk the player is in. This <i>must</i> be
@@ -61,6 +70,7 @@ public class Settings{
 			BinaryFile bin = new BinaryFile(file);
 			bin.decompress(false);
 			chunkRenderDistance = bin.getInt();
+			chunkCatcheDistance = bin.getInt();
 			chunkLoadDistance = bin.getInt();
 			generatorSleeping = bin.getInt();
 			chunkUpdateFrames = bin.getInt();
@@ -72,7 +82,8 @@ public class Settings{
 			renderSky = bin.getBoolean();
 		}else{
 			chunkRenderDistance = 4;
-			chunkLoadDistance = 4;
+			chunkCatcheDistance = 5;
+			chunkLoadDistance = 5;
 			generatorSleeping = 1;
 			chunkUpdateFrames = 5;
 			fpsCap = 30;
@@ -82,6 +93,9 @@ public class Settings{
 			particleCount = 5000;
 			renderSky = true;
 		}
+	}
+	public int getChunkCatcheDistance(){
+		return chunkCatcheDistance;
 	}
 	public int getChunkLoadDistance(){
 		return chunkLoadDistance;
@@ -117,8 +131,9 @@ public class Settings{
 		return new SettingsChangeRequest(this);
 	}
 	public void save(){
-		BinaryFile bin = new BinaryFile(7*4+3);
+		BinaryFile bin = new BinaryFile(8*4+3);
 		bin.addInt(chunkRenderDistance);
+		bin.addInt(chunkCatcheDistance);
 		bin.addInt(chunkLoadDistance);
 		bin.addInt(generatorSleeping);
 		bin.addInt(chunkUpdateFrames);
@@ -130,6 +145,9 @@ public class Settings{
 		bin.addBoolean(renderSky);
 		bin.compress(false);
 		bin.compile(new File(WraithavensConquest.saveFolder, "Settings.dat"));
+	}
+	public void setChunkCatcheDistance(int chunkCatcheDistance){
+		this.chunkCatcheDistance = chunkCatcheDistance;
 	}
 	public void setChunkLoadDistance(int chunkLoadDistance){
 		this.chunkLoadDistance = chunkLoadDistance;
@@ -162,6 +180,55 @@ public class Settings{
 		this.vSync = vSync;
 	}
 	void submitChange(SettingsChangeRequest request){
-		// TODO
+		boolean changed = false;
+		if(request.getChunkRenderDistance()!=chunkRenderDistance){
+			chunkRenderDistance = request.getChunkRenderDistance();
+			if(SinglePlayerGame.INSTANCE!=null)
+				SinglePlayerGame.INSTANCE.getLandscape().setRenderDistance(getChunkRenderDistance());
+			changed = true;
+		}
+		if(request.getChunkCatcheDistance()!=chunkCatcheDistance){
+			chunkCatcheDistance = request.getChunkCatcheDistance();
+			changed = true;
+		}
+		if(request.getChunkLoadDistance()!=chunkLoadDistance){
+			// TODO
+			changed = true;
+		}
+		if(request.getGeneratorSleeping()!=generatorSleeping){
+			// TODO
+			changed = true;
+		}
+		if(request.getChunkUpdateFrames()!=chunkUpdateFrames){
+			// TODO
+			changed = true;
+		}
+		if(request.getFpsCap()!=fpsCap){
+			fpsCap = request.getFpsCap();
+			MainLoop.FPS_SYNC = fpsCap;
+			changed = true;
+		}
+		if(request.getScreenResolution()!=screenResolution){
+			// TODO
+			changed = true;
+		}
+		if(request.isvSync()!=vSync){
+			// TODO
+			changed = true;
+		}
+		if(request.isFullScreen()!=fullScreen){
+			// TODO
+			changed = true;
+		}
+		if(request.getParticleCount()!=particleCount){
+			// TODO
+			changed = true;
+		}
+		if(request.isRenderSky()!=renderSky){
+			// TODO
+			changed = true;
+		}
+		if(changed)
+			save();
 	}
 }

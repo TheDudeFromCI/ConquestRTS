@@ -1,9 +1,9 @@
 package com.wraithavens.conquest.Utility;
 
-
 public class SettingsChangeRequest{
 	private final Settings settings;
 	private int chunkRenderDistance;
+	private int chunkCatcheDistance;
 	private int chunkLoadDistance;
 	private int generatorSleeping;
 	private int chunkUpdateFrames;
@@ -16,6 +16,7 @@ public class SettingsChangeRequest{
 	SettingsChangeRequest(Settings settings){
 		this.settings = settings;
 		chunkRenderDistance = settings.getChunkRenderDistance();
+		chunkCatcheDistance = settings.getChunkCatcheDistance();
 		chunkLoadDistance = settings.getChunkLoadDistance();
 		generatorSleeping = settings.getGeneratorSleeping();
 		chunkUpdateFrames = settings.getChunkUpdateFrames();
@@ -25,6 +26,9 @@ public class SettingsChangeRequest{
 		fullScreen = settings.isFullScreen();
 		particleCount = settings.getParticleCount();
 		renderSky = settings.isRenderSky();
+	}
+	public int getChunkCatcheDistance(){
+		return chunkCatcheDistance;
 	}
 	public int getChunkLoadDistance(){
 		return chunkLoadDistance;
@@ -55,6 +59,9 @@ public class SettingsChangeRequest{
 	}
 	public boolean isvSync(){
 		return vSync;
+	}
+	public void setChunkCatcheDistance(int chunkCatcheDistance){
+		this.chunkCatcheDistance = chunkCatcheDistance;
 	}
 	public void setChunkLoadDistance(int chunkLoadDistance){
 		this.chunkLoadDistance = chunkLoadDistance;

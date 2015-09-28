@@ -83,7 +83,7 @@ public class LoadingScreen{
 			shader.bind();
 			GL11.glDisable(GL11.GL_CULL_FACE);
 			GL11.glEnable(GL11.GL_BLEND);
-			MainLoop.FPS_SYNC = false;
+			MainLoop.FPS_SYNC = 0;
 			setup = true;
 		}
 		background.render(shader);
@@ -102,7 +102,7 @@ public class LoadingScreen{
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 			GL11.glEnable(GL11.GL_CULL_FACE);
 			GL11.glDisable(GL11.GL_BLEND);
-			MainLoop.FPS_SYNC = true;
+			MainLoop.FPS_SYNC = 30;
 			task = null;
 			return;
 		}

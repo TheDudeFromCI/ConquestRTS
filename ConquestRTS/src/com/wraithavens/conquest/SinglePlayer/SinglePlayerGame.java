@@ -45,6 +45,9 @@ public class SinglePlayerGame implements Driver{
 	public Camera getCamera(){
 		return camera;
 	}
+	public LandscapeWorld getLandscape(){
+		return landscape;
+	}
 	public LoadingScreen getLoadingScreen(){
 		return loadingScreen;
 	}

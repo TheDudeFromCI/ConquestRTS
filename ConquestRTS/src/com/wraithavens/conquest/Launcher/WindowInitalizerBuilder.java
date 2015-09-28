@@ -157,7 +157,6 @@ class WindowInitalizerBuilder extends JFrame{
 				init.height = resolution.height;
 				init.fullscreen = fullScreen.isSelected();
 				init.vSync = vSync.isSelected();
-				MainLoop.FPS_SYNC = fpsSync.isSelected();
 				return init;
 			}
 			if(isVisible())

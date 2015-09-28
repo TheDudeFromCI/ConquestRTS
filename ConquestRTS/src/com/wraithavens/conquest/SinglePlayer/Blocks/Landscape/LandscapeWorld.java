@@ -15,7 +15,6 @@ import com.wraithavens.conquest.Utility.Algorithms;
 
 public class LandscapeWorld{
 	static int ShadeAttribLocation;
-	private static final int ViewDistance = 8;
 	private static final int ChunkPingRate = 2;
 	private final ArrayList<LandscapeChunk> chunks = new ArrayList();
 	private final ShaderProgram shader;
@@ -49,8 +48,8 @@ public class LandscapeWorld{
 		ShadeAttribLocation = shader.getAttributeLocation("shade");
 		GL20.glEnableVertexAttribArray(ShadeAttribLocation);
 		spiral = new SpiralGridAlgorithm();
-		spiral.setMaxDistance(ViewDistance);
-		loadingLoop = new SecondaryLoop(camera, machine, ViewDistance+3);
+		spiral.setMaxDistance(WraithavensConquest.Settings.getChunkRenderDistance());
+		loadingLoop = new SecondaryLoop(camera, machine, WraithavensConquest.Settings.getChunkLoadDistance());
 		chunkLoadHeight[1] = 0;
 	}
 	public void dispose(){
@@ -65,18 +64,21 @@ public class LandscapeWorld{
 		z = Algorithms.groupLocation(z, 64);
 		for(LandscapeChunk c : chunks)
 			if(c.getX()==x&&c.getZ()==z){
-				return isWithinView(c, ViewDistance);
+				return isWithinView(c, WraithavensConquest.Settings.getChunkRenderDistance());
 			}
 		return false;
 	}
 	public void render(){
 		shader.bind();
 		for(LandscapeChunk c : chunks)
-			if(isWithinView(c, ViewDistance)
+			if(isWithinView(c, WraithavensConquest.Settings.getChunkRenderDistance())
 				&&camera.cubeInView(c.getX(), c.getY(), c.getZ(), LandscapeChunk.LandscapeSize)){
 				shader.setUniform2f(1, c.getX(), c.getZ());
 				c.render();
 			}
+	}
+	public void setRenderDistance(int renderDistance){
+		spiral.setMaxDistance(renderDistance);
 	}
 	public void setup(Grasslands grassLands){
 		this.grassLands = grassLands;
@@ -225,6 +227,6 @@ public class LandscapeWorld{
 		}
 	}
 	private boolean shouldRemove(LandscapeChunk chunk){
-		return !isWithinView(chunk, ViewDistance+3);
+		return !isWithinView(chunk, WraithavensConquest.Settings.getChunkCatcheDistance());
 	}
 }

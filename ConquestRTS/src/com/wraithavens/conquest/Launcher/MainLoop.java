@@ -15,7 +15,7 @@ import org.lwjgl.opengl.GLContext;
 import org.lwjgl.system.MemoryUtil;
 
 public class MainLoop{
-	public static boolean FPS_SYNC = true;
+	public static int FPS_SYNC = 0;
 	public static final LinkedBlockingQueue<Runnable> endLoopTasks = new LinkedBlockingQueue();
 	private GLFWCursorPosCallback cursorPosCallback;
 	private GLFWErrorCallback errorCallback;
@@ -85,7 +85,7 @@ public class MainLoop{
 			windowInitalizer.loopObjective.render();
 			GLFW.glfwSwapBuffers(window);
 			GLFW.glfwPollEvents();
-			if(MainLoop.FPS_SYNC)
+			if(MainLoop.FPS_SYNC>0)
 				sync();
 			while(!endLoopTasks.isEmpty())
 				try{
@@ -116,7 +116,7 @@ public class MainLoop{
 		}
 	}
 	private void sync(){
-		long sleepTime = 1000000000/30;
+		long sleepTime = 1000000000/FPS_SYNC;
 		long yieldTime = Math.min(sleepTime, variableYieldTime+sleepTime%(1000*1000));
 		long overSleep = 0;
 		try{
