@@ -81,10 +81,8 @@ public class ColorConsole extends JFrame{
 			public void paint(Graphics g1){
 				Graphics2D g = (Graphics2D)g1;
 				g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g.setFont(new Font("Consolas", Font.BOLD, 15));
-				boolean moveDown = false;
-				if(moveDownRequest&&scroll==maximumScroll)
-					moveDown = true;
+				g.setFont(new Font("Courier", Font.PLAIN, 15));
+				boolean moveDown = moveDownRequest&&scroll==maximumScroll;
 				moveDownRequest = false;
 				calculateMaximumScroll(g.getFontMetrics().getHeight());
 				if(moveDown)
