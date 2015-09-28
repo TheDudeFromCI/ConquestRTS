@@ -32,6 +32,6 @@ public class HelpCommand implements Command{
 			console.println(ChatColor.GRAY+"  Usage: "+c.getUsage());
 			console.println(ChatColor.GRAY+"  "+c.getDescription());
 		}
-		console.println(ChatColor.GREEN+"~~~~~~~~~~~~~~~~~~~~~");
+		console.println(ChatColor.GREEN+"~~~~~~~~~~~~~~~~~~~~~~~~");
 	}
 }
