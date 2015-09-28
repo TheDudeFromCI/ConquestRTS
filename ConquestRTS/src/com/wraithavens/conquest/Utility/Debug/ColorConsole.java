@@ -181,7 +181,6 @@ public class ColorConsole extends JFrame{
 	}
 	private void trimBuffer(){
 		int count = getLineCount();
-		System.out.println(count);
 		if(count>MaxLineCount){
 			int clear = MaxLineCount-count;
 			int cleared = 0;

@@ -1,8 +1,9 @@
 package com.wraithavens.conquest.Utility.Debug;
 
 import java.util.ArrayList;
-import com.wraithavens.conquest.Utility.Debug.Commands.TpCommand;
 import com.wraithavens.conquest.Utility.Debug.Commands.HelpCommand;
+import com.wraithavens.conquest.Utility.Debug.Commands.SettingsCommand;
+import com.wraithavens.conquest.Utility.Debug.Commands.TpCommand;
 
 public class ConsoleCommands implements ConsoleListener{
 	private final ColorConsole console;
@@ -12,6 +13,7 @@ public class ConsoleCommands implements ConsoleListener{
 		{
 			commands.add(new TpCommand(console));
 			commands.add(new HelpCommand(console, commands));
+			commands.add(new SettingsCommand(console));
 		}
 	}
 	public void onCommandSent(String command){
