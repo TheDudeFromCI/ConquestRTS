@@ -65,7 +65,7 @@ class SecondaryLoop implements Runnable{
 			tr += z*z+s;
 			random.setSeed(tr);
 			random.nextFloat(); // This helps shuffle up the random number, a
-								// lot.
+			// lot.
 		}
 		if(random.nextFloat()<0.2){
 			Biome biome = randomBiomeObject(h, t);
