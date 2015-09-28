@@ -93,7 +93,14 @@ public enum EntityType{
 	AesiaStems21("AesiaStems21.tal", false, false, false, true),
 	AesiaStems22("AesiaStems22.tal", false, false, false, true),
 	AesiaStems23("AesiaStems23.tal", false, false, false, true),
-	AesiaStems24("AesiaStems24.tal", false, false, false, true);
+	AesiaStems24("AesiaStems24.tal", false, false, false, true),
+	AesiaPedals("AesiaPedals1.tal", false, false, false, false),
+	AesiaPedals2("AesiaPedals2.tal", false, false, false, false),
+	AesiaPedals3("AesiaPedals3.tal", false, false, false, false),
+	AesiaPedals4("AesiaPedals4.tal", false, false, false, false),
+	AesiaPedals5("AesiaPedals5.tal", false, false, false, false),
+	AesiaPedals6("AesiaPedals6.tal", false, false, false, false),
+	AesiaPedals7("AesiaPedals7.tal", false, false, false, false);
 	public static EntityType getVariation(EntityType inital, int type){
 		return values()[inital.ordinal()+type];
 	}

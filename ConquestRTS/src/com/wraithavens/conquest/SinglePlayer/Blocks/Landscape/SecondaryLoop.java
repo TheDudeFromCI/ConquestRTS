@@ -86,6 +86,8 @@ class SecondaryLoop implements Runnable{
 				case AesiaFields:
 					if(random.nextFloat()<0.03)
 						return EntityType.getVariation(EntityType.AesiaStems, (int)(random.nextFloat()*24));
+					if(random.nextFloat()<0.1)
+						return EntityType.getVariation(EntityType.AesiaPedals, (int)(random.nextFloat()*7));
 					return EntityType.values()[EntityType.AesiaFieldsGrass0.ordinal()
 						+(int)(random.nextFloat()*8)];
 				default:
