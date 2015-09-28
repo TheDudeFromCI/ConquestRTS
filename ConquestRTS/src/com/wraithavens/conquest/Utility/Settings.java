@@ -60,6 +60,16 @@ public class Settings{
 		if(file.exists()){
 			BinaryFile bin = new BinaryFile(file);
 			bin.decompress(false);
+			chunkRenderDistance = bin.getInt();
+			chunkLoadDistance = bin.getInt();
+			generatorSleeping = bin.getInt();
+			chunkUpdateFrames = bin.getInt();
+			fpsCap = bin.getInt();
+			screenResolution = bin.getInt();
+			vSync = bin.getBoolean();
+			fullScreen = bin.getBoolean();
+			particleCount = bin.getInt();
+			renderSky = bin.getBoolean();
 		}else{
 			chunkRenderDistance = 4;
 			chunkLoadDistance = 4;
@@ -107,7 +117,19 @@ public class Settings{
 		return new SettingsChangeRequest(this);
 	}
 	public void save(){
-		// TODO
+		BinaryFile bin = new BinaryFile(7*4+3);
+		bin.addInt(chunkRenderDistance);
+		bin.addInt(chunkLoadDistance);
+		bin.addInt(generatorSleeping);
+		bin.addInt(chunkUpdateFrames);
+		bin.addInt(fpsCap);
+		bin.addInt(screenResolution);
+		bin.addBoolean(vSync);
+		bin.addBoolean(fullScreen);
+		bin.addInt(particleCount);
+		bin.addBoolean(renderSky);
+		bin.compress(false);
+		bin.compile(new File(WraithavensConquest.saveFolder, "Settings.dat"));
 	}
 	public void setChunkLoadDistance(int chunkLoadDistance){
 		this.chunkLoadDistance = chunkLoadDistance;
