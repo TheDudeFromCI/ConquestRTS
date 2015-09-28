@@ -1,6 +1,5 @@
 package com.wraithavens.conquest.Utility;
 
-import java.awt.Dimension;
 import java.io.File;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 
@@ -34,10 +33,11 @@ public class Settings{
 	 */
 	private int fpsCap;
 	/**
-	 * This is the size of the game viewport resolution. (And window size, if
-	 * not full screen.)
+	 * This is the index of the size of the game viewport resolution (And window
+	 * size, if not full screen.), as determined by the order determined in the
+	 * ResolutionSize class.
 	 */
-	private Dimension screenResolution;
+	private int screenResolution;
 	/**
 	 * This enables/disables vSync.
 	 */
@@ -66,7 +66,7 @@ public class Settings{
 			generatorSleeping = 1;
 			chunkUpdateFrames = 5;
 			fpsCap = 30;
-			screenResolution = new Dimension(1024, 768);
+			screenResolution = 0;
 			vSync = true;
 			fullScreen = false;
 			particleCount = 5000;
@@ -91,7 +91,7 @@ public class Settings{
 	public int getParticleCount(){
 		return particleCount;
 	}
-	public Dimension getScreenResolution(){
+	public int getScreenResolution(){
 		return screenResolution;
 	}
 	public boolean isFullScreen(){
@@ -133,7 +133,7 @@ public class Settings{
 	public void setRenderSky(boolean renderSky){
 		this.renderSky = renderSky;
 	}
-	public void setScreenResolution(Dimension screenResolution){
+	public void setScreenResolution(int screenResolution){
 		this.screenResolution = screenResolution;
 	}
 	public void setvSync(boolean vSync){

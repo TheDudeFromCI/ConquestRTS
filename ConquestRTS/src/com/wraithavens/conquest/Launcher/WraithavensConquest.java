@@ -25,7 +25,7 @@ public class WraithavensConquest extends EmptyLoop{
 		// TODO Remove this later, once game saving and loading is in.
 		// ---
 		currentGameFolder = saveFolder+File.separatorChar+"Pre-Alpha";
-		// settings = new Settings();
+		Settings = new Settings();
 		WindowInitalizerBuilder builder = new WindowInitalizerBuilder();
 		new WraithavensConquest(builder.build());
 		System.exit(0);
@@ -81,7 +81,7 @@ public class WraithavensConquest extends EmptyLoop{
 	 * Bugfix State - This is the current bugfix state for the progress version.
 	 */
 	public static final String Version = "v0.1.02.0";
-	public static Settings settings;
+	public static Settings Settings;
 	private Driver driver;
 	private double currentTime;
 	private WraithavensConquest(WindowInitalizer init){

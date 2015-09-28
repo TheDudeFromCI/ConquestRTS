@@ -1,6 +1,5 @@
 package com.wraithavens.conquest.Utility;
 
-import java.awt.Dimension;
 
 public class SettingsChangeRequest{
 	private final Settings settings;
@@ -9,7 +8,7 @@ public class SettingsChangeRequest{
 	private int generatorSleeping;
 	private int chunkUpdateFrames;
 	private int fpsCap;
-	private Dimension screenResolution;
+	private int screenResolution;
 	private boolean vSync;
 	private boolean fullScreen;
 	private int particleCount;
@@ -45,7 +44,7 @@ public class SettingsChangeRequest{
 	public int getParticleCount(){
 		return particleCount;
 	}
-	public Dimension getScreenResolution(){
+	public int getScreenResolution(){
 		return screenResolution;
 	}
 	public boolean isFullScreen(){
@@ -81,7 +80,7 @@ public class SettingsChangeRequest{
 	public void setRenderSky(boolean renderSky){
 		this.renderSky = renderSky;
 	}
-	public void setScreenResolution(Dimension screenResolution){
+	public void setScreenResolution(int screenResolution){
 		this.screenResolution = screenResolution;
 	}
 	public void setvSync(boolean vSync){

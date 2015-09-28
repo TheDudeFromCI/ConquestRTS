@@ -85,6 +85,9 @@ class ResolutionSize{
 		ratioNum = width/gcd;
 		ratioDen = height/gcd;
 	}
+	public boolean isNative(){
+		return real;
+	}
 	@Override
 	public String toString(){
 		if(real)

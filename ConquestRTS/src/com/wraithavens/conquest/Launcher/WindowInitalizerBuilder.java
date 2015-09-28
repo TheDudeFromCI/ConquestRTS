@@ -16,7 +16,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
-import com.wraithavens.conquest.Utility.BinaryFile;
+import com.wraithavens.conquest.Utility.SettingsChangeRequest;
 
 class WindowInitalizerBuilder extends JFrame{
 	private JCheckBox fullScreen;
@@ -134,27 +134,18 @@ class WindowInitalizerBuilder extends JFrame{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	private void loadSettings(){
-		File file = new File(WraithavensConquest.saveFolder, "Settings.dat");
-		if(file.exists()&&file.length()>0){
-			BinaryFile bin = new BinaryFile(file);
-			int id = bin.getByte();
-			for(int i = 0; i<comboBox.getItemCount(); i++)
-				if(((ResolutionSize)comboBox.getItemAt(i)).id==id){
-					comboBox.setSelectedIndex(i);
-					break;
-				}
-			fullScreen.setSelected(bin.getBoolean());
-			vSync.setSelected(bin.getBoolean());
-			fpsSync.setSelected(bin.getBoolean());
-		}
+		fullScreen.setSelected(WraithavensConquest.Settings.isFullScreen());
+		vSync.setSelected(WraithavensConquest.Settings.isvSync());
+		fpsSync.setSelected(WraithavensConquest.Settings.getFpsCap()!=0);
+		comboBox.setSelectedIndex(WraithavensConquest.Settings.getScreenResolution());
 	}
 	private void saveSettings(){
-		BinaryFile bin = new BinaryFile(4);
-		bin.addByte((byte)((ResolutionSize)comboBox.getSelectedItem()).id);
-		bin.addBoolean(fullScreen.isSelected());
-		bin.addBoolean(vSync.isSelected());
-		bin.addBoolean(fpsSync.isSelected());
-		bin.compile(new File(WraithavensConquest.saveFolder, "Settings.dat"));
+		SettingsChangeRequest s = WraithavensConquest.Settings.requestChange();
+		s.setFullScreen(fullScreen.isSelected());
+		s.setvSync(vSync.isSelected());
+		s.setFpsCap(fpsSync.isSelected()?s.getFpsCap()==0?30:s.getFpsCap():0);
+		s.setScreenResolution(comboBox.getSelectedIndex());
+		s.submit();
 	}
 	WindowInitalizer build(){
 		for(int i = 0; i<3000; i++){
