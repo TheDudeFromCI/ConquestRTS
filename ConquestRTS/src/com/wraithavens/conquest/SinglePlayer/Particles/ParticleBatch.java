@@ -9,6 +9,7 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL31;
 import org.lwjgl.opengl.GL33;
+import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.Vector2f;
 import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.Math.Vector4f;
@@ -16,16 +17,16 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 
 public class ParticleBatch{
-	private static final int MaxParticleCount = 20000;
 	private static final boolean SortParticles = false;
 	private final int vbo;
 	private final int particleBuffer;
 	private final ShaderProgram shader;
-	private final FloatBuffer particleData;
+	private FloatBuffer particleData;
 	private final int offsetAttribLocation;
 	private final int scaleAttribLocation;
 	private final int colorAttribLocation;
-	private final ArrayList<Particle> particles = new ArrayList(MaxParticleCount);
+	private int maxParticleCount;
+	private final ArrayList<Particle> particles = new ArrayList(maxParticleCount);
 	private final Comparator particleSorter = new Comparator<Particle>(){
 		public int compare(Particle a, Particle b){
 			return a.getCameraDistance()==b.getCameraDistance()?0:a.getCameraDistance()<b.getCameraDistance()?1
@@ -36,6 +37,7 @@ public class ParticleBatch{
 	private final ArrayList<ParticleEngine> engines = new ArrayList();
 	public ParticleBatch(Camera camera){
 		this.camera = camera;
+		maxParticleCount = WraithavensConquest.Settings.getParticleCount();
 		vbo = GL15.glGenBuffers();
 		particleBuffer = GL15.glGenBuffers();
 		{
@@ -48,7 +50,7 @@ public class ParticleBatch{
 			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertexData, GL15.GL_STATIC_DRAW);
 		}
-		particleData = BufferUtils.createFloatBuffer(9*MaxParticleCount);
+		particleData = BufferUtils.createFloatBuffer(9*maxParticleCount);
 		shader = new ShaderProgram("Particle");
 		shader.bind();
 		offsetAttribLocation = shader.getAttributeLocation("att_offset");
@@ -59,7 +61,7 @@ public class ParticleBatch{
 		GL20.glEnableVertexAttribArray(colorAttribLocation);
 	}
 	public void addParticle(Particle particle){
-		if(particles.size()==MaxParticleCount)
+		if(particles.size()>=maxParticleCount)
 			return;
 		particles.add(particle);
 	}
@@ -91,6 +93,10 @@ public class ParticleBatch{
 		GL33.glVertexAttribDivisor(colorAttribLocation, 0);
 		GL11.glDepthMask(true);
 	}
+	public void setMaxParticles(int count){
+		maxParticleCount = count;
+		particleData = BufferUtils.createFloatBuffer(9*maxParticleCount);
+	}
 	public void update(double delta, double time){
 		for(int i = 0; i<engines.size(); i++)
 			engines.get(i).update(time);
@@ -115,6 +121,8 @@ public class ParticleBatch{
 		Vector3f location;
 		Vector2f scale;
 		for(int i = 0; i<particles.size(); i++){
+			if(i>=maxParticleCount)
+				break;
 			location = particles.get(i).getLocation();
 			scale = particles.get(i).getScale();
 			color = particles.get(i).getColor();

@@ -223,7 +223,9 @@ public class Settings{
 			changed = true;
 		}
 		if(request.getParticleCount()!=particleCount){
-			// TODO
+			particleCount = request.getParticleCount();
+			if(SinglePlayerGame.INSTANCE!=null)
+				SinglePlayerGame.INSTANCE.getParticleBatch().setMaxParticles(particleCount);
 			changed = true;
 		}
 		if(request.isRenderSky()!=renderSky){
