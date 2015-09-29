@@ -77,19 +77,19 @@ public class SecondaryLoop implements Runnable{
 						return EntityType.getVariation(EntityType.VallaFlower, (int)(random.nextFloat()*4));
 					if(random.nextFloat()<0.005)
 						return EntityType.values()[EntityType.TayleaMeadowRock1.ordinal()
-							+(int)(random.nextFloat()*3)];
+						                           +(int)(random.nextFloat()*3)];
 					return EntityType.values()[EntityType.TayleaMeadowGrass0.ordinal()
-						+(int)(random.nextFloat()*8)];
+					                           +(int)(random.nextFloat()*8)];
 				case ArcstoneHills:
 					return EntityType.values()[EntityType.ArcstoneHillsGrass0.ordinal()
-						+(int)(random.nextFloat()*8)];
+					                           +(int)(random.nextFloat()*8)];
 				case AesiaFields:
 					if(random.nextFloat()<0.03)
 						return EntityType.getVariation(EntityType.AesiaStems, (int)(random.nextFloat()*24));
 					if(random.nextFloat()<0.1)
 						return EntityType.getVariation(EntityType.AesiaPedals, (int)(random.nextFloat()*7));
 					return EntityType.values()[EntityType.AesiaFieldsGrass0.ordinal()
-						+(int)(random.nextFloat()*8)];
+					                           +(int)(random.nextFloat()*8)];
 				default:
 					throw new AssertionError();
 			}
@@ -246,7 +246,7 @@ public class SecondaryLoop implements Runnable{
 					q = ExtremeQuadOptimizer.optimize(storage, tempStorage, quads, 64, 64);
 					if(q==0)
 						continue;
-					xCounter.setup(x, y, z, a, j, listener, Block.GRASS);
+					xCounter.setup(x, y, z, a, j, listener, Block.Grass);
 					ExtremeQuadOptimizer.countQuads(xCounter, storage, 64, 64, q);
 				}
 			}else if(j==2){
@@ -271,7 +271,7 @@ public class SecondaryLoop implements Runnable{
 					q = ExtremeQuadOptimizer.optimize(storage, tempStorage, quads, 64, 64);
 					if(q==0)
 						continue;
-					yCounter.setup(x, y, z, b, j, listener, Block.GRASS);
+					yCounter.setup(x, y, z, b, j, listener, Block.Grass);
 					ExtremeQuadOptimizer.countQuads(yCounter, storage, 64, 64, q);
 				}
 			}else{
@@ -298,7 +298,7 @@ public class SecondaryLoop implements Runnable{
 					q = ExtremeQuadOptimizer.optimize(storage, tempStorage, quads, 64, 64);
 					if(q==0)
 						continue;
-					zCounter.setup(x, y, z, c, j, listener, Block.GRASS);
+					zCounter.setup(x, y, z, c, j, listener, Block.Grass);
 					ExtremeQuadOptimizer.countQuads(zCounter, storage, 64, 64, q);
 				}
 			}
@@ -314,10 +314,18 @@ public class SecondaryLoop implements Runnable{
 		for(int i = 0; i<quadList.size(); i++){
 			quad = quadList.get(i);
 			shade = (byte)(quad.side==2?255:quad.side==3?130:quad.side==0||quad.side==1?200:180);
-			v0 = vertices.indexOf(quad.data.get(0), quad.data.get(1), quad.data.get(2), shade);
-			v1 = vertices.indexOf(quad.data.get(3), quad.data.get(4), quad.data.get(5), shade);
-			v2 = vertices.indexOf(quad.data.get(6), quad.data.get(7), quad.data.get(8), shade);
-			v3 = vertices.indexOf(quad.data.get(9), quad.data.get(10), quad.data.get(11), shade);
+			v0 =
+				vertices.indexOf(quad.data.get(0), quad.data.get(1), quad.data.get(2), shade, quad.data.get(12),
+					quad.data.get(13), (byte)quad.data.get(20));
+			v1 =
+				vertices.indexOf(quad.data.get(3), quad.data.get(4), quad.data.get(5), shade, quad.data.get(14),
+					quad.data.get(15), (byte)quad.data.get(20));
+			v2 =
+				vertices.indexOf(quad.data.get(6), quad.data.get(7), quad.data.get(8), shade, quad.data.get(16),
+					quad.data.get(17), (byte)quad.data.get(20));
+			v3 =
+				vertices.indexOf(quad.data.get(9), quad.data.get(10), quad.data.get(11), shade,
+					quad.data.get(18), quad.data.get(19), (byte)quad.data.get(20));
 			indices.place(v0);
 			indices.place(v1);
 			indices.place(v2);
@@ -361,10 +369,6 @@ public class SecondaryLoop implements Runnable{
 						EntityTransform loc =
 							new EntityTransform(null, tempA+0.5f, heightData.getHeight(tempA, tempB),
 								tempB+0.5f, (float)(Math.random()*Math.PI*2), (float)(Math.random()*0.1f+0.15f));
-						// TODO Remove.
-						if(entity==EntityType.AesiaStems)
-							System.out.println("EntityLocation: ["+loc.getX()+", "+loc.getY()+", "+loc.getZ()
-								+"]");
 						if(entityLocations.containsKey(entity))
 							entityLocations.get(entity).add(loc);
 						else{
@@ -413,7 +417,7 @@ public class SecondaryLoop implements Runnable{
 		// ---
 		// Compile and save.
 		// ---
-		BinaryFile bin = new BinaryFile(vertices.size()*13+indices.size()*4+8+bytes+64*64*3);
+		BinaryFile bin = new BinaryFile(vertices.size()*(5*4+2)+indices.size()*4+8+bytes+64*64*3);
 		bin.addInt(vertices.size());
 		bin.addInt(indices.size());
 		Vertex v;
@@ -424,6 +428,9 @@ public class SecondaryLoop implements Runnable{
 			bin.addFloat(v.getY());
 			bin.addFloat(v.getZ());
 			bin.addByte(v.getShade());
+			bin.addFloat(v.getTx());
+			bin.addFloat(v.getTy());
+			bin.addByte(v.getTexture());
 		}
 		for(i = 0; i<indices.size(); i++)
 			bin.addInt(indices.get(i));

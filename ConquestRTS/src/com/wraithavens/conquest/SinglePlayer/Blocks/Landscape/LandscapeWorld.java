@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
+import com.wraithavens.conquest.SinglePlayer.BlockPopulators.BlockTextures;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
@@ -15,6 +16,7 @@ import com.wraithavens.conquest.Utility.Algorithms;
 
 public class LandscapeWorld{
 	static int ShadeAttribLocation;
+	static int UvAttribLocation;
 	private final ArrayList<LandscapeChunk> chunks = new ArrayList();
 	private final ShaderProgram shader;
 	private final SpiralGridAlgorithm spiral;
@@ -42,17 +44,22 @@ public class LandscapeWorld{
 			new ShaderProgram(new File(WraithavensConquest.assetFolder, "Landscape.vert"), null, new File(
 				WraithavensConquest.assetFolder, "Landscape.frag"));
 		shader.bind();
-		shader.loadUniforms("colorMap", "offset");
+		shader.loadUniforms("colorMap", "offset", "texture");
 		shader.setUniform1I(0, 0);
+		shader.setUniform1I(2, 1);
 		ShadeAttribLocation = shader.getAttributeLocation("shade");
+		UvAttribLocation = shader.getAttributeLocation("att_uv");
 		GL20.glEnableVertexAttribArray(ShadeAttribLocation);
+		GL20.glEnableVertexAttribArray(UvAttribLocation);
 		spiral = new SpiralGridAlgorithm();
 		spiral.setMaxDistance(WraithavensConquest.Settings.getChunkRenderDistance());
 		loadingLoop = new SecondaryLoop(camera, machine, WraithavensConquest.Settings.getChunkLoadDistance());
 		chunkLoadHeight[1] = 0;
+		BlockTextures.load();
 	}
 	public void dispose(){
 		loadingLoop.dispose();
+		BlockTextures.dispose();
 		shader.dispose();
 		for(LandscapeChunk c : chunks)
 			c.dispose();
@@ -72,6 +79,7 @@ public class LandscapeWorld{
 	}
 	public void render(){
 		shader.bind();
+		BlockTextures.bind();
 		for(LandscapeChunk c : chunks)
 			if(isWithinView(c, WraithavensConquest.Settings.getChunkRenderDistance())
 				&&camera.cubeInView(c.getX(), c.getY(), c.getZ(), LandscapeChunk.LandscapeSize)){
@@ -149,7 +157,7 @@ public class LandscapeWorld{
 						continue clearer;
 				for(a = 0; a<biomeParticleEngines.size(); a++)
 					if(biomeParticleEngines.get(a).getX()==ch.getX()
-					&&biomeParticleEngines.get(a).getZ()==ch.getZ()){
+						&&biomeParticleEngines.get(a).getZ()==ch.getZ()){
 						biomeParticleEngines.remove(a).dispose();
 						continue clearer;
 					}

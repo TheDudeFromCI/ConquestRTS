@@ -1,10 +1,15 @@
 package com.wraithavens.conquest.SinglePlayer.BlockPopulators;
 
 public class ChunkXQuadCounter implements QuadCounter{
-	private static final float[] QUAD_POINTS = new float[12];
-	private static final float[] COLORS = new float[3];
+	private static final float[] QuadPoints = new float[12];
+	private static final float[] TextureCoords = new float[8];
 	private QuadListener listener;
-	private int x, side, startX, startY, startZ;
+	private int x;
+	private int side;
+	private int startX;
+	private int startY;
+	private int startZ;
+	private int texture;
 	public void addQuad(int y, int z, int w, int h){
 		float smallX = startX+x;
 		float smallY = startY+y;
@@ -13,33 +18,49 @@ public class ChunkXQuadCounter implements QuadCounter{
 		float bigY = smallY+w;
 		float bigZ = smallZ+h;
 		if(side==0){
-			QUAD_POINTS[0] = bigX;
-			QUAD_POINTS[1] = bigY;
-			QUAD_POINTS[2] = bigZ;
-			QUAD_POINTS[3] = bigX;
-			QUAD_POINTS[4] = smallY;
-			QUAD_POINTS[5] = bigZ;
-			QUAD_POINTS[6] = bigX;
-			QUAD_POINTS[7] = smallY;
-			QUAD_POINTS[8] = smallZ;
-			QUAD_POINTS[9] = bigX;
-			QUAD_POINTS[10] = bigY;
-			QUAD_POINTS[11] = smallZ;
+			QuadPoints[0] = bigX;
+			QuadPoints[1] = bigY;
+			QuadPoints[2] = bigZ;
+			QuadPoints[3] = bigX;
+			QuadPoints[4] = smallY;
+			QuadPoints[5] = bigZ;
+			QuadPoints[6] = bigX;
+			QuadPoints[7] = smallY;
+			QuadPoints[8] = smallZ;
+			QuadPoints[9] = bigX;
+			QuadPoints[10] = bigY;
+			QuadPoints[11] = smallZ;
+			TextureCoords[0] = 0;
+			TextureCoords[1] = 0;
+			TextureCoords[2] = 0;
+			TextureCoords[3] = h;
+			TextureCoords[4] = w;
+			TextureCoords[5] = h;
+			TextureCoords[6] = w;
+			TextureCoords[7] = 0;
 		}else{
-			QUAD_POINTS[0] = smallX;
-			QUAD_POINTS[1] = smallY;
-			QUAD_POINTS[2] = smallZ;
-			QUAD_POINTS[3] = smallX;
-			QUAD_POINTS[4] = smallY;
-			QUAD_POINTS[5] = bigZ;
-			QUAD_POINTS[6] = smallX;
-			QUAD_POINTS[7] = bigY;
-			QUAD_POINTS[8] = bigZ;
-			QUAD_POINTS[9] = smallX;
-			QUAD_POINTS[10] = bigY;
-			QUAD_POINTS[11] = smallZ;
+			QuadPoints[0] = smallX;
+			QuadPoints[1] = smallY;
+			QuadPoints[2] = smallZ;
+			QuadPoints[3] = smallX;
+			QuadPoints[4] = smallY;
+			QuadPoints[5] = bigZ;
+			QuadPoints[6] = smallX;
+			QuadPoints[7] = bigY;
+			QuadPoints[8] = bigZ;
+			QuadPoints[9] = smallX;
+			QuadPoints[10] = bigY;
+			QuadPoints[11] = smallZ;
+			TextureCoords[0] = w;
+			TextureCoords[1] = h;
+			TextureCoords[2] = 0;
+			TextureCoords[3] = h;
+			TextureCoords[4] = 0;
+			TextureCoords[5] = 0;
+			TextureCoords[6] = w;
+			TextureCoords[7] = 0;
 		}
-		listener.addQuad(new Quad(QUAD_POINTS, COLORS, side));
+		listener.addQuad(new Quad(QuadPoints, TextureCoords, texture, side));
 	}
 	public void setup(int startX, int startY, int startZ, int x, int side, QuadListener listener, Block block){
 		this.x = x;
@@ -48,8 +69,6 @@ public class ChunkXQuadCounter implements QuadCounter{
 		this.startX = startX;
 		this.startY = startY;
 		this.startZ = startZ;
-		COLORS[0] = block.red;
-		COLORS[1] = block.green;
-		COLORS[2] = block.blue;
+		texture = side==0?block.texture0:block.texture1;
 	}
 }
