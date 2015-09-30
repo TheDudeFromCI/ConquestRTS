@@ -64,9 +64,9 @@ public class NoiseGenerator{
 					edge[j] = (i&c[j])==c[j]?reals[j]+1:reals[j];
 				t = seed;
 				for(j = 0; j<edge.length; j++)
-					t = t*s+edge[j];
+					t = t*s+edge[j]+s;
 				for(j = 0; j<edge.length; j++)
-					t += edge[j]*edge[j]+s;
+					t += edge[j]*edge[j]+s+edge[j];
 				r.setSeed(t);
 				v[i] = r.nextFloat();
 			}
