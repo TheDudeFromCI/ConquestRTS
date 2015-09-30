@@ -8,7 +8,8 @@ class Vertex{
 	private final float tx;
 	private final float ty;
 	private final byte texture;
-	Vertex(float x, float y, float z, byte shade, float tx, float ty, byte texture){
+	private final boolean grass;
+	Vertex(float x, float y, float z, byte shade, float tx, float ty, byte texture, boolean grass){
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -16,6 +17,7 @@ class Vertex{
 		this.tx = tx;
 		this.ty = ty;
 		this.texture = texture;
+		this.grass = grass;
 	}
 	public byte getTexture(){
 		return texture;
@@ -37,5 +39,8 @@ class Vertex{
 	}
 	byte getShade(){
 		return shade;
+	}
+	public boolean isGrass(){
+		return grass;
 	}
 }

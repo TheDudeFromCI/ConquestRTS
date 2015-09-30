@@ -311,21 +311,23 @@ public class SecondaryLoop implements Runnable{
 		int v0, v1, v2, v3;
 		byte shade;
 		Quad quad;
+		boolean grass;
 		for(int i = 0; i<quadList.size(); i++){
 			quad = quadList.get(i);
 			shade = (byte)(quad.side==2?255:quad.side==3?130:quad.side==0||quad.side==1?200:180);
+			grass = quad.grass;
 			v0 =
 				vertices.indexOf(quad.data.get(0), quad.data.get(1), quad.data.get(2), shade, quad.data.get(12),
-					quad.data.get(13), (byte)quad.data.get(20));
+					quad.data.get(13), (byte)quad.data.get(20), grass);
 			v1 =
 				vertices.indexOf(quad.data.get(3), quad.data.get(4), quad.data.get(5), shade, quad.data.get(14),
-					quad.data.get(15), (byte)quad.data.get(20));
+					quad.data.get(15), (byte)quad.data.get(20), grass);
 			v2 =
 				vertices.indexOf(quad.data.get(6), quad.data.get(7), quad.data.get(8), shade, quad.data.get(16),
-					quad.data.get(17), (byte)quad.data.get(20));
+					quad.data.get(17), (byte)quad.data.get(20), grass);
 			v3 =
 				vertices.indexOf(quad.data.get(9), quad.data.get(10), quad.data.get(11), shade,
-					quad.data.get(18), quad.data.get(19), (byte)quad.data.get(20));
+					quad.data.get(18), quad.data.get(19), (byte)quad.data.get(20), grass);
 			indices.place(v0);
 			indices.place(v1);
 			indices.place(v2);
@@ -417,7 +419,7 @@ public class SecondaryLoop implements Runnable{
 		// ---
 		// Compile and save.
 		// ---
-		BinaryFile bin = new BinaryFile(vertices.size()*(5*4+2)+indices.size()*4+8+bytes+64*64*3);
+		BinaryFile bin = new BinaryFile(vertices.size()*(5*4+3)+indices.size()*4+8+bytes+64*64*3);
 		bin.addInt(vertices.size());
 		bin.addInt(indices.size());
 		Vertex v;
@@ -431,6 +433,7 @@ public class SecondaryLoop implements Runnable{
 			bin.addFloat(v.getTx());
 			bin.addFloat(v.getTy());
 			bin.addByte(v.getTexture());
+			bin.addBoolean(v.isGrass());
 		}
 		for(i = 0; i<indices.size(); i++)
 			bin.addInt(indices.get(i));

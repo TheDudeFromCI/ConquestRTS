@@ -33,10 +33,10 @@ public class ChunkXQuadCounter implements QuadCounter{
 			TextureCoords[0] = 0;
 			TextureCoords[1] = 0;
 			TextureCoords[2] = 0;
-			TextureCoords[3] = h;
-			TextureCoords[4] = w;
-			TextureCoords[5] = h;
-			TextureCoords[6] = w;
+			TextureCoords[3] = w;
+			TextureCoords[4] = h;
+			TextureCoords[5] = w;
+			TextureCoords[6] = h;
 			TextureCoords[7] = 0;
 		}else{
 			QuadPoints[0] = smallX;
@@ -60,7 +60,8 @@ public class ChunkXQuadCounter implements QuadCounter{
 			TextureCoords[6] = w;
 			TextureCoords[7] = 0;
 		}
-		listener.addQuad(new Quad(QuadPoints, TextureCoords, texture, side));
+		listener.addQuad(new Quad(QuadPoints, TextureCoords, texture, side, texture==BlockTextures.Grass
+			.ordinal()));
 	}
 	public void setup(int startX, int startY, int startZ, int x, int side, QuadListener listener, Block block){
 		this.x = x;

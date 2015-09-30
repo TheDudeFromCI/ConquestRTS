@@ -50,7 +50,7 @@ public class LandscapeChunk{
 			bin.decompress(false);
 			int vertexCount = bin.getInt();
 			indexCount = bin.getInt();
-			ByteBuffer vertexData = BufferUtils.createByteBuffer(vertexCount*(6*4+1));
+			ByteBuffer vertexData = BufferUtils.createByteBuffer(vertexCount*(7*4+1));
 			IntBuffer indexData = BufferUtils.createIntBuffer(indexCount);
 			int i, a;
 			for(i = 0; i<vertexCount; i++){
@@ -60,6 +60,7 @@ public class LandscapeChunk{
 				vertexData.put(bin.getByte());
 				vertexData.putFloat(bin.getFloat());
 				vertexData.putFloat(bin.getFloat());
+				vertexData.putFloat(bin.getByte());
 				vertexData.putFloat(bin.getByte());
 			}
 			for(i = 0; i<indexCount; i++)
@@ -148,9 +149,9 @@ public class LandscapeChunk{
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
-		GL11.glVertexPointer(3, GL11.GL_FLOAT, 25, 0);
-		GL20.glVertexAttribPointer(LandscapeWorld.ShadeAttribLocation, 1, GL11.GL_UNSIGNED_BYTE, true, 25, 12);
-		GL20.glVertexAttribPointer(LandscapeWorld.UvAttribLocation, 3, GL11.GL_FLOAT, false, 25, 13);
+		GL11.glVertexPointer(3, GL11.GL_FLOAT, 29, 0);
+		GL20.glVertexAttribPointer(LandscapeWorld.ShadeAttribLocation, 1, GL11.GL_UNSIGNED_BYTE, true, 29, 12);
+		GL20.glVertexAttribPointer(LandscapeWorld.UvAttribLocation, 4, GL11.GL_FLOAT, false, 29, 13);
 		GL11.glDrawElements(GL11.GL_TRIANGLES, indexCount, GL11.GL_UNSIGNED_INT, 0);
 	}
 }
