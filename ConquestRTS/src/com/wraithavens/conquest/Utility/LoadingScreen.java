@@ -28,7 +28,8 @@ public class LoadingScreen{
 		shader.loadUniforms("texture", "alpha");
 		shader.setUniform1I(0, 0);
 		spinner =
-			new UiElement(Texture.getTexture(new File(WraithavensConquest.assetFolder, "Loading Spinner.png")));
+			new UiElement(Texture.getTexture(new File(WraithavensConquest.assetFolder+File.separatorChar+"Misc",
+				"Loading Spinner.png")));
 		background =
 			new UiElement(Texture.getTexture(new File(WraithavensConquest.loadingScreenImagesFolder,
 				lastPictureIndex+".png")));

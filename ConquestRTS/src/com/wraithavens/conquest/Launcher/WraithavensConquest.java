@@ -21,6 +21,7 @@ public class WraithavensConquest extends EmptyLoop{
 		saveFolder = defaultDirectory()+File.separatorChar+"Talantra Save Data";
 		modelFolder = programFolder+File.separatorChar+"Models";
 		loadingScreenImagesFolder = programFolder+File.separatorChar+"Loading Screen Images";
+		shaderFolder = assetFolder+File.separatorChar+"Shaders";
 		// ---
 		// TODO Remove this later, once game saving and loading is in.
 		// ---
@@ -71,6 +72,7 @@ public class WraithavensConquest extends EmptyLoop{
 	public static String loadingScreenImagesFolder;
 	public static String modelFolder;
 	public static String saveFolder;
+	public static String shaderFolder;
 	public static WraithavensConquest INSTANCE;
 	/**
 	 * Version Breakdown: <br>

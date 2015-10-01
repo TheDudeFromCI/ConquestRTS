@@ -52,7 +52,8 @@ class WindowInitalizerBuilder extends JFrame{
 		getContentPane().setLayout(gridBagLayout);
 		BufferedImage splashImage = null;
 		try{
-			splashImage = ImageIO.read(new File(WraithavensConquest.assetFolder, "Splash.png"));
+			splashImage =
+				ImageIO.read(new File(WraithavensConquest.assetFolder+File.separatorChar+"Misc", "Splash.png"));
 		}catch(Exception exception){
 			exception.printStackTrace();
 			System.exit(1);

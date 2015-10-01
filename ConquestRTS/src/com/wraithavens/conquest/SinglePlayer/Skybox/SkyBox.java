@@ -1,6 +1,5 @@
 package com.wraithavens.conquest.SinglePlayer.Skybox;
 
-import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
@@ -21,9 +20,7 @@ public class SkyBox{
 		this.layer0 = layer0;
 		this.layer1 = layer1;
 		this.layer2 = layer2;
-		shader =
-			new ShaderProgram(new File(WraithavensConquest.assetFolder, "SkyboxShader.vert"), null, new File(
-				WraithavensConquest.assetFolder, "SkyboxShader.frag"));
+		shader = new ShaderProgram("SkyboxShader");
 		shader.bind();
 		shader.loadUniforms("texture");
 		shader.setUniform1I(0, 0);

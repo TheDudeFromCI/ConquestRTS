@@ -30,14 +30,13 @@ public enum BlockTextures{
 		int[] pixelBuffer = new int[textureSize*textureSize];
 		int[] clipPixelBuffer = new int[textureSize*textureSize];
 		File file;
+		String textureFolder = WraithavensConquest.assetFolder+File.separatorChar+"BlockTextures";
 		for(BlockTextures t : values()){
 			try{
-				file = new File(WraithavensConquest.assetFolder, t.name);
+				file = new File(textureFolder, t.name);
 				ImageIO.read(file).getRGB(0, 0, textureSize, textureSize, pixelBuffer, 0, textureSize);
 				if(t.clipType==2){
-					file =
-						new File(WraithavensConquest.assetFolder, t.name.substring(0, t.name.length()-4)
-							+"Clip.png");
+					file = new File(textureFolder, t.name.substring(0, t.name.length()-4)+"Clip.png");
 					ImageIO.read(file).getRGB(0, 0, textureSize, textureSize, clipPixelBuffer, 0, textureSize);
 				}
 			}catch(Exception exception){

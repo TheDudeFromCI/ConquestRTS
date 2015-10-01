@@ -35,8 +35,8 @@ public class ShaderProgram{
 			.readFile(geometryShader), ShaderProgram.readFile(fragmentShader));
 	}
 	public ShaderProgram(String name){
-		this(new File(WraithavensConquest.assetFolder, name+".vert"), null, new File(
-			WraithavensConquest.assetFolder, name+".frag"));
+		this(new File(WraithavensConquest.shaderFolder, name+".vert"), null, new File(
+			WraithavensConquest.shaderFolder, name+".frag"));
 	}
 	private ShaderProgram(String vertexShader, String geometryShader, String fragmentShader){
 		// Vertex Shader

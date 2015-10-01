@@ -1,6 +1,5 @@
 package com.wraithavens.conquest.SinglePlayer.Entities.Grass;
 
-import java.io.File;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
@@ -10,7 +9,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL33;
-import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
@@ -63,9 +61,7 @@ public class Grasslands{
 		// ---
 		// Load the shader.
 		// ---
-		shader =
-			new ShaderProgram(new File(WraithavensConquest.assetFolder, "Grass.vert"), null, new File(
-				WraithavensConquest.assetFolder, "Grass.frag"));
+		shader = new ShaderProgram("Grass");
 		shader.bind();
 		shader.loadUniforms("texture", "time");
 		shader.setUniform1I(0, 0);

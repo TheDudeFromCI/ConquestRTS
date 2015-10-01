@@ -40,9 +40,7 @@ public class LandscapeWorld{
 		this.entityDatabase = entityDatabase;
 		this.machine = machine;
 		this.particleBatch = particleBatch;
-		shader =
-			new ShaderProgram(new File(WraithavensConquest.assetFolder, "Landscape.vert"), null, new File(
-				WraithavensConquest.assetFolder, "Landscape.frag"));
+		shader = new ShaderProgram("Landscape");
 		shader.bind();
 		shader.loadUniforms("colorMap", "offset", "texture", "clipmap");
 		shader.setUniform1I(0, 0);

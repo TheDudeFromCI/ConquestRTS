@@ -1,10 +1,8 @@
 package com.wraithavens.conquest.SinglePlayer.Entities;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import org.lwjgl.opengl.GL20;
-import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
@@ -30,9 +28,7 @@ public class EntityDatabase{
 	private double time;
 	public EntityDatabase(Camera camera){
 		this.camera = camera;
-		shader =
-			new ShaderProgram(new File(WraithavensConquest.assetFolder, "ModelShader.vert"), null, new File(
-				WraithavensConquest.assetFolder, "ModelShader.frag"));
+		shader = new ShaderProgram("ModelShader");
 		shader.bind();
 		shader.loadUniforms("uni_swayAmount", "uni_meshCenter", "uni_time", "uni_colorBlended",
 			"uni_textureOffset", "uni_textureSize", "uni_rotScale");
