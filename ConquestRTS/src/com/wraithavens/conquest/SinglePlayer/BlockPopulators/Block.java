@@ -2,8 +2,8 @@ package com.wraithavens.conquest.SinglePlayer.BlockPopulators;
 
 public enum Block{
 	Grass(new BlockTextures[]{
-		BlockTextures.Dirt, BlockTextures.Dirt, BlockTextures.Grass, BlockTextures.Dirt, BlockTextures.Dirt,
-		BlockTextures.Dirt
+		BlockTextures.SideDirt, BlockTextures.SideDirt, BlockTextures.Grass, BlockTextures.Dirt,
+		BlockTextures.SideDirt, BlockTextures.SideDirt
 	});
 	final int texture0;
 	final int texture1;

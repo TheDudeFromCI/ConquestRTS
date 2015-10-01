@@ -11,5 +11,6 @@ const float LOG2 = 1.442695f;
 
 void main(){
 	float z = (gl_FragCoord.z/gl_FragCoord.w)/5000.0f;
-	gl_FragColor = vec4(mix(fogColor, mix(vec3(1.0f), texture(colorMap, floor(pos)*textureScale).rgb, uv.w)*texture(texture, uv.xyz).rgb*edgeShade, clamp(exp2(-fogDensity*fogDensity*z*z*LOG2), 0.0, 1.0)), 1.0f);
+	vec4 tex = texture(texture, uv.xyz);
+	gl_FragColor = vec4(mix(fogColor, mix(vec3(1.0f), texture(colorMap, floor(pos)*textureScale).rgb, tex.w)*tex.rgb*edgeShade, clamp(exp2(-fogDensity*fogDensity*z*z*LOG2), 0.0, 1.0)), 1.0f);
 }

@@ -44,9 +44,10 @@ public class LandscapeWorld{
 			new ShaderProgram(new File(WraithavensConquest.assetFolder, "Landscape.vert"), null, new File(
 				WraithavensConquest.assetFolder, "Landscape.frag"));
 		shader.bind();
-		shader.loadUniforms("colorMap", "offset", "texture");
+		shader.loadUniforms("colorMap", "offset", "texture", "clipmap");
 		shader.setUniform1I(0, 0);
 		shader.setUniform1I(2, 1);
+		shader.setUniform1I(3, 2);
 		ShadeAttribLocation = shader.getAttributeLocation("shade");
 		UvAttribLocation = shader.getAttributeLocation("att_uv");
 		GL20.glEnableVertexAttribArray(ShadeAttribLocation);
@@ -157,7 +158,7 @@ public class LandscapeWorld{
 						continue clearer;
 				for(a = 0; a<biomeParticleEngines.size(); a++)
 					if(biomeParticleEngines.get(a).getX()==ch.getX()
-						&&biomeParticleEngines.get(a).getZ()==ch.getZ()){
+					&&biomeParticleEngines.get(a).getZ()==ch.getZ()){
 						biomeParticleEngines.remove(a).dispose();
 						continue clearer;
 					}

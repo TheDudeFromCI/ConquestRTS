@@ -12,8 +12,9 @@ import org.lwjgl.opengl.GL30;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 
 public enum BlockTextures{
-	Grass("Grass.png"),
-	Dirt("Dirt.png");
+	Grass("Grass.png", 0),
+	Dirt("Dirt.png", 1),
+	SideDirt("SideDirt.png", 2);
 	public static void bind(){
 		GL13.glActiveTexture(GL13.GL_TEXTURE1);
 		GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, textureId);
@@ -23,16 +24,22 @@ public enum BlockTextures{
 		GL11.glDeleteTextures(textureId);
 	}
 	public static void load(){
-		textureId = GL11.glGenTextures();
-		GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, textureId);
 		int textureCount = values().length;
-		final int textureSize = 16;
-		ByteBuffer pixels = BufferUtils.createByteBuffer(textureSize*textureSize*textureCount*3);
+		final int textureSize = 32;
+		ByteBuffer pixels = BufferUtils.createByteBuffer(textureSize*textureSize*textureCount*4);
 		int[] pixelBuffer = new int[textureSize*textureSize];
+		int[] clipPixelBuffer = new int[textureSize*textureSize];
+		File file;
 		for(BlockTextures t : values()){
 			try{
-				File file = new File(WraithavensConquest.assetFolder, t.name);
+				file = new File(WraithavensConquest.assetFolder, t.name);
 				ImageIO.read(file).getRGB(0, 0, textureSize, textureSize, pixelBuffer, 0, textureSize);
+				if(t.clipType==2){
+					file =
+						new File(WraithavensConquest.assetFolder, t.name.substring(0, t.name.length()-4)
+							+"Clip.png");
+					ImageIO.read(file).getRGB(0, 0, textureSize, textureSize, clipPixelBuffer, 0, textureSize);
+				}
 			}catch(Exception exception){
 				exception.printStackTrace();
 				throw new RuntimeException();
@@ -44,26 +51,42 @@ public enum BlockTextures{
 					pixels.put((byte)(p>>16&0xFF));
 					pixels.put((byte)(p>>8&0xFF));
 					pixels.put((byte)(p&0xFF));
+					if(t.clipType==0)
+						pixels.put((byte)255);
+					else if(t.clipType==1)
+						pixels.put((byte)0);
+					else
+						pixels.put((byte)(clipPixelBuffer[y*textureSize+x]>>16&0xFF));
 				}
 			}
 		}
 		pixels.flip();
-		GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
-		GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
-		GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL14.GL_GENERATE_MIPMAP, GL11.GL_TRUE);
-		GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
-		GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-		// GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY,
-		// GL11.GL_TEXTURE_MIN_FILTER,
-		// GL11.GL_NEAREST_MIPMAP_NEAREST);
-		// GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY,
-		// GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-		GL12.glTexImage3D(GL30.GL_TEXTURE_2D_ARRAY, 0, GL11.GL_RGBA8, textureSize, textureSize, textureCount, 0,
-			GL11.GL_RGB, GL11.GL_UNSIGNED_BYTE, pixels);
+		{
+			// ---
+			// Build texture.
+			// ---
+			textureId = GL11.glGenTextures();
+			GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, textureId);
+			GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+			GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
+			GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL14.GL_GENERATE_MIPMAP, GL11.GL_TRUE);
+			// GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY,
+			// GL11.GL_TEXTURE_MIN_FILTER,
+			// GL11.GL_LINEAR_MIPMAP_LINEAR);
+			// GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY,
+			// GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+			GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MIN_FILTER,
+				GL11.GL_NEAREST_MIPMAP_NEAREST);
+			GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+			GL12.glTexImage3D(GL30.GL_TEXTURE_2D_ARRAY, 0, GL11.GL_RGBA8, textureSize, textureSize,
+				textureCount, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, pixels);
+		}
 	}
 	private static int textureId;
 	private final String name;
-	private BlockTextures(String name){
+	private final int clipType;
+	private BlockTextures(String name, int clipType){
 		this.name = name;
+		this.clipType = clipType;
 	}
 }
