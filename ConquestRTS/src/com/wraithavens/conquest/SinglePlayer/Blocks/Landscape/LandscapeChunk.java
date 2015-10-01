@@ -100,7 +100,7 @@ public class LandscapeChunk{
 				locationCount = bin.getInt();
 				for(a = 0; a<locationCount; a++)
 					locations.add(new GrassTransform(bin.getFloat(), bin.getFloat(), bin.getFloat(), bin
-						.getFloat(), bin.getFloat()));
+						.getFloat(), bin.getFloat(), bin.getFloat(), bin.getFloat(), bin.getFloat()));
 				grassPatches[i] = new GrassPatch(type, locations, x, z);
 				grassLands.addPatch(grassPatches[i]);
 			}

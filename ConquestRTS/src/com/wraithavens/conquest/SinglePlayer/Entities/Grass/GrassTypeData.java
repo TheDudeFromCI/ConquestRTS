@@ -21,7 +21,7 @@ class GrassTypeData{
 	}
 	FloatBuffer allocateData(int count){
 		this.count = count;
-		count *= 5;
+		count *= 8;
 		if(data==null||data.capacity()<count)
 			data = BufferUtils.createFloatBuffer(count);
 		data.clear();

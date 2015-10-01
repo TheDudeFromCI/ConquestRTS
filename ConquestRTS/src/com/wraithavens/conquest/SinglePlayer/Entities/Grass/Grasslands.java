@@ -23,14 +23,11 @@ public class Grasslands{
 	private final int SwayAttribLocation;
 	private final int OffsetAttribLocation;
 	private final int RotScaleAttribLocation;
+	private final int ColorAttribLocation;
 	private final GrassBook grassBook;
 	private final HashMap<GrassPatch,Boolean> que = new HashMap();
 	private double time;
-	// private final Camera camera;
-	// private int lastX;
-	// private int lastZ;
 	public Grasslands(LandscapeWorld landscape, Camera camera){
-		// this.camera = camera;
 		vbo = GL15.glGenBuffers();
 		ibo = GL15.glGenBuffers();
 		{
@@ -75,14 +72,13 @@ public class Grasslands{
 		SwayAttribLocation = shader.getAttributeLocation("att_swayTolerance");
 		OffsetAttribLocation = shader.getAttributeLocation("att_offset");
 		RotScaleAttribLocation = shader.getAttributeLocation("att_rotScale");
+		ColorAttribLocation = shader.getAttributeLocation("att_color");
 		GL20.glEnableVertexAttribArray(SwayAttribLocation);
 		GL20.glEnableVertexAttribArray(OffsetAttribLocation);
 		GL20.glEnableVertexAttribArray(RotScaleAttribLocation);
-		grassBook = new GrassBook(OffsetAttribLocation, RotScaleAttribLocation, patches, landscape, camera);
-		// lastX = Algorithms.groupLocation((int)camera.x,
-		// LandscapeChunk.LandscapeSize);
-		// lastZ = Algorithms.groupLocation((int)camera.z,
-		// LandscapeChunk.LandscapeSize);
+		grassBook =
+			new GrassBook(OffsetAttribLocation, RotScaleAttribLocation, ColorAttribLocation, patches, landscape,
+				camera);
 	}
 	public void addPatch(GrassPatch patch){
 		que.put(patch, true);
@@ -100,6 +96,7 @@ public class Grasslands{
 		shader.bind();
 		GL33.glVertexAttribDivisor(OffsetAttribLocation, 1);
 		GL33.glVertexAttribDivisor(RotScaleAttribLocation, 1);
+		GL33.glVertexAttribDivisor(ColorAttribLocation, 1);
 		GL11.glEnable(GL11.GL_ALPHA_TEST);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
@@ -112,11 +109,10 @@ public class Grasslands{
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		GL33.glVertexAttribDivisor(OffsetAttribLocation, 0);
 		GL33.glVertexAttribDivisor(RotScaleAttribLocation, 0);
+		GL33.glVertexAttribDivisor(ColorAttribLocation, 0);
 	}
 	public void update(double time){
 		this.time = time;
-		// TODO Make grass stream like particles, and only render what's current
-		// in view.
 		if(que.isEmpty()){
 			checkCameraPos();
 			return;
@@ -136,14 +132,6 @@ public class Grasslands{
 		grassBook.updateVisibility();
 	}
 	private void checkCameraPos(){
-		// int x = Algorithms.groupLocation((int)camera.x,
-		// LandscapeChunk.LandscapeSize);
-		// int z = Algorithms.groupLocation((int)camera.z,
-		// LandscapeChunk.LandscapeSize);
-		// if(x!=lastX||z!=lastZ){
-		// lastX = x;
-		// lastZ = z;
 		grassBook.updateVisibility();
-		// }
 	}
 }

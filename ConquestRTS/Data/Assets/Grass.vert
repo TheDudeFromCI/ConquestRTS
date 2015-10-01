@@ -2,7 +2,9 @@ uniform float time;
 in float att_swayTolerance;
 in vec3 att_offset;
 in vec2 att_rotScale;
+in vec3 att_color;
 out vec2 uv;
+out vec3 color;
 
 const float swayStrength = 0.15f;
 
@@ -19,4 +21,5 @@ void main(){
 	pos.z += swayLocations.y;
 	gl_Position = gl_ModelViewProjectionMatrix*vec4(att_offset+pos, 1.0f);
 	uv = gl_MultiTexCoord0.xy;
+	color = att_color;
 }

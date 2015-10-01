@@ -77,19 +77,16 @@ public class SecondaryLoop implements Runnable{
 						return EntityType.getVariation(EntityType.VallaFlower, (int)(random.nextFloat()*4));
 					if(random.nextFloat()<0.005)
 						return EntityType.values()[EntityType.TayleaMeadowRock1.ordinal()
-						                           +(int)(random.nextFloat()*3)];
-					return EntityType.values()[EntityType.TayleaMeadowGrass0.ordinal()
-					                           +(int)(random.nextFloat()*8)];
+							+(int)(random.nextFloat()*3)];
+					return EntityType.values()[EntityType.Grass.ordinal()+(int)(random.nextFloat()*8)];
 				case ArcstoneHills:
-					return EntityType.values()[EntityType.ArcstoneHillsGrass0.ordinal()
-					                           +(int)(random.nextFloat()*8)];
+					return EntityType.values()[EntityType.Grass.ordinal()+(int)(random.nextFloat()*8)];
 				case AesiaFields:
 					if(random.nextFloat()<0.03)
 						return EntityType.getVariation(EntityType.AesiaStems, (int)(random.nextFloat()*24));
 					if(random.nextFloat()<0.1)
 						return EntityType.getVariation(EntityType.AesiaPedals, (int)(random.nextFloat()*7));
-					return EntityType.values()[EntityType.AesiaFieldsGrass0.ordinal()
-					                           +(int)(random.nextFloat()*8)];
+					return EntityType.values()[EntityType.Grass.ordinal()+(int)(random.nextFloat()*8)];
 				default:
 					throw new AssertionError();
 			}
@@ -341,6 +338,9 @@ public class SecondaryLoop implements Runnable{
 		HashMap<EntityType,ArrayList<GrassTransform>> grassLocations = new HashMap();
 		HashMap<EntityType,ArrayList<EntityTransform>> entityLocations = new HashMap();
 		EntityType entity;
+		float humidity;
+		float tempature;
+		Vector3f colorVec = new Vector3f();
 		for(a = 0; a<LandscapeChunk.LandscapeSize; a++)
 			for(b = 0; b<LandscapeChunk.LandscapeSize; b++){
 				// ---
@@ -353,13 +353,16 @@ public class SecondaryLoop implements Runnable{
 				tempA = a+x;
 				tempB = b+z;
 				entity =
-					randomPlant(heightData.getHumidity(tempA, tempB), heightData.getTempature(tempA, tempB),
-						tempA, tempB, machine.getGiantEntitySeed()^100799);
+					randomPlant(humidity = heightData.getHumidity(tempA, tempB),
+						tempature = heightData.getTempature(tempA, tempB), tempA, tempB,
+						machine.getGiantEntitySeed()^100799);
 				if(entity!=null){
 					if(entity.isGrass){
+						WorldNoiseMachine.getBiomeColorAt(humidity, tempature, colorVec);
 						GrassTransform loc =
 							new GrassTransform(tempA+0.5f, heightData.getHeight(tempA, tempB), tempB+0.5f,
-								(float)(Math.random()*Math.PI*2), 2.0f+(float)(Math.random()*0.3f-0.15f));
+								(float)(Math.random()*Math.PI*2), 2.0f+(float)(Math.random()*0.3f-0.15f),
+								colorVec.x, colorVec.y, colorVec.z);
 						if(grassLocations.containsKey(entity))
 							grassLocations.get(entity).add(loc);
 						else{
@@ -414,7 +417,7 @@ public class SecondaryLoop implements Runnable{
 		}
 		for(EntityType type : grassLocations.keySet()){
 			bytes += 8;
-			bytes += grassLocations.get(type).size()*5*4;
+			bytes += grassLocations.get(type).size()*8*4;
 		}
 		// ---
 		// Compile and save.
@@ -464,6 +467,9 @@ public class SecondaryLoop implements Runnable{
 				bin.addFloat(transform.getZ());
 				bin.addFloat(transform.getRotation());
 				bin.addFloat(transform.getScale());
+				bin.addFloat(transform.getRed());
+				bin.addFloat(transform.getGreen());
+				bin.addFloat(transform.getBlue());
 			}
 		}
 		{

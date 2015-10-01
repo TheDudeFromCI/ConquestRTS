@@ -3,14 +3,14 @@ package com.wraithavens.conquest.SinglePlayer.Entities;
 import com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities.GiantEntityGroundHits;
 
 public enum EntityType{
-	TayleaMeadowGrass0("Taylea Meadow Grass.tal_0", true, false, true, false),
-	TayleaMeadowGrass1("Taylea Meadow Grass.tal_1", true, false, true, false),
-	TayleaMeadowGrass2("Taylea Meadow Grass.tal_2", true, false, true, false),
-	TayleaMeadowGrass3("Taylea Meadow Grass.tal_3", true, false, true, false),
-	TayleaMeadowGrass4("Taylea Meadow Grass.tal_4", true, false, true, false),
-	TayleaMeadowGrass5("Taylea Meadow Grass.tal_5", true, false, true, false),
-	TayleaMeadowGrass6("Taylea Meadow Grass.tal_6", true, false, true, false),
-	TayleaMeadowGrass7("Taylea Meadow Grass.tal_7", true, false, true, false),
+	Grass("Grass0.png", true, false, true, false),
+	Grass1("Grass1.png", true, false, true, false),
+	Grass2("Grass2.png", true, false, true, false),
+	Grass3("Grass3.png", true, false, true, false),
+	Grass4("Grass4.png", true, false, true, false),
+	Grass5("Grass5.png", true, false, true, false),
+	Grass6("Grass6.png", true, false, true, false),
+	Grass7("Grass7.png", true, false, true, false),
 	ArcstoneHillsGrass0("Arcstone Hills Grass.tal_0", true, false, true, false),
 	ArcstoneHillsGrass1("Arcstone Hills Grass.tal_1", true, false, true, false),
 	ArcstoneHillsGrass2("Arcstone Hills Grass.tal_2", true, false, true, false),
