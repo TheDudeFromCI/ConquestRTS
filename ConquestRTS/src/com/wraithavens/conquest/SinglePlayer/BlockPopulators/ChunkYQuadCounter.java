@@ -60,8 +60,7 @@ public class ChunkYQuadCounter implements QuadCounter{
 			TextureCoords[6] = h;
 			TextureCoords[7] = 0;
 		}
-		listener.addQuad(new Quad(QuadPoints, TextureCoords, texture, side, texture==BlockTextures.Grass
-			.ordinal()));
+		listener.addQuad(new Quad(QuadPoints, TextureCoords, texture, side));
 	}
 	public void setup(int startX, int startY, int startZ, int y, int side, QuadListener listener, Block block){
 		this.y = y;
