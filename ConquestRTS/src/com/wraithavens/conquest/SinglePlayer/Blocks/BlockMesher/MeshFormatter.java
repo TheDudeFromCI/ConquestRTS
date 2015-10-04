@@ -87,10 +87,10 @@ public class MeshFormatter{
 			float sz = y;
 			float by = sy+w;
 			float bz = sz+h;
-			short v1 = (short)vertexStorage.place(sx, sy, sz, shade, w, h, currentTextureId);
-			short v2 = (short)vertexStorage.place(sx, sy, bz, shade, 0, h, currentTextureId);
+			short v1 = (short)vertexStorage.place(sx, sy, sz, shade, h, w, currentTextureId);
+			short v2 = (short)vertexStorage.place(sx, sy, bz, shade, 0, w, currentTextureId);
 			short v3 = (short)vertexStorage.place(sx, by, bz, shade, 0, 0, currentTextureId);
-			short v4 = (short)vertexStorage.place(sx, by, sz, shade, w, 0, currentTextureId);
+			short v4 = (short)vertexStorage.place(sx, by, sz, shade, h, 0, currentTextureId);
 			indexStorage.place(v1);
 			indexStorage.place(v2);
 			indexStorage.place(v3);
@@ -147,15 +147,15 @@ public class MeshFormatter{
 			indexStorage.place(v1);
 			indexStorage.place(v3);
 			indexStorage.place(v4);
-		}else{
+		}else if(j==5){
 			float sx = x;
 			float sy = y;
 			float sz = o;
 			float bx = sx+w;
 			float by = sy+h;
-			short v1 = (short)vertexStorage.place(sx, sy, sz, shade, w, h, currentTextureId);
+			short v1 = (short)vertexStorage.place(sx, sy, sz, shade, 0, 0, currentTextureId);
 			short v2 = (short)vertexStorage.place(sx, by, sz, shade, 0, h, currentTextureId);
-			short v3 = (short)vertexStorage.place(bx, by, sz, shade, 0, 0, currentTextureId);
+			short v3 = (short)vertexStorage.place(bx, by, sz, shade, w, h, currentTextureId);
 			short v4 = (short)vertexStorage.place(bx, sy, sz, shade, w, 0, currentTextureId);
 			indexStorage.place(v1);
 			indexStorage.place(v2);
@@ -163,7 +163,8 @@ public class MeshFormatter{
 			indexStorage.place(v1);
 			indexStorage.place(v3);
 			indexStorage.place(v4);
-		}
+		}else
+			throw new AssertionError();
 	}
 	private void countQuads(int quadCount, int j, int offset){
 		int x, y, w, h, o;
