@@ -74,7 +74,7 @@ public class SecondaryLoop implements Runnable{
 						return EntityType.getVariation(EntityType.VallaFlower, (int)(random.nextFloat()*4));
 					if(random.nextFloat()<0.005)
 						return EntityType.values()[EntityType.TayleaMeadowRock1.ordinal()
-						                           +(int)(random.nextFloat()*3)];
+							+(int)(random.nextFloat()*3)];
 					break;
 				case ArcstoneHills:
 					break;
@@ -216,15 +216,15 @@ public class SecondaryLoop implements Runnable{
 					tempB = b+z;
 					type =
 						randomPlant(humidity = heightData.getHumidity(tempA, tempB),
-						tempature = heightData.getTempature(tempA, tempB), tempA, tempB,
-						machine.getGiantEntitySeed()^100799);
+							tempature = heightData.getTempature(tempA, tempB), tempA, tempB,
+							machine.getGiantEntitySeed()^100799);
 					if(type==null)
 						continue;
 					if(type.isGrass){
 						WorldNoiseMachine.getBiomeColorAt(humidity, tempature, colorVec);
 						grassLocations.add(new GrassDataRaw(type.ordinal(), tempA+0.5f, heightData.getHeight(
 							tempA, tempB), tempB+0.5f, (float)(Math.random()*Math.PI*2), 2.0f+(float)(Math
-								.random()*0.3f-0.15f), colorVec.x, colorVec.y, colorVec.z));
+							.random()*0.3f-0.15f), colorVec.x, colorVec.y, colorVec.z));
 						continue;
 					}
 					entityLocations.add(new EntityDataRaw(type.ordinal(), tempA+0.5f, heightData.getHeight(

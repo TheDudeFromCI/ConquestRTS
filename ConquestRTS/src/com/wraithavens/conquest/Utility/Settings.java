@@ -4,6 +4,7 @@ import java.io.File;
 import com.wraithavens.conquest.Launcher.MainLoop;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.SinglePlayer.SinglePlayerGame;
+import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.SecondaryLoop;
 
 public class Settings{
 	/**
@@ -163,8 +164,10 @@ public class Settings{
 		}
 		if(request.getChunkLoadDistance()!=chunkLoadDistance){
 			chunkLoadDistance = request.getChunkLoadDistance();
-			if(SinglePlayerGame.INSTANCE!=null)
-				SinglePlayerGame.INSTANCE.getLandscape().getLoadingLoop().setMaxLoadDistance(chunkLoadDistance);
+			if(SinglePlayerGame.INSTANCE!=null){
+				SecondaryLoop loop = SinglePlayerGame.INSTANCE.getLandscape().getLoadingLoop();
+				loop.setMaxLoadDistance(chunkLoadDistance);
+			}
 			changed = true;
 		}
 		if(request.getGeneratorSleeping()!=generatorSleeping){

@@ -34,37 +34,16 @@ public class Entity{
 	public final void dispose(){
 		mesh.removeReference();
 	}
-	public float getScale(){
-		return scale;
-	}
-	public float getX(){
-		return position.x;
-	}
-	public float getY(){
-		return position.y;
-	}
-	public float getYaw(){
-		return yaw;
-	}
-	public float getZ(){
-		return position.z;
-	}
-	public final boolean isColorBlended(){
-		return mesh.getType().colorBlended;
-	}
-	public void moveTo(float x, float y, float z){
+	public final void moveTo(float x, float y, float z){
 		position.set(x, y, z);
 	}
-	public void render(){
-		mesh.drawStatic();
-	}
-	public void scaleTo(float scale){
+	public final void scaleTo(float scale){
 		this.scale = scale;
 	}
-	public void setYaw(float yaw){
+	public final void setYaw(float yaw){
 		this.yaw = yaw;
 	}
-	public void updateAABB(){
+	public final void updateAABB(){
 		tempMin.set(mesh.getAabbMin());
 		tempMax.set(mesh.getAabbMax());
 		double sin = Math.sin(yaw);
@@ -74,7 +53,7 @@ public class Entity{
 		updateMinMax();
 		aabb.calculate(tempMin, tempMax, scale, position);
 	}
-	boolean canRender(LandscapeWorld landscape, Camera camera){
+	final boolean canRender(LandscapeWorld landscape, Camera camera){
 		return (mesh.getType().viewDistance==0||camera.distanceSquared(position.x, position.y, position.z)<mesh
 			.getType().viewDistance)
 			&&landscape.isWithinView((int)position.x, (int)position.z)
@@ -82,6 +61,27 @@ public class Entity{
 	}
 	final EntityMesh getMesh(){
 		return mesh;
+	}
+	float getScale(){
+		return scale;
+	}
+	float getX(){
+		return position.x;
+	}
+	float getY(){
+		return position.y;
+	}
+	float getYaw(){
+		return yaw;
+	}
+	float getZ(){
+		return position.z;
+	}
+	final boolean isColorBlended(){
+		return mesh.getType().colorBlended;
+	}
+	void render(){
+		mesh.drawStatic();
 	}
 	final boolean sways(){
 		return mesh.getType().sways;
