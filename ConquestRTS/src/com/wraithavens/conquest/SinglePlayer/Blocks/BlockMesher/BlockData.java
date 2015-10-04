@@ -3,15 +3,19 @@ package com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Block;
 
 public class BlockData{
-	public static final byte Air = Byte.MAX_VALUE;
+	public static final byte Air = -1;
 	private final byte[] blocks = new byte[64*64*64];
 	private final BlockClipData clipData;
 	private final MeshFormatter meshFormatter;
 	public BlockData(MeshFormatter meshFormatter){
 		this.meshFormatter = meshFormatter;
+		clipData = new BlockClipData();
+		clear();
+	}
+	public void clear(){
 		for(int i = 0; i<blocks.length; i++)
 			blocks[i] = Air;
-		clipData = new BlockClipData();
+		clipData.clear();
 	}
 	public byte getBlock(int x, int y, int z){
 		return blocks[x*64*64+y*64+z];
@@ -83,7 +87,10 @@ public class BlockData{
 		return meshFormatter.extract();
 	}
 	public void setBlock(int x, int y, int z, byte b){
-		blocks[x*64*64+y*64+z] = b;
+		if(x>=0&&x<64&&y>=0&&y<64&&z>=0&&z<64)
+			blocks[x*64*64+y*64+z] = b;
+		else
+			clipData.setHasBlockWeak(x, y, z, b!=Air);
 	}
 	private boolean hasAdvancedBlock(int x, int y, int z, int j){
 		switch(j){

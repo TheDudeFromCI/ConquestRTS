@@ -17,7 +17,7 @@ public class VertexStorage{
 	public int place(float x, float y, float z, float shade, float tx, float ty, float tz){
 		for(int i = 0; i<size; i += 7)
 			if(vertices[i]==x&&vertices[i+1]==y&&vertices[i+2]==z&&vertices[i+3]==shade&&vertices[i+4]==tx
-				&&vertices[i+5]==ty&&vertices[i+6]==tz)
+			&&vertices[i+5]==ty&&vertices[i+6]==tz)
 				return i;
 		if(size==vertices.length)
 			vertices = Arrays.copyOf(vertices, vertices.length+700);
@@ -30,7 +30,7 @@ public class VertexStorage{
 		vertices[size+6] = tz;
 		int originalSize = size;
 		size += 7;
-		return originalSize;
+		return originalSize/7;
 	}
 	public int size(){
 		return size;

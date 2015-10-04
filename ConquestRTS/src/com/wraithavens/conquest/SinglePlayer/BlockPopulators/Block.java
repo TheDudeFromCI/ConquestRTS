@@ -1,10 +1,13 @@
 package com.wraithavens.conquest.SinglePlayer.BlockPopulators;
 
-
 public enum Block{
 	Grass(new BlockTextures[]{
-		BlockTextures.SideDirt, BlockTextures.SideDirt, BlockTextures.Grass, BlockTextures.Dirt,
-		BlockTextures.SideDirt, BlockTextures.SideDirt
+		BlockTextures.Grass, BlockTextures.Grass, BlockTextures.Grass, BlockTextures.Grass, BlockTextures.Grass,
+		BlockTextures.Grass
+	}),
+	Dirt(new BlockTextures[]{
+		BlockTextures.Dirt, BlockTextures.Dirt, BlockTextures.Dirt, BlockTextures.Dirt, BlockTextures.Dirt,
+		BlockTextures.Dirt
 	});
 	final int texture0;
 	final int texture1;
@@ -37,5 +40,8 @@ public enum Block{
 			default:
 				throw new AssertionError();
 		}
+	}
+	public byte id(){
+		return (byte)ordinal();
 	}
 }

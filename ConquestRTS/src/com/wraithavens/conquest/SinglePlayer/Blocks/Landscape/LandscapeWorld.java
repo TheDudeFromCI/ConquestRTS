@@ -82,7 +82,7 @@ public class LandscapeWorld{
 		for(LandscapeChunk c : chunks)
 			if(isWithinView(c, WraithavensConquest.Settings.getChunkRenderDistance())
 				&&camera.cubeInView(c.getX(), c.getY(), c.getZ(), LandscapeChunk.LandscapeSize)){
-				shader.setUniform2f(1, c.getX(), c.getZ());
+				shader.setUniform3f(1, c.getX(), c.getY(), c.getZ());
 				c.render();
 			}
 	}
@@ -156,7 +156,7 @@ public class LandscapeWorld{
 						continue clearer;
 				for(a = 0; a<biomeParticleEngines.size(); a++)
 					if(biomeParticleEngines.get(a).getX()==ch.getX()
-					&&biomeParticleEngines.get(a).getZ()==ch.getZ()){
+						&&biomeParticleEngines.get(a).getZ()==ch.getZ()){
 						biomeParticleEngines.remove(a).dispose();
 						continue clearer;
 					}

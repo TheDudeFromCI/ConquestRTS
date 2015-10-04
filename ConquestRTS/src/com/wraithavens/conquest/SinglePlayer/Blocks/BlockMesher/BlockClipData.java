@@ -35,6 +35,10 @@ public class BlockClipData{
 		return -1;
 	}
 	private final boolean[] blocks = new boolean[64*64*6];
+	public void clear(){
+		for(int i = 0; i<blocks.length; i++)
+			blocks[i] = false;
+	}
 	public boolean hasBlock(int x, int y, int z){
 		return blocks[getIndex(x, y, z)];
 	}

@@ -63,7 +63,7 @@ public class MeshFormatter{
 		return typeList.size();
 	}
 	private void addQuad(int x, int y, int w, int h, int j, int o){
-		float shade = (byte)(j==2?1:j==3?130/255f:j==0||j==1?200/255f:180/255f);
+		float shade = j==2?1:j==3?130/255f:j==0||j==1?200/255f:180/255f;
 		if(j==0){
 			float sx = o;
 			float sy = x;
@@ -72,9 +72,9 @@ public class MeshFormatter{
 			float by = sy+w;
 			float bz = sz+h;
 			short v1 = (short)vertexStorage.place(bx, by, bz, shade, 0, 0, currentTextureId);
-			short v2 = (short)vertexStorage.place(bx, sy, bz, shade, 0, h, currentTextureId);
-			short v3 = (short)vertexStorage.place(bx, sy, sz, shade, w, h, currentTextureId);
-			short v4 = (short)vertexStorage.place(bx, by, sz, shade, w, 0, currentTextureId);
+			short v2 = (short)vertexStorage.place(bx, sy, bz, shade, 0, w, currentTextureId);
+			short v3 = (short)vertexStorage.place(bx, sy, sz, shade, h, w, currentTextureId);
+			short v4 = (short)vertexStorage.place(bx, by, sz, shade, h, 0, currentTextureId);
 			indexStorage.place(v1);
 			indexStorage.place(v2);
 			indexStorage.place(v3);
@@ -132,15 +132,15 @@ public class MeshFormatter{
 			indexStorage.place(v4);
 		}else if(j==4){
 			float sx = x;
-			float sy = o;
-			float sz = y;
+			float sy = y;
+			float sz = o;
 			float bx = sx+w;
-			float by = sy+1;
-			float bz = sz+h;
+			float by = sy+h;
+			float bz = sz+1;
 			short v1 = (short)vertexStorage.place(bx, by, bz, shade, 0, 0, currentTextureId);
-			short v2 = (short)vertexStorage.place(sx, by, bz, shade, 0, h, currentTextureId);
-			short v3 = (short)vertexStorage.place(sx, sy, bz, shade, w, h, currentTextureId);
-			short v4 = (short)vertexStorage.place(bx, sy, bz, shade, w, 0, currentTextureId);
+			short v2 = (short)vertexStorage.place(sx, by, bz, shade, 0, w, currentTextureId);
+			short v3 = (short)vertexStorage.place(sx, sy, bz, shade, h, w, currentTextureId);
+			short v4 = (short)vertexStorage.place(bx, sy, bz, shade, h, 0, currentTextureId);
 			indexStorage.place(v1);
 			indexStorage.place(v2);
 			indexStorage.place(v3);
@@ -149,10 +149,10 @@ public class MeshFormatter{
 			indexStorage.place(v4);
 		}else{
 			float sx = x;
-			float sy = o;
-			float sz = y;
+			float sy = y;
+			float sz = o;
 			float bx = sx+w;
-			float by = sy+1;
+			float by = sy+h;
 			short v1 = (short)vertexStorage.place(sx, sy, sz, shade, w, h, currentTextureId);
 			short v2 = (short)vertexStorage.place(sx, by, sz, shade, 0, h, currentTextureId);
 			short v3 = (short)vertexStorage.place(bx, by, sz, shade, 0, 0, currentTextureId);
@@ -193,7 +193,7 @@ public class MeshFormatter{
 	}
 	private int optimize(){
 		if(basicState)
-			return optimizeXStrong(storage);
+			return optimizeSimpleXStrong();
 		int x, y;
 		for(x = 0; x<64; x++)
 			for(y = 0; y<64; y++)
@@ -210,6 +210,73 @@ public class MeshFormatter{
 			for(y = 0; y<64; y++)
 				storage[x][y] = temp[x][y];
 		return yS;
+	}
+	private int optimizeSimpleXStrong(){
+		int x, y, t, q;
+		int w = -1;
+		int total = 0;
+		for(x = 0; x<64; x++)
+			for(y = 0; y<64; y++)
+				storage[x][y] = -1;
+		for(y = 0; y<64; y++){
+			w = -1;
+			for(x = 0; x<64; x++){
+				if(quads[x][y]!=1){
+					w = -1;
+					continue;
+				}
+				if(w!=1){
+					w = total;
+					total++;
+				}
+				storage[x][y] = w;
+			}
+		}
+		for(y = 0; y<64-1; y++){
+			w = 0;
+			for(x = 0; x<64; x++){
+				if(quads[x][y]!=1){
+					if(w>0){
+						q = 0;
+						if(quads[x][y+1]!=1&&(x==w||quads[x-w-1][y+1]!=1)){
+							for(t = x-w; t<x; t++){
+								if(quads[t][y+1]!=1)
+									break;
+								q++;
+							}
+							if(q==w)
+								for(t = x-w; t<x; t++)
+									storage[t][y+1] = storage[t][y];
+						}
+						w = 0;
+					}
+					continue;
+				}
+				w++;
+			}
+			if(w>0){
+				q = 0;
+				if(x==w||quads[x-w-1][y+1]!=1){
+					for(t = x-w; t<x; t++){
+						if(quads[t][y+1]!=1)
+							break;
+						q++;
+					}
+					if(q==w)
+						for(t = x-w; t<x; t++)
+							storage[t][y+1] = storage[t][y];
+				}
+			}
+		}
+		for(x = 0; x<64; x++)
+			for(y = 0; y<64; y++)
+				if(storage[x][y]>-1&&!used.contains(storage[x][y]))
+					used.add(storage[x][y]);
+		for(x = 0; x<64; x++)
+			for(y = 0; y<64; y++)
+				if(storage[x][y]>-1)
+					storage[x][y] = used.indexOf(storage[x][y]);
+		return used.size();
 	}
 	private int optimizeXStrong(int[][] storage){
 		int x, y, t, q;
