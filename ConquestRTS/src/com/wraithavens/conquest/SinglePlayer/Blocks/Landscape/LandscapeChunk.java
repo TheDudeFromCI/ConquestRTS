@@ -12,7 +12,9 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.SinglePlayer.Entities.Entity;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
+import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassPatch;
+import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassTransform;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
@@ -25,7 +27,7 @@ public class LandscapeChunk{
 	private final int ibo;
 	private final int textureId;
 	private final int indexCount;
-	private final ArrayList<Entity> plantLife;
+	private final Entity[] plantLife;
 	private final GrassPatch[] grassPatches;
 	private final EntityDatabase entityDatabase;
 	private final Grasslands grassLands;
@@ -38,7 +40,6 @@ public class LandscapeChunk{
 		vbo = GL15.glGenBuffers();
 		ibo = GL15.glGenBuffers();
 		textureId = GL11.glGenTextures();
-		plantLife = new ArrayList();
 		{
 			// ---
 			// Load/Parse binary file.
@@ -47,10 +48,9 @@ public class LandscapeChunk{
 			bin.decompress(false);
 			int vertexCount = bin.getInt();
 			indexCount = bin.getInt();
-			@SuppressWarnings("unused")
 			int entityCount = bin.getInt();
-			@SuppressWarnings("unused")
 			int grassCount = bin.getInt();
+			int grassPatchCount = bin.getInt();
 			{
 				// ---
 				// Load mesh data.
@@ -72,14 +72,41 @@ public class LandscapeChunk{
 				// ---
 				// Load entity data.
 				// ---
-				// TODO
+				plantLife = new Entity[entityCount];
+				Entity entity;
+				for(int i = 0; i<entityCount; i++){
+					entity = new Entity(EntityType.values()[bin.getInt()]);
+					entity.moveTo(bin.getFloat(), bin.getFloat(), bin.getFloat());
+					entity.setYaw(bin.getFloat());
+					entity.scaleTo(bin.getFloat());
+					entity.updateAABB();
+					entityDatabase.addEntity(entity);
+					plantLife[i] = entity;
+				}
 			}
 			{
 				// ---
 				// Load grass data.
 				// ---
-				// TODO
-				grassPatches = new GrassPatch[0];
+				grassPatches = new GrassPatch[grassPatchCount];
+				if(grassPatchCount>0){
+					ArrayList<GrassTransform> locations = null;
+					EntityType lastType = null;
+					EntityType currentType;
+					int p = 0;
+					for(int i = 0; i<grassCount; i++){
+						currentType = EntityType.values()[bin.getInt()];
+						if(currentType!=lastType){
+							locations = new ArrayList();
+							grassPatches[p] = new GrassPatch(currentType, locations, x, z);
+							grassLands.addPatch(grassPatches[p]);
+							p++;
+							lastType = currentType;
+						}
+						locations.add(new GrassTransform(bin.getFloat(), bin.getFloat(), bin.getFloat(), bin
+							.getFloat(), bin.getFloat(), bin.getFloat(), bin.getFloat(), bin.getFloat()));
+					}
+				}
 			}
 			{
 				// ---

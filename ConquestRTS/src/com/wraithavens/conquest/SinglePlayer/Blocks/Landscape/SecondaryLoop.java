@@ -5,12 +5,10 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Random;
 import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Block;
-import com.wraithavens.conquest.SinglePlayer.BlockPopulators.ChunkXQuadCounter;
-import com.wraithavens.conquest.SinglePlayer.BlockPopulators.ChunkYQuadCounter;
-import com.wraithavens.conquest.SinglePlayer.BlockPopulators.ChunkZQuadCounter;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.BlockData;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.MeshFormatter;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.MeshRenderer;
@@ -22,7 +20,6 @@ import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.Utility.Algorithms;
 import com.wraithavens.conquest.Utility.BinaryFile;
-import com.wraithavens.conquest.Utility.QuadList;
 
 public class SecondaryLoop implements Runnable{
 	private static Biome randomBiomeObject(float h, float t){
@@ -106,17 +103,9 @@ public class SecondaryLoop implements Runnable{
 	private final ChunkWorkerQue que;
 	private final WorldNoiseMachine machine;
 	private final int[][] heights = new int[66][66];
-	private final ChunkXQuadCounter xCounter = new ChunkXQuadCounter();
-	private final ChunkYQuadCounter yCounter = new ChunkYQuadCounter();
-	private final ChunkZQuadCounter zCounter = new ChunkZQuadCounter();
-	private final QuadList quadList = new QuadList();
-	private final int[][] quads = new int[64][64];
-	private final int[][] storage = new int[64][64];
-	private final int[][] tempStorage = new int[64][64];
-	private final VertexStorage vertices = new VertexStorage();
-	private final IndexStorage indices = new IndexStorage();
 	private final GiantEntityDictionary dictionary;
 	private final PointGenerator2D giantEntitySpawner;
+	private final ArrayList<float[]> giantEntityListTemp = new ArrayList();
 	private Thread t;
 	private boolean working;
 	SecondaryLoop(Camera camera, WorldNoiseMachine machine, int maxLoadDistance){
@@ -182,6 +171,7 @@ public class SecondaryLoop implements Runnable{
 		ByteBuffer colorData;
 		ArrayList<EntityDataRaw> entityLocations = new ArrayList();
 		ArrayList<GrassDataRaw> grassLocations = new ArrayList();
+		int grassPatchCount = 0;
 		{
 			// ---
 			// Add mesh data.
@@ -197,14 +187,13 @@ public class SecondaryLoop implements Runnable{
 					heights[a][b] =
 						(a==0||b==0||a==65||b==65?machine.getGroundLevel(tempA, b-1+z):heightData.getHeight(
 							tempA, b-1+z))-1;
-					type = Math.random()>=0.5?Block.Grass.id():Block.Dirt.id();
+					type = Block.Grass.id();
 					for(c = 0; c<66; c++)
-						if(c-1+y<heights[a][b])
+						if(c-1+y<=heights[a][b])
 							blockData.setBlock(a-1, c-1, b-1, type);
-					blockData.setBlock(a-1, heights[a][b]+1, b-1, type);
 				}
 			}
-			MeshRenderer render = blockData.mesh(true);
+			MeshRenderer render = blockData.mesh(false);
 			vertexData = render.getVertexData();
 			indexData = render.getIndexData();
 		}
@@ -212,13 +201,59 @@ public class SecondaryLoop implements Runnable{
 			// ---
 			// Add entity data.
 			// ---
-			// TODO
-		}
-		{
-			// ---
-			// Add grass data.
-			// ---
-			// TODO
+			int a, b, h;
+			int tempA, tempB;
+			float humidity;
+			float tempature;
+			EntityType type;
+			Vector3f colorVec = new Vector3f();
+			for(a = 0; a<64; a++)
+				for(b = 0; b<64; b++){
+					h = heights[a+1][b+1];
+					if(h<y||h>=y+64)
+						continue;
+					tempA = a+x;
+					tempB = b+z;
+					type =
+						randomPlant(humidity = heightData.getHumidity(tempA, tempB),
+						tempature = heightData.getTempature(tempA, tempB), tempA, tempB,
+						machine.getGiantEntitySeed()^100799);
+					if(type==null)
+						continue;
+					if(type.isGrass){
+						WorldNoiseMachine.getBiomeColorAt(humidity, tempature, colorVec);
+						grassLocations.add(new GrassDataRaw(type.ordinal(), tempA+0.5f, heightData.getHeight(
+							tempA, tempB), tempB+0.5f, (float)(Math.random()*Math.PI*2), 2.0f+(float)(Math
+								.random()*0.3f-0.15f), colorVec.x, colorVec.y, colorVec.z));
+						continue;
+					}
+					entityLocations.add(new EntityDataRaw(type.ordinal(), tempA+0.5f, heightData.getHeight(
+						tempA, tempB), tempB+0.5f, (float)(Math.random()*Math.PI*2),
+						(float)(Math.random()*0.1f+0.15f)));
+				}
+			giantEntitySpawner.noise(x, z, 64, giantEntityListTemp);
+			int fx, fz;
+			for(float[] f : giantEntityListTemp){
+				fx = (int)Math.floor(f[0]);
+				fz = (int)Math.floor(f[1]);
+				type =
+					dictionary.randomEntity(heightData.getBiome(fx, fz), machine.getGiantEntitySeed()+1, fx, fz);
+				if(type!=null)
+					entityLocations.add(new EntityDataRaw(type.ordinal(), f[0], type.groundHits.getGround(
+						machine, heightData, f[0], f[1], f[2], f[3]), f[1], f[2], f[3]));
+			}
+			giantEntityListTemp.clear();
+			grassLocations.sort(new Comparator<GrassDataRaw>(){
+				public int compare(GrassDataRaw a, GrassDataRaw b){
+					return a.getType()==b.getType()?0:a.getType()<b.getType()?1:-1;
+				}
+			});
+			int lastType = -1;
+			for(GrassDataRaw data : grassLocations)
+				if(data.getType()!=lastType){
+					lastType = data.getType();
+					grassPatchCount++;
+				}
 		}
 		{
 			// ---
@@ -248,13 +283,14 @@ public class SecondaryLoop implements Runnable{
 			byteCount += vertexData.capacity()*4+4;
 			byteCount += indexData.capacity()*2+4;
 			byteCount += entityLocations.size()*6*4+4;
-			byteCount += grassLocations.size()*9*4+4;
+			byteCount += grassLocations.size()*9*4+8;
 			byteCount += 64*64*3;
 			BinaryFile bin = new BinaryFile(byteCount);
 			bin.addInt(vertexData.capacity());
 			bin.addInt(indexData.capacity());
 			bin.addInt(entityLocations.size());
 			bin.addInt(grassLocations.size());
+			bin.addInt(grassPatchCount);
 			while(vertexData.hasRemaining())
 				bin.addFloat(vertexData.get());
 			while(indexData.hasRemaining())
