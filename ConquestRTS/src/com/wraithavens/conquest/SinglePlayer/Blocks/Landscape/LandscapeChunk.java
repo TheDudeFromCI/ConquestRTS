@@ -10,6 +10,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
+import com.wraithavens.conquest.SinglePlayer.Entities.AesiaStem;
 import com.wraithavens.conquest.SinglePlayer.Entities.Entity;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
@@ -74,8 +75,13 @@ class LandscapeChunk{
 				// ---
 				plantLife = new Entity[entityCount];
 				Entity entity;
+				EntityType type;
 				for(int i = 0; i<entityCount; i++){
-					entity = new Entity(EntityType.values()[bin.getInt()]);
+					type = EntityType.values()[bin.getInt()];
+					if(type.isAesiaStemType())
+						entity = new AesiaStem(type);
+					else
+						entity = new Entity(type);
 					entity.moveTo(bin.getFloat(), bin.getFloat(), bin.getFloat());
 					entity.setYaw(bin.getFloat());
 					entity.scaleTo(bin.getFloat());
