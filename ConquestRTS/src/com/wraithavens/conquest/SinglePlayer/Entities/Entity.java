@@ -62,25 +62,25 @@ public class Entity{
 	final EntityMesh getMesh(){
 		return mesh;
 	}
-	float getScale(){
+	final float getScale(){
 		return scale;
 	}
-	float getX(){
+	final float getX(){
 		return position.x;
 	}
-	float getY(){
+	final float getY(){
 		return position.y;
 	}
-	float getYaw(){
+	final float getYaw(){
 		return yaw;
 	}
-	float getZ(){
+	final float getZ(){
 		return position.z;
 	}
 	final boolean isColorBlended(){
 		return mesh.getType().colorBlended;
 	}
-	void render(){
+	final void render(){
 		mesh.drawStatic();
 	}
 	final boolean sways(){

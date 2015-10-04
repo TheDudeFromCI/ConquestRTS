@@ -2,13 +2,13 @@ package com.wraithavens.conquest.SinglePlayer.Particles.ParticleTypes;
 
 import com.wraithavens.conquest.SinglePlayer.Particles.Particle;
 
-public class AesiaStemPedal extends Particle{
+class AesiaStemPedal extends Particle{
 	private final float randomX;
 	private final float randomZ;
 	private final float endY;
 	private final double creationTime;
 	private float speed;
-	public AesiaStemPedal(float x, float y, float z, double time){
+	AesiaStemPedal(float x, float y, float z, double time){
 		creationTime = time;
 		endY = y-6;
 		location.set(x, y, z);
