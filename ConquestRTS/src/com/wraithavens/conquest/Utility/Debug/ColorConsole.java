@@ -32,7 +32,7 @@ public class ColorConsole extends JFrame{
 	private int scroll;
 	private int maximumScroll;
 	private boolean carret = true;
-	private boolean allowInput;
+	private final boolean allowInput;
 	private boolean moveDownRequest;
 	private final ArrayList<ConsoleListener> consoleListeners = new ArrayList<>();
 	public ColorConsole(boolean hasInput){
@@ -153,25 +153,8 @@ public class ColorConsole extends JFrame{
 	public void addConsoleListener(ConsoleListener consoleListener){
 		consoleListeners.add(consoleListener);
 	}
-	public void clear(){
-		text = "";
-		scroll = maximumScroll = 0;
-		repaint();
-	}
-	public void print(String msg){
-		if(msg.startsWith("¥"))
-			text += msg;
-		else
-			text += ChatColor.WHITE+msg;
-		trimBuffer();
-		moveDownRequest = true;
-		repaint();
-	}
 	public void println(String msg){
 		print(msg+"\n");
-	}
-	public void removeConsoleListener(ConsoleListener consoleListener){
-		consoleListeners.remove(consoleListener);
 	}
 	private int getLineCount(){
 		int i = 0;
@@ -179,6 +162,15 @@ public class ColorConsole extends JFrame{
 			if(c=='\n')
 				i++;
 		return i;
+	}
+	private void print(String msg){
+		if(msg.startsWith("¥"))
+			text += msg;
+		else
+			text += ChatColor.WHITE+msg;
+		trimBuffer();
+		moveDownRequest = true;
+		repaint();
 	}
 	private void trimBuffer(){
 		int count = getLineCount();

@@ -3,7 +3,7 @@ package com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Block;
 
 public class BlockData{
-	public static final byte Air = -1;
+	private static final byte Air = -1;
 	private final byte[] blocks = new byte[64*64*64];
 	private final BlockClipData clipData;
 	private final MeshFormatter meshFormatter;
@@ -11,17 +11,6 @@ public class BlockData{
 		this.meshFormatter = meshFormatter;
 		clipData = new BlockClipData();
 		clear();
-	}
-	public void clear(){
-		for(int i = 0; i<blocks.length; i++)
-			blocks[i] = Air;
-		clipData.clear();
-	}
-	public byte getBlock(int x, int y, int z){
-		return blocks[x*64*64+y*64+z];
-	}
-	public BlockClipData getClipData(){
-		return clipData;
 	}
 	/**
 	 * Creates and saves the mesh for this chunk. If basic is enabled, then no
@@ -91,6 +80,17 @@ public class BlockData{
 			blocks[x*64*64+y*64+z] = b;
 		else
 			clipData.setHasBlockWeak(x, y, z, b!=Air);
+	}
+	private void clear(){
+		for(int i = 0; i<blocks.length; i++)
+			blocks[i] = Air;
+		clipData.clear();
+	}
+	private byte getBlock(int x, int y, int z){
+		return blocks[x*64*64+y*64+z];
+	}
+	private BlockClipData getClipData(){
+		return clipData;
 	}
 	private boolean hasAdvancedBlock(int x, int y, int z, int j){
 		switch(j){

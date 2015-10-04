@@ -27,38 +27,8 @@ public class SettingsChangeRequest{
 		particleCount = settings.getParticleCount();
 		renderSky = settings.isRenderSky();
 	}
-	public int getChunkCatcheDistance(){
-		return chunkCatcheDistance;
-	}
-	public int getChunkLoadDistance(){
-		return chunkLoadDistance;
-	}
-	public int getChunkRenderDistance(){
-		return chunkRenderDistance;
-	}
-	public int getChunkUpdateFrames(){
-		return chunkUpdateFrames;
-	}
 	public int getFpsCap(){
 		return fpsCap;
-	}
-	public int getGeneratorSleeping(){
-		return generatorSleeping;
-	}
-	public int getParticleCount(){
-		return particleCount;
-	}
-	public int getScreenResolution(){
-		return screenResolution;
-	}
-	public boolean isFullScreen(){
-		return fullScreen;
-	}
-	public boolean isRenderSky(){
-		return renderSky;
-	}
-	public boolean isvSync(){
-		return vSync;
 	}
 	public void setChunkCatcheDistance(int chunkCatcheDistance){
 		this.chunkCatcheDistance = chunkCatcheDistance;
@@ -95,5 +65,35 @@ public class SettingsChangeRequest{
 	}
 	public void submit(){
 		settings.submitChange(this);
+	}
+	int getChunkCatcheDistance(){
+		return chunkCatcheDistance;
+	}
+	int getChunkLoadDistance(){
+		return chunkLoadDistance;
+	}
+	int getChunkRenderDistance(){
+		return chunkRenderDistance;
+	}
+	int getChunkUpdateFrames(){
+		return chunkUpdateFrames;
+	}
+	int getGeneratorSleeping(){
+		return generatorSleeping;
+	}
+	int getParticleCount(){
+		return particleCount;
+	}
+	int getScreenResolution(){
+		return screenResolution;
+	}
+	boolean isFullScreen(){
+		return fullScreen;
+	}
+	boolean isRenderSky(){
+		return renderSky;
+	}
+	boolean isvSync(){
+		return vSync;
 	}
 }

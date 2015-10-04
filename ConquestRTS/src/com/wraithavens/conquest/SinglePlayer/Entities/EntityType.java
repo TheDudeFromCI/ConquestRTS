@@ -102,7 +102,12 @@ public enum EntityType{
 		viewDistance = isGiant?0:100*100;
 		groundHits = new GiantEntityGroundHits(this);
 	}
-	public EntityMesh createReference(){
+	public boolean isAesiaStemType(){
+		int o = ordinal();
+		int i = EntityType.AesiaStems.ordinal();
+		return o>=i&&o<i+24;
+	}
+	EntityMesh createReference(){
 		if(mesh!=null){
 			mesh.addReference();
 			return mesh;
@@ -110,10 +115,5 @@ public enum EntityType{
 		mesh = new EntityMesh(this);
 		mesh.addReference();
 		return mesh;
-	}
-	public boolean isAesiaStemType(){
-		int o = ordinal();
-		int i = EntityType.AesiaStems.ordinal();
-		return o>=i&&o<i+24;
 	}
 }

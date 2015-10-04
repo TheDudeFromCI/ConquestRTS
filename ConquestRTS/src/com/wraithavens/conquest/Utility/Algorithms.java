@@ -20,12 +20,6 @@ public class Algorithms{
 	public static File getChunkPath(int x, int y, int z){
 		return getLandscapePath(x, y, z, 64, ChunkId);
 	}
-	public static File getDistantEntityListPath(int x, int z){
-		return getLandscapePath(x, z, 2048, DistantEntityListId);
-	}
-	public static File getDynmapFile(int x, int z){
-		return getLandscapePath(x, z, 8192, DynmapId);
-	}
 	public static File getMassChunkHeightsPath(int x, int z){
 		return getLandscapePath(x, z, 8192, MassChunkHeightsId);
 	}
@@ -86,8 +80,6 @@ public class Algorithms{
 		return file;
 	}
 	private static final char ChunkId = 'a';
-	private static final char DynmapId = 'b';
 	private static final char ChunkHeightsId = 'c';
 	private static final char MassChunkHeightsId = 'd';
-	private static final char DistantEntityListId = 'e';
 }

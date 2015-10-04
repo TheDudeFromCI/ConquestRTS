@@ -7,10 +7,6 @@ import com.wraithavens.conquest.SinglePlayer.Blocks.BiomeNoise.TayleaMeadowNoise
 import com.wraithavens.conquest.Utility.CosineInterpolation;
 
 public class WorldNoiseMachine{
-	public static float blend(float a, float b, float frac){
-		frac = (float)((1-Math.cos(frac*Math.PI))/2);
-		return a*(1-frac)+b*frac;
-	}
 	/**
 	 * Created a world noise generation machine. The seeds determine how each
 	 * part of the noise machine functions. This includes world height,
@@ -74,6 +70,10 @@ public class WorldNoiseMachine{
 		blend(p3, p4, a, t2);
 		blend(t1, t2, b, t3);
 		colorOut.set(t3[0], t3[1], t3[2]);
+	}
+	private static float blend(float a, float b, float frac){
+		frac = (float)((1-Math.cos(frac*Math.PI))/2);
+		return a*(1-frac)+b*frac;
 	}
 	private static void blend(float[] a, float[] b, float c, float[] out){
 		c = (float)((1-Math.cos(c*Math.PI))/2);
@@ -148,9 +148,6 @@ public class WorldNoiseMachine{
 		getBiomeAt(x, z, tempHTL);
 		return scaleHeight(tempHTL[0], tempHTL[1], tempHTL[2], x, z);
 	}
-	public float getLevelRaw(float x, float y){
-		return worldHeight.noise(x, y)/worldHeight.getMaxHeight();
-	}
 	public int scaleHeight(float h, float t, float l, float x, float z){
 		l -= 0.5f;
 		final float mapSize = 50;
@@ -182,6 +179,9 @@ public class WorldNoiseMachine{
 	}
 	private float getHumidityRaw(float x, float z){
 		return humidity.noise(x, z);
+	}
+	private float getLevelRaw(float x, float y){
+		return worldHeight.noise(x, y)/worldHeight.getMaxHeight();
 	}
 	private float getTempatureRaw(float x, float z){
 		return tempature.noise(x, z);

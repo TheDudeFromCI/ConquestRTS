@@ -1,6 +1,6 @@
 package com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher;
 
-public class BlockClipData{
+class BlockClipData{
 	private static int getIndex(int x, int y, int z){
 		{
 			// Test to make sure point is within bounds.
@@ -35,14 +35,14 @@ public class BlockClipData{
 		return -1;
 	}
 	private final boolean[] blocks = new boolean[64*64*6];
-	public void clear(){
+	void clear(){
 		for(int i = 0; i<blocks.length; i++)
 			blocks[i] = false;
 	}
-	public boolean hasBlock(int x, int y, int z){
+	boolean hasBlock(int x, int y, int z){
 		return blocks[getIndex(x, y, z)];
 	}
-	public void setHasBlockWeak(int x, int y, int z, boolean block){
+	void setHasBlockWeak(int x, int y, int z, boolean block){
 		try{
 			blocks[getIndex(x, y, z)] = block;
 		}catch(Exception exception){}

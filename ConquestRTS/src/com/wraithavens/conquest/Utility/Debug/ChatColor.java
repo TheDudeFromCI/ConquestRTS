@@ -17,7 +17,7 @@ public enum ChatColor{
 	BLACK('B', new Color(0, 0, 0)),
 	GOLD('C', new Color(255, 200, 0)),
 	DARK_AQUA('D', new Color(0, 150, 150));
-	public static ChatColor getBySymbol(char symbol){
+	static ChatColor getBySymbol(char symbol){
 		for(ChatColor c : values())
 			if(c.symbol==symbol)
 				return c;
@@ -29,11 +29,11 @@ public enum ChatColor{
 		this.symbol = symbol;
 		this.color = color;
 	}
-	public Color getColor(){
-		return color;
-	}
 	@Override
 	public String toString(){
 		return "¥"+symbol;
+	}
+	Color getColor(){
+		return color;
 	}
 }

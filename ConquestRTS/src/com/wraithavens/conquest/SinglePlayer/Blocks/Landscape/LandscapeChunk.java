@@ -18,8 +18,8 @@ import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassTransform;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
-public class LandscapeChunk{
-	public static final int LandscapeSize = 64;
+class LandscapeChunk{
+	static final int LandscapeSize = 64;
 	private final int x;
 	private final int y;
 	private final int z;

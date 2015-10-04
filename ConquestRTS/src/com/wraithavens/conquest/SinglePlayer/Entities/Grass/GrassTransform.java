@@ -19,28 +19,28 @@ public class GrassTransform{
 		this.green = green;
 		this.blue = blue;
 	}
-	public float getBlue(){
+	float getBlue(){
 		return blue;
 	}
-	public float getGreen(){
+	float getGreen(){
 		return green;
 	}
-	public float getRed(){
+	float getRed(){
 		return red;
 	}
-	public float getRotation(){
+	float getRotation(){
 		return r;
 	}
-	public float getScale(){
+	float getScale(){
 		return s;
 	}
-	public float getX(){
+	float getX(){
 		return x;
 	}
-	public float getY(){
+	float getY(){
 		return y;
 	}
-	public float getZ(){
+	float getZ(){
 		return z;
 	}
 }

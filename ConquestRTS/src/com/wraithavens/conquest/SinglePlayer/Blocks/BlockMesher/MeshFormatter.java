@@ -24,44 +24,6 @@ public class MeshFormatter{
 		vertexStorage = new VertexStorage();
 		indexStorage = new IndexStorage();
 	}
-	public void addBlockType(byte block){
-		typeList.add(block);
-	}
-	public void clearTypeList(){
-		typeList.clear();
-	}
-	public void compileLayer(int side, int o){
-		int count = optimize();
-		if(count==0)
-			return;
-		countQuads(count, side, o);
-	}
-	public MeshRenderer extract(){
-		FloatBuffer verts = BufferUtils.createFloatBuffer(vertexStorage.size());
-		ShortBuffer inds = BufferUtils.createShortBuffer(indexStorage.size());
-		verts.put(vertexStorage.getAll(), 0, vertexStorage.size());
-		inds.put(indexStorage.getAll(), 0, indexStorage.size());
-		verts.flip();
-		inds.flip();
-		vertexStorage.clear();
-		indexStorage.clear();
-		return new MeshRenderer(verts, inds);
-	}
-	public byte getBlockType(int index){
-		return typeList.get(index);
-	}
-	public void setBasicState(boolean basicState){
-		this.basicState = basicState;
-	}
-	public void setBlock(int a, int b, byte state){
-		quads[a][b] = state;
-	}
-	public void setCurrentTexutre(int id){
-		currentTextureId = id;
-	}
-	public int typeListSize(){
-		return typeList.size();
-	}
 	private void addQuad(int x, int y, int w, int h, int j, int o){
 		float shade = j==2?1:j==3?130/255f:j==0||j==1?200/255f:180/255f;
 		if(j==0){
@@ -506,5 +468,43 @@ public class MeshFormatter{
 					}
 			}
 		}
+	}
+	void addBlockType(byte block){
+		typeList.add(block);
+	}
+	void clearTypeList(){
+		typeList.clear();
+	}
+	void compileLayer(int side, int o){
+		int count = optimize();
+		if(count==0)
+			return;
+		countQuads(count, side, o);
+	}
+	MeshRenderer extract(){
+		FloatBuffer verts = BufferUtils.createFloatBuffer(vertexStorage.size());
+		ShortBuffer inds = BufferUtils.createShortBuffer(indexStorage.size());
+		verts.put(vertexStorage.getAll(), 0, vertexStorage.size());
+		inds.put(indexStorage.getAll(), 0, indexStorage.size());
+		verts.flip();
+		inds.flip();
+		vertexStorage.clear();
+		indexStorage.clear();
+		return new MeshRenderer(verts, inds);
+	}
+	byte getBlockType(int index){
+		return typeList.get(index);
+	}
+	void setBasicState(boolean basicState){
+		this.basicState = basicState;
+	}
+	void setBlock(int a, int b, byte state){
+		quads[a][b] = state;
+	}
+	void setCurrentTexutre(int id){
+		currentTextureId = id;
+	}
+	int typeListSize(){
+		return typeList.size();
 	}
 }

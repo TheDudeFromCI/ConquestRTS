@@ -2,10 +2,10 @@ package com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher;
 
 import java.util.Arrays;
 
-public class BlockTypeList{
+class BlockTypeList{
 	private byte[] types = new byte[10];
 	private int size;
-	public void add(byte t){
+	void add(byte t){
 		for(int i = 0; i<size; i++)
 			if(types[i]==t)
 				return;
@@ -14,13 +14,13 @@ public class BlockTypeList{
 		types[size] = t;
 		size++;
 	}
-	public void clear(){
+	void clear(){
 		size = 0;
 	}
-	public byte get(int index){
+	byte get(int index){
 		return types[index];
 	}
-	public int size(){
+	int size(){
 		return size;
 	}
 }

@@ -67,9 +67,6 @@ public class BinaryFile{
 	public BinaryFile(int space){
 		binary = new byte[space];
 	}
-	public void addBoolean(boolean val){
-		addByte((byte)(val?1:0));
-	}
 	public void addByte(byte n){
 		binary[pos] = n;
 		pos++;
@@ -89,9 +86,6 @@ public class BinaryFile{
 		binary[pos+1] = (byte)(n>>8&0xFF);
 		pos += 2;
 	}
-	public void allocateBytes(int bytes){
-		binary = Arrays.copyOf(binary, binary.length+bytes);
-	}
 	public void compile(File file){
 		if(!file.exists()){
 			try{
@@ -109,47 +103,10 @@ public class BinaryFile{
 			compress(CompressionBuffer, writeBufSize);
 		}
 	}
-	public void compress(byte[] buffer, boolean writeBufSize){
-		Deflater deflater = new Deflater();
-		deflater.setInput(binary);
-		deflater.finish();
-		int size = deflater.deflate(buffer);
-		pos = 0;
-		if(writeBufSize){
-			int originalSize = binary.length;
-			binary = Arrays.copyOf(binary, size+4);
-			addInt(originalSize);
-			addBytes(buffer, 0, size);
-		}else{
-			binary = Arrays.copyOf(binary, size);
-			addBytes(buffer, 0, size);
-		}
-	}
 	public void decompress(boolean readBuffSize){
 		synchronized(CompressionBuffer){
 			decompress(CompressionBuffer, readBuffSize);
 		}
-	}
-	public void decompress(byte[] buffer, boolean readBuffSize){
-		try{
-			Inflater inflater = new Inflater();
-			if(readBuffSize){
-				inflater.setInput(binary, 4, binary.length-4);
-				pos = 0;
-				int size = getInt();
-				buffer = new byte[size];
-			}else
-				inflater.setInput(binary, 0, binary.length);
-			int size = inflater.inflate(buffer);
-			inflater.end();
-			binary = Arrays.copyOf(buffer, size);
-			pos = 0;
-		}catch(DataFormatException e){
-			e.printStackTrace();
-		}
-	}
-	public boolean getBoolean(){
-		return getByte()==1;
 	}
 	public byte getByte(){
 		byte b = binary[pos];
@@ -174,12 +131,49 @@ public class BinaryFile{
 		pos += 2;
 		return i;
 	}
-	public int size(){
-		return binary.length;
-	}
 	private void addBytes(byte[] bytes, int offset, int length){
 		for(int i = offset; i<offset+length; i++)
 			binary[pos+i-offset] = bytes[i];
 		pos += length;
+	}
+	private void compress(byte[] buffer, boolean writeBufSize){
+		Deflater deflater = new Deflater();
+		deflater.setInput(binary);
+		deflater.finish();
+		int size = deflater.deflate(buffer);
+		pos = 0;
+		if(writeBufSize){
+			int originalSize = binary.length;
+			binary = Arrays.copyOf(binary, size+4);
+			addInt(originalSize);
+			addBytes(buffer, 0, size);
+		}else{
+			binary = Arrays.copyOf(binary, size);
+			addBytes(buffer, 0, size);
+		}
+	}
+	private void decompress(byte[] buffer, boolean readBuffSize){
+		try{
+			Inflater inflater = new Inflater();
+			if(readBuffSize){
+				inflater.setInput(binary, 4, binary.length-4);
+				pos = 0;
+				int size = getInt();
+				buffer = new byte[size];
+			}else
+				inflater.setInput(binary, 0, binary.length);
+			int size = inflater.inflate(buffer);
+			inflater.end();
+			binary = Arrays.copyOf(buffer, size);
+			pos = 0;
+		}catch(DataFormatException e){
+			e.printStackTrace();
+		}
+	}
+	void addBoolean(boolean val){
+		addByte((byte)(val?1:0));
+	}
+	boolean getBoolean(){
+		return getByte()==1;
 	}
 }

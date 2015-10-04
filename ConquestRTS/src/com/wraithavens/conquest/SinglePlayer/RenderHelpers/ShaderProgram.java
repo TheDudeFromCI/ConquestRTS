@@ -30,13 +30,13 @@ public class ShaderProgram{
 	private final int fs;
 	private final int gs;
 	private int[] uniforms;
-	public ShaderProgram(File vertexShader, File geometryShader, File fragmentShader){
-		this(ShaderProgram.readFile(vertexShader), geometryShader==null?null:ShaderProgram
-			.readFile(geometryShader), ShaderProgram.readFile(fragmentShader));
-	}
 	public ShaderProgram(String name){
 		this(new File(WraithavensConquest.shaderFolder, name+".vert"), null, new File(
 			WraithavensConquest.shaderFolder, name+".frag"));
+	}
+	private ShaderProgram(File vertexShader, File geometryShader, File fragmentShader){
+		this(ShaderProgram.readFile(vertexShader), geometryShader==null?null:ShaderProgram
+			.readFile(geometryShader), ShaderProgram.readFile(fragmentShader));
 	}
 	private ShaderProgram(String vertexShader, String geometryShader, String fragmentShader){
 		// Vertex Shader

@@ -132,7 +132,7 @@ public class Settings{
 	public SettingsChangeRequest requestChange(){
 		return new SettingsChangeRequest(this);
 	}
-	public void save(){
+	private void save(){
 		BinaryFile bin = new BinaryFile(8*4+3);
 		bin.addInt(chunkRenderDistance);
 		bin.addInt(chunkCatcheDistance);
@@ -148,39 +148,6 @@ public class Settings{
 		bin.compress(false);
 		bin.compile(new File(WraithavensConquest.saveFolder, "Settings.dat"));
 		System.out.println("Settings saved.");
-	}
-	public void setChunkCatcheDistance(int chunkCatcheDistance){
-		this.chunkCatcheDistance = chunkCatcheDistance;
-	}
-	public void setChunkLoadDistance(int chunkLoadDistance){
-		this.chunkLoadDistance = chunkLoadDistance;
-	}
-	public void setChunkRenderDistance(int chunkRenderDistance){
-		this.chunkRenderDistance = chunkRenderDistance;
-	}
-	public void setChunkUpdateFrames(int chunkUpdateFrames){
-		this.chunkUpdateFrames = chunkUpdateFrames;
-	}
-	public void setFpsCap(int fpsCap){
-		this.fpsCap = fpsCap;
-	}
-	public void setFullScreen(boolean fullscren){
-		fullScreen = fullscren;
-	}
-	public void setGeneratorSleeping(int generatorSleeping){
-		this.generatorSleeping = generatorSleeping;
-	}
-	public void setParticleCount(int particleCount){
-		this.particleCount = particleCount;
-	}
-	public void setRenderSky(boolean renderSky){
-		this.renderSky = renderSky;
-	}
-	public void setScreenResolution(int screenResolution){
-		this.screenResolution = screenResolution;
-	}
-	public void setvSync(boolean vSync){
-		this.vSync = vSync;
 	}
 	void submitChange(SettingsChangeRequest request){
 		boolean changed = false;

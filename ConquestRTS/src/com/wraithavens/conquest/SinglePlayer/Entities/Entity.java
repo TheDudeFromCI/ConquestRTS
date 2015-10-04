@@ -23,19 +23,13 @@ public class Entity{
 	private static final Vector3f tempMax = new Vector3f();
 	final EntityMesh mesh;
 	protected final Vector3f position = new Vector3f();
-	protected float scale = 1/5f;
-	protected float yaw;
+	private float scale = 1/5f;
+	private float yaw;
 	private final AABB aabb;
 	public Entity(EntityType type){
 		mesh = type.createReference();
 		aabb = new AABB();
 		updateAABB();
-	}
-	public boolean canRender(LandscapeWorld landscape, Camera camera){
-		return (mesh.getType().viewDistance==0||camera.distanceSquared(position.x, position.y, position.z)<mesh
-			.getType().viewDistance)
-			&&landscape.isWithinView((int)position.x, (int)position.z)
-			&&aabb.visible(camera);
 	}
 	public final void dispose(){
 		mesh.removeReference();
@@ -79,6 +73,12 @@ public class Entity{
 		tempMax.rotateYaw(sin, cos);
 		updateMinMax();
 		aabb.calculate(tempMin, tempMax, scale, position);
+	}
+	boolean canRender(LandscapeWorld landscape, Camera camera){
+		return (mesh.getType().viewDistance==0||camera.distanceSquared(position.x, position.y, position.z)<mesh
+			.getType().viewDistance)
+			&&landscape.isWithinView((int)position.x, (int)position.z)
+			&&aabb.visible(camera);
 	}
 	final EntityMesh getMesh(){
 		return mesh;

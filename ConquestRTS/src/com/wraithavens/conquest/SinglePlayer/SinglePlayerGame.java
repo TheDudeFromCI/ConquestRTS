@@ -49,9 +49,6 @@ public class SinglePlayerGame implements Driver{
 	public LandscapeWorld getLandscape(){
 		return landscape;
 	}
-	public LoadingScreen getLoadingScreen(){
-		return loadingScreen;
-	}
 	public ParticleBatch getParticleBatch(){
 		return particleBatch;
 	}

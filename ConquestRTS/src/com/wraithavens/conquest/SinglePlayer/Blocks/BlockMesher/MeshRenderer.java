@@ -6,7 +6,7 @@ import java.nio.ShortBuffer;
 public class MeshRenderer{
 	private final FloatBuffer vertexData;
 	private final ShortBuffer indexData;
-	public MeshRenderer(FloatBuffer vertexData, ShortBuffer indexData){
+	MeshRenderer(FloatBuffer vertexData, ShortBuffer indexData){
 		this.vertexData = vertexData;
 		this.indexData = indexData;
 	}

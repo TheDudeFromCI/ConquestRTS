@@ -92,11 +92,6 @@ public class LoadingScreen{
 		spinner.render(shader);
 		completionText.render(shader);
 	}
-	public void setTask(LoadingScreenTask task){
-		this.task = task;
-		setup = false;
-		lastPercent = -1;
-	}
 	public void update(double time){
 		spinner.r = (float)(time*SPINNER_SPEED);
 		if(task.runStep()){

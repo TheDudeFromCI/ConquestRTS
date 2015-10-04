@@ -1,13 +1,13 @@
 package com.wraithavens.conquest.SinglePlayer.Blocks.Landscape;
 
-public class EntityDataRaw{
+class EntityDataRaw{
 	private final int type;
 	private final float x;
 	private final float y;
 	private final float z;
 	private final float r;
 	private final float s;
-	public EntityDataRaw(int type, float x, float y, float z, float r, float s){
+	EntityDataRaw(int type, float x, float y, float z, float r, float s){
 		this.type = type;
 		this.x = x;
 		this.y = y;
@@ -15,22 +15,22 @@ public class EntityDataRaw{
 		this.r = r;
 		this.s = s;
 	}
-	public float getR(){
+	float getR(){
 		return r;
 	}
-	public float getS(){
+	float getS(){
 		return s;
 	}
-	public int getType(){
+	int getType(){
 		return type;
 	}
-	public float getX(){
+	float getX(){
 		return x;
 	}
-	public float getY(){
+	float getY(){
 		return y;
 	}
-	public float getZ(){
+	float getZ(){
 		return z;
 	}
 }

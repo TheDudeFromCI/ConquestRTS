@@ -44,16 +44,16 @@ public class SpiralGridAlgorithm{
 			}
 		}
 	}
-	public void reset(){
+	public void setMaxDistance(int maxDistance){
+		this.maxDistance = maxDistance;
+	}
+	void reset(){
 		x = 0;
 		y = 0;
 		dir = 0;
 		dis = 1;
 	}
-	public void setMaxDistance(int maxDistance){
-		this.maxDistance = maxDistance;
-	}
-	public void setOrigin(int x, int y){
+	void setOrigin(int x, int y){
 		centerX = x;
 		centerY = y;
 	}

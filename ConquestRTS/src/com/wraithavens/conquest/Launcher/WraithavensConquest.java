@@ -82,7 +82,7 @@ public class WraithavensConquest extends EmptyLoop{
 	 * Progress Version - This the progress state for that milestone. <br>
 	 * Bugfix State - This is the current bugfix state for the progress version.
 	 */
-	public static final String Version = "v0.1.02.0";
+	private static final String Version = "v0.1.02.0";
 	public static Settings Settings;
 	private Driver driver;
 	private double currentTime;

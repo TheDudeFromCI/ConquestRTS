@@ -11,11 +11,11 @@ public enum Biome{
 	// ShallowOcean(0, 100, 0, 100, 45, 50),
 	// Beach(0, 100, 0, 100, 50, 50.05f),
 	// Other biomes.
-	TayleaMeadow(0.0f, 0.5f, 0.0f, 0.5f, 0.0f, 1.0f, 2, PollenParticleEngine.class),
-	ArcstoneHills(0.5f, 1.0f, 0.0f, 0.5f, 0.0f, 1.0f, 2, ZipperParticleEngine.class),
-	AesiaFields(0.0f, 1.0f, 0.5f, 1.0f, 0.0f, 1.0f, 2, null),
+	TayleaMeadow(0.0f, 0.5f, 0.0f, 0.5f, 0.0f, 1.0f, PollenParticleEngine.class),
+	ArcstoneHills(0.5f, 1.0f, 0.0f, 0.5f, 0.0f, 1.0f, ZipperParticleEngine.class),
+	AesiaFields(0.0f, 1.0f, 0.5f, 1.0f, 0.0f, 1.0f, null),
 	// And finally, a catch-all. This should never be hit.
-	Void(0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0, null);
+	Void(0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, null);
 	public static Biome getByName(String name){
 		for(Biome biome : values())
 			if(biome.name().equalsIgnoreCase(name))
@@ -28,19 +28,15 @@ public enum Biome{
 				return b;
 		return null;
 	}
-	public static final int BiomeTypeNull = 0;
-	public static final int BiomeTypeOcean = 1;
-	public static final int BiomeTypeGrasslands = 2;
 	private final float minH;
 	private final float maxH;
 	private final float minT;
 	private final float maxT;
 	private final float minL;
 	private final float maxL;
-	private final int biomeType;
 	private final Class<? extends ParticleEngine> particleEngine;
 	private Biome(
-		float minH, float maxH, float minT, float maxT, float minL, float maxL, int biomeType,
+		float minH, float maxH, float minT, float maxT, float minL, float maxL,
 		Class<? extends ParticleEngine> particleEngine){
 		this.minH = minH;
 		this.maxH = maxH;
@@ -48,7 +44,6 @@ public enum Biome{
 		this.maxT = maxT;
 		this.minL = minL;
 		this.maxL = maxL;
-		this.biomeType = biomeType;
 		this.particleEngine = particleEngine;
 	}
 	public Class<? extends ParticleEngine> getParticleEngine(){
@@ -56,8 +51,5 @@ public enum Biome{
 	}
 	private boolean fitsIn(double h, double t, double l){
 		return h>=minH&&h<=maxH&&t>=minT&&t<=maxT&&l>=minL&&l<=maxL;
-	}
-	int getType(){
-		return biomeType;
 	}
 }

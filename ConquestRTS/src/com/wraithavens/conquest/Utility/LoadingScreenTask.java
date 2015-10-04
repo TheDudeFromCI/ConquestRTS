@@ -1,6 +1,6 @@
 package com.wraithavens.conquest.Utility;
 
-public interface LoadingScreenTask{
+interface LoadingScreenTask{
 	public float getCompletionPercent();
 	public boolean runStep();
 }

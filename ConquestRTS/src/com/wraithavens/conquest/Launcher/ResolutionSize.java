@@ -11,34 +11,34 @@ class ResolutionSize{
 	}
 	static ResolutionSize[] generateSizes(){
 		ArrayList<ResolutionSize> sizes = new ArrayList();
-		ResolutionSize nativeSize = new ResolutionSize(sizes.size());
+		ResolutionSize nativeSize = new ResolutionSize();
 		sizes.add(nativeSize);
-		sizes.add(new ResolutionSize(800, 600, sizes.size()));
-		sizes.add(new ResolutionSize(1024, 600, sizes.size()));
-		sizes.add(new ResolutionSize(1024, 768, sizes.size()));
-		sizes.add(new ResolutionSize(1152, 864, sizes.size()));
-		sizes.add(new ResolutionSize(1280, 720, sizes.size()));
-		sizes.add(new ResolutionSize(1280, 768, sizes.size()));
-		sizes.add(new ResolutionSize(1280, 800, sizes.size()));
-		sizes.add(new ResolutionSize(1280, 960, sizes.size()));
-		sizes.add(new ResolutionSize(1280, 1024, sizes.size()));
-		sizes.add(new ResolutionSize(1360, 768, sizes.size()));
-		sizes.add(new ResolutionSize(1366, 768, sizes.size()));
-		sizes.add(new ResolutionSize(1400, 1050, sizes.size()));
-		sizes.add(new ResolutionSize(1440, 900, sizes.size()));
-		sizes.add(new ResolutionSize(1600, 900, sizes.size()));
-		sizes.add(new ResolutionSize(1600, 1200, sizes.size()));
-		sizes.add(new ResolutionSize(1680, 1050, sizes.size()));
-		sizes.add(new ResolutionSize(1920, 1080, sizes.size()));
-		sizes.add(new ResolutionSize(1920, 1200, sizes.size()));
-		sizes.add(new ResolutionSize(2048, 1152, sizes.size()));
-		sizes.add(new ResolutionSize(2560, 1440, sizes.size()));
-		sizes.add(new ResolutionSize(2560, 1600, sizes.size()));
-		sizes.add(new ResolutionSize(768, 1024, sizes.size()));
-		sizes.add(new ResolutionSize(1093, 614, sizes.size()));
-		sizes.add(new ResolutionSize(1536, 864, sizes.size()));
-		sizes.add(new ResolutionSize(640, 480, sizes.size()));
-		sizes.add(new ResolutionSize(160, 120, sizes.size()));
+		sizes.add(new ResolutionSize(800, 600));
+		sizes.add(new ResolutionSize(1024, 600));
+		sizes.add(new ResolutionSize(1024, 768));
+		sizes.add(new ResolutionSize(1152, 864));
+		sizes.add(new ResolutionSize(1280, 720));
+		sizes.add(new ResolutionSize(1280, 768));
+		sizes.add(new ResolutionSize(1280, 800));
+		sizes.add(new ResolutionSize(1280, 960));
+		sizes.add(new ResolutionSize(1280, 1024));
+		sizes.add(new ResolutionSize(1360, 768));
+		sizes.add(new ResolutionSize(1366, 768));
+		sizes.add(new ResolutionSize(1400, 1050));
+		sizes.add(new ResolutionSize(1440, 900));
+		sizes.add(new ResolutionSize(1600, 900));
+		sizes.add(new ResolutionSize(1600, 1200));
+		sizes.add(new ResolutionSize(1680, 1050));
+		sizes.add(new ResolutionSize(1920, 1080));
+		sizes.add(new ResolutionSize(1920, 1200));
+		sizes.add(new ResolutionSize(2048, 1152));
+		sizes.add(new ResolutionSize(2560, 1440));
+		sizes.add(new ResolutionSize(2560, 1600));
+		sizes.add(new ResolutionSize(768, 1024));
+		sizes.add(new ResolutionSize(1093, 614));
+		sizes.add(new ResolutionSize(1536, 864));
+		sizes.add(new ResolutionSize(640, 480));
+		sizes.add(new ResolutionSize(160, 120));
 		sizes.sort(new Comparator<ResolutionSize>(){
 			public int compare(ResolutionSize b, ResolutionSize a){
 				if(a.real)
@@ -61,9 +61,7 @@ class ResolutionSize{
 	private final long pixels;
 	private final int ratioNum;
 	private final int ratioDen;
-	public final int id;
-	private ResolutionSize(int id){
-		this.id = id;
+	private ResolutionSize(){
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		width = dimension.width;
 		height = dimension.height;
@@ -74,8 +72,7 @@ class ResolutionSize{
 		ratioNum = width/gcd;
 		ratioDen = height/gcd;
 	}
-	private ResolutionSize(int width, int height, int id){
-		this.id = id;
+	private ResolutionSize(int width, int height){
 		this.width = width;
 		this.height = height;
 		real = false;
@@ -84,9 +81,6 @@ class ResolutionSize{
 		int gcd = ResolutionSize.gcd(width, height);
 		ratioNum = width/gcd;
 		ratioDen = height/gcd;
-	}
-	public boolean isNative(){
-		return real;
 	}
 	@Override
 	public String toString(){
