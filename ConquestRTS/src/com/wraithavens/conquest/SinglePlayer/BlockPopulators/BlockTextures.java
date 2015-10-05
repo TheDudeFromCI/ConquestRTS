@@ -12,9 +12,14 @@ import org.lwjgl.opengl.GL30;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 
 public enum BlockTextures{
+	/*
+	 * For the clip types, 0 Means full biome color. 1 Means full original
+	 * color. 2 Means it uses a clip map. (Half and Half.)
+	 */
 	Grass("Grass.png", 0),
 	Dirt("Dirt.png", 1),
-	SideDirt("SideDirt.png", 2);
+	SideDirt("SideDirt.png", 2),
+	Water("Water.png", 1);
 	public static void bind(){
 		GL13.glActiveTexture(GL13.GL_TEXTURE1);
 		GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, textureId);
@@ -69,11 +74,6 @@ public enum BlockTextures{
 			GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
 			GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
 			GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL14.GL_GENERATE_MIPMAP, GL11.GL_TRUE);
-			// GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY,
-			// GL11.GL_TEXTURE_MIN_FILTER,
-			// GL11.GL_LINEAR_MIPMAP_LINEAR);
-			// GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY,
-			// GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
 			GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MIN_FILTER,
 				GL11.GL_NEAREST_MIPMAP_NEAREST);
 			GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);

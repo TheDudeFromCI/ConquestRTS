@@ -31,11 +31,11 @@ public class BlockData{
 							if((block = getBlock(x, y, z))!=Air)
 								meshFormatter.addBlockType(block);
 					for(i = 0; i<meshFormatter.typeListSize(); i++){
+						block = meshFormatter.getBlockType(i);
 						for(y = 0; y<64; y++)
 							for(z = 0; z<64; z++)
-								meshFormatter.setBlock(y, z,
-									placeSide(x, y, z, j, meshFormatter.getBlockType(i)));
-						meshFormatter.setCurrentTexutre(Block.values()[i].getTexture(j));
+								meshFormatter.setBlock(y, z, placeSide(x, y, z, j, block));
+						meshFormatter.setCurrentTexutre(Block.values()[block].getTexture(j));
 						meshFormatter.compileLayer(j, x);
 					}
 				}
@@ -47,11 +47,11 @@ public class BlockData{
 							if((block = getBlock(x, y, z))!=Air)
 								meshFormatter.addBlockType(block);
 					for(i = 0; i<meshFormatter.typeListSize(); i++){
+						block = meshFormatter.getBlockType(i);
 						for(x = 0; x<64; x++)
 							for(z = 0; z<64; z++)
-								meshFormatter.setBlock(x, z,
-									placeSide(x, y, z, j, meshFormatter.getBlockType(i)));
-						meshFormatter.setCurrentTexutre(Block.values()[i].getTexture(j));
+								meshFormatter.setBlock(x, z, placeSide(x, y, z, j, block));
+						meshFormatter.setCurrentTexutre(Block.values()[block].getTexture(j));
 						meshFormatter.compileLayer(j, y);
 					}
 				}
@@ -63,11 +63,11 @@ public class BlockData{
 							if((block = getBlock(x, y, z))!=Air)
 								meshFormatter.addBlockType(block);
 					for(i = 0; i<meshFormatter.typeListSize(); i++){
+						block = meshFormatter.getBlockType(i);
 						for(x = 0; x<64; x++)
 							for(y = 0; y<64; y++)
-								meshFormatter.setBlock(x, y,
-									placeSide(x, y, z, j, meshFormatter.getBlockType(i)));
-						meshFormatter.setCurrentTexutre(Block.values()[i].getTexture(j));
+								meshFormatter.setBlock(x, y, placeSide(x, y, z, j, block));
+						meshFormatter.setCurrentTexutre(Block.values()[block].getTexture(j));
 						meshFormatter.compileLayer(j, z);
 					}
 				}

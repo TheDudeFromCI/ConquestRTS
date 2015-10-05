@@ -8,6 +8,10 @@ public enum Block{
 	Dirt(new BlockTextures[]{
 		BlockTextures.Dirt, BlockTextures.Dirt, BlockTextures.Dirt, BlockTextures.Dirt, BlockTextures.Dirt,
 		BlockTextures.Dirt
+	}),
+	Water(new BlockTextures[]{
+		BlockTextures.Water, BlockTextures.Water, BlockTextures.Water, BlockTextures.Water, BlockTextures.Water,
+		BlockTextures.Water,
 	});
 	final int texture0;
 	final int texture1;
