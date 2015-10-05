@@ -160,7 +160,6 @@ public class LandscapeWorld{
 						biomeParticleEngines.remove(a).dispose();
 						continue clearer;
 					}
-				throw new AssertionError();
 			}
 			i++;
 		}

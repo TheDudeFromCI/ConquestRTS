@@ -126,7 +126,7 @@ public class MeshFormatter{
 			indexStorage.place(v3);
 			indexStorage.place(v4);
 		}else
-			throw new AssertionError();
+			throw new RuntimeException();
 	}
 	private void countQuads(int quadCount, int j, int offset){
 		int x, y, w, h, o;

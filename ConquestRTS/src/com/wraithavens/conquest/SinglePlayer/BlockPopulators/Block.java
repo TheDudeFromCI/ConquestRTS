@@ -42,7 +42,7 @@ public enum Block{
 			case 5:
 				return texture5;
 			default:
-				throw new AssertionError();
+				throw new RuntimeException();
 		}
 	}
 	public byte id(){

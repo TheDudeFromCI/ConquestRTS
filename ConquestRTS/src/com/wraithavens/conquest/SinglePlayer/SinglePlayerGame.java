@@ -61,7 +61,7 @@ public class SinglePlayerGame implements Driver{
 		INSTANCE = this;
 		initalized = true;
 		long[] seeds = new long[]{
-			0, 1, 2, 3, 4, 5, 6
+			0, 1, 2, 3, 4, 5, 6, 7
 		};
 		machine = WorldNoiseMachine.generate(seeds);
 		// ---

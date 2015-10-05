@@ -3,6 +3,7 @@ package com.wraithavens.conquest.SinglePlayer.Noise;
 import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BiomeNoise.AesiaFieldsNoise;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BiomeNoise.ArcstoneHillsNoise;
+import com.wraithavens.conquest.SinglePlayer.Blocks.BiomeNoise.OceanNoise;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BiomeNoise.TayleaMeadowNoise;
 import com.wraithavens.conquest.Utility.CosineInterpolation;
 
@@ -24,7 +25,7 @@ public class WorldNoiseMachine{
 		// on the seeds given, of course.
 		// ---
 		CosineInterpolation cos = new CosineInterpolation();
-		SubNoise worldHeightNoise1 = SubNoise.build(seeds[0], 10000, 8, cos, 1500, 0);
+		SubNoise worldHeightNoise1 = SubNoise.build(seeds[0], 100000, 8, cos, 1, 0);
 		SubNoise humidityNoise = SubNoise.build(seeds[1], 25000, 4, cos, 1, 0);
 		SubNoise tempatureNoise = SubNoise.build(seeds[2], 25000, 4, cos, 1, 0);
 		// ---
@@ -101,8 +102,13 @@ public class WorldNoiseMachine{
 				out[1] = 115/255f;
 				out[2] = 19/255f;
 				return;
+			case Ocean:
+				out[0] = 0/255f;
+				out[1] = 255/255f;
+				out[2] = 100/255f;
+				return;
 			default:
-				throw new AssertionError();
+				throw new RuntimeException();
 		}
 	}
 	public static final int BiomeTransitionSize = 300;
@@ -112,6 +118,7 @@ public class WorldNoiseMachine{
 	private final TayleaMeadowNoise tayleaMeadowNoise;
 	private final ArcstoneHillsNoise arcstoneHillsNoise;
 	private final AesiaFieldsNoise aesiaFieldsNoise;
+	private final OceanNoise oceanNoise;
 	private final long[] seeds;
 	private final float[] tempHTL = new float[3];
 	/**
@@ -131,6 +138,7 @@ public class WorldNoiseMachine{
 		tayleaMeadowNoise = new TayleaMeadowNoise(seeds[4]);
 		arcstoneHillsNoise = new ArcstoneHillsNoise(seeds[5]);
 		aesiaFieldsNoise = new AesiaFieldsNoise(seeds[6]);
+		oceanNoise = new OceanNoise(seeds[7]);
 	}
 	public Biome getBiomeAt(int x, int z, float[] heightOut){
 		heightOut[0] = getHumidityRaw(x, z);
@@ -148,22 +156,29 @@ public class WorldNoiseMachine{
 		getBiomeAt(x, z, tempHTL);
 		return scaleHeight(tempHTL[0], tempHTL[1], tempHTL[2], x, z);
 	}
-	public int scaleHeight(float h, float t, float l, float x, float z){
-		l -= 0.5f;
+	public int scaleHeight(float h, float t, float l, int x, int z){
 		final float mapSize = 50;
 		h *= mapSize;
 		t *= mapSize;
-		Biome c1 = Biome.getFittingBiome((int)h/mapSize, (int)t/mapSize, 1.0f);
-		Biome c2 = Biome.getFittingBiome((int)(h+1)/mapSize, (int)t/mapSize, 1.0f);
-		Biome c3 = Biome.getFittingBiome((int)h/mapSize, (int)(t+1)/mapSize, 1.0f);
-		Biome c4 = Biome.getFittingBiome((int)(h+1)/mapSize, (int)(t+1)/mapSize, 1.0f);
-		if(c1==c2&&c2==c3&&c3==c4)
-			return cheapFloor(l*getBiomeTempHeight(c1, x, z));
+		l *= mapSize;
+		Biome c1 = Biome.getFittingBiome((int)h/mapSize, (int)t/mapSize, (int)l/mapSize);
+		Biome c2 = Biome.getFittingBiome((int)(h+1)/mapSize, (int)t/mapSize, (int)l/mapSize);
+		Biome c3 = Biome.getFittingBiome((int)h/mapSize, (int)(t+1)/mapSize, (int)l/mapSize);
+		Biome c4 = Biome.getFittingBiome((int)(h+1)/mapSize, (int)(t+1)/mapSize, (int)l/mapSize);
+		Biome c5 = Biome.getFittingBiome((int)h/mapSize, (int)t/mapSize, (int)(l+1)/mapSize);
+		Biome c6 = Biome.getFittingBiome((int)(h+1)/mapSize, (int)t/mapSize, (int)(l+1)/mapSize);
+		Biome c7 = Biome.getFittingBiome((int)h/mapSize, (int)(t+1)/mapSize, (int)(l+1)/mapSize);
+		Biome c8 = Biome.getFittingBiome((int)(h+1)/mapSize, (int)(t+1)/mapSize, (int)(l+1)/mapSize);
+		if(c1==c2&&c2==c3&&c3==c4&&c4==c5&&c5==c6&&c6==c7&&c7==c8)
+			return cheapFloor(getBiomeTempHeight(c1, x, z));
 		float a = h-(int)h;
 		float b = t-(int)t;
-		return cheapFloor(l
-			*blend(blend(getBiomeTempHeight(c1, x, z), getBiomeTempHeight(c2, x, z), a),
-				blend(getBiomeTempHeight(c3, x, z), getBiomeTempHeight(c4, x, z), a), b));
+		float c = l-(int)l;
+		return cheapFloor(blend(
+			blend(blend(getBiomeTempHeight(c1, x, z), getBiomeTempHeight(c2, x, z), a),
+				blend(getBiomeTempHeight(c3, x, z), getBiomeTempHeight(c4, x, z), a), b),
+				blend(blend(getBiomeTempHeight(c5, x, z), getBiomeTempHeight(c6, x, z), a),
+					blend(getBiomeTempHeight(c7, x, z), getBiomeTempHeight(c8, x, z), a), b), c));
 	}
 	private float getBiomeTempHeight(Biome biome, float x, float z){
 		switch(biome){
@@ -173,8 +188,10 @@ public class WorldNoiseMachine{
 				return arcstoneHillsNoise.getHeight(x, z);
 			case AesiaFields:
 				return aesiaFieldsNoise.getHeight(x, z);
+			case Ocean:
+				return oceanNoise.getHeight(x, z);
 			default:
-				throw new AssertionError();
+				throw new RuntimeException();
 		}
 	}
 	private float getHumidityRaw(float x, float z){

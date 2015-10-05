@@ -22,7 +22,10 @@ import com.wraithavens.conquest.Utility.Algorithms;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class SecondaryLoop implements Runnable{
-	private static Biome randomBiomeObject(float h, float t){
+	private static Biome randomBiomeObject(float h, float t, float l){
+		Biome c0 = Biome.getFittingBiome(h, t, l);
+		if(c0.isWaterType())
+			return c0;
 		final float mapSize = WorldNoiseMachine.BiomeTransitionSize;
 		h *= mapSize;
 		t *= mapSize;
@@ -53,7 +56,7 @@ public class SecondaryLoop implements Runnable{
 			return c3;
 		return c4;
 	}
-	private static EntityType randomPlant(float h, float t, int x, int z, long seed){
+	private static EntityType randomPlant(float h, float t, float l, int x, int z, long seed){
 		{
 			long tr = seed;
 			tr = tr*s+x;
@@ -65,7 +68,7 @@ public class SecondaryLoop implements Runnable{
 			// lot.
 		}
 		if(random.nextFloat()<0.2){
-			Biome biome = randomBiomeObject(h, t);
+			Biome biome = randomBiomeObject(h, t, l);
 			switch(biome){
 				case TayleaMeadow:
 					if(random.nextFloat()<0.02)
@@ -84,8 +87,10 @@ public class SecondaryLoop implements Runnable{
 					if(random.nextFloat()<0.1)
 						return EntityType.getVariation(EntityType.AesiaPedals, (int)(random.nextFloat()*7));
 					break;
+				case Ocean:
+					return null;
 				default:
-					throw new AssertionError();
+					throw new RuntimeException();
 			}
 			return EntityType.values()[EntityType.Grass.ordinal()+(int)(random.nextFloat()*4)];
 		}
@@ -187,9 +192,9 @@ public class SecondaryLoop implements Runnable{
 					heights[a][b] =
 						a==0||b==0||a==65||b==65?machine.getGroundLevel(tempA, b-1+z):heightData.getHeight(
 							tempA, b-1+z);
-						type = heights[a][b]<=30?Block.Water.id():Block.Grass.id();
+						type = heights[a][b]<0?Block.Water.id():Block.Grass.id();
 						for(c = 0; c<66; c++)
-							if(c-1+y<Math.max(heights[a][b], 31))
+							if(c-1+y<Math.max(heights[a][b], 0))
 								blockData.setBlock(a-1, c-1, b-1, type);
 				}
 			}
@@ -216,8 +221,8 @@ public class SecondaryLoop implements Runnable{
 					tempB = b+z;
 					type =
 						randomPlant(humidity = heightData.getHumidity(tempA, tempB),
-						tempature = heightData.getTempature(tempA, tempB), tempA, tempB,
-						machine.getGiantEntitySeed()^100799);
+						tempature = heightData.getTempature(tempA, tempB),
+							heightData.getLevel(tempA, tempB), tempA, tempB, machine.getGiantEntitySeed()^100799);
 					if(type==null)
 						continue;
 					if(type.isGrass){

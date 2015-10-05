@@ -34,7 +34,7 @@ class AesiaStemPedal extends Particle{
 				color.set(234/255f, 114/255f, 188/255f, 1);
 				break;
 			default:
-				throw new AssertionError();
+				throw new RuntimeException();
 		}
 		randomX = (float)(Math.random()*2-1);
 		randomZ = (float)(Math.random()*2-1);

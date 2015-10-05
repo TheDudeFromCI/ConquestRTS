@@ -7,13 +7,13 @@ import com.wraithavens.conquest.SinglePlayer.Particles.ParticleTypes.ZipperParti
 public enum Biome{
 	// Oceans biomes. Catch all, but only under sea-level. (Plus beach)
 	// DeepWater(0, 100, 0, 100, 0, 35),
-	// Ocean(0, 100, 0, 100, 35, 45),
+	Ocean(0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.5f, null),
 	// ShallowOcean(0, 100, 0, 100, 45, 50),
 	// Beach(0, 100, 0, 100, 50, 50.05f),
 	// Other biomes.
-	TayleaMeadow(0.0f, 0.5f, 0.0f, 0.5f, 0.0f, 1.0f, PollenParticleEngine.class),
-	ArcstoneHills(0.5f, 1.0f, 0.0f, 0.5f, 0.0f, 1.0f, ZipperParticleEngine.class),
-	AesiaFields(0.0f, 1.0f, 0.5f, 1.0f, 0.0f, 1.0f, null),
+	TayleaMeadow(0.0f, 0.5f, 0.0f, 0.5f, 0.5f, 1.0f, PollenParticleEngine.class),
+	ArcstoneHills(0.5f, 1.0f, 0.0f, 0.5f, 0.5f, 1.0f, ZipperParticleEngine.class),
+	AesiaFields(0.0f, 1.0f, 0.5f, 1.0f, 0.5f, 1.0f, null),
 	// And finally, a catch-all. This should never be hit.
 	Void(0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, null);
 	public static Biome getByName(String name){
@@ -48,6 +48,9 @@ public enum Biome{
 	}
 	public Class<? extends ParticleEngine> getParticleEngine(){
 		return particleEngine;
+	}
+	public boolean isWaterType(){
+		return this==Ocean;
 	}
 	private boolean fitsIn(double h, double t, double l){
 		return h>=minH&&h<=maxH&&t>=minT&&t<=maxT&&l>=minL&&l<=maxL;

@@ -9,7 +9,7 @@ import com.wraithavens.conquest.Utility.BinaryFile;
 public class ChunkHeightData{
 	private final short[] heights = new short[64*64];
 	private final byte[] biomes = new byte[64*64];
-	private final float[] weather = new float[64*64*2];
+	private final float[] weather = new float[64*64*3];
 	private final int minHeight;
 	private final int maxHeight;
 	private final int x;
@@ -27,9 +27,10 @@ public class ChunkHeightData{
 			for(int i = 0; i<heights.length; i++){
 				heights[i] = bin.getShort();
 				biomes[i] = bin.getByte();
-				a = i*2;
+				a = i*3;
 				weather[a] = bin.getFloat();
 				weather[a+1] = bin.getFloat();
+				weather[a+2] = bin.getFloat();
 			}
 			return;
 		}
@@ -52,23 +53,27 @@ public class ChunkHeightData{
 					u = heights[index];
 				if(heights[index]>v)
 					v = heights[index];
-				index *= 2;
+				index *= 3;
 				weather[index] = height[0];
 				weather[index+1] = height[1];
+				weather[index+2] = height[2];
 			}
+		if(v<-1)
+			v = -1;
 		minHeight = u-1;
 		maxHeight = v;
 		for(int i = 0; i<heights.length; i++)
 			this.heights[i] = (short)(heights[i]-minHeight);
-		BinaryFile bin = new BinaryFile((3+8)*64*64+8);
+		BinaryFile bin = new BinaryFile((3+3*4)*64*64+8);
 		bin.addInt(minHeight);
 		bin.addInt(maxHeight);
 		for(int i = 0; i<this.heights.length; i++){
 			bin.addShort(this.heights[i]);
 			bin.addByte(biomes[i]);
-			a = i*2;
+			a = i*3;
 			bin.addFloat(weather[a]);
 			bin.addFloat(weather[a+1]);
+			bin.addFloat(weather[a+2]);
 		}
 		bin.compress(false);
 		bin.compile(file);
@@ -104,9 +109,12 @@ public class ChunkHeightData{
 		out[1] = (maxHeight-minHeight)/LandscapeChunk.LandscapeSize+1;
 	}
 	float getHumidity(int x, int z){
-		return weather[((z-this.z)*64+x-this.x)*2];
+		return weather[((z-this.z)*64+x-this.x)*3];
+	}
+	float getLevel(int x, int z){
+		return weather[((z-this.z)*64+x-this.x)*3+2];
 	}
 	float getTempature(int x, int z){
-		return weather[((z-this.z)*64+x-this.x)*2+1];
+		return weather[((z-this.z)*64+x-this.x)*3+1];
 	}
 }
