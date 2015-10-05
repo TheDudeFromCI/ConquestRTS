@@ -48,4 +48,7 @@ public enum Block{
 	public byte id(){
 		return (byte)ordinal();
 	}
+	public boolean isTranspartent(){
+		return this==Water;
+	}
 }

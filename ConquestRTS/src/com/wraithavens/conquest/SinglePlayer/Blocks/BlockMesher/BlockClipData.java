@@ -34,15 +34,15 @@ class BlockClipData{
 			return 64*64*5+x*64+y;
 		return -1;
 	}
-	private final boolean[] blocks = new boolean[64*64*6];
+	private final byte[] blocks = new byte[64*64*6];
 	void clear(){
 		for(int i = 0; i<blocks.length; i++)
-			blocks[i] = false;
+			blocks[i] = BlockData.Air;
 	}
-	boolean hasBlock(int x, int y, int z){
+	byte hasBlock(int x, int y, int z){
 		return blocks[getIndex(x, y, z)];
 	}
-	void setHasBlockWeak(int x, int y, int z, boolean block){
+	void setHasBlockWeak(int x, int y, int z, byte block){
 		try{
 			blocks[getIndex(x, y, z)] = block;
 		}catch(Exception exception){}

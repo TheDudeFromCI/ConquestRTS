@@ -3,7 +3,7 @@ package com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Block;
 
 public class BlockData{
-	private static final byte Air = -1;
+	static final byte Air = -1;
 	private final byte[] blocks = new byte[64*64*64];
 	private final BlockClipData clipData;
 	private final MeshFormatter meshFormatter;
@@ -35,7 +35,7 @@ public class BlockData{
 						for(y = 0; y<64; y++)
 							for(z = 0; z<64; z++)
 								meshFormatter.setBlock(y, z, placeSide(x, y, z, j, block));
-						meshFormatter.setCurrentTexutre(Block.values()[block].getTexture(j));
+						meshFormatter.setCurrentTexutre(Block.values()[block&0xFF].getTexture(j));
 						meshFormatter.compileLayer(j, x);
 					}
 				}
@@ -51,7 +51,7 @@ public class BlockData{
 						for(x = 0; x<64; x++)
 							for(z = 0; z<64; z++)
 								meshFormatter.setBlock(x, z, placeSide(x, y, z, j, block));
-						meshFormatter.setCurrentTexutre(Block.values()[block].getTexture(j));
+						meshFormatter.setCurrentTexutre(Block.values()[block&0xFF].getTexture(j));
 						meshFormatter.compileLayer(j, y);
 					}
 				}
@@ -67,7 +67,7 @@ public class BlockData{
 						for(x = 0; x<64; x++)
 							for(y = 0; y<64; y++)
 								meshFormatter.setBlock(x, y, placeSide(x, y, z, j, block));
-						meshFormatter.setCurrentTexutre(Block.values()[block].getTexture(j));
+						meshFormatter.setCurrentTexutre(Block.values()[block&0xFF].getTexture(j));
 						meshFormatter.compileLayer(j, z);
 					}
 				}
@@ -79,7 +79,7 @@ public class BlockData{
 		if(x>=0&&x<64&&y>=0&&y<64&&z>=0&&z<64)
 			blocks[x*64*64+y*64+z] = b;
 		else
-			clipData.setHasBlockWeak(x, y, z, b!=Air);
+			clipData.setHasBlockWeak(x, y, z, b);
 	}
 	private void clear(){
 		for(int i = 0; i<blocks.length; i++)
@@ -92,7 +92,7 @@ public class BlockData{
 	private BlockClipData getClipData(){
 		return clipData;
 	}
-	private boolean hasAdvancedBlock(int x, int y, int z, int j){
+	private byte hasAdvancedBlock(int x, int y, int z, int j){
 		switch(j){
 			case 0:
 				x++;
@@ -114,34 +114,21 @@ public class BlockData{
 				break;
 		}
 		if(x>=0&&x<64&&y>=0&&y<64&&z>=0&&z<64)
-			return getBlock(x, y, z)!=Air;
+			return getBlock(x, y, z);
 		return getClipData().hasBlock(x, y, z);
 	}
 	private byte placeSide(int x, int y, int z, int j, byte type){
-		/*
-		 * From has 3 possible states. Air, required block, or non-required
-		 * block. To has 2 possible states. Air, or solid block. This means we
-		 * have 6 conditions to check for.
-		 */
-		// byte from = getBlock(x, y, z);
-		// boolean to = hasAdvancedBlock(x, y, z, j);
-		// if(to){
-		// if(from==type)
-		// return 0;
-		// else if(from==Air)
-		// return 0;
-		// else
-		// return 0;
-		// }
-		// if(from==type)
-		// return 1;
-		// else if(from==Air)
-		// return -1;
-		// else
-		// return -1;
-		if(hasAdvancedBlock(x, y, z, j))
+		byte to = hasAdvancedBlock(x, y, z, j);
+		byte at = getBlock(x, y, z);
+		boolean toTrans = to==Air?false:Block.values()[to&0xFF].isTranspartent();
+		boolean fromTrans = at==Air?false:Block.values()[at&0xFF].isTranspartent();
+		if(at==type&&toTrans&&!fromTrans)
+			return 1;
+		if(toTrans)
+			return -1;
+		if(to!=Air)
 			return 0;
-		if(getBlock(x, y, z)==type)
+		if(at==type)
 			return 1;
 		return -1;
 	}

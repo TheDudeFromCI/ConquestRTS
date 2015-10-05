@@ -79,7 +79,7 @@ public class SecondaryLoop implements Runnable{
 						return EntityType.getVariation(EntityType.VallaFlower, (int)(random.nextFloat()*4));
 					if(random.nextFloat()<0.005)
 						return EntityType.values()[EntityType.TayleaMeadowRock1.ordinal()
-						                           +(int)(random.nextFloat()*3)];
+							+(int)(random.nextFloat()*3)];
 					break;
 				case ArcstoneHills:
 					break;
@@ -186,18 +186,23 @@ public class SecondaryLoop implements Runnable{
 			MeshFormatter meshFormatter = new MeshFormatter();
 			BlockData blockData = new BlockData(meshFormatter);
 			int a, b, c;
-			int tempA;
+			int tempA, tempC;
 			byte type;
+			byte waterId = Block.Water.id();
 			for(a = 0; a<66; a++){
 				tempA = a-1+x;
 				for(b = 0; b<66; b++){
 					heights[a][b] =
 						a==0||b==0||a==65||b==65?machine.getGroundLevel(tempA, b-1+z):heightData.getHeight(
 							tempA, b-1+z);
-						type = heights[a][b]<0?Block.Water.id():Block.Grass.id();
-						for(c = 0; c<66; c++)
-							if(c-1+y<Math.max(heights[a][b], 0))
-								blockData.setBlock(a-1, c-1, b-1, type);
+					type = Block.Grass.id();
+					for(c = 0; c<66; c++){
+						tempC = c-1+y;
+						if(tempC<heights[a][b])
+							blockData.setBlock(a-1, c-1, b-1, type);
+						else if(tempC<0)
+							blockData.setBlock(a-1, c-1, b-1, waterId);
+					}
 				}
 			}
 			MeshRenderer render = blockData.mesh(false);
@@ -223,16 +228,16 @@ public class SecondaryLoop implements Runnable{
 					tempB = b+z;
 					type =
 						randomPlant(humidity = heightData.getHumidity(tempA, tempB),
-						tempature = heightData.getTempature(tempA, tempB),
-							heightData.getLevel(tempA, tempB), tempA, h, tempB,
-							machine.getGiantEntitySeed()^100799);
+							tempature = heightData.getTempature(tempA, tempB),
+						heightData.getLevel(tempA, tempB), tempA, h, tempB,
+						machine.getGiantEntitySeed()^100799);
 					if(type==null)
 						continue;
 					if(type.isGrass){
 						WorldNoiseMachine.getBiomeColorAt(humidity, tempature, colorVec);
 						grassLocations.add(new GrassDataRaw(type.ordinal(), tempA+0.5f, heightData.getHeight(
 							tempA, tempB), tempB+0.5f, (float)(Math.random()*Math.PI*2), 2.0f+(float)(Math
-								.random()*0.3f-0.15f), colorVec.x, colorVec.y, colorVec.z));
+							.random()*0.3f-0.15f), colorVec.x, colorVec.y, colorVec.z));
 						continue;
 					}
 					entityLocations.add(new EntityDataRaw(type.ordinal(), tempA+0.5f, heightData.getHeight(
