@@ -56,7 +56,9 @@ public class SecondaryLoop implements Runnable{
 			return c3;
 		return c4;
 	}
-	private static EntityType randomPlant(float h, float t, float l, int x, int z, long seed){
+	private static EntityType randomPlant(float h, float t, float l, int x, int y, int z, long seed){
+		if(y<0)
+			return null;
 		{
 			long tr = seed;
 			tr = tr*s+x;
@@ -222,7 +224,8 @@ public class SecondaryLoop implements Runnable{
 					type =
 						randomPlant(humidity = heightData.getHumidity(tempA, tempB),
 						tempature = heightData.getTempature(tempA, tempB),
-							heightData.getLevel(tempA, tempB), tempA, tempB, machine.getGiantEntitySeed()^100799);
+							heightData.getLevel(tempA, tempB), tempA, h, tempB,
+							machine.getGiantEntitySeed()^100799);
 					if(type==null)
 						continue;
 					if(type.isGrass){
