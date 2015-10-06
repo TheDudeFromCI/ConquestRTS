@@ -33,17 +33,21 @@ public class MeshFormatter{
 		float shade = j==2?1:j==3?130/255f:j==0||j==1?200/255f:180/255f;
 		VertexStorage vertexStorage;
 		IndexStorage indexStorage;
+		boolean water;
+		final float waterOffset = -0.1f;
 		if(BlockTextures.values()[currentTextureId].isWater()){
 			vertexStorage = waterVertexStorage;
 			indexStorage = waterIndexStorage;
 			shade = 1;
+			water = true;
 		}else{
 			vertexStorage = this.vertexStorage;
 			indexStorage = this.indexStorage;
+			water = false;
 		}
 		if(j==0){
 			float sx = o;
-			float sy = x;
+			float sy = x+(water?waterOffset:0);
 			float sz = y;
 			float bx = sx+1;
 			float by = sy+w;
@@ -60,7 +64,7 @@ public class MeshFormatter{
 			indexStorage.place(v4);
 		}else if(j==1){
 			float sx = o;
-			float sy = x;
+			float sy = x+(water?waterOffset:0);
 			float sz = y;
 			float by = sy+w;
 			float bz = sz+h;
@@ -76,7 +80,7 @@ public class MeshFormatter{
 			indexStorage.place(v4);
 		}else if(j==2){
 			float sx = x;
-			float sy = o;
+			float sy = o+(water?waterOffset:0);
 			float sz = y;
 			float bx = sx+w;
 			float by = sy+1;
@@ -93,7 +97,7 @@ public class MeshFormatter{
 			indexStorage.place(v4);
 		}else if(j==3){
 			float sx = x;
-			float sy = o;
+			float sy = o+(water?waterOffset:0);
 			float sz = y;
 			float bx = sx+w;
 			float bz = sz+h;
@@ -109,7 +113,7 @@ public class MeshFormatter{
 			indexStorage.place(v4);
 		}else if(j==4){
 			float sx = x;
-			float sy = y;
+			float sy = y+(water?waterOffset:0);
 			float sz = o;
 			float bx = sx+w;
 			float by = sy+h;
@@ -126,7 +130,7 @@ public class MeshFormatter{
 			indexStorage.place(v4);
 		}else if(j==5){
 			float sx = x;
-			float sy = y;
+			float sy = y+(water?waterOffset:0);
 			float sz = o;
 			float bx = sx+w;
 			float by = sy+h;
