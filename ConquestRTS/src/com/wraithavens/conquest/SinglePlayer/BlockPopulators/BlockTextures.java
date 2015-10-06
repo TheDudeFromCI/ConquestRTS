@@ -88,4 +88,7 @@ public enum BlockTextures{
 		this.name = name;
 		this.clipType = clipType;
 	}
+	public boolean isWater(){
+		return this==Water;
+	}
 }

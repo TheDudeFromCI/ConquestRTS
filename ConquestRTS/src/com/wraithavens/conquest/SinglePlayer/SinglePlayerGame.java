@@ -8,6 +8,7 @@ import com.wraithavens.conquest.Math.MatrixUtils;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
+import com.wraithavens.conquest.SinglePlayer.Entities.Water.WaterWorks;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.Particles.ParticleBatch;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
@@ -30,6 +31,7 @@ public class SinglePlayerGame implements Driver{
 	private LandscapeWorld landscape;
 	private Grasslands grassLands;
 	private ParticleBatch particleBatch;
+	private WaterWorks waterWorks;
 	private boolean initalized = false;
 	private LoadingScreen loadingScreen;
 	private double lastLocationTime = 0;
@@ -42,6 +44,7 @@ public class SinglePlayerGame implements Driver{
 		grassLands.dispose();
 		particleBatch.dispose();
 		loadingScreen.dispose();
+		waterWorks.dispose();
 	}
 	public Camera getCamera(){
 		return camera;
@@ -51,6 +54,9 @@ public class SinglePlayerGame implements Driver{
 	}
 	public ParticleBatch getParticleBatch(){
 		return particleBatch;
+	}
+	public WaterWorks getWaterWorks(){
+		return waterWorks;
 	}
 	public WorldNoiseMachine getWorldNoiseMachine(){
 		return machine;
@@ -79,6 +85,7 @@ public class SinglePlayerGame implements Driver{
 		skybox = new SkyBox(noise, new Sunbox(), noise2);
 		entityDatabase = new EntityDatabase(camera);
 		particleBatch = new ParticleBatch(camera);
+		waterWorks = new WaterWorks();
 		landscape = new LandscapeWorld(machine, entityDatabase, camera, particleBatch);
 		grassLands = new Grasslands(landscape, camera);
 		entityDatabase.setLandscape(landscape);
@@ -202,6 +209,7 @@ public class SinglePlayerGame implements Driver{
 		landscape.render();
 		entityDatabase.render();
 		grassLands.render();
+		waterWorks.render();
 		particleBatch.render();
 		GL11.glPopMatrix();
 	}

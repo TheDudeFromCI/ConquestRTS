@@ -4,6 +4,11 @@ import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import org.lwjgl.BufferUtils;
+import com.wraithavens.conquest.Launcher.MainLoop;
+import com.wraithavens.conquest.SinglePlayer.SinglePlayerGame;
+import com.wraithavens.conquest.SinglePlayer.BlockPopulators.BlockTextures;
+import com.wraithavens.conquest.SinglePlayer.Entities.Water.WaterPuddle;
+import com.wraithavens.conquest.SinglePlayer.Entities.Water.WaterWorks;
 
 public class MeshFormatter{
 	private static boolean[] quadReferences = new boolean[10];
@@ -14,6 +19,8 @@ public class MeshFormatter{
 	private final int[][] temp;
 	private final VertexStorage vertexStorage;
 	private final IndexStorage indexStorage;
+	private final VertexStorage waterVertexStorage;
+	private final IndexStorage waterIndexStorage;
 	private boolean basicState;
 	private int currentTextureId;
 	public MeshFormatter(){
@@ -23,9 +30,21 @@ public class MeshFormatter{
 		temp = new int[64][64];
 		vertexStorage = new VertexStorage();
 		indexStorage = new IndexStorage();
+		waterVertexStorage = new VertexStorage();
+		waterIndexStorage = new IndexStorage();
 	}
 	private void addQuad(int x, int y, int w, int h, int j, int o){
 		float shade = j==2?1:j==3?130/255f:j==0||j==1?200/255f:180/255f;
+		VertexStorage vertexStorage;
+		IndexStorage indexStorage;
+		if(BlockTextures.values()[currentTextureId].isWater()){
+			vertexStorage = waterVertexStorage;
+			indexStorage = waterIndexStorage;
+			shade = 1;
+		}else{
+			vertexStorage = this.vertexStorage;
+			indexStorage = this.indexStorage;
+		}
 		if(j==0){
 			float sx = o;
 			float sy = x;
@@ -481,7 +500,31 @@ public class MeshFormatter{
 			return;
 		countQuads(count, side, o);
 	}
-	MeshRenderer extract(){
+	MeshRenderer extract(int x, int y, int z){
+		if(waterIndexStorage.size()>0){
+			int vertexCount = waterVertexStorage.size()/7;
+			FloatBuffer verts = BufferUtils.createFloatBuffer(vertexCount*5);
+			ShortBuffer inds = BufferUtils.createShortBuffer(waterIndexStorage.size());
+			for(int i = 0; i<waterVertexStorage.size(); i += 7){
+				verts.put(waterVertexStorage.get(i+0));
+				verts.put(waterVertexStorage.get(i+1));
+				verts.put(waterVertexStorage.get(i+2));
+				verts.put(waterVertexStorage.get(i+4));
+				verts.put(waterVertexStorage.get(i+5));
+			}
+			inds.put(waterIndexStorage.getAll(), 0, waterIndexStorage.size());
+			verts.flip();
+			inds.flip();
+			MainLoop.endLoopTasks.add(new Runnable(){
+				public void run(){
+					WaterWorks waterWorks = SinglePlayerGame.INSTANCE.getWaterWorks();
+					WaterPuddle puddle = new WaterPuddle(verts, inds, x, y, z);
+					waterWorks.addPuddle(puddle);
+				}
+			});
+			waterVertexStorage.clear();
+			indexStorage.clear();
+		}
 		FloatBuffer verts = BufferUtils.createFloatBuffer(vertexStorage.size());
 		ShortBuffer inds = BufferUtils.createShortBuffer(indexStorage.size());
 		verts.put(vertexStorage.getAll(), 0, vertexStorage.size());
@@ -490,7 +533,7 @@ public class MeshFormatter{
 		inds.flip();
 		vertexStorage.clear();
 		indexStorage.clear();
-		return new MeshRenderer(verts, inds);
+		return new MeshRenderer(verts, inds, null, null);
 	}
 	byte getBlockType(int index){
 		return typeList.get(index);

@@ -11,17 +11,20 @@ class VertexStorage{
 	void clear(){
 		size = 0;
 	}
+	float get(int index){
+		return vertices[index];
+	}
 	float[] getAll(){
 		return vertices;
 	}
 	int place(float x, float y, float z, float shade, float tx, float ty, float tz){
 		for(int i = 0; i<size; i += 7)
 			if(vertices[i]==x&&vertices[i+1]==y&&vertices[i+2]==z&&vertices[i+3]==shade&&vertices[i+4]==tx
-				&&vertices[i+5]==ty&&vertices[i+6]==tz)
+			&&vertices[i+5]==ty&&vertices[i+6]==tz)
 				return i;
 		if(size==vertices.length)
 			vertices = Arrays.copyOf(vertices, vertices.length+700);
-		vertices[size] = x;
+		vertices[size+0] = x;
 		vertices[size+1] = y;
 		vertices[size+2] = z;
 		vertices[size+3] = shade;

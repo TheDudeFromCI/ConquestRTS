@@ -18,7 +18,7 @@ public class BlockData{
 	 * basic, then a full optimazation is preformed. (This takes much longer,
 	 * but with far, far, fewer quads.)
 	 */
-	public MeshRenderer mesh(boolean basic){
+	public MeshRenderer mesh(boolean basic, int chunkX, int chunkY, int chunkZ){
 		meshFormatter.setBasicState(basic);
 		int x, y, z, j, i;
 		byte block;
@@ -73,7 +73,7 @@ public class BlockData{
 				}
 			}
 		}
-		return meshFormatter.extract();
+		return meshFormatter.extract(chunkX, chunkY, chunkZ);
 	}
 	public void setBlock(int x, int y, int z, byte b){
 		if(x>=0&&x<64&&y>=0&&y<64&&z>=0&&z<64)
