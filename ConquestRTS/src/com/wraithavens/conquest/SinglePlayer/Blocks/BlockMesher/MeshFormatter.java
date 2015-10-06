@@ -31,18 +31,18 @@ public class MeshFormatter{
 	}
 	private void addQuad(int x, int y, int w, int h, int j, int o){
 		float shade = j==2?1:j==3?130/255f:j==0||j==1?200/255f:180/255f;
-		VertexStorage vertexStorage;
-		IndexStorage indexStorage;
+		VertexStorage vertices;
+		IndexStorage indices;
 		boolean water;
 		final float waterOffset = -0.1f;
 		if(BlockTextures.values()[currentTextureId].isWater()){
-			vertexStorage = waterVertexStorage;
-			indexStorage = waterIndexStorage;
+			vertices = waterVertexStorage;
+			indices = waterIndexStorage;
 			shade = 1;
 			water = true;
 		}else{
-			vertexStorage = this.vertexStorage;
-			indexStorage = this.indexStorage;
+			vertices = vertexStorage;
+			indices = indexStorage;
 			water = false;
 		}
 		if(j==0){
@@ -52,32 +52,32 @@ public class MeshFormatter{
 			float bx = sx+1;
 			float by = sy+w;
 			float bz = sz+h;
-			short v1 = (short)vertexStorage.place(bx, by, bz, shade, 0, 0, currentTextureId);
-			short v2 = (short)vertexStorage.place(bx, sy, bz, shade, 0, w, currentTextureId);
-			short v3 = (short)vertexStorage.place(bx, sy, sz, shade, h, w, currentTextureId);
-			short v4 = (short)vertexStorage.place(bx, by, sz, shade, h, 0, currentTextureId);
-			indexStorage.place(v1);
-			indexStorage.place(v2);
-			indexStorage.place(v3);
-			indexStorage.place(v1);
-			indexStorage.place(v3);
-			indexStorage.place(v4);
+			short v1 = (short)vertices.place(bx, by, bz, shade, 0, 0, currentTextureId);
+			short v2 = (short)vertices.place(bx, sy, bz, shade, 0, w, currentTextureId);
+			short v3 = (short)vertices.place(bx, sy, sz, shade, h, w, currentTextureId);
+			short v4 = (short)vertices.place(bx, by, sz, shade, h, 0, currentTextureId);
+			indices.place(v1);
+			indices.place(v2);
+			indices.place(v3);
+			indices.place(v1);
+			indices.place(v3);
+			indices.place(v4);
 		}else if(j==1){
 			float sx = o;
 			float sy = x+(water?waterOffset:0);
 			float sz = y;
 			float by = sy+w;
 			float bz = sz+h;
-			short v1 = (short)vertexStorage.place(sx, sy, sz, shade, h, w, currentTextureId);
-			short v2 = (short)vertexStorage.place(sx, sy, bz, shade, 0, w, currentTextureId);
-			short v3 = (short)vertexStorage.place(sx, by, bz, shade, 0, 0, currentTextureId);
-			short v4 = (short)vertexStorage.place(sx, by, sz, shade, h, 0, currentTextureId);
-			indexStorage.place(v1);
-			indexStorage.place(v2);
-			indexStorage.place(v3);
-			indexStorage.place(v1);
-			indexStorage.place(v3);
-			indexStorage.place(v4);
+			short v1 = (short)vertices.place(sx, sy, sz, shade, h, w, currentTextureId);
+			short v2 = (short)vertices.place(sx, sy, bz, shade, 0, w, currentTextureId);
+			short v3 = (short)vertices.place(sx, by, bz, shade, 0, 0, currentTextureId);
+			short v4 = (short)vertices.place(sx, by, sz, shade, h, 0, currentTextureId);
+			indices.place(v1);
+			indices.place(v2);
+			indices.place(v3);
+			indices.place(v1);
+			indices.place(v3);
+			indices.place(v4);
 		}else if(j==2){
 			float sx = x;
 			float sy = o+(water?waterOffset:0);
@@ -85,32 +85,32 @@ public class MeshFormatter{
 			float bx = sx+w;
 			float by = sy+1;
 			float bz = sz+h;
-			short v1 = (short)vertexStorage.place(sx, by, sz, shade, 0, 0, currentTextureId);
-			short v2 = (short)vertexStorage.place(sx, by, bz, shade, 0, h, currentTextureId);
-			short v3 = (short)vertexStorage.place(bx, by, bz, shade, w, h, currentTextureId);
-			short v4 = (short)vertexStorage.place(bx, by, sz, shade, w, 0, currentTextureId);
-			indexStorage.place(v1);
-			indexStorage.place(v2);
-			indexStorage.place(v3);
-			indexStorage.place(v1);
-			indexStorage.place(v3);
-			indexStorage.place(v4);
+			short v1 = (short)vertices.place(sx, by, sz, shade, 0, 0, currentTextureId);
+			short v2 = (short)vertices.place(sx, by, bz, shade, 0, h, currentTextureId);
+			short v3 = (short)vertices.place(bx, by, bz, shade, w, h, currentTextureId);
+			short v4 = (short)vertices.place(bx, by, sz, shade, w, 0, currentTextureId);
+			indices.place(v1);
+			indices.place(v2);
+			indices.place(v3);
+			indices.place(v1);
+			indices.place(v3);
+			indices.place(v4);
 		}else if(j==3){
 			float sx = x;
 			float sy = o+(water?waterOffset:0);
 			float sz = y;
 			float bx = sx+w;
 			float bz = sz+h;
-			short v1 = (short)vertexStorage.place(bx, sy, bz, shade, w, h, currentTextureId);
-			short v2 = (short)vertexStorage.place(sx, sy, bz, shade, 0, h, currentTextureId);
-			short v3 = (short)vertexStorage.place(sx, sy, sz, shade, 0, 0, currentTextureId);
-			short v4 = (short)vertexStorage.place(bx, sy, sz, shade, w, 0, currentTextureId);
-			indexStorage.place(v1);
-			indexStorage.place(v2);
-			indexStorage.place(v3);
-			indexStorage.place(v1);
-			indexStorage.place(v3);
-			indexStorage.place(v4);
+			short v1 = (short)vertices.place(bx, sy, bz, shade, w, h, currentTextureId);
+			short v2 = (short)vertices.place(sx, sy, bz, shade, 0, h, currentTextureId);
+			short v3 = (short)vertices.place(sx, sy, sz, shade, 0, 0, currentTextureId);
+			short v4 = (short)vertices.place(bx, sy, sz, shade, w, 0, currentTextureId);
+			indices.place(v1);
+			indices.place(v2);
+			indices.place(v3);
+			indices.place(v1);
+			indices.place(v3);
+			indices.place(v4);
 		}else if(j==4){
 			float sx = x;
 			float sy = y+(water?waterOffset:0);
@@ -118,32 +118,32 @@ public class MeshFormatter{
 			float bx = sx+w;
 			float by = sy+h;
 			float bz = sz+1;
-			short v1 = (short)vertexStorage.place(bx, by, bz, shade, 0, 0, currentTextureId);
-			short v2 = (short)vertexStorage.place(sx, by, bz, shade, 0, w, currentTextureId);
-			short v3 = (short)vertexStorage.place(sx, sy, bz, shade, h, w, currentTextureId);
-			short v4 = (short)vertexStorage.place(bx, sy, bz, shade, h, 0, currentTextureId);
-			indexStorage.place(v1);
-			indexStorage.place(v2);
-			indexStorage.place(v3);
-			indexStorage.place(v1);
-			indexStorage.place(v3);
-			indexStorage.place(v4);
+			short v1 = (short)vertices.place(bx, by, bz, shade, 0, 0, currentTextureId);
+			short v2 = (short)vertices.place(sx, by, bz, shade, 0, w, currentTextureId);
+			short v3 = (short)vertices.place(sx, sy, bz, shade, h, w, currentTextureId);
+			short v4 = (short)vertices.place(bx, sy, bz, shade, h, 0, currentTextureId);
+			indices.place(v1);
+			indices.place(v2);
+			indices.place(v3);
+			indices.place(v1);
+			indices.place(v3);
+			indices.place(v4);
 		}else if(j==5){
 			float sx = x;
 			float sy = y+(water?waterOffset:0);
 			float sz = o;
 			float bx = sx+w;
 			float by = sy+h;
-			short v1 = (short)vertexStorage.place(sx, sy, sz, shade, 0, 0, currentTextureId);
-			short v2 = (short)vertexStorage.place(sx, by, sz, shade, 0, h, currentTextureId);
-			short v3 = (short)vertexStorage.place(bx, by, sz, shade, w, h, currentTextureId);
-			short v4 = (short)vertexStorage.place(bx, sy, sz, shade, w, 0, currentTextureId);
-			indexStorage.place(v1);
-			indexStorage.place(v2);
-			indexStorage.place(v3);
-			indexStorage.place(v1);
-			indexStorage.place(v3);
-			indexStorage.place(v4);
+			short v1 = (short)vertices.place(sx, sy, sz, shade, 0, 0, currentTextureId);
+			short v2 = (short)vertices.place(sx, by, sz, shade, 0, h, currentTextureId);
+			short v3 = (short)vertices.place(bx, by, sz, shade, w, h, currentTextureId);
+			short v4 = (short)vertices.place(bx, sy, sz, shade, w, 0, currentTextureId);
+			indices.place(v1);
+			indices.place(v2);
+			indices.place(v3);
+			indices.place(v1);
+			indices.place(v3);
+			indices.place(v4);
 		}else
 			throw new RuntimeException();
 	}
@@ -525,7 +525,7 @@ public class MeshFormatter{
 		verts2.flip();
 		inds2.flip();
 		waterVertexStorage.clear();
-		indexStorage.clear();
+		waterIndexStorage.clear();
 		return new MeshRenderer(verts, inds, verts2, inds2);
 	}
 	byte getBlockType(int index){

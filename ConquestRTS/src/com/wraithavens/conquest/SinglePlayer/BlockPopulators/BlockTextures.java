@@ -19,7 +19,7 @@ public enum BlockTextures{
 	Grass("Grass.png", 0),
 	Dirt("Dirt.png", 1),
 	SideDirt("SideDirt.png", 2),
-	Water("Water.png", 1);
+	Water("Water0.png", 1);
 	public static void bind(){
 		GL13.glActiveTexture(GL13.GL_TEXTURE1);
 		GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, textureId);
