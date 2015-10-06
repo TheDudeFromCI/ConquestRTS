@@ -40,7 +40,6 @@ public class WorldNoiseMachine{
 		return new WorldNoiseMachine(seeds, worldHeight, humidity, tempature);
 	}
 	public static void getBiomeColorAt(float h, float t, Vector3f colorOut){
-		// TODO Make this more effiecient.
 		final float mapSize = BiomeTransitionSize;
 		h *= mapSize;
 		t *= mapSize;
@@ -49,68 +48,61 @@ public class WorldNoiseMachine{
 		Biome c3 = Biome.getFittingBiome((int)h/mapSize, (int)(t+1)/mapSize, 1.0f);
 		Biome c4 = Biome.getFittingBiome((int)(h+1)/mapSize, (int)(t+1)/mapSize, 1.0f);
 		if(c1==c2&&c2==c3&&c3==c4){
-			float[] temp = new float[3];
-			getTempBiomeColorAt(c1, temp);
-			colorOut.set(temp[0], temp[1], temp[2]);
+			getTempBiomeColorAt(c1, tempBiomeColor, 0);
+			colorOut.set(tempBiomeColor[0], tempBiomeColor[1], tempBiomeColor[2]);
 			return;
 		}
-		float[] p1 = new float[3];
-		float[] p2 = new float[3];
-		float[] p3 = new float[3];
-		float[] p4 = new float[3];
-		getTempBiomeColorAt(c1, p1);
-		getTempBiomeColorAt(c2, p2);
-		getTempBiomeColorAt(c3, p3);
-		getTempBiomeColorAt(c4, p4);
-		float[] t1 = new float[3];
-		float[] t2 = new float[3];
-		float[] t3 = new float[3];
+		getTempBiomeColorAt(c1, tempBiomeColor, 0);
+		getTempBiomeColorAt(c2, tempBiomeColor, 3);
+		getTempBiomeColorAt(c3, tempBiomeColor, 6);
+		getTempBiomeColorAt(c4, tempBiomeColor, 9);
 		float a = h-(int)h;
 		float b = t-(int)t;
-		blend(p1, p2, a, t1);
-		blend(p3, p4, a, t2);
-		blend(t1, t2, b, t3);
-		colorOut.set(t3[0], t3[1], t3[2]);
+		blend(tempBiomeColor, 0, tempBiomeColor, 3, a, tempBiomeColor, 12);
+		blend(tempBiomeColor, 6, tempBiomeColor, 9, a, tempBiomeColor, 15);
+		blend(tempBiomeColor, 12, tempBiomeColor, 15, b, tempBiomeColor, 18);
+		colorOut.set(tempBiomeColor[18], tempBiomeColor[19], tempBiomeColor[20]);
 	}
 	private static float blend(float a, float b, float frac){
 		frac = (float)((1-Math.cos(frac*Math.PI))/2);
 		return a*(1-frac)+b*frac;
 	}
-	private static void blend(float[] a, float[] b, float c, float[] out){
+	private static void blend(float[] a, int offset1, float[] b, int offset2, float c, float[] out, int offset3){
 		c = (float)((1-Math.cos(c*Math.PI))/2);
-		out[0] = a[0]*(1-c)+b[0]*c;
-		out[1] = a[1]*(1-c)+b[1]*c;
-		out[2] = a[2]*(1-c)+b[2]*c;
+		out[offset3+0] = a[offset1+0]*(1-c)+b[offset2+0]*c;
+		out[offset3+1] = a[offset1+1]*(1-c)+b[offset2+1]*c;
+		out[offset3+2] = a[offset1+2]*(1-c)+b[offset2+2]*c;
 	}
 	private static int cheapFloor(float x){
 		return x<0?(int)x-1:(int)x;
 	}
-	private static void getTempBiomeColorAt(Biome biome, float[] out){
+	private static void getTempBiomeColorAt(Biome biome, float[] out, int offset){
 		switch(biome){
 			case TayleaMeadow:
-				out[0] = 109/255f;
-				out[1] = 135/255f;
-				out[2] = 24/255f;
+				out[offset+0] = 109/255f;
+				out[offset+1] = 135/255f;
+				out[offset+2] = 24/255f;
 				return;
 			case ArcstoneHills:
-				out[0] = 90/255f;
-				out[1] = 110/255f;
-				out[2] = 20/255f;
+				out[offset+0] = 90/255f;
+				out[offset+1] = 110/255f;
+				out[offset+2] = 20/255f;
 				return;
 			case AesiaFields:
-				out[0] = 93/255f;
-				out[1] = 115/255f;
-				out[2] = 19/255f;
+				out[offset+0] = 93/255f;
+				out[offset+1] = 115/255f;
+				out[offset+2] = 19/255f;
 				return;
 			case Ocean:
-				out[0] = 0/255f;
-				out[1] = 255/255f;
-				out[2] = 100/255f;
+				out[offset+0] = 0/255f;
+				out[offset+1] = 255/255f;
+				out[offset+2] = 100/255f;
 				return;
 			default:
 				throw new RuntimeException();
 		}
 	}
+	private static float[] tempBiomeColor = new float[21];
 	public static final int BiomeTransitionSize = 300;
 	private final AdvancedNoise worldHeight;
 	private final AdvancedNoise tempature;
