@@ -2,9 +2,9 @@ package com.wraithavens.conquest.SinglePlayer.Skybox;
 
 public class Sunbox{
 	void dispose(){
-		// TODO
+		// TODO Make a sun.
 	}
 	void render(){
-		// TODO
+		// TODO Render sun.
 	}
 }

@@ -171,7 +171,7 @@ public class Settings{
 			changed = true;
 		}
 		if(request.getGeneratorSleeping()!=generatorSleeping){
-			// TODO
+			// TODO Make generator sleeping adjustable.
 			generatorSleeping = request.getGeneratorSleeping();
 			changed = true;
 		}
@@ -186,17 +186,17 @@ public class Settings{
 			changed = true;
 		}
 		if(request.getScreenResolution()!=screenResolution){
-			// TODO
+			// TODO Make screen resolution adjustable.
 			screenResolution = request.getScreenResolution();
 			changed = true;
 		}
 		if(request.isvSync()!=vSync){
-			// TODO
+			// TODO Make vSync adjustable.
 			vSync = request.isvSync();
 			changed = true;
 		}
 		if(request.isFullScreen()!=fullScreen){
-			// TODO
+			// TODO Make full screen adjustable.
 			fullScreen = request.isFullScreen();
 			changed = true;
 		}

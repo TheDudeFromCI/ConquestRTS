@@ -12,6 +12,11 @@ public class BlockData{
 		clipData = new BlockClipData();
 		clear();
 	}
+	public void clear(){
+		for(int i = 0; i<blocks.length; i++)
+			blocks[i] = Air;
+		clipData.clear();
+	}
 	/**
 	 * Creates and saves the mesh for this chunk. If basic is enabled, then no
 	 * optimization steps are taken for creating the mesh. Simply speed. If not
@@ -80,11 +85,6 @@ public class BlockData{
 			blocks[x*64*64+y*64+z] = b;
 		else
 			clipData.setHasBlockWeak(x, y, z, b);
-	}
-	private void clear(){
-		for(int i = 0; i<blocks.length; i++)
-			blocks[i] = Air;
-		clipData.clear();
 	}
 	private byte getBlock(int x, int y, int z){
 		return blocks[x*64*64+y*64+z];

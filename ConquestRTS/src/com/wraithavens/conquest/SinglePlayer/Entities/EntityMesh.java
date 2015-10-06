@@ -39,7 +39,7 @@ class EntityMesh{
 			bin.decompress(true);
 			// ---
 			// Get the type of mesh this TAL file represents.
-			// 1 Bit = Has Bones? (TODO)
+			// 1 Bit = Has Bones? TODO Make bones
 			// 2 Bit = Is Color Blended?
 			// 4 Bit = Has Decimated Model?
 			// ----
