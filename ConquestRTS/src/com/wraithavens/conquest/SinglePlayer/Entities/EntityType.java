@@ -102,10 +102,10 @@ public enum EntityType{
 		viewDistance = isGiant?0:100*100;
 		groundHits = new GiantEntityGroundHits(this);
 	}
-	public boolean isAesiaStemType(){
+	public boolean isType(EntityType base, int count){
 		int o = ordinal();
-		int i = EntityType.AesiaStems.ordinal();
-		return o>=i&&o<i+24;
+		int i = base.ordinal();
+		return o>=i&&o<i+count;
 	}
 	EntityMesh createReference(){
 		if(mesh!=null){

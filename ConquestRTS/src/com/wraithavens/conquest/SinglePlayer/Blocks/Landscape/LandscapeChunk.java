@@ -85,11 +85,13 @@ class LandscapeChunk{
 				EntityType type;
 				for(int i = 0; i<entityCount; i++){
 					type = EntityType.values()[bin.getInt()];
-					if(type.isAesiaStemType())
+					if(type.isType(EntityType.AesiaStems, 24))
 						entity = new AesiaStem(type);
 					else
 						entity = new Entity(type);
 					entity.moveTo(bin.getFloat(), bin.getFloat(), bin.getFloat());
+					if(type.isType(EntityType.AesiaPedals, 7))
+						entity.shift(0, -1/5f*0.9f, 0);
 					entity.setYaw(bin.getFloat());
 					entity.scaleTo(bin.getFloat());
 					entity.updateAABB();

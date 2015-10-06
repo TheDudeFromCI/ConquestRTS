@@ -23,10 +23,10 @@ public class PointGenerator2D{
 		float subX = x/averageDistanceApart;
 		float subY = y/averageDistanceApart;
 		float subSize = size/averageDistanceApart;
-		int startX = floor(subX)-1;
-		int startY = floor(subY)-1;
-		int endX = floor(subX+subSize)+1;
-		int endY = floor(subY+subSize)+1;
+		int startX = floor(subX)-5;
+		int startY = floor(subY)-5;
+		int endX = floor(subX+subSize)+5;
+		int endY = floor(subY+subSize)+5;
 		int a, b;
 		float tempX, tempY;
 		long t;
@@ -39,6 +39,7 @@ public class PointGenerator2D{
 					t += a*a+s;
 					t += b*b+s;
 					r.setSeed(t);
+					r.nextFloat();
 				}
 				if(r.nextFloat()>=consistancy)
 					continue;

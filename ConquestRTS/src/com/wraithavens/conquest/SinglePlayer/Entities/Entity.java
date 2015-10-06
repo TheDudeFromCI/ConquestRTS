@@ -43,6 +43,11 @@ public class Entity{
 	public final void setYaw(float yaw){
 		this.yaw = yaw;
 	}
+	public final void shift(float x, float y, float z){
+		position.x += x;
+		position.y += y;
+		position.z += z;
+	}
 	public final void updateAABB(){
 		tempMin.set(mesh.getAabbMin());
 		tempMax.set(mesh.getAabbMax());
