@@ -67,6 +67,9 @@ public class BinaryFile{
 	public BinaryFile(int space){
 		binary = new byte[space];
 	}
+	public void addBoolean(boolean val){
+		addByte((byte)(val?1:0));
+	}
 	public void addByte(byte n){
 		binary[pos] = n;
 		pos++;
@@ -107,6 +110,9 @@ public class BinaryFile{
 		synchronized(CompressionBuffer){
 			decompress(CompressionBuffer, readBuffSize);
 		}
+	}
+	public boolean getBoolean(){
+		return getByte()==1;
 	}
 	public byte getByte(){
 		byte b = binary[pos];
@@ -169,11 +175,5 @@ public class BinaryFile{
 		}catch(DataFormatException e){
 			e.printStackTrace();
 		}
-	}
-	void addBoolean(boolean val){
-		addByte((byte)(val?1:0));
-	}
-	boolean getBoolean(){
-		return getByte()==1;
 	}
 }

@@ -10,6 +10,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
+import com.wraithavens.conquest.SinglePlayer.SinglePlayerGame;
 import com.wraithavens.conquest.SinglePlayer.Entities.AesiaStem;
 import com.wraithavens.conquest.SinglePlayer.Entities.Entity;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
@@ -17,6 +18,8 @@ import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassPatch;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassTransform;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
+import com.wraithavens.conquest.SinglePlayer.Entities.Water.WaterPuddle;
+import com.wraithavens.conquest.SinglePlayer.Entities.Water.WaterWorks;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
 class LandscapeChunk{
@@ -32,6 +35,7 @@ class LandscapeChunk{
 	private final GrassPatch[] grassPatches;
 	private final EntityDatabase entityDatabase;
 	private final Grasslands grassLands;
+	private WaterPuddle waterPuddle;
 	LandscapeChunk(EntityDatabase entityDatabase, Grasslands grassLands, int x, int y, int z, File file){
 		this.x = x;
 		this.y = y;
@@ -52,6 +56,9 @@ class LandscapeChunk{
 			int entityCount = bin.getInt();
 			int grassCount = bin.getInt();
 			int grassPatchCount = bin.getInt();
+			boolean hasWater = bin.getBoolean();
+			int waterVertexSize = hasWater?bin.getInt():0;
+			int waterIndexSize = hasWater?bin.getInt():0;
 			{
 				// ---
 				// Load mesh data.
@@ -131,6 +138,22 @@ class LandscapeChunk{
 				GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB8, 64, 64, 0, GL11.GL_RGB,
 					GL11.GL_UNSIGNED_BYTE, pixels);
 			}
+			if(hasWater){
+				// ---
+				// Load water puddle.
+				// ---
+				FloatBuffer vertexData = BufferUtils.createFloatBuffer(waterVertexSize);
+				ShortBuffer indexData = BufferUtils.createShortBuffer(waterIndexSize);
+				while(vertexData.hasRemaining())
+					vertexData.put(bin.getFloat());
+				while(indexData.hasRemaining())
+					indexData.put(bin.getShort());
+				vertexData.flip();
+				indexData.flip();
+				WaterWorks waterWorks = SinglePlayerGame.INSTANCE.getWaterWorks();
+				waterPuddle = new WaterPuddle(vertexData, indexData, x, y, z);
+				waterWorks.addPuddle(waterPuddle);
+			}
 		}
 	}
 	void dispose(){
@@ -143,6 +166,10 @@ class LandscapeChunk{
 		}
 		for(GrassPatch patch : grassPatches)
 			grassLands.removePatch(patch);
+		if(waterPuddle!=null){
+			WaterWorks waterWorks = SinglePlayerGame.INSTANCE.getWaterWorks();
+			waterWorks.removePuddle(waterPuddle);
+		}
 	}
 	int getX(){
 		return x;

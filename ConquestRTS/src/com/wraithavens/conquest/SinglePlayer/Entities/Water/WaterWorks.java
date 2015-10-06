@@ -68,13 +68,16 @@ public class WaterWorks{
 	}
 	public void addPuddle(WaterPuddle puddle){
 		puddles.add(puddle);
-		// TODO dispose puddles.
 	}
 	public void dispose(){
 		shader.dispose();
 		GL11.glDeleteTextures(textureId);
 		for(WaterPuddle p : puddles)
 			p.dispose();
+	}
+	public void removePuddle(WaterPuddle puddle){
+		puddles.remove(puddle);
+		puddle.dispose();
 	}
 	public void render(){
 		if(puddles.isEmpty())

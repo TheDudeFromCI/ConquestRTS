@@ -37,7 +37,6 @@ public class SinglePlayerGame implements Driver{
 	private double lastLocationTime = 0;
 	private int renderedSky = 0;
 	public void dispose(){
-		INSTANCE = null;
 		skybox.dispose();
 		landscape.dispose();
 		entityDatabase.dispose();
@@ -45,6 +44,7 @@ public class SinglePlayerGame implements Driver{
 		particleBatch.dispose();
 		loadingScreen.dispose();
 		waterWorks.dispose();
+		INSTANCE = null;
 	}
 	public Camera getCamera(){
 		return camera;

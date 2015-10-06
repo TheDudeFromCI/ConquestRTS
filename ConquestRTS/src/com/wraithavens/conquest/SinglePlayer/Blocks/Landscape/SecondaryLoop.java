@@ -173,8 +173,8 @@ public class SecondaryLoop implements Runnable{
 		}
 	}
 	private void genChunk(File file, int x, int y, int z, ChunkHeightData heightData){
-		FloatBuffer vertexData;
-		ShortBuffer indexData;
+		FloatBuffer vertexData, waterVertexData;
+		ShortBuffer indexData, waterIndexData;
 		ByteBuffer colorData;
 		ArrayList<EntityDataRaw> entityLocations = new ArrayList();
 		ArrayList<GrassDataRaw> grassLocations = new ArrayList();
@@ -183,6 +183,7 @@ public class SecondaryLoop implements Runnable{
 			// ---
 			// Add mesh data.
 			// ---
+			// TODO Reuse this, and stop wasting memory!
 			MeshFormatter meshFormatter = new MeshFormatter();
 			BlockData blockData = new BlockData(meshFormatter);
 			int a, b, c;
@@ -205,9 +206,11 @@ public class SecondaryLoop implements Runnable{
 						}
 				}
 			}
-			MeshRenderer render = blockData.mesh(false, x, y, z);
+			MeshRenderer render = blockData.mesh(false);
 			vertexData = render.getVertexData();
 			indexData = render.getIndexData();
+			waterVertexData = render.getWaterVertexData();
+			waterIndexData = render.getWaterIndexData();
 		}
 		{
 			// ---
@@ -293,17 +296,28 @@ public class SecondaryLoop implements Runnable{
 			// Compile file.
 			// ---
 			int byteCount = 0;
+			boolean hasWater = waterIndexData!=null;
 			byteCount += vertexData.capacity()*4+4;
 			byteCount += indexData.capacity()*2+4;
 			byteCount += entityLocations.size()*6*4+4;
 			byteCount += grassLocations.size()*9*4+8;
 			byteCount += 64*64*3;
+			byteCount += 1;
+			if(waterIndexData!=null){
+				byteCount += waterVertexData.capacity()*4+4;
+				byteCount += waterIndexData.capacity()*2+4;
+			}
 			BinaryFile bin = new BinaryFile(byteCount);
 			bin.addInt(vertexData.capacity());
 			bin.addInt(indexData.capacity());
 			bin.addInt(entityLocations.size());
 			bin.addInt(grassLocations.size());
 			bin.addInt(grassPatchCount);
+			bin.addBoolean(hasWater);
+			if(hasWater){
+				bin.addInt(waterVertexData.capacity());
+				bin.addInt(waterIndexData.capacity());
+			}
 			while(vertexData.hasRemaining())
 				bin.addFloat(vertexData.get());
 			while(indexData.hasRemaining())
@@ -329,6 +343,12 @@ public class SecondaryLoop implements Runnable{
 			}
 			while(colorData.hasRemaining())
 				bin.addByte(colorData.get());
+			if(hasWater){
+				while(waterVertexData.hasRemaining())
+					bin.addFloat(waterVertexData.get());
+				while(waterIndexData.hasRemaining())
+					bin.addShort(waterIndexData.get());
+			}
 			bin.compress(false);
 			bin.compile(file);
 		}
