@@ -10,6 +10,6 @@ public class TayleaMeadowNoise implements BiomeNoiseMachine{
 		noise.setFunction(new CosineInterpolation());
 	}
 	public float getHeight(float x, float z){
-		return noise.noise(x, z)*300;
+		return noise.noise(x, z)*50;
 	}
 }

@@ -10,6 +10,6 @@ public class AesiaFieldsNoise implements BiomeNoiseMachine{
 		noise.setFunction(new CosineInterpolation());
 	}
 	public float getHeight(float x, float z){
-		return noise.noise(x, z)*500;
+		return noise.noise(x, z)*100+50;
 	}
 }

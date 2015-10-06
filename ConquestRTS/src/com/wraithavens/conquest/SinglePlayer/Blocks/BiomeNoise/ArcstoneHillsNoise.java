@@ -14,6 +14,6 @@ public class ArcstoneHillsNoise implements BiomeNoiseMachine{
 		noise2.setFunction(cos);
 	}
 	public float getHeight(float x, float z){
-		return noise.noise(x, z)*1300+noise2.noise(x, z)*500;
+		return noise.noise(x, z)*300+noise2.noise(x, z)*100;
 	}
 }

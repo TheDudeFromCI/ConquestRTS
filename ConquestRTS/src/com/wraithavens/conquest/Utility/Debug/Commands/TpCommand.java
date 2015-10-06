@@ -25,26 +25,11 @@ public class TpCommand implements Command{
 		return "tp [biome] {-maxRange:#}";
 	}
 	public void parse(String[] args){
-		if(args.length!=3&&args.length!=4){
+		if(args.length!=2&&args.length!=4){
 			console.println(ChatColor.RED+"Error! Unknown number of arguments.");
 			return;
 		}
 		if(args.length==2){
-			int maxRangeFirstPass = Integer.MAX_VALUE;
-			for(String s : args){
-				if(s==args[0]||s==args[1])
-					continue;
-				if(s.startsWith("-maxRange")){
-					try{
-						maxRangeFirstPass = Integer.valueOf(s.substring(9));
-					}catch(Exception exception){
-						console.println(ChatColor.RED+"That's not a number! '"+s.substring(9)+"'");
-						return;
-					}
-				}else
-					console.println(ChatColor.YELLOW+"Warning! Unknown argument: '"+s+"'.");
-			}
-			final int maxRange = maxRangeFirstPass;
 			final Biome targetBiome = Biome.getByName(args[1]);
 			if(targetBiome==null){
 				console.println(ChatColor.RED+"Error! Biome not found. '"+args[1]+"'.");
@@ -61,7 +46,6 @@ public class TpCommand implements Command{
 					WorldNoiseMachine machine = game.getWorldNoiseMachine();
 					SpiralGridAlgorithm grid = new SpiralGridAlgorithm();
 					int searchSize = 100;
-					grid.setMaxDistance(maxRange/searchSize);
 					Camera camera = game.getCamera();
 					int x, z;
 					float[] temp = new float[3];
