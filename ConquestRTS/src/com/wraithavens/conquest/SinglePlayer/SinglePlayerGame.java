@@ -227,6 +227,7 @@ public class SinglePlayerGame implements Driver{
 		move(delta);
 		landscape.update(time);
 		skybox.update(time);
+		waterWorks.update(time);
 		grassLands.update(time);
 		entityDatabase.update(time);
 		particleBatch.update(delta, time);

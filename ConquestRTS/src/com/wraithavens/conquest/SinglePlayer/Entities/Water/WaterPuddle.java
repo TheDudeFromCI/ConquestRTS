@@ -7,17 +7,6 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 
 public class WaterPuddle{
-	private static void print(FloatBuffer buf, ShortBuffer in){
-		StringBuilder sb = new StringBuilder();
-		sb.append("Water Puddle:\n\nVertices\n\n");
-		for(int i = 0; i<buf.capacity(); i++)
-			sb.append(buf.get(i)+"\n");
-		sb.append("\nIndices\n\n");
-		for(int i = 0; i<in.capacity(); i++)
-			sb.append(in.get(i)+"\n");
-		sb.append("\n\n");
-		System.out.println(sb.toString());
-	}
 	private final int vbo;
 	private final int ibo;
 	private final int count;
@@ -35,8 +24,6 @@ public class WaterPuddle{
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertexData, GL15.GL_STATIC_DRAW);
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_STATIC_DRAW);
-		// print(vertexData, indexData);
-		System.out.println("Count: "+count);
 	}
 	void dispose(){
 		GL15.glDeleteBuffers(vbo);
