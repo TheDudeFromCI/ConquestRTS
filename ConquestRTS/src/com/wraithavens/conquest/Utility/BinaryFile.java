@@ -74,6 +74,11 @@ public class BinaryFile{
 		binary[pos] = n;
 		pos++;
 	}
+	public void addBytes(byte[] bytes, int offset, int length){
+		for(int i = offset; i<offset+length; i++)
+			binary[pos+i-offset] = bytes[i];
+		pos += length;
+	}
 	public void addFloat(float n){
 		addInt(Float.floatToIntBits(n));
 	}
@@ -136,11 +141,6 @@ public class BinaryFile{
 		short i = (short)(binary[pos]&0xFF|(binary[pos+1]&0xFF)<<8);
 		pos += 2;
 		return i;
-	}
-	private void addBytes(byte[] bytes, int offset, int length){
-		for(int i = offset; i<offset+length; i++)
-			binary[pos+i-offset] = bytes[i];
-		pos += length;
 	}
 	private void compress(byte[] buffer, boolean writeBufSize){
 		Deflater deflater = new Deflater();

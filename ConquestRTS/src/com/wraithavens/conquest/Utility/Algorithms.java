@@ -14,6 +14,9 @@ public class Algorithms{
 			return NumberFormat.getInstance().format(bytes/1024.0/1024.0)+" mB";
 		return NumberFormat.getInstance().format(bytes/1024.0/1024.0/1024.0)+" gB";
 	}
+	public static File getChunkBlocksPath(int x, int y, int z){
+		return getLandscapePath(x, y, z, 64, ChunkBlocksId);
+	}
 	public static File getChunkHeightsPath(int x, int z){
 		return getLandscapePath(x, z, 64, ChunkHeightsId);
 	}
@@ -79,7 +82,10 @@ public class Algorithms{
 		file.getParentFile().mkdirs();
 		return file;
 	}
+	// 3 Argument Files
 	private static final char ChunkId = 'a';
-	private static final char ChunkHeightsId = 'c';
-	private static final char MassChunkHeightsId = 'd';
+	private static final char ChunkBlocksId = 'b';
+	// 2 Argument Files
+	private static final char ChunkHeightsId = 'a';
+	private static final char MassChunkHeightsId = 'b';
 }

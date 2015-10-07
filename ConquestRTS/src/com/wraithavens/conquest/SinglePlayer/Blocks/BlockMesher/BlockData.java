@@ -1,6 +1,8 @@
 package com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher;
 
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Block;
+import com.wraithavens.conquest.Utility.Algorithms;
+import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class BlockData{
 	static final byte Air = -1;
@@ -79,6 +81,12 @@ public class BlockData{
 			}
 		}
 		return meshFormatter.extract();
+	}
+	public void saveToFile(int x, int y, int z){
+		BinaryFile bin = new BinaryFile(blocks.length);
+		bin.addBytes(blocks, 0, blocks.length);
+		bin.compress(false);
+		bin.compile(Algorithms.getChunkBlocksPath(x, y, z));
 	}
 	public void setBlock(int x, int y, int z, byte b){
 		if(x>=0&&x<64&&y>=0&&y<64&&z>=0&&z<64)
