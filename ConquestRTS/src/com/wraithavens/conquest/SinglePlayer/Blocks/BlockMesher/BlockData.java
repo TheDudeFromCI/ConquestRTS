@@ -19,6 +19,11 @@ public class BlockData{
 			blocks[i] = Air;
 		clipData.clear();
 	}
+	public void loadFromFile(int x, int y, int z){
+		BinaryFile bin = new BinaryFile(Algorithms.getChunkBlocksPath(x, y, z));
+		bin.decompress(false);
+		bin.getBytes(blocks);
+	}
 	/**
 	 * Creates and saves the mesh for this chunk. If basic is enabled, then no
 	 * optimization steps are taken for creating the mesh. Simply speed. If not
