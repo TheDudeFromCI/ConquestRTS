@@ -1,17 +1,33 @@
 package com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher;
 
+import java.io.File;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Block;
 import com.wraithavens.conquest.Utility.Algorithms;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class BlockData{
+	public static byte getBlockFromFile(int chunkX, int chunkY, int chunkZ, int x, int y, int z){
+		File file = Algorithms.getChunkBlocksPath(chunkX, chunkY, chunkZ);
+		if(file.exists()&&file.length()>0){
+			BinaryFile bin = new BinaryFile(file);
+			bin.decompress(false);
+			bin.skip(x*64*64+y*64+z);
+			return bin.getByte();
+		}
+		throw new ChunkNotGeneratedException(chunkX, chunkY, chunkZ);
+	}
 	static final byte Air = -1;
 	private final byte[] blocks = new byte[64*64*64];
 	private final BlockClipData clipData;
 	private final MeshFormatter meshFormatter;
 	public BlockData(MeshFormatter meshFormatter){
-		this.meshFormatter = meshFormatter;
-		clipData = new BlockClipData();
+		if(meshFormatter==null){
+			this.meshFormatter = null;
+			clipData = null;
+		}else{
+			this.meshFormatter = meshFormatter;
+			clipData = new BlockClipData();
+		}
 		clear();
 	}
 	public void clear(){
@@ -20,9 +36,13 @@ public class BlockData{
 		clipData.clear();
 	}
 	public void loadFromFile(int x, int y, int z){
-		BinaryFile bin = new BinaryFile(Algorithms.getChunkBlocksPath(x, y, z));
-		bin.decompress(false);
-		bin.getBytes(blocks);
+		File file = Algorithms.getChunkBlocksPath(x, y, z);
+		if(file.exists()&&file.length()>0){
+			BinaryFile bin = new BinaryFile(file);
+			bin.decompress(false);
+			bin.getBytes(blocks);
+		}else
+			clear();
 	}
 	/**
 	 * Creates and saves the mesh for this chunk. If basic is enabled, then no

@@ -142,6 +142,9 @@ public class BinaryFile{
 		pos += 2;
 		return i;
 	}
+	public void skip(int bytes){
+		pos += bytes;
+	}
 	private void compress(byte[] buffer, boolean writeBufSize){
 		Deflater deflater = new Deflater();
 		deflater.setInput(binary);

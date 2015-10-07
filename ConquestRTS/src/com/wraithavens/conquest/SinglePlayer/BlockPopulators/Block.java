@@ -51,4 +51,8 @@ public enum Block{
 	public boolean isTranspartent(){
 		return this==Water;
 	}
+	@Override
+	public String toString(){
+		return "["+name()+" ("+id()+")]";
+	}
 }

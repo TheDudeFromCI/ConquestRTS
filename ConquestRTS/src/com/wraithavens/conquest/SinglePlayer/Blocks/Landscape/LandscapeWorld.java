@@ -4,7 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
+import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Block;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.BlockTextures;
+import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.BlockData;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
@@ -15,6 +17,15 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 import com.wraithavens.conquest.Utility.Algorithms;
 
 public class LandscapeWorld{
+	public static Block getBlock(int x, int y, int z){
+		int chunkX = Algorithms.groupLocation(x, 64);
+		int chunkY = Algorithms.groupLocation(y, 64);
+		int chunkZ = Algorithms.groupLocation(z, 64);
+		int block = BlockData.getBlockFromFile(chunkX, chunkY, chunkZ, x-chunkX, y-chunkY, z-chunkZ)&0xFF;
+		if(block==255)
+			return null;
+		return Block.values()[block];
+	}
 	static int ShadeAttribLocation;
 	static int UvAttribLocation;
 	private final ArrayList<LandscapeChunk> chunks = new ArrayList();
@@ -156,7 +167,7 @@ public class LandscapeWorld{
 						continue clearer;
 				for(a = 0; a<biomeParticleEngines.size(); a++)
 					if(biomeParticleEngines.get(a).getX()==ch.getX()
-						&&biomeParticleEngines.get(a).getZ()==ch.getZ()){
+					&&biomeParticleEngines.get(a).getZ()==ch.getZ()){
 						biomeParticleEngines.remove(a).dispose();
 						continue clearer;
 					}

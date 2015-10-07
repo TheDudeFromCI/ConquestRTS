@@ -5,6 +5,8 @@ import org.lwjgl.opengl.GL11;
 import com.wraithavens.conquest.Launcher.Driver;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.MatrixUtils;
+import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Block;
+import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.ChunkNotGeneratedException;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
@@ -129,6 +131,9 @@ public class SinglePlayerGame implements Driver{
 				shift = true;
 			else if(action==GLFW.GLFW_RELEASE)
 				shift = false;
+		}else if(key==GLFW.GLFW_KEY_ESCAPE){
+			if(action==GLFW.GLFW_PRESS)
+				GLFW.glfwSetWindowShouldClose(WraithavensConquest.INSTANCE.getWindow(), GL11.GL_TRUE);
 		}else if(key==GLFW.GLFW_KEY_1){
 			if(action==GLFW.GLFW_PRESS){
 				if(wireframeMode){
@@ -146,17 +151,22 @@ public class SinglePlayerGame implements Driver{
 				grounded = !grounded;
 				System.out.println("Ground mode now set to "+grounded+".");
 			}
-		}else if(key==GLFW.GLFW_KEY_ESCAPE){
-			if(action==GLFW.GLFW_PRESS)
-				GLFW.glfwSetWindowShouldClose(WraithavensConquest.INSTANCE.getWindow(), GL11.GL_TRUE);
 		}else if(key==GLFW.GLFW_KEY_3){
 			if(action==GLFW.GLFW_PRESS){
 				walkLock = !walkLock;
 				System.out.println("Walklock now set to "+walkLock+".");
 			}
-		}else if(key==GLFW.GLFW_KEY_9){
-			if(action==GLFW.GLFW_PRESS)
-				entityDatabase.clear();
+		}else if(key==GLFW.GLFW_KEY_4){
+			if(action==GLFW.GLFW_PRESS){
+				try{
+					Block block =
+						LandscapeWorld.getBlock((int)Math.floor(camera.x), (int)Math.floor(camera.y),
+							(int)Math.floor(camera.z));
+					System.out.println("Block. "+block);
+				}catch(ChunkNotGeneratedException exception){
+					System.out.println("No chunk, here.");
+				}
+			}
 		}
 	}
 	public void onMouse(int button, int action){
