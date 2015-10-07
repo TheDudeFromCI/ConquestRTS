@@ -5,8 +5,6 @@ import org.lwjgl.opengl.GL11;
 import com.wraithavens.conquest.Launcher.Driver;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.MatrixUtils;
-import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Block;
-import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.ChunkNotGeneratedException;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
@@ -14,10 +12,12 @@ import com.wraithavens.conquest.SinglePlayer.Entities.Water.WaterWorks;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.Particles.ParticleBatch;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
+import com.wraithavens.conquest.SinglePlayer.RenderHelpers.CameraTargetBlockCallback;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyBox;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxClouds;
 import com.wraithavens.conquest.SinglePlayer.Skybox.Sunbox;
 import com.wraithavens.conquest.Utility.LoadingScreen;
+import com.wraithavens.conquest.Utility.Debug.ColorConsole;
 
 public class SinglePlayerGame implements Driver{
 	public static SinglePlayerGame INSTANCE;
@@ -158,14 +158,11 @@ public class SinglePlayerGame implements Driver{
 			}
 		}else if(key==GLFW.GLFW_KEY_4){
 			if(action==GLFW.GLFW_PRESS){
-				try{
-					Block block =
-						LandscapeWorld.getBlock((int)Math.floor(camera.x), (int)Math.floor(camera.y),
-							(int)Math.floor(camera.z));
-					System.out.println("Block. "+block);
-				}catch(ChunkNotGeneratedException exception){
-					System.out.println("No chunk, here.");
-				}
+				ColorConsole con = ColorConsole.INSTANCE;
+				CameraTargetBlockCallback callback = camera.getTargetBlock(50);
+				con.println("Block Hit: "+callback.block);
+				con.println("     Side: "+callback.side);
+				con.println("      Pos: ["+callback.x+", "+callback.y+", "+callback.z+"]");
 			}
 		}
 	}

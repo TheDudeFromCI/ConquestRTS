@@ -7,6 +7,7 @@ import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Block;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.BlockTextures;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.BlockData;
+import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.ChunkNotGeneratedException;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
@@ -17,7 +18,7 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 import com.wraithavens.conquest.Utility.Algorithms;
 
 public class LandscapeWorld{
-	public static Block getBlock(int x, int y, int z){
+	public static Block getBlock(int x, int y, int z) throws ChunkNotGeneratedException{
 		int chunkX = Algorithms.groupLocation(x, 64);
 		int chunkY = Algorithms.groupLocation(y, 64);
 		int chunkZ = Algorithms.groupLocation(z, 64);
@@ -167,7 +168,7 @@ public class LandscapeWorld{
 						continue clearer;
 				for(a = 0; a<biomeParticleEngines.size(); a++)
 					if(biomeParticleEngines.get(a).getX()==ch.getX()
-					&&biomeParticleEngines.get(a).getZ()==ch.getZ()){
+						&&biomeParticleEngines.get(a).getZ()==ch.getZ()){
 						biomeParticleEngines.remove(a).dispose();
 						continue clearer;
 					}

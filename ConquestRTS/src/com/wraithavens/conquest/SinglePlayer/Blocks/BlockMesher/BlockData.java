@@ -6,7 +6,8 @@ import com.wraithavens.conquest.Utility.Algorithms;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class BlockData{
-	public static byte getBlockFromFile(int chunkX, int chunkY, int chunkZ, int x, int y, int z){
+	public static byte getBlockFromFile(int chunkX, int chunkY, int chunkZ, int x, int y, int z)
+		throws ChunkNotGeneratedException{
 		File file = Algorithms.getChunkBlocksPath(chunkX, chunkY, chunkZ);
 		if(file.exists()&&file.length()>0){
 			BinaryFile bin = new BinaryFile(file);
@@ -33,16 +34,20 @@ public class BlockData{
 	public void clear(){
 		for(int i = 0; i<blocks.length; i++)
 			blocks[i] = Air;
-		clipData.clear();
+		if(clipData!=null)
+			clipData.clear();
 	}
-	public void loadFromFile(int x, int y, int z){
+	public byte getBlock(int x, int y, int z){
+		return blocks[x*64*64+y*64+z];
+	}
+	public void loadFromFile(int x, int y, int z) throws ChunkNotGeneratedException{
 		File file = Algorithms.getChunkBlocksPath(x, y, z);
 		if(file.exists()&&file.length()>0){
 			BinaryFile bin = new BinaryFile(file);
 			bin.decompress(false);
 			bin.getBytes(blocks);
 		}else
-			clear();
+			throw new ChunkNotGeneratedException(x, y, z);
 	}
 	/**
 	 * Creates and saves the mesh for this chunk. If basic is enabled, then no
@@ -118,9 +123,6 @@ public class BlockData{
 			blocks[x*64*64+y*64+z] = b;
 		else
 			clipData.setHasBlockWeak(x, y, z, b);
-	}
-	private byte getBlock(int x, int y, int z){
-		return blocks[x*64*64+y*64+z];
 	}
 	private BlockClipData getClipData(){
 		return clipData;

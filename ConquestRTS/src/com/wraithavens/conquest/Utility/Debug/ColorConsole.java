@@ -19,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 public class ColorConsole extends JFrame{
+	public static ColorConsole INSTANCE;
 	private static final int EDGE_BUFFER = 3;
 	private static final int SCROLL_BAR_WIDTH = 30;
 	private static final int INPUT_HEIGHT = 25;
@@ -36,6 +37,7 @@ public class ColorConsole extends JFrame{
 	private boolean moveDownRequest;
 	private final ArrayList<ConsoleListener> consoleListeners = new ArrayList<>();
 	public ColorConsole(boolean hasInput){
+		INSTANCE = this;
 		allowInput = hasInput;
 		setSize(500, 500);
 		setLocationRelativeTo(null);

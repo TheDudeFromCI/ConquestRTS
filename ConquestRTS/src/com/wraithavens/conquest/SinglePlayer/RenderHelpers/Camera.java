@@ -1,16 +1,23 @@
 package com.wraithavens.conquest.SinglePlayer.RenderHelpers;
 
 import org.lwjgl.opengl.GL11;
+import com.wraithavens.conquest.Math.Vector3f;
 
 public class Camera{
 	public float cameraMoveSpeed = 1;
 	private final Frustum frustum = new Frustum();
+	private final CameraTargetBlock targetBlock;
 	public float goalX, goalY, goalZ;
 	public volatile float x;
 	public volatile float y;
 	public volatile float z;
 	public float rx;
 	public float ry;
+	private final Vector3f position = new Vector3f();
+	private final Vector3f direction = new Vector3f();
+	public Camera(){
+		targetBlock = new CameraTargetBlock(this);
+	}
 	public boolean boxInView(float[] e){
 		return frustum.boxInFrustum(e);
 	}
@@ -22,6 +29,21 @@ public class Camera{
 		y -= this.y;
 		z -= this.z;
 		return x*x+y*y+z*z;
+	}
+	public Vector3f getDirection(){
+		direction.x = (float)(Math.cos(Math.toRadians(ry-90))*Math.cos(Math.toRadians(-rx)));
+		direction.y = (float)Math.sin(Math.toRadians(-rx));
+		direction.z = (float)(Math.sin(Math.toRadians(ry-90))*Math.cos(Math.toRadians(-rx)));
+		return direction;
+	}
+	public Vector3f getPosition(){
+		position.x = x;
+		position.y = y;
+		position.z = z;
+		return position;
+	}
+	public CameraTargetBlockCallback getTargetBlock(int range){
+		return targetBlock.getTargetBlock(range);
 	}
 	public void teleport(float x, float y, float z){
 		goalX = this.x = x;
