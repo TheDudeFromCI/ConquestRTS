@@ -1,6 +1,6 @@
 package com.wraithavens.conquest.SinglePlayer.Blocks.Landscape;
 
-class EntityDataRaw{
+public class EntityDataRaw{
 	private final int type;
 	private final float x;
 	private final float y;
@@ -15,22 +15,22 @@ class EntityDataRaw{
 		this.r = r;
 		this.s = s;
 	}
-	float getR(){
+	public float getR(){
 		return r;
 	}
-	float getS(){
+	public float getS(){
 		return s;
 	}
-	int getType(){
+	public int getType(){
 		return type;
 	}
-	float getX(){
+	public float getX(){
 		return x;
 	}
-	float getY(){
+	public float getY(){
 		return y;
 	}
-	float getZ(){
+	public float getZ(){
 		return z;
 	}
 }

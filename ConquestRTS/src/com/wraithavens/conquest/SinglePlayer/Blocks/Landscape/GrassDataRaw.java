@@ -1,7 +1,6 @@
 package com.wraithavens.conquest.SinglePlayer.Blocks.Landscape;
 
-class GrassDataRaw{
-	private final int type;
+public class GrassDataRaw{
 	private final float x;
 	private final float y;
 	private final float z;
@@ -10,8 +9,7 @@ class GrassDataRaw{
 	private final float red;
 	private final float green;
 	private final float blue;
-	GrassDataRaw(int type, float x, float y, float z, float r, float s, float red, float green, float blue){
-		this.type = type;
+	GrassDataRaw(float x, float y, float z, float r, float s, float red, float green, float blue){
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -21,31 +19,28 @@ class GrassDataRaw{
 		this.green = green;
 		this.blue = blue;
 	}
-	float getBlue(){
+	public float getBlue(){
 		return blue;
 	}
-	float getGreen(){
+	public float getGreen(){
 		return green;
 	}
-	float getR(){
+	public float getR(){
 		return r;
 	}
-	float getRed(){
+	public float getRed(){
 		return red;
 	}
-	float getS(){
+	public float getS(){
 		return s;
 	}
-	int getType(){
-		return type;
-	}
-	float getX(){
+	public float getX(){
 		return x;
 	}
-	float getY(){
+	public float getY(){
 		return y;
 	}
-	float getZ(){
+	public float getZ(){
 		return z;
 	}
 }

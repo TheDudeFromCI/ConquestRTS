@@ -4,6 +4,7 @@ import com.wraithavens.conquest.Math.Vec3i;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Block;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.BlockData;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.ChunkNotGeneratedException;
+import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.MeshFormatter;
 import com.wraithavens.conquest.Utility.Algorithms;
 
 class CameraTargetBlock{
@@ -19,8 +20,9 @@ class CameraTargetBlock{
 		this.camera = camera;
 		plotter = new Plotter(0, 0, 0, 1, 1, 1);
 		v = plotter.get();
-		blockData = new BlockData(null);
+		blockData = new BlockData(new MeshFormatter());
 		callback = new CameraTargetBlockCallback();
+		callback.blockData = blockData;
 		loadCurrentChunk();
 	}
 	private void loadCurrentChunk(){

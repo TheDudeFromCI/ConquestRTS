@@ -8,7 +8,6 @@ import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Block;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.BlockTextures;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.BlockData;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.ChunkNotGeneratedException;
-import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.Particles.BiomeParticleEngine;
@@ -33,7 +32,6 @@ public class LandscapeWorld{
 	private final ShaderProgram shader;
 	private final SpiralGridAlgorithm spiral;
 	private final Camera camera;
-	private final EntityDatabase entityDatabase;
 	private final SecondaryLoop loadingLoop;
 	private final WorldNoiseMachine machine;
 	private final ArrayList<BiomeParticleEngine> biomeParticleEngines = new ArrayList();
@@ -46,10 +44,8 @@ public class LandscapeWorld{
 	private ChunkWorkerTask currentLoadingChunk;
 	private final int[] chunkLoadHeight = new int[5];
 	private ChunkHeightData chunkHeightDataTemp;
-	public LandscapeWorld(
-		WorldNoiseMachine machine, EntityDatabase entityDatabase, Camera camera, ParticleBatch particleBatch){
+	public LandscapeWorld(WorldNoiseMachine machine, Camera camera, ParticleBatch particleBatch){
 		this.camera = camera;
-		this.entityDatabase = entityDatabase;
 		this.machine = machine;
 		this.particleBatch = particleBatch;
 		shader = new ShaderProgram("Landscape");
@@ -134,8 +130,7 @@ public class LandscapeWorld{
 				if(currentLoadingChunk!=null){
 					if(currentLoadingChunk.isFinished()){
 						loadChunk(currentLoadingChunk.getX(), currentLoadingChunk.getY(),
-							currentLoadingChunk.getZ(), Algorithms.getChunkPath(currentLoadingChunk.getX(),
-								currentLoadingChunk.getY(), currentLoadingChunk.getZ()));
+							currentLoadingChunk.getZ());
 						currentLoadingChunk = null;
 					}
 					return;
@@ -193,15 +188,15 @@ public class LandscapeWorld{
 			currentLoadingChunk = loadingLoop.getQue().place(x, y, z, heightData);
 			return null;
 		}
-		return loadChunk(x, y, z, file);
+		return loadChunk(x, y, z);
 	}
 	private boolean isWithinView(LandscapeChunk c, int distance){
 		int x = Algorithms.groupLocation((int)camera.x, 64)/64;
 		int z = Algorithms.groupLocation((int)camera.z, 64)/64;
 		return Math.abs(x-c.getX()/64)<=distance&&Math.abs(z-c.getZ()/64)<=distance;
 	}
-	private LandscapeChunk loadChunk(int x, int y, int z, File file){
-		LandscapeChunk c = new LandscapeChunk(entityDatabase, grassLands, x, y, z, file);
+	private LandscapeChunk loadChunk(int x, int y, int z){
+		LandscapeChunk c = new LandscapeChunk(x, y, z);
 		chunks.add(c);
 		if(grassLands!=null)
 			grassLands.updateVisibility();

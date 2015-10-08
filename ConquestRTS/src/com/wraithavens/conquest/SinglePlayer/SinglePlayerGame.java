@@ -51,6 +51,12 @@ public class SinglePlayerGame implements Driver{
 	public Camera getCamera(){
 		return camera;
 	}
+	public EntityDatabase getEntityDatabase(){
+		return entityDatabase;
+	}
+	public Grasslands getGrasslands(){
+		return grassLands;
+	}
 	public LandscapeWorld getLandscape(){
 		return landscape;
 	}
@@ -88,7 +94,7 @@ public class SinglePlayerGame implements Driver{
 		entityDatabase = new EntityDatabase(camera);
 		particleBatch = new ParticleBatch(camera);
 		waterWorks = new WaterWorks();
-		landscape = new LandscapeWorld(machine, entityDatabase, camera, particleBatch);
+		landscape = new LandscapeWorld(machine, camera, particleBatch);
 		grassLands = new Grasslands(landscape, camera);
 		entityDatabase.setLandscape(landscape);
 		landscape.setup(grassLands);
@@ -163,6 +169,17 @@ public class SinglePlayerGame implements Driver{
 				con.println("Block Hit: "+callback.block);
 				con.println("     Side: "+callback.side);
 				con.println("      Pos: ["+callback.x+", "+callback.y+", "+callback.z+"]");
+				// if(callback.block!=null){
+				// int chunkX = Algorithms.groupLocation(callback.x, 64);
+				// int chunkY = Algorithms.groupLocation(callback.y, 64);
+				// int chunkZ = Algorithms.groupLocation(callback.z, 64);
+				// int x = callback.x-chunkX;
+				// int y = callback.y-chunkY;
+				// int z = callback.z-chunkZ;
+				// callback.blockData.setBlock(x, y, z, (byte)255);
+				// MeshRenderer render = callback.blockData.mesh(true);
+				// callback.blockData.saveToFile(chunkX, chunkY, chunkZ);
+				// }
 			}
 		}
 	}
