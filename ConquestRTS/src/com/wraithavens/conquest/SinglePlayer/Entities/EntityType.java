@@ -4,10 +4,10 @@ import java.io.File;
 import com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities.GiantEntityGroundHits;
 
 public enum EntityType{
-	Grass("Basic/Grass1.png", true, false, true, false),
-	Grass2("Basic/Grass3.png", true, false, true, false),
-	Grass3("Basic/Grass5.png", true, false, true, false),
-	Grass4("Basic/Grass7.png", true, false, true, false),
+	Grass("Basic/Grass0.png", true, false, true, false),
+	Grass2("Basic/Grass1.png", true, false, true, false),
+	Grass3("Basic/Grass2.png", true, false, true, false),
+	Grass4("Basic/Grass3.png", true, false, true, false),
 	TayleaFlower("TayleaMeadow/TayleaFlower1.tal", false, false, true, true),
 	TayleaFlower2("TayleaMeadow/TayleaFlower2.tal", false, false, true, true),
 	TayleaFlower3("TayleaMeadow/TayleaFlower3.tal", false, false, true, true),
