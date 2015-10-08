@@ -1,5 +1,6 @@
 package com.wraithavens.conquest.SinglePlayer.Blocks.Landscape;
 
+import java.util.ArrayList;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL15;
@@ -8,6 +9,7 @@ import com.wraithavens.conquest.SinglePlayer.SinglePlayerGame;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.ChunkBuilder.BiomeColorDataPacket;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.ChunkBuilder.ChunkDataPacket;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.ChunkBuilder.ChunkPainter;
+import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.ChunkBuilder.EntityDataPacket;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.ChunkBuilder.MeshDataPacket;
 import com.wraithavens.conquest.SinglePlayer.Entities.Entity;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
@@ -37,11 +39,9 @@ class LandscapeChunk{
 		textureId = GL11.glGenTextures();
 		ChunkPainter painter = new ChunkPainter();
 		painter.load(x, y, z);
-		System.out.println("Loaded "+painter.getPackets().size()+" Packets");
 		for(ChunkDataPacket packet : painter.getPackets()){
 			switch(packet.getPacketType()){
 				case ChunkDataPacket.MeshDataPacket:
-					System.out.print("Loading MeshData");
 					MeshDataPacket meshData = (MeshDataPacket)packet;
 					meshData.decompile();
 					GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
@@ -52,18 +52,24 @@ class LandscapeChunk{
 					waterPuddle = meshData.getWaterPuddle(x, y, z);
 					if(waterPuddle!=null)
 						SinglePlayerGame.INSTANCE.getWaterWorks().addPuddle(waterPuddle);
-					System.out.println("  Done.");
 					break;
 				case ChunkDataPacket.EntityDataPacket:
-					// TODO
-					System.out.println("Loading EntityData Done.");
+					EntityDataPacket entityData = (EntityDataPacket)packet;
+					entityData.prepareEntityIterator();
+					EntityDatabase d = SinglePlayerGame.INSTANCE.getEntityDatabase();
+					Entity e;
+					ArrayList<Entity> entities = new ArrayList();
+					while(entityData.hasNext()){
+						e = entityData.next();
+						d.addEntity(e);
+						entities.add(e);
+					}
+					plantLife = entities.toArray(new Entity[entities.size()]);
 					break;
 				case ChunkDataPacket.GrassDataPacket:
 					// TODO
-					System.out.println("Loading EntityData Done.");
 					break;
 				case ChunkDataPacket.BiomeColorDataPacket:
-					System.out.print("Loading BiomeColorData");
 					GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
 					GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
 					GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
@@ -71,7 +77,6 @@ class LandscapeChunk{
 					GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 					GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB8, 64, 64, 0, GL11.GL_RGB,
 						GL11.GL_UNSIGNED_BYTE, ((BiomeColorDataPacket)packet).getPixelData());
-					System.out.println("  Done.");
 					break;
 				default:
 					throw new RuntimeException();

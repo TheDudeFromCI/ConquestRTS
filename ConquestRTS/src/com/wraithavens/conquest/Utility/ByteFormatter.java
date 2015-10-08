@@ -51,4 +51,7 @@ public class ByteFormatter{
 		pos += 2;
 		return i;
 	}
+	public boolean hasNext(){
+		return pos<bytes.length;
+	}
 }

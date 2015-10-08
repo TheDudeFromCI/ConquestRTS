@@ -251,8 +251,8 @@ public class SecondaryLoop implements Runnable{
 						continue;
 					}
 					entityLocations.add(new EntityDataRaw(type.ordinal(), tempA+0.5f, heightData.getHeight(
-						tempA, tempB), tempB+0.5f, (float)(Math.random()*Math.PI*2),
-						(float)(Math.random()*0.1f+0.15f)));
+						tempA, tempB)+(type.isType(EntityType.AesiaPedals, 7)?-1/5f*0.9f:0), tempB+0.5f,
+						(float)(Math.random()*Math.PI*2), (float)(Math.random()*0.1f+0.15f)));
 				}
 			giantEntitySpawner.noise(x, z, 64, giantEntityListTemp);
 			int fx, fz;
