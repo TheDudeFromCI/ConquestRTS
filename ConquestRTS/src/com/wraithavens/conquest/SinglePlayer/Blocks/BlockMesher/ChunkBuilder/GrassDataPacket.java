@@ -2,6 +2,10 @@ package com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.ChunkBuilder;
 
 import java.util.ArrayList;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.GrassDataRaw;
+import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
+import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassPatch;
+import com.wraithavens.conquest.SinglePlayer.Entities.Grass.GrassTransform;
+import com.wraithavens.conquest.Utility.ByteFormatter;
 
 public class GrassDataPacket extends ChunkDataPacket{
 	private static int addFloat(byte[] bytes, int pos, float f){
@@ -33,5 +37,14 @@ public class GrassDataPacket extends ChunkDataPacket{
 	}
 	public GrassDataPacket(int type, ArrayList<GrassDataRaw> grassLocations){
 		super(ChunkDataPacket.GrassDataPacket, compile(type, grassLocations));
+	}
+	public GrassPatch decode(int x, int z){
+		ByteFormatter b = new ByteFormatter(data);
+		EntityType type = EntityType.values()[b.getByte()];
+		ArrayList<GrassTransform> trans = new ArrayList();
+		while(b.hasNext())
+			trans.add(new GrassTransform(b.getFloat(), b.getFloat(), b.getFloat(), b.getFloat(), b.getFloat(), b
+				.getFloat(), b.getFloat(), b.getFloat()));
+		return new GrassPatch(type, trans, x, z);
 	}
 }

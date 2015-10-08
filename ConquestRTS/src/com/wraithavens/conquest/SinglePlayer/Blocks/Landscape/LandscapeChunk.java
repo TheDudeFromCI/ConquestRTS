@@ -10,6 +10,7 @@ import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.ChunkBuilder.Bio
 import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.ChunkBuilder.ChunkDataPacket;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.ChunkBuilder.ChunkPainter;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.ChunkBuilder.EntityDataPacket;
+import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.ChunkBuilder.GrassDataPacket;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.ChunkBuilder.MeshDataPacket;
 import com.wraithavens.conquest.SinglePlayer.Entities.Entity;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
@@ -26,9 +27,9 @@ class LandscapeChunk{
 	private final int vbo;
 	private final int ibo;
 	private final int textureId;
+	private final ArrayList<Entity> plantLife = new ArrayList();
+	private final ArrayList<GrassPatch> grassPatches = new ArrayList();
 	private int indexCount;
-	private Entity[] plantLife;
-	private GrassPatch[] grassPatches;
 	private WaterPuddle waterPuddle;
 	LandscapeChunk(int x, int y, int z){
 		this.x = x;
@@ -58,16 +59,18 @@ class LandscapeChunk{
 					entityData.prepareEntityIterator();
 					EntityDatabase d = SinglePlayerGame.INSTANCE.getEntityDatabase();
 					Entity e;
-					ArrayList<Entity> entities = new ArrayList();
 					while(entityData.hasNext()){
 						e = entityData.next();
 						d.addEntity(e);
-						entities.add(e);
+						plantLife.add(e);
 					}
-					plantLife = entities.toArray(new Entity[entities.size()]);
 					break;
 				case ChunkDataPacket.GrassDataPacket:
-					// TODO
+					GrassDataPacket grassData = (GrassDataPacket)packet;
+					GrassPatch patch = grassData.decode(x, z);
+					grassPatches.add(patch);
+					Grasslands grassLands = SinglePlayerGame.INSTANCE.getGrasslands();
+					grassLands.addPatch(patch);
 					break;
 				case ChunkDataPacket.BiomeColorDataPacket:
 					GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
@@ -210,14 +213,14 @@ class LandscapeChunk{
 		GL15.glDeleteBuffers(vbo);
 		GL15.glDeleteBuffers(ibo);
 		GL11.glDeleteTextures(textureId);
-		if(plantLife!=null){
+		if(plantLife.size()>0){
 			EntityDatabase e = SinglePlayerGame.INSTANCE.getEntityDatabase();
 			for(Entity batch : plantLife){
 				batch.dispose();
 				e.removeEntity(batch);
 			}
 		}
-		if(grassPatches!=null){
+		if(grassPatches.size()>0){
 			Grasslands e = SinglePlayerGame.INSTANCE.getGrasslands();
 			for(GrassPatch patch : grassPatches)
 				e.removePatch(patch);
