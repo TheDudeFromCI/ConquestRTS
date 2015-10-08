@@ -2,6 +2,7 @@ package com.wraithavens.conquest.SinglePlayer.Blocks.Landscape;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Block;
@@ -44,6 +45,7 @@ public class LandscapeWorld{
 	private ChunkWorkerTask currentLoadingChunk;
 	private final int[] chunkLoadHeight = new int[5];
 	private ChunkHeightData chunkHeightDataTemp;
+	private LinkedList<ChunkRepaintRequest> repaintRequests = new LinkedList();
 	public LandscapeWorld(WorldNoiseMachine machine, Camera camera, ParticleBatch particleBatch){
 		this.camera = camera;
 		this.machine = machine;
@@ -63,6 +65,9 @@ public class LandscapeWorld{
 		loadingLoop = new SecondaryLoop(camera, machine, WraithavensConquest.Settings.getChunkLoadDistance());
 		chunkLoadHeight[1] = 0;
 		BlockTextures.load();
+	}
+	public void addRepaintRequest(ChunkRepaintRequest req){
+		repaintRequests.add(req);
 	}
 	public void dispose(){
 		loadingLoop.dispose();
@@ -127,6 +132,16 @@ public class LandscapeWorld{
 		frame++;
 		if(frame%WraithavensConquest.Settings.getChunkUpdateFrames()==0){
 			if(frame%(WraithavensConquest.Settings.getChunkUpdateFrames()*2)==0){
+				if(repaintRequests.size()>0){
+					ChunkRepaintRequest req = repaintRequests.removeFirst();
+					for(LandscapeChunk chunk : chunks){
+						if(chunk.getX()==req.getX()&&chunk.getY()==req.getY()&&chunk.getZ()==req.getZ()){
+							chunk.reload(req.getNewMesh());
+							break;
+						}
+					}
+					return;
+				}
 				if(currentLoadingChunk!=null){
 					if(currentLoadingChunk.isFinished()){
 						loadChunk(currentLoadingChunk.getX(), currentLoadingChunk.getY(),

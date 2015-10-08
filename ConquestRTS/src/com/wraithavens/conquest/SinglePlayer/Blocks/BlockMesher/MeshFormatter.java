@@ -7,8 +7,8 @@ import org.lwjgl.BufferUtils;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.BlockTextures;
 
 public class MeshFormatter{
-	private static boolean[] quadReferences = new boolean[10];
-	private static final ArrayList<Integer> used = new ArrayList();
+	private boolean[] quadReferences = new boolean[10];
+	private final ArrayList<Integer> used = new ArrayList();
 	private final BlockTypeList typeList;
 	private final byte[][] quads;
 	private final int[][] storage;
