@@ -180,6 +180,9 @@ public class SinglePlayerGame implements Driver{
 					int y = callback.y-chunkY;
 					int z = callback.z-chunkZ;
 					callback.blockData.setBlock(x, y, z, (byte)255);
+					// TODO Block Data is not aware of surrounding clip blocks.
+					// TODO Basic meshing is buggy. And extreme meshing is
+					// laggy. (Fix!)
 					MeshRenderer render = callback.blockData.mesh(false);
 					callback.blockData.saveToFile(chunkX, chunkY, chunkZ);
 					landscape.addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, render));

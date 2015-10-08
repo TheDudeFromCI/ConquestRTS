@@ -26,18 +26,18 @@ public class MeshDataPacket extends ChunkDataPacket{
 		ByteFormatter b = new ByteFormatter(bytes);
 		b.addInt(vertexData.capacity());
 		b.addInt(indexData.capacity());
-		while(vertexData.hasRemaining())
-			b.addFloat(vertexData.get());
-		while(indexData.hasRemaining())
-			b.addShort(indexData.get());
+		for(int i = 0; i<vertexData.capacity(); i++)
+			b.addFloat(vertexData.get(i));
+		for(int i = 0; i<indexData.capacity(); i++)
+			b.addShort(indexData.get(i));
 		b.addBoolean(hasWater);
 		if(hasWater){
 			b.addInt(waterVertexData.capacity());
 			b.addInt(waterIndexData.capacity());
-			while(waterVertexData.hasRemaining())
-				b.addFloat(waterVertexData.get());
-			while(waterIndexData.hasRemaining())
-				b.addShort(waterIndexData.get());
+			for(int i = 0; i<waterVertexData.capacity(); i++)
+				b.addFloat(waterVertexData.get(i));
+			for(int i = 0; i<waterIndexData.capacity(); i++)
+				b.addShort(waterIndexData.get(i));
 		}
 		return bytes;
 	}

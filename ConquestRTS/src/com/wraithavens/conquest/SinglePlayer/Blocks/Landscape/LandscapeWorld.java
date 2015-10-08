@@ -68,6 +68,7 @@ public class LandscapeWorld{
 	}
 	public void addRepaintRequest(ChunkRepaintRequest req){
 		repaintRequests.add(req);
+		loadingLoop.addRepaintRequest(req);
 	}
 	public void dispose(){
 		loadingLoop.dispose();
@@ -178,7 +179,7 @@ public class LandscapeWorld{
 						continue clearer;
 				for(a = 0; a<biomeParticleEngines.size(); a++)
 					if(biomeParticleEngines.get(a).getX()==ch.getX()
-						&&biomeParticleEngines.get(a).getZ()==ch.getZ()){
+					&&biomeParticleEngines.get(a).getZ()==ch.getZ()){
 						biomeParticleEngines.remove(a).dispose();
 						continue clearer;
 					}

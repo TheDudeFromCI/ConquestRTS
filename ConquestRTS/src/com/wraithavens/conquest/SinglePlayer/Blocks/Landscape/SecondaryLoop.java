@@ -3,6 +3,9 @@ package com.wraithavens.conquest.SinglePlayer.Blocks.Landscape;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Block;
@@ -10,6 +13,7 @@ import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.BlockData;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.MeshFormatter;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.MeshRenderer;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.ChunkBuilder.BiomeColorDataPacket;
+import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.ChunkBuilder.ChunkDataPacket;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.ChunkBuilder.ChunkPainter;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.ChunkBuilder.EntityDataPacket;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.ChunkBuilder.GrassDataPacket;
@@ -80,7 +84,7 @@ public class SecondaryLoop implements Runnable{
 						return EntityType.getVariation(EntityType.VallaFlower, (int)(random.nextFloat()*4));
 					if(random.nextFloat()<0.005)
 						return EntityType.values()[EntityType.TayleaMeadowRock1.ordinal()
-						                           +(int)(random.nextFloat()*3)];
+							+(int)(random.nextFloat()*3)];
 					break;
 				case ArcstoneHills:
 					break;
@@ -101,6 +105,7 @@ public class SecondaryLoop implements Runnable{
 	}
 	private static final long s = 4294967291L;
 	private static final Random random = new Random();
+	private final List<ChunkRepaintRequest> repaintRequests;
 	private volatile boolean running = true;
 	private final SpiralGridAlgorithm spiral;
 	private volatile Camera camera;
@@ -117,6 +122,7 @@ public class SecondaryLoop implements Runnable{
 	private Thread t;
 	private boolean working;
 	private final BlockData blockData;
+	private ChunkPainter painter;
 	SecondaryLoop(Camera camera, WorldNoiseMachine machine, int maxLoadDistance){
 		dictionary = new GiantEntityDictionary();
 		giantEntitySpawner =
@@ -125,6 +131,8 @@ public class SecondaryLoop implements Runnable{
 		blockData = new BlockData(new MeshFormatter());
 		this.camera = camera;
 		this.machine = machine;
+		repaintRequests = Collections.synchronizedList(new LinkedList<ChunkRepaintRequest>());
+		painter = new ChunkPainter();
 		spiral = new SpiralGridAlgorithm();
 		// ---
 		// And this should prevent the map from generating too many chunks will
@@ -154,6 +162,18 @@ public class SecondaryLoop implements Runnable{
 		}
 		int y;
 		for(int i = 0; i<temp[1]; i++){
+			if(repaintRequests.size()>0){
+				ChunkRepaintRequest req = repaintRequests.remove(0);
+				painter.load(req.getX(), req.getY(), req.getZ());
+				ArrayList<ChunkDataPacket> packets = painter.getPackets();
+				for(int j = 0; j<packets.size(); j++)
+					if(packets.get(j).getPacketType()==ChunkDataPacket.MeshDataPacket){
+						packets.remove(j);
+						break;
+					}
+				packets.add(new MeshDataPacket(req.getNewMesh()));
+				painter.save(req.getX(), req.getY(), req.getZ());
+			}
 			y = i*LandscapeChunk.LandscapeSize+temp[0];
 			File file = Algorithms.getChunkPath(x, y, z);
 			if(file.exists()&&file.length()>0){
@@ -175,7 +195,6 @@ public class SecondaryLoop implements Runnable{
 		}
 	}
 	private void genChunk(int x, int y, int z, ChunkHeightData heightData){
-		ChunkPainter painter = new ChunkPainter();
 		{
 			// ---
 			// Add mesh data.
@@ -190,14 +209,14 @@ public class SecondaryLoop implements Runnable{
 					heights[a][b] =
 						a==0||b==0||a==65||b==65?machine.getGroundLevel(tempA, b-1+z):heightData.getHeight(
 							tempA, b-1+z);
-						type = Block.Grass.id();
-						for(c = 0; c<66; c++){
-							tempC = c-1+y;
-							if(tempC<heights[a][b])
-								blockData.setBlock(a-1, c-1, b-1, type);
-							else if(tempC<0)
-								blockData.setBlock(a-1, c-1, b-1, waterId);
-						}
+					type = Block.Grass.id();
+					for(c = 0; c<66; c++){
+						tempC = c-1+y;
+						if(tempC<heights[a][b])
+							blockData.setBlock(a-1, c-1, b-1, type);
+						else if(tempC<0)
+							blockData.setBlock(a-1, c-1, b-1, waterId);
+					}
 				}
 			}
 			MeshRenderer render = blockData.mesh(false);
@@ -230,9 +249,9 @@ public class SecondaryLoop implements Runnable{
 					tempB = b+z;
 					type =
 						randomPlant(humidity = heightData.getHumidity(tempA, tempB),
-						tempature = heightData.getTempature(tempA, tempB),
-						heightData.getLevel(tempA, tempB), tempA, h, tempB,
-						machine.getGiantEntitySeed()^100799);
+							tempature = heightData.getTempature(tempA, tempB),
+							heightData.getLevel(tempA, tempB), tempA, h, tempB,
+							machine.getGiantEntitySeed()^100799);
 					if(type==null)
 						continue;
 					if(type.isGrass){
@@ -354,6 +373,9 @@ public class SecondaryLoop implements Runnable{
 			System.out.println("Generator is now working.");
 		else
 			System.out.println("Generator is now resting.");
+	}
+	void addRepaintRequest(ChunkRepaintRequest req){
+		repaintRequests.add(req);
 	}
 	void dispose(){
 		running = false;
