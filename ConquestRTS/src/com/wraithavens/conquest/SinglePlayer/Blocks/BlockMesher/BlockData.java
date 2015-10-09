@@ -22,13 +22,8 @@ public class BlockData{
 	private final BlockClipData clipData;
 	private final MeshFormatter meshFormatter;
 	public BlockData(MeshFormatter meshFormatter){
-		if(meshFormatter==null){
-			this.meshFormatter = null;
-			clipData = null;
-		}else{
-			this.meshFormatter = meshFormatter;
-			clipData = new BlockClipData();
-		}
+		this.meshFormatter = meshFormatter;
+		clipData = new BlockClipData();
 		clear();
 	}
 	public void clear(){
@@ -46,6 +41,7 @@ public class BlockData{
 			BinaryFile bin = new BinaryFile(file);
 			bin.decompress(false);
 			bin.getBytes(blocks);
+			bin.getBytes(clipData.getBytes());
 		}else
 			throw new ChunkNotGeneratedException(x, y, z);
 	}
@@ -113,8 +109,9 @@ public class BlockData{
 		return meshFormatter.extract();
 	}
 	public void saveToFile(int x, int y, int z){
-		BinaryFile bin = new BinaryFile(blocks.length);
+		BinaryFile bin = new BinaryFile(blocks.length+clipData.getBytes().length);
 		bin.addBytes(blocks, 0, blocks.length);
+		bin.addBytes(clipData.getBytes(), 0, clipData.getBytes().length);
 		bin.compress(false);
 		bin.compile(Algorithms.getChunkBlocksPath(x, y, z));
 	}

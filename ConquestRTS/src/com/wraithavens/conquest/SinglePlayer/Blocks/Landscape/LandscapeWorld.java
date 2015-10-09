@@ -9,6 +9,7 @@ import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Block;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.BlockTextures;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.BlockData;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.ChunkNotGeneratedException;
+import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.MeshFormatter;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.Particles.BiomeParticleEngine;
@@ -27,6 +28,7 @@ public class LandscapeWorld{
 			return null;
 		return Block.values()[block];
 	}
+	private static final BlockData tempBlockData = new BlockData(new MeshFormatter());
 	static int ShadeAttribLocation;
 	static int UvAttribLocation;
 	private final ArrayList<LandscapeChunk> chunks = new ArrayList();
@@ -99,6 +101,80 @@ public class LandscapeWorld{
 				shader.setUniform3f(1, c.getX(), c.getY(), c.getZ());
 				c.render();
 			}
+	}
+	public void setBlock(int x, int y, int z, Block type){
+		int chunkX = Algorithms.groupLocation(x, 64);
+		int chunkY = Algorithms.groupLocation(y, 64);
+		int chunkZ = Algorithms.groupLocation(z, 64);
+		x -= chunkX;
+		y -= chunkY;
+		z -= chunkZ;
+		try{
+			tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
+			tempBlockData.setBlock(x, y, z, type==null?(byte)255:type.id());
+			tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
+			// TODO Mesh area quickly, not worrying about culling chunk faces.
+			// That can be done in the second pass in the loading thread.
+			addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(false)));
+			try{
+				// ---
+				// Update touching chunks.
+				// ---
+				if(x==0){
+					chunkX -= 64;
+					tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
+					tempBlockData.setBlock(x+64, y, z, type==null?(byte)255:type.id());
+					tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
+					addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(false)));
+				}
+				if(x==63){
+					chunkX += 64;
+					tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
+					tempBlockData.setBlock(x-64, y, z, type==null?(byte)255:type.id());
+					tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
+					addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(false)));
+				}
+				try{
+					if(y==0){
+						chunkY -= 64;
+						tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
+						tempBlockData.setBlock(x, y+64, z, type==null?(byte)255:type.id());
+						tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
+						addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ,
+							tempBlockData.mesh(false)));
+					}
+					if(y==63){
+						chunkY += 64;
+						tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
+						tempBlockData.setBlock(x, y-64, z, type==null?(byte)255:type.id());
+						tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
+						addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ,
+							tempBlockData.mesh(false)));
+					}
+				}catch(ChunkNotGeneratedException e){
+					// TODO Generate new chunks above or below.
+				}
+				if(z==0){
+					chunkZ -= 64;
+					tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
+					tempBlockData.setBlock(x, y, z+64, type==null?(byte)255:type.id());
+					tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
+					addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(false)));
+				}
+				if(z==63){
+					chunkZ += 64;
+					tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
+					tempBlockData.setBlock(x, y, z-64, type==null?(byte)255:type.id());
+					tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
+					addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(false)));
+				}
+			}catch(ChunkNotGeneratedException e){
+				// This shouldn't be hit.
+				e.printStackTrace();
+			}
+		}catch(ChunkNotGeneratedException e){
+			// TODO Generate new chunks above or below.
+		}
 	}
 	public void setRenderDistance(int renderDistance){
 		spiral.setMaxDistance(renderDistance);
@@ -179,7 +255,7 @@ public class LandscapeWorld{
 						continue clearer;
 				for(a = 0; a<biomeParticleEngines.size(); a++)
 					if(biomeParticleEngines.get(a).getX()==ch.getX()
-					&&biomeParticleEngines.get(a).getZ()==ch.getZ()){
+						&&biomeParticleEngines.get(a).getZ()==ch.getZ()){
 						biomeParticleEngines.remove(a).dispose();
 						continue clearer;
 					}

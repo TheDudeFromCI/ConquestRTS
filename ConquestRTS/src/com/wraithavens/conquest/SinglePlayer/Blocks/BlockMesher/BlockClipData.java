@@ -39,6 +39,9 @@ class BlockClipData{
 		for(int i = 0; i<blocks.length; i++)
 			blocks[i] = BlockData.Air;
 	}
+	byte[] getBytes(){
+		return blocks;
+	}
 	byte hasBlock(int x, int y, int z){
 		return blocks[getIndex(x, y, z)];
 	}

@@ -5,8 +5,7 @@ import org.lwjgl.opengl.GL11;
 import com.wraithavens.conquest.Launcher.Driver;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.MatrixUtils;
-import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.MeshRenderer;
-import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.ChunkRepaintRequest;
+import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Block;
 import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
@@ -18,7 +17,6 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.CameraTargetBlockCall
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyBox;
 import com.wraithavens.conquest.SinglePlayer.Skybox.SkyboxClouds;
 import com.wraithavens.conquest.SinglePlayer.Skybox.Sunbox;
-import com.wraithavens.conquest.Utility.Algorithms;
 import com.wraithavens.conquest.Utility.LoadingScreen;
 import com.wraithavens.conquest.Utility.Debug.ColorConsole;
 
@@ -167,42 +165,62 @@ public class SinglePlayerGame implements Driver{
 			}
 		}else if(key==GLFW.GLFW_KEY_4){
 			if(action==GLFW.GLFW_PRESS){
+				if(lockedMouse){
+					GLFW.glfwSetInputMode(WraithavensConquest.INSTANCE.getWindow(), GLFW.GLFW_CURSOR,
+						GLFW.GLFW_CURSOR_NORMAL);
+				}else{
+					GLFW.glfwSetCursorPos(WraithavensConquest.INSTANCE.getWindow(),
+						WraithavensConquest.INSTANCE.getScreenWidth()/2f,
+						WraithavensConquest.INSTANCE.getScreenHeight()/2f);
+					GLFW.glfwSetInputMode(WraithavensConquest.INSTANCE.getWindow(), GLFW.GLFW_CURSOR,
+						GLFW.GLFW_CURSOR_HIDDEN);
+				}
+				lockedMouse = !lockedMouse;
+			}
+		}
+	}
+	public void onMouse(int button, int action){
+		if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT||button==GLFW.GLFW_MOUSE_BUTTON_RIGHT){
+			boolean left = button==GLFW.GLFW_MOUSE_BUTTON_LEFT;
+			if(action==GLFW.GLFW_PRESS){
 				ColorConsole con = ColorConsole.INSTANCE;
 				CameraTargetBlockCallback callback = camera.getTargetBlock(50);
 				con.println("Block Hit: "+callback.block);
 				con.println("     Side: "+callback.side);
 				con.println("      Pos: ["+callback.x+", "+callback.y+", "+callback.z+"]");
 				if(callback.block!=null){
-					int chunkX = Algorithms.groupLocation(callback.x, 64);
-					int chunkY = Algorithms.groupLocation(callback.y, 64);
-					int chunkZ = Algorithms.groupLocation(callback.z, 64);
-					int x = callback.x-chunkX;
-					int y = callback.y-chunkY;
-					int z = callback.z-chunkZ;
-					callback.blockData.setBlock(x, y, z, (byte)255);
-					// TODO Block Data is not aware of surrounding clip blocks.
-					// TODO Basic meshing is buggy. And extreme meshing is
-					// laggy. (Fix!)
-					MeshRenderer render = callback.blockData.mesh(false);
-					callback.blockData.saveToFile(chunkX, chunkY, chunkZ);
-					landscape.addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, render));
+					int x = callback.x;
+					int y = callback.y;
+					int z = callback.z;
+					if(left)
+						landscape.setBlock(x, y, z, null);
+					else{
+						switch(callback.side){
+							case 0:
+								x++;
+								break;
+							case 1:
+								x--;
+								break;
+							case 2:
+								y++;
+								break;
+							case 3:
+								y--;
+								break;
+							case 4:
+								z++;
+								break;
+							case 5:
+								z--;
+								break;
+							default:
+								throw new RuntimeException();
+						}
+						landscape.setBlock(x, y, z, Block.Dirt);
+					}
 				}
 			}
-		}
-	}
-	public void onMouse(int button, int action){
-		if(action==GLFW.GLFW_PRESS){
-			if(lockedMouse){
-				GLFW.glfwSetInputMode(WraithavensConquest.INSTANCE.getWindow(), GLFW.GLFW_CURSOR,
-					GLFW.GLFW_CURSOR_NORMAL);
-			}else{
-				GLFW.glfwSetCursorPos(WraithavensConquest.INSTANCE.getWindow(),
-					WraithavensConquest.INSTANCE.getScreenWidth()/2f,
-					WraithavensConquest.INSTANCE.getScreenHeight()/2f);
-				GLFW.glfwSetInputMode(WraithavensConquest.INSTANCE.getWindow(), GLFW.GLFW_CURSOR,
-					GLFW.GLFW_CURSOR_HIDDEN);
-			}
-			lockedMouse = !lockedMouse;
 		}
 	}
 	public void onMouseMove(double x, double y){
