@@ -45,6 +45,7 @@ public class TpCommand implements Command{
 					}
 					WorldNoiseMachine machine = game.getWorldNoiseMachine();
 					SpiralGridAlgorithm grid = new SpiralGridAlgorithm();
+					grid.setMaxDistance(Integer.MAX_VALUE);
 					int searchSize = 100;
 					Camera camera = game.getCamera();
 					int x, z;
