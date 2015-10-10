@@ -70,7 +70,7 @@ public class LandscapeWorld{
 	}
 	public void addRepaintRequest(ChunkRepaintRequest req){
 		repaintRequests.add(req);
-		loadingLoop.addRepaintRequest(req);
+		loadingLoop.addRepaintRequest(req.getX(), req.getY(), req.getZ());
 	}
 	public void dispose(){
 		loadingLoop.dispose();
@@ -103,6 +103,7 @@ public class LandscapeWorld{
 			}
 	}
 	public void setBlock(int x, int y, int z, Block type){
+		byte block = type==null?(byte)255:type.id();
 		int chunkX = Algorithms.groupLocation(x, 64);
 		int chunkY = Algorithms.groupLocation(y, 64);
 		int chunkZ = Algorithms.groupLocation(z, 64);
@@ -111,69 +112,68 @@ public class LandscapeWorld{
 		z -= chunkZ;
 		try{
 			tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
-			tempBlockData.setBlock(x, y, z, type==null?(byte)255:type.id());
+			tempBlockData.setBlock(x, y, z, block);
 			tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
-			// TODO Mesh area quickly, not worrying about culling chunk faces.
-			// That can be done in the second pass in the loading thread.
-			addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(false)));
+			addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(true)));
+		}catch(ChunkNotGeneratedException e){
+			fullyGenerateChunk(chunkX, chunkY, chunkZ);
+			tempBlockData.setBlock(x, y, z, block);
+			tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
+			addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(true)));
+		}
+		try{
+			// ---
+			// Update touching chunks.
+			// ---
+			if(x==0){
+				chunkX -= 64;
+				tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
+				tempBlockData.setBlock(x+64, y, z, block);
+				tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
+				addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(true)));
+			}
+			if(x==63){
+				chunkX += 64;
+				tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
+				tempBlockData.setBlock(x-64, y, z, block);
+				tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
+				addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(true)));
+			}
 			try{
-				// ---
-				// Update touching chunks.
-				// ---
-				if(x==0){
-					chunkX -= 64;
+				if(y==0){
+					chunkY -= 64;
 					tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
-					tempBlockData.setBlock(x+64, y, z, type==null?(byte)255:type.id());
+					tempBlockData.setBlock(x, y+64, z, block);
 					tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
-					addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(false)));
+					addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(true)));
 				}
-				if(x==63){
-					chunkX += 64;
+				if(y==63){
+					chunkY += 64;
 					tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
-					tempBlockData.setBlock(x-64, y, z, type==null?(byte)255:type.id());
+					tempBlockData.setBlock(x, y-64, z, block);
 					tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
-					addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(false)));
-				}
-				try{
-					if(y==0){
-						chunkY -= 64;
-						tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
-						tempBlockData.setBlock(x, y+64, z, type==null?(byte)255:type.id());
-						tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
-						addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ,
-							tempBlockData.mesh(false)));
-					}
-					if(y==63){
-						chunkY += 64;
-						tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
-						tempBlockData.setBlock(x, y-64, z, type==null?(byte)255:type.id());
-						tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
-						addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ,
-							tempBlockData.mesh(false)));
-					}
-				}catch(ChunkNotGeneratedException e){
-					// TODO Generate new chunks above or below.
-				}
-				if(z==0){
-					chunkZ -= 64;
-					tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
-					tempBlockData.setBlock(x, y, z+64, type==null?(byte)255:type.id());
-					tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
-					addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(false)));
-				}
-				if(z==63){
-					chunkZ += 64;
-					tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
-					tempBlockData.setBlock(x, y, z-64, type==null?(byte)255:type.id());
-					tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
-					addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(false)));
+					addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(true)));
 				}
 			}catch(ChunkNotGeneratedException e){
-				// This shouldn't be hit.
-				e.printStackTrace();
+				// If the chunk doesn't exist, go ahead and skip it.
+			}
+			if(z==0){
+				chunkZ -= 64;
+				tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
+				tempBlockData.setBlock(x, y, z+64, block);
+				tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
+				addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(true)));
+			}
+			if(z==63){
+				chunkZ += 64;
+				tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
+				tempBlockData.setBlock(x, y, z-64, block);
+				tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
+				addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(true)));
 			}
 		}catch(ChunkNotGeneratedException e){
-			// TODO Generate new chunks above or below.
+			// This shouldn't be hit.
+			e.printStackTrace();
 		}
 	}
 	public void setRenderDistance(int renderDistance){
@@ -214,7 +214,7 @@ public class LandscapeWorld{
 					for(LandscapeChunk chunk : chunks){
 						if(chunk.getX()==req.getX()&&chunk.getY()==req.getY()&&chunk.getZ()==req.getZ()){
 							chunk.reload(req.getNewMesh());
-							break;
+							return;
 						}
 					}
 					return;
@@ -261,6 +261,63 @@ public class LandscapeWorld{
 					}
 			}
 			i++;
+		}
+	}
+	private void fullyGenerateChunk(int x, int y, int z){
+		// TODO Make this extend the the mass height chunk data up or down.
+		// TODO Generate and load this chunk.
+		boolean air = machine.getGroundLevel(x, z)<y; // Works in theory.
+		tempBlockData.clear();
+		if(!air)
+			tempBlockData.fill(Block.Dirt.id());
+		{
+			// ---
+			// Fill in clip data.
+			// ---
+			BlockData blockData = new BlockData(null);
+			int a, b, c;
+			try{
+				blockData.loadFromFile(x+64, y, z);
+				a = 0;
+				for(b = 0; b<64; b++)
+					for(c = 0; c<64; c++)
+						tempBlockData.setBlock(64, b, c, blockData.getBlock(a, b, c));
+			}catch(ChunkNotGeneratedException e){} // Ignore chunk, then.
+			try{
+				blockData.loadFromFile(x-64, y, z);
+				a = 63;
+				for(b = 0; b<64; b++)
+					for(c = 0; c<64; c++)
+						tempBlockData.setBlock(-1, b, c, blockData.getBlock(a, b, c));
+			}catch(ChunkNotGeneratedException e){} // Ignore chunk, then.
+			try{
+				blockData.loadFromFile(x, y+64, z);
+				b = 0;
+				for(a = 0; a<64; a++)
+					for(c = 0; c<64; c++)
+						tempBlockData.setBlock(a, 64, c, blockData.getBlock(a, b, c));
+			}catch(ChunkNotGeneratedException e){} // Ignore chunk, then.
+			try{
+				blockData.loadFromFile(x, y-64, z);
+				b = 63;
+				for(a = 0; a<64; a++)
+					for(c = 0; c<64; c++)
+						tempBlockData.setBlock(a, -1, c, blockData.getBlock(a, b, c));
+			}catch(ChunkNotGeneratedException e){} // Ignore chunk, then.
+			try{
+				blockData.loadFromFile(x, y, z+64);
+				c = 0;
+				for(a = 0; a<64; a++)
+					for(b = 0; b<64; b++)
+						tempBlockData.setBlock(a, b, 64, blockData.getBlock(a, b, c));
+			}catch(ChunkNotGeneratedException e){} // Ignore chunk, then.
+			try{
+				blockData.loadFromFile(x, y, z-64);
+				c = 63;
+				for(a = 0; a<64; a++)
+					for(b = 0; b<64; b++)
+						tempBlockData.setBlock(a, b, -1, blockData.getBlock(a, b, c));
+			}catch(ChunkNotGeneratedException e){} // Ignore chunk, then.
 		}
 	}
 	private LandscapeChunk getContainingChunk(int x, int y, int z, boolean load, ChunkHeightData heightData){

@@ -27,10 +27,12 @@ public class BlockData{
 		clear();
 	}
 	public void clear(){
+		fill(Air);
+		clipData.clear();
+	}
+	public void fill(byte type){
 		for(int i = 0; i<blocks.length; i++)
-			blocks[i] = Air;
-		if(clipData!=null)
-			clipData.clear();
+			blocks[i] = type;
 	}
 	public byte getBlock(int x, int y, int z){
 		return blocks[x*64*64+y*64+z];
@@ -52,6 +54,7 @@ public class BlockData{
 	 * but with far, far, fewer quads.)
 	 */
 	public MeshRenderer mesh(boolean basic){
+		// TODO Fix basic meshing.
 		meshFormatter.setBasicState(basic);
 		int x, y, z, j, i;
 		byte block;
