@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
+import com.wraithavens.conquest.Math.Vec3i;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Block;
 import com.wraithavens.conquest.SinglePlayer.BlockPopulators.BlockTextures;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.BlockData;
@@ -126,61 +127,85 @@ public class LandscapeWorld{
 			tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
 			addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(true)));
 		}
+		ArrayList<Vec3i> toGen = new ArrayList();
 		{
 			// ---
 			// Update touching chunks.
 			// ---
-			try{
-				if(x==0){
+			if(x==0){
+				try{
 					chunkX -= 64;
 					tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
 					tempBlockData.setBlock(x+64, y, z, block);
 					tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
 					addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(true)));
-				}else if(x==63){
+				}catch(ChunkNotGeneratedException e){
+					// Generate this chunk.
+					toGen.add(new Vec3i(chunkX, chunkY, chunkZ));
+				}
+			}else if(x==63){
+				try{
 					chunkX += 64;
 					tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
 					tempBlockData.setBlock(x-64, y, z, block);
 					tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
 					addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(true)));
+				}catch(ChunkNotGeneratedException e){
+					// Generate this chunk.
+					toGen.add(new Vec3i(chunkX, chunkY, chunkZ));
 				}
-			}catch(ChunkNotGeneratedException e){
-				// If the chunk doesn't exist, go ahead and skip it.
 			}
-			try{
-				if(y==0){
+			if(y==0){
+				try{
 					chunkY -= 64;
 					tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
 					tempBlockData.setBlock(x, y+64, z, block);
 					tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
 					addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(true)));
-				}else if(y==63){
+				}catch(ChunkNotGeneratedException e){
+					// Generate this chunk.
+					toGen.add(new Vec3i(chunkX, chunkY, chunkZ));
+				}
+			}else if(y==63){
+				try{
 					chunkY += 64;
 					tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
 					tempBlockData.setBlock(x, y-64, z, block);
 					tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
 					addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(true)));
+				}catch(ChunkNotGeneratedException e){
+					// Generate this chunk.
+					toGen.add(new Vec3i(chunkX, chunkY, chunkZ));
 				}
-			}catch(ChunkNotGeneratedException e){
-				// If the chunk doesn't exist, go ahead and skip it.
 			}
-			try{
-				if(z==0){
+			if(z==0){
+				try{
 					chunkZ -= 64;
 					tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
 					tempBlockData.setBlock(x, y, z+64, block);
 					tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
 					addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(true)));
-				}else if(z==63){
+				}catch(ChunkNotGeneratedException e){
+					// Generate this chunk.
+					toGen.add(new Vec3i(chunkX, chunkY, chunkZ));
+				}
+			}else if(z==63){
+				try{
 					chunkZ += 64;
 					tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
 					tempBlockData.setBlock(x, y, z-64, block);
 					tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
 					addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(true)));
+				}catch(ChunkNotGeneratedException e){
+					// Generate this chunk.
+					toGen.add(new Vec3i(chunkX, chunkY, chunkZ));
 				}
-			}catch(ChunkNotGeneratedException e){
-				// If the chunk doesn't exist, go ahead and skip it.
 			}
+		}
+		for(Vec3i co : toGen){
+			fullyGenerateChunk(co.x, co.y, co.z);
+			tempBlockData.saveToFile(co.x, co.y, co.z);
+			addRepaintRequest(new ChunkRepaintRequest(co.x, co.y, co.z, tempBlockData.mesh(true)));
 		}
 	}
 	public void setRenderDistance(int renderDistance){
@@ -262,7 +287,7 @@ public class LandscapeWorld{
 						continue clearer;
 				for(a = 0; a<biomeParticleEngines.size(); a++)
 					if(biomeParticleEngines.get(a).getX()==ch.getX()
-					&&biomeParticleEngines.get(a).getZ()==ch.getZ()){
+						&&biomeParticleEngines.get(a).getZ()==ch.getZ()){
 						biomeParticleEngines.remove(a).dispose();
 						continue clearer;
 					}
