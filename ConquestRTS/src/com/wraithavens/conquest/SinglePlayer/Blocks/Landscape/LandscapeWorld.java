@@ -1,6 +1,7 @@
 package com.wraithavens.conquest.SinglePlayer.Blocks.Landscape;
 
 import java.io.File;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import org.lwjgl.opengl.GL20;
@@ -10,6 +11,10 @@ import com.wraithavens.conquest.SinglePlayer.BlockPopulators.BlockTextures;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.BlockData;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.ChunkNotGeneratedException;
 import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.MeshFormatter;
+import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.MeshRenderer;
+import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.ChunkBuilder.BiomeColorDataPacket;
+import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.ChunkBuilder.ChunkPainter;
+import com.wraithavens.conquest.SinglePlayer.Blocks.BlockMesher.ChunkBuilder.MeshDataPacket;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.Particles.BiomeParticleEngine;
@@ -121,23 +126,26 @@ public class LandscapeWorld{
 			tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
 			addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(true)));
 		}
-		try{
+		{
 			// ---
 			// Update touching chunks.
 			// ---
-			if(x==0){
-				chunkX -= 64;
-				tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
-				tempBlockData.setBlock(x+64, y, z, block);
-				tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
-				addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(true)));
-			}
-			if(x==63){
-				chunkX += 64;
-				tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
-				tempBlockData.setBlock(x-64, y, z, block);
-				tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
-				addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(true)));
+			try{
+				if(x==0){
+					chunkX -= 64;
+					tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
+					tempBlockData.setBlock(x+64, y, z, block);
+					tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
+					addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(true)));
+				}else if(x==63){
+					chunkX += 64;
+					tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
+					tempBlockData.setBlock(x-64, y, z, block);
+					tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
+					addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(true)));
+				}
+			}catch(ChunkNotGeneratedException e){
+				// If the chunk doesn't exist, go ahead and skip it.
 			}
 			try{
 				if(y==0){
@@ -146,8 +154,7 @@ public class LandscapeWorld{
 					tempBlockData.setBlock(x, y+64, z, block);
 					tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
 					addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(true)));
-				}
-				if(y==63){
+				}else if(y==63){
 					chunkY += 64;
 					tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
 					tempBlockData.setBlock(x, y-64, z, block);
@@ -157,23 +164,23 @@ public class LandscapeWorld{
 			}catch(ChunkNotGeneratedException e){
 				// If the chunk doesn't exist, go ahead and skip it.
 			}
-			if(z==0){
-				chunkZ -= 64;
-				tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
-				tempBlockData.setBlock(x, y, z+64, block);
-				tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
-				addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(true)));
+			try{
+				if(z==0){
+					chunkZ -= 64;
+					tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
+					tempBlockData.setBlock(x, y, z+64, block);
+					tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
+					addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(true)));
+				}else if(z==63){
+					chunkZ += 64;
+					tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
+					tempBlockData.setBlock(x, y, z-64, block);
+					tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
+					addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(true)));
+				}
+			}catch(ChunkNotGeneratedException e){
+				// If the chunk doesn't exist, go ahead and skip it.
 			}
-			if(z==63){
-				chunkZ += 64;
-				tempBlockData.loadFromFile(chunkX, chunkY, chunkZ);
-				tempBlockData.setBlock(x, y, z-64, block);
-				tempBlockData.saveToFile(chunkX, chunkY, chunkZ);
-				addRepaintRequest(new ChunkRepaintRequest(chunkX, chunkY, chunkZ, tempBlockData.mesh(true)));
-			}
-		}catch(ChunkNotGeneratedException e){
-			// This shouldn't be hit.
-			e.printStackTrace();
 		}
 	}
 	public void setRenderDistance(int renderDistance){
@@ -255,7 +262,7 @@ public class LandscapeWorld{
 						continue clearer;
 				for(a = 0; a<biomeParticleEngines.size(); a++)
 					if(biomeParticleEngines.get(a).getX()==ch.getX()
-						&&biomeParticleEngines.get(a).getZ()==ch.getZ()){
+					&&biomeParticleEngines.get(a).getZ()==ch.getZ()){
 						biomeParticleEngines.remove(a).dispose();
 						continue clearer;
 					}
@@ -265,7 +272,6 @@ public class LandscapeWorld{
 	}
 	private void fullyGenerateChunk(int x, int y, int z){
 		// TODO Make this extend the the mass height chunk data up or down.
-		// TODO Generate and load this chunk.
 		boolean air = machine.getGroundLevel(x, z)<y; // Works in theory.
 		tempBlockData.clear();
 		if(!air)
@@ -319,6 +325,24 @@ public class LandscapeWorld{
 						tempBlockData.setBlock(a, b, -1, blockData.getBlock(a, b, c));
 			}catch(ChunkNotGeneratedException e){} // Ignore chunk, then.
 		}
+		// TODO Move this chunk generation process to the loading loop.
+		ChunkPainter chunkPainter = new ChunkPainter();
+		MeshRenderer newMesh = tempBlockData.mesh(false);
+		chunkPainter.getPackets().add(new MeshDataPacket(newMesh));
+		{
+			// ---
+			// Get biome colors.
+			// ---
+			// TODO Make this use actual biome color data.
+			ByteBuffer colorData = ByteBuffer.allocate(64*64*3);
+			while(colorData.hasRemaining())
+				colorData.put((byte)255);
+			colorData.flip();
+			chunkPainter.getPackets().add(new BiomeColorDataPacket(colorData));
+		}
+		chunkPainter.save(x, y, z);
+		loadChunk(x, y, z);
+		addRepaintRequest(new ChunkRepaintRequest(x, y, z, newMesh));
 	}
 	private LandscapeChunk getContainingChunk(int x, int y, int z, boolean load, ChunkHeightData heightData){
 		x = Algorithms.groupLocation(x, LandscapeChunk.LandscapeSize);

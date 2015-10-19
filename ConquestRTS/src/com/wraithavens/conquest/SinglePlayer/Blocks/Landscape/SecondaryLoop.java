@@ -84,7 +84,7 @@ public class SecondaryLoop implements Runnable{
 						return EntityType.getVariation(EntityType.VallaFlower, (int)(random.nextFloat()*4));
 					if(random.nextFloat()<0.005)
 						return EntityType.values()[EntityType.TayleaMeadowRock1.ordinal()
-						                           +(int)(random.nextFloat()*3)];
+							+(int)(random.nextFloat()*3)];
 					break;
 				case ArcstoneHills:
 					break;
@@ -152,6 +152,10 @@ public class SecondaryLoop implements Runnable{
 		spiral.setMaxDistance(distance);
 	}
 	private void attemptGenerateChunk(){
+		// TODO Make biome color texture use a single texture per biome vertical
+		// stack. This will slightly increase rendering speed, and decrease
+		// memory usage. The biome color texture would have to be stored as an
+		// image and stored in a seperate file.
 		int x = spiral.getX()*LandscapeChunk.LandscapeSize;
 		int z = spiral.getY()*LandscapeChunk.LandscapeSize;
 		loadMassChunkHeightData(x, z);
@@ -213,14 +217,14 @@ public class SecondaryLoop implements Runnable{
 					heights[a][b] =
 						a==0||b==0||a==65||b==65?machine.getGroundLevel(tempA, b-1+z):heightData.getHeight(
 							tempA, b-1+z);
-						type = Block.Grass.id();
-						for(c = 0; c<66; c++){
-							tempC = c-1+y;
-							if(tempC<heights[a][b])
-								blockData.setBlock(a-1, c-1, b-1, type);
-							else if(tempC<0)
-								blockData.setBlock(a-1, c-1, b-1, waterId);
-						}
+					type = Block.Grass.id();
+					for(c = 0; c<66; c++){
+						tempC = c-1+y;
+						if(tempC<heights[a][b])
+							blockData.setBlock(a-1, c-1, b-1, type);
+						else if(tempC<0)
+							blockData.setBlock(a-1, c-1, b-1, waterId);
+					}
 				}
 			}
 			MeshRenderer render = blockData.mesh(false);
@@ -253,9 +257,9 @@ public class SecondaryLoop implements Runnable{
 					tempB = b+z;
 					type =
 						randomPlant(humidity = heightData.getHumidity(tempA, tempB),
-						tempature = heightData.getTempature(tempA, tempB),
-						heightData.getLevel(tempA, tempB), tempA, h, tempB,
-						machine.getGiantEntitySeed()^100799);
+							tempature = heightData.getTempature(tempA, tempB),
+							heightData.getLevel(tempA, tempB), tempA, h, tempB,
+							machine.getGiantEntitySeed()^100799);
 					if(type==null)
 						continue;
 					if(type.isGrass){
