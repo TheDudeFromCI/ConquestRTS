@@ -53,9 +53,10 @@ public class BlockData{
 	 * basic, then a full optimazation is preformed. (This takes much longer,
 	 * but with far, far, fewer quads.)
 	 */
-	public MeshRenderer mesh(boolean basic){
+	public MeshRenderer mesh(@SuppressWarnings("unused") boolean basic){
 		// TODO Fix basic meshing.
-		meshFormatter.setBasicState(basic);
+		// meshFormatter.setBasicState(basic);
+		meshFormatter.setBasicState(false);
 		int x, y, z, j, i;
 		byte block;
 		for(j = 0; j<6; j++){

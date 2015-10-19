@@ -202,6 +202,7 @@ public class LandscapeWorld{
 				}
 			}
 		}
+		// TODO Move this chunk generation process to loading loop.
 		for(Vec3i co : toGen){
 			fullyGenerateChunk(co.x, co.y, co.z);
 			tempBlockData.saveToFile(co.x, co.y, co.z);
@@ -352,7 +353,7 @@ public class LandscapeWorld{
 		}
 		// TODO Move this chunk generation process to the loading loop.
 		ChunkPainter chunkPainter = new ChunkPainter();
-		MeshRenderer newMesh = tempBlockData.mesh(false);
+		MeshRenderer newMesh = tempBlockData.mesh(true);
 		chunkPainter.getPackets().add(new MeshDataPacket(newMesh));
 		{
 			// ---
