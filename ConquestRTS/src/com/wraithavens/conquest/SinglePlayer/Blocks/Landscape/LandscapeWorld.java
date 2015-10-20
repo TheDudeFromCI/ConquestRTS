@@ -60,7 +60,7 @@ public class LandscapeWorld{
 		this.particleBatch = particleBatch;
 		shader = new ShaderProgram("Landscape");
 		shader.bind();
-		shader.loadUniforms("colorMap", "offset", "texture", "clipmap");
+		shader.loadUniforms("colorMap", "offset", "texture1", "clipmap");
 		shader.setUniform1I(0, 0);
 		shader.setUniform1I(2, 1);
 		shader.setUniform1I(3, 2);
@@ -288,7 +288,7 @@ public class LandscapeWorld{
 						continue clearer;
 				for(a = 0; a<biomeParticleEngines.size(); a++)
 					if(biomeParticleEngines.get(a).getX()==ch.getX()
-						&&biomeParticleEngines.get(a).getZ()==ch.getZ()){
+					&&biomeParticleEngines.get(a).getZ()==ch.getZ()){
 						biomeParticleEngines.remove(a).dispose();
 						continue clearer;
 					}
@@ -297,8 +297,14 @@ public class LandscapeWorld{
 		}
 	}
 	private void fullyGenerateChunk(int x, int y, int z){
-		// TODO Make this extend the the mass height chunk data up or down.
 		boolean air = machine.getGroundLevel(x, z)<y; // Works in theory.
+		loadMassChunkHeightData(x, z);
+		int[] h = new int[2];
+		massChunkHeightData.getHeights(x, z, h);
+		if(!air)
+			h[0] -= 64;
+		h[1]++;
+		massChunkHeightData.setHeight(x, z, h);
 		tempBlockData.clear();
 		if(!air)
 			tempBlockData.fill(Block.Dirt.id());

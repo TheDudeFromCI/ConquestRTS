@@ -25,7 +25,7 @@ public class LoadingScreen{
 	private int lastPercent;
 	public LoadingScreen(){
 		shader = new ShaderProgram("LoadingScreen");
-		shader.loadUniforms("texture", "alpha");
+		shader.loadUniforms("texture1", "alpha");
 		shader.setUniform1I(0, 0);
 		spinner =
 			new UiElement(Texture.getTexture(new File(WraithavensConquest.assetFolder+File.separatorChar+"Misc",

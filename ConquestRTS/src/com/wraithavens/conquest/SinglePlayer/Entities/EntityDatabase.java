@@ -31,8 +31,9 @@ public class EntityDatabase{
 		shader = new ShaderProgram("ModelShader");
 		shader.bind();
 		shader.loadUniforms("uni_swayAmount", "uni_meshCenter", "uni_time", "uni_colorBlended",
-			"uni_textureOffset", "uni_textureSize", "uni_rotScale");
-		SingularShaderAttrib = shader.getAttributeLocation("shade");
+			"uni_textureOffset", "uni_textureSize", "uni_rotScale", "texture1");
+		shader.setUniform1I(7, 0);
+		SingularShaderAttrib = shader.getAttributeLocation("inColor");
 		GL20.glEnableVertexAttribArray(SingularShaderAttrib);
 	}
 	public void addEntity(Entity e){
@@ -66,6 +67,7 @@ public class EntityDatabase{
 		EntityMesh mesh = null;
 		boolean shaderBound = false;
 		Vector3f textureOffset3d, textureSize3D;
+		// TODO Get rid of use of gl_Color, in GLSL.
 		for(Entity e : entities){
 			if(!e.canRender(landscape, camera))
 				continue;

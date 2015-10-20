@@ -51,14 +51,16 @@ class EntityMesh{
 			int vertexCount = bin.getInt();
 			{
 				ByteBuffer vertexData = BufferUtils.createByteBuffer(vertexCount*16);
+				byte shade;
 				for(int i = 0; i<vertexCount; i++){
 					vertexData.putFloat(bin.getFloat());
 					vertexData.putFloat(bin.getFloat());
 					vertexData.putFloat(bin.getFloat());
+					shade = bin.getByte();
 					vertexData.put(bin.getByte());
 					vertexData.put(bin.getByte());
 					vertexData.put(bin.getByte());
-					vertexData.put(bin.getByte());
+					vertexData.put(shade);
 				}
 				vertexData.flip();
 				GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
@@ -177,8 +179,7 @@ class EntityMesh{
 	void bind(){
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 		GL11.glVertexPointer(3, GL11.GL_FLOAT, 16, 0);
-		GL20.glVertexAttribPointer(EntityDatabase.SingularShaderAttrib, 1, GL11.GL_UNSIGNED_BYTE, true, 16, 12);
-		GL11.glColorPointer(3, GL11.GL_UNSIGNED_BYTE, 16, 13);
+		GL20.glVertexAttribPointer(EntityDatabase.SingularShaderAttrib, 4, GL11.GL_UNSIGNED_BYTE, true, 16, 12);
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 		if(textureColorsId!=0)
 			GL11.glBindTexture(GL12.GL_TEXTURE_3D, textureColorsId);

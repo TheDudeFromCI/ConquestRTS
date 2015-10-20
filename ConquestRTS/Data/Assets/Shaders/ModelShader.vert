@@ -4,9 +4,8 @@ uniform float uni_time;
 uniform vec3 uni_textureOffset;
 uniform vec3 uni_textureSize;
 uniform vec2 uni_rotScale;
-out vec3 color;
-in float shade;
-out float edgeShade;
+out vec4 color;
+in vec4 inColor;
 out vec3 uv;
 
 void main(){
@@ -19,9 +18,8 @@ void main(){
 	uv = (gl_Vertex.xyz-uni_textureOffset)/uni_textureSize;
 	vec2 swayLocations = vec2(sin(uni_time+uni_meshCenter.x), cos(uni_time+uni_meshCenter.z))*uni_swayAmount*pos.y;
 	pos.x += swayLocations.x;
-	pos.y -= (swayLocations.x+swayLocations.y)*0.2f;
+	pos.y -= (swayLocations.x+swayLocations.y)*0.2;
 	pos.z += swayLocations.y;
-	gl_Position = gl_ModelViewProjectionMatrix*vec4(pos+uni_meshCenter, 1.0f);
-	edgeShade = shade;
-	color = gl_Color.rgb;
+	gl_Position = gl_ModelViewProjectionMatrix*vec4(pos+uni_meshCenter, 1.0);
+	color = inColor;
 }

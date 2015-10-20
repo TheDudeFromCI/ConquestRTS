@@ -6,7 +6,7 @@ in vec3 att_color;
 out vec2 uv;
 out vec3 color;
 
-const float swayStrength = 0.15f;
+const float swayStrength = 0.15;
 
 void main(){
 	vec2 r = vec2(cos(att_rotScale.x), sin(att_rotScale.x));
@@ -19,7 +19,7 @@ void main(){
 	pos.x += swayLocations.x;
 	pos.y -= swayLocations.x+swayLocations.y;
 	pos.z += swayLocations.y;
-	gl_Position = gl_ModelViewProjectionMatrix*vec4(att_offset+pos, 1.0f);
+	gl_Position = gl_ModelViewProjectionMatrix*vec4(att_offset+pos, 1.0);
 	uv = gl_MultiTexCoord0.xy;
 	color = att_color;
 }

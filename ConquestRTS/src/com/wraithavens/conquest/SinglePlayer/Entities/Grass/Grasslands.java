@@ -63,7 +63,7 @@ public class Grasslands{
 		// ---
 		shader = new ShaderProgram("Grass");
 		shader.bind();
-		shader.loadUniforms("texture", "time");
+		shader.loadUniforms("texture1", "time");
 		shader.setUniform1I(0, 0);
 		SwayAttribLocation = shader.getAttributeLocation("att_swayTolerance");
 		OffsetAttribLocation = shader.getAttributeLocation("att_offset");
