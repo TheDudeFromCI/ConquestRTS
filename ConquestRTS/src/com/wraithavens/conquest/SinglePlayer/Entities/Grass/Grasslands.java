@@ -22,6 +22,7 @@ public class Grasslands{
 	private final int OffsetAttribLocation;
 	private final int RotScaleAttribLocation;
 	private final int ColorAttribLocation;
+	private final int UvAttribLocation;
 	private final GrassBook grassBook;
 	private final HashMap<GrassPatch,Boolean> que = new HashMap();
 	private double time;
@@ -69,12 +70,14 @@ public class Grasslands{
 		OffsetAttribLocation = shader.getAttributeLocation("att_offset");
 		RotScaleAttribLocation = shader.getAttributeLocation("att_rotScale");
 		ColorAttribLocation = shader.getAttributeLocation("att_color");
+		UvAttribLocation = shader.getAttributeLocation("att_uv");
 		GL20.glEnableVertexAttribArray(SwayAttribLocation);
 		GL20.glEnableVertexAttribArray(OffsetAttribLocation);
 		GL20.glEnableVertexAttribArray(RotScaleAttribLocation);
-		grassBook =
-			new GrassBook(OffsetAttribLocation, RotScaleAttribLocation, ColorAttribLocation, patches, landscape,
-				camera);
+		GL20.glEnableVertexAttribArray(ColorAttribLocation);
+		GL20.glEnableVertexAttribArray(UvAttribLocation);
+		grassBook = new GrassBook(OffsetAttribLocation, RotScaleAttribLocation, ColorAttribLocation, patches,
+			landscape, camera);
 	}
 	public void addPatch(GrassPatch patch){
 		que.put(patch, true);
@@ -97,7 +100,7 @@ public class Grasslands{
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
 		GL11.glVertexPointer(3, GL11.GL_FLOAT, 24, 0);
-		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 24, 12);
+		GL20.glVertexAttribPointer(UvAttribLocation, 2, GL11.GL_FLOAT, false, 24, 12);
 		GL20.glVertexAttribPointer(SwayAttribLocation, 1, GL11.GL_FLOAT, false, 24, 20);
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		shader.setUniform1f(1, (float)time);

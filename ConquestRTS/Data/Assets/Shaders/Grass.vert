@@ -3,6 +3,7 @@ in float att_swayTolerance;
 in vec3 att_offset;
 in vec2 att_rotScale;
 in vec3 att_color;
+in vec2 att_uv;
 out vec2 uv;
 out vec3 color;
 
@@ -20,6 +21,6 @@ void main(){
 	pos.y -= swayLocations.x+swayLocations.y;
 	pos.z += swayLocations.y;
 	gl_Position = gl_ModelViewProjectionMatrix*vec4(att_offset+pos, 1.0);
-	uv = gl_MultiTexCoord0.xy;
+	uv = att_uv;
 	color = att_color;
 }
