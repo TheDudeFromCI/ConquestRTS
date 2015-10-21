@@ -23,6 +23,9 @@ public class Algorithms{
 	public static File getChunkPath(int x, int y, int z){
 		return getLandscapePath(x, y, z, 64, ChunkId);
 	}
+	public static File getChunkStackPath(int x, int z){
+		return getLandscapePath(x, z, 32, ChunkStackId);
+	}
 	public static File getMassChunkHeightsPath(int x, int z){
 		return getLandscapePath(x, z, 8192, MassChunkHeightsId);
 	}
@@ -88,4 +91,5 @@ public class Algorithms{
 	// 2 Argument Files
 	private static final char ChunkHeightsId = 'a';
 	private static final char MassChunkHeightsId = 'b';
+	private static final char ChunkStackId = 'c';
 }

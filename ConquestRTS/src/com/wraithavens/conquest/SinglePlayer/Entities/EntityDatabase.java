@@ -67,7 +67,6 @@ public class EntityDatabase{
 		EntityMesh mesh = null;
 		boolean shaderBound = false;
 		Vector3f textureOffset3d, textureSize3D;
-		// TODO Get rid of use of gl_Color, in GLSL.
 		for(Entity e : entities){
 			if(!e.canRender(landscape, camera))
 				continue;
