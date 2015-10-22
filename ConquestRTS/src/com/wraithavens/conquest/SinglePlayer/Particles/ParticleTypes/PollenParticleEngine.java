@@ -1,30 +1,24 @@
 package com.wraithavens.conquest.SinglePlayer.Particles.ParticleTypes;
 
-import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.ChunkHeightData;
-import com.wraithavens.conquest.SinglePlayer.Noise.Biome;
-import com.wraithavens.conquest.SinglePlayer.Particles.ParticleBatch;
-import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
-import com.wraithavens.conquest.Utility.Algorithms;
-
 public class PollenParticleEngine extends ChunkParticleEngine{
-	@SuppressWarnings("ucd")
-	public PollenParticleEngine(ParticleBatch batch, ChunkHeightData chunkHeights, Camera camera){
-		super(batch, chunkHeights, camera, 90, 30);
+	public PollenParticleEngine(){
+		super(90, 30);
 	}
 	public void dispose(){}
 	@Override
 	public void newParticle(double time){
-		float x = Algorithms.random(64);
-		float z = Algorithms.random(64);
-		int fx = (int)x;
-		int fz = (int)z;
-		if(chunkHeights.getBiomeRaw(fx, fz)!=Biome.TayleaMeadow)
-			return;
-		float y = chunkHeights.getHeightRaw(fx, fz)+1.5f;
-		x += chunkHeights.getX();
-		z += chunkHeights.getZ();
-		if(camera.distanceSquared(x, y, z)>=100*100)
-			return;
-		batch.addParticle(new Pollen(x, y, z, time));
+		// TODO Make quick accessing of biome for a block.
+		// float x = Algorithms.random(64);
+		// float z = Algorithms.random(64);
+		// int fx = (int)x;
+		// int fz = (int)z;
+		// if(chunkHeights.getBiomeRaw(fx, fz)!=Biome.TayleaMeadow)
+		// return;
+		// float y = chunkHeights.getHeightRaw(fx, fz)+1.5f;
+		// x += chunkHeights.getX();
+		// z += chunkHeights.getZ();
+		// if(camera.distanceSquared(x, y, z)>=100*100)
+		// return;
+		// batch.addParticle(new Pollen(x, y, z, time));
 	}
 }

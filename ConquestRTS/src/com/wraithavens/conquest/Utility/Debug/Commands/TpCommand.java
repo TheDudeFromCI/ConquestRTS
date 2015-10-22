@@ -2,7 +2,7 @@ package com.wraithavens.conquest.Utility.Debug.Commands;
 
 import com.wraithavens.conquest.Launcher.MainLoop;
 import com.wraithavens.conquest.SinglePlayer.SinglePlayerGame;
-import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.SpiralGridAlgorithm;
+import com.wraithavens.conquest.SinglePlayer.Blocks.World.BetterChunkLoader;
 import com.wraithavens.conquest.SinglePlayer.Noise.Biome;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
@@ -44,15 +44,15 @@ public class TpCommand implements Command{
 						return;
 					}
 					WorldNoiseMachine machine = game.getWorldNoiseMachine();
-					SpiralGridAlgorithm grid = new SpiralGridAlgorithm();
+					BetterChunkLoader grid = new BetterChunkLoader();
 					grid.setMaxDistance(Integer.MAX_VALUE);
 					int searchSize = 100;
 					Camera camera = game.getCamera();
 					int x, z;
 					float[] temp = new float[3];
 					while(true){
-						x = grid.getX()*searchSize+(int)camera.x;
-						z = grid.getY()*searchSize+(int)camera.z;
+						x = grid.getX()*searchSize+camera.getBlockX();
+						z = grid.getY()*searchSize+camera.getBlockZ();
 						if(machine.getBiomeAt(x, z, temp)==targetBiome){
 							camera.teleport(x, machine.getGroundLevel(x, z)+6, z);
 							break;

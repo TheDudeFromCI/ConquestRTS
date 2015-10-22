@@ -6,19 +6,8 @@ import com.wraithavens.conquest.Utility.Algorithms;
 import com.wraithavens.conquest.Utility.BinaryFile;
 
 public class BlockData{
-	public static byte getBlockFromFile(int chunkX, int chunkY, int chunkZ, int x, int y, int z)
-		throws ChunkNotGeneratedException{
-		File file = Algorithms.getChunkBlocksPath(chunkX, chunkY, chunkZ);
-		if(file.exists()&&file.length()>0){
-			BinaryFile bin = new BinaryFile(file);
-			bin.decompress(false);
-			bin.skip(x*64*64+y*64+z);
-			return bin.getByte();
-		}
-		throw new ChunkNotGeneratedException(chunkX, chunkY, chunkZ);
-	}
 	static final byte Air = -1;
-	private final byte[] blocks = new byte[64*64*64];
+	private final byte[] blocks = new byte[32*32*32];
 	private final BlockClipData clipData;
 	private final MeshFormatter meshFormatter;
 	public BlockData(MeshFormatter meshFormatter){
@@ -35,7 +24,7 @@ public class BlockData{
 			blocks[i] = type;
 	}
 	public byte getBlock(int x, int y, int z){
-		return blocks[x*64*64+y*64+z];
+		return blocks[x*32*32+y*32+z];
 	}
 	public void loadFromFile(int x, int y, int z) throws ChunkNotGeneratedException{
 		File file = Algorithms.getChunkBlocksPath(x, y, z);
@@ -61,48 +50,48 @@ public class BlockData{
 		byte block;
 		for(j = 0; j<6; j++){
 			if(j==0||j==1){
-				for(x = 0; x<64; x++){
+				for(x = 0; x<32; x++){
 					meshFormatter.clearTypeList();
-					for(y = 0; y<64; y++)
-						for(z = 0; z<64; z++)
+					for(y = 0; y<32; y++)
+						for(z = 0; z<32; z++)
 							if((block = getBlock(x, y, z))!=Air)
 								meshFormatter.addBlockType(block);
 					for(i = 0; i<meshFormatter.typeListSize(); i++){
 						block = meshFormatter.getBlockType(i);
-						for(y = 0; y<64; y++)
-							for(z = 0; z<64; z++)
+						for(y = 0; y<32; y++)
+							for(z = 0; z<32; z++)
 								meshFormatter.setBlock(y, z, placeSide(x, y, z, j, block));
 						meshFormatter.setCurrentTexutre(Block.values()[block&0xFF].getTexture(j));
 						meshFormatter.compileLayer(j, x);
 					}
 				}
 			}else if(j==2||j==3){
-				for(y = 0; y<64; y++){
+				for(y = 0; y<32; y++){
 					meshFormatter.clearTypeList();
-					for(x = 0; x<64; x++)
-						for(z = 0; z<64; z++)
+					for(x = 0; x<32; x++)
+						for(z = 0; z<32; z++)
 							if((block = getBlock(x, y, z))!=Air)
 								meshFormatter.addBlockType(block);
 					for(i = 0; i<meshFormatter.typeListSize(); i++){
 						block = meshFormatter.getBlockType(i);
-						for(x = 0; x<64; x++)
-							for(z = 0; z<64; z++)
+						for(x = 0; x<32; x++)
+							for(z = 0; z<32; z++)
 								meshFormatter.setBlock(x, z, placeSide(x, y, z, j, block));
 						meshFormatter.setCurrentTexutre(Block.values()[block&0xFF].getTexture(j));
 						meshFormatter.compileLayer(j, y);
 					}
 				}
 			}else{
-				for(z = 0; z<64; z++){
+				for(z = 0; z<32; z++){
 					meshFormatter.clearTypeList();
-					for(x = 0; x<64; x++)
-						for(y = 0; y<64; y++)
+					for(x = 0; x<32; x++)
+						for(y = 0; y<32; y++)
 							if((block = getBlock(x, y, z))!=Air)
 								meshFormatter.addBlockType(block);
 					for(i = 0; i<meshFormatter.typeListSize(); i++){
 						block = meshFormatter.getBlockType(i);
-						for(x = 0; x<64; x++)
-							for(y = 0; y<64; y++)
+						for(x = 0; x<32; x++)
+							for(y = 0; y<32; y++)
 								meshFormatter.setBlock(x, y, placeSide(x, y, z, j, block));
 						meshFormatter.setCurrentTexutre(Block.values()[block&0xFF].getTexture(j));
 						meshFormatter.compileLayer(j, z);
@@ -120,8 +109,8 @@ public class BlockData{
 		bin.compile(Algorithms.getChunkBlocksPath(x, y, z));
 	}
 	public void setBlock(int x, int y, int z, byte b){
-		if(x>=0&&x<64&&y>=0&&y<64&&z>=0&&z<64)
-			blocks[x*64*64+y*64+z] = b;
+		if(x>=0&&x<32&&y>=0&&y<32&&z>=0&&z<32)
+			blocks[x*32*32+y*32+z] = b;
 		else
 			clipData.setHasBlockWeak(x, y, z, b);
 	}
@@ -149,7 +138,7 @@ public class BlockData{
 				z--;
 				break;
 		}
-		if(x>=0&&x<64&&y>=0&&y<64&&z>=0&&z<64)
+		if(x>=0&&x<32&&y>=0&&y<32&&z>=0&&z<32)
 			return getBlock(x, y, z);
 		return getClipData().hasBlock(x, y, z);
 	}

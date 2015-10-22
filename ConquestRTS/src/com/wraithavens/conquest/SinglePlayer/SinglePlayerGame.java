@@ -5,8 +5,7 @@ import org.lwjgl.opengl.GL11;
 import com.wraithavens.conquest.Launcher.Driver;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.MatrixUtils;
-import com.wraithavens.conquest.SinglePlayer.BlockPopulators.Block;
-import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
+import com.wraithavens.conquest.SinglePlayer.Blocks.World.World;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityDatabase;
 import com.wraithavens.conquest.SinglePlayer.Entities.Grass.Grasslands;
 import com.wraithavens.conquest.SinglePlayer.Entities.Water.WaterWorks;
@@ -31,17 +30,16 @@ public class SinglePlayerGame implements Driver{
 	private SkyBox skybox;
 	private WorldNoiseMachine machine;
 	private EntityDatabase entityDatabase;
-	private LandscapeWorld landscape;
+	private World world;
 	private Grasslands grassLands;
 	private ParticleBatch particleBatch;
 	private WaterWorks waterWorks;
 	private boolean initalized = false;
 	private LoadingScreen loadingScreen;
-	private double lastLocationTime = 0;
 	private int renderedSky = 0;
 	public void dispose(){
+		world.dispose();
 		skybox.dispose();
-		landscape.dispose();
 		entityDatabase.dispose();
 		grassLands.dispose();
 		particleBatch.dispose();
@@ -58,14 +56,14 @@ public class SinglePlayerGame implements Driver{
 	public Grasslands getGrasslands(){
 		return grassLands;
 	}
-	public LandscapeWorld getLandscape(){
-		return landscape;
-	}
 	public ParticleBatch getParticleBatch(){
 		return particleBatch;
 	}
 	public WaterWorks getWaterWorks(){
 		return waterWorks;
+	}
+	public World getWorld(){
+		return world;
 	}
 	public WorldNoiseMachine getWorldNoiseMachine(){
 		return machine;
@@ -82,25 +80,19 @@ public class SinglePlayerGame implements Driver{
 		// ---
 		// Setup the camera.
 		// ---
-		camera.cameraMoveSpeed = 10.0f;
-		camera.goalX = camera.x = 0;
-		camera.goalZ = camera.z = 0;
-		camera.goalY = machine.getGroundLevel(camera.x, camera.z)+6;
+		camera.teleport(0, machine.getGroundLevel(0, 0)+6, 0);
 		SkyboxClouds noise = new SkyboxClouds(true, 0.5f, 0);
 		SkyboxClouds[] noise2 = null;
 		noise2 = new SkyboxClouds[SkyboxClouds.LayerCount];
 		for(int i = 0; i<SkyboxClouds.LayerCount; i++)
 			noise2[i] = new SkyboxClouds(false, (float)Math.random()*2, 0);
 		skybox = new SkyBox(noise, new Sunbox(), noise2);
-		entityDatabase = new EntityDatabase(camera);
-		particleBatch = new ParticleBatch(camera);
+		entityDatabase = new EntityDatabase();
+		particleBatch = new ParticleBatch();
 		waterWorks = new WaterWorks();
-		landscape = new LandscapeWorld(machine, camera, particleBatch);
-		grassLands = new Grasslands(landscape, camera);
-		entityDatabase.setLandscape(landscape);
-		landscape.setup(grassLands);
+		world = new World();
+		grassLands = new Grasslands();
 		loadingScreen = new LoadingScreen();
-		landscape.start();
 	}
 	public void onKey(int key, int action){
 		if(key==GLFW.GLFW_KEY_W){
@@ -181,6 +173,7 @@ public class SinglePlayerGame implements Driver{
 	}
 	public void onMouse(int button, int action){
 		if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT||button==GLFW.GLFW_MOUSE_BUTTON_RIGHT){
+			@SuppressWarnings("unused")
 			boolean left = button==GLFW.GLFW_MOUSE_BUTTON_LEFT;
 			if(action==GLFW.GLFW_PRESS){
 				ColorConsole con = ColorConsole.INSTANCE;
@@ -188,38 +181,39 @@ public class SinglePlayerGame implements Driver{
 				con.println("Block Hit: "+callback.block);
 				con.println("     Side: "+callback.side);
 				con.println("      Pos: ["+callback.x+", "+callback.y+", "+callback.z+"]");
-				if(callback.block!=null){
-					int x = callback.x;
-					int y = callback.y;
-					int z = callback.z;
-					if(left)
-						landscape.setBlock(x, y, z, null);
-					else{
-						switch(callback.side){
-							case 0:
-								x++;
-								break;
-							case 1:
-								x--;
-								break;
-							case 2:
-								y++;
-								break;
-							case 3:
-								y--;
-								break;
-							case 4:
-								z++;
-								break;
-							case 5:
-								z--;
-								break;
-							default:
-								throw new RuntimeException();
-						}
-						landscape.setBlock(x, y, z, Block.Dirt);
-					}
-				}
+				// TODO Reimplement block editing.
+				// if(callback.block!=null){
+				// int x = callback.x;
+				// int y = callback.y;
+				// int z = callback.z;
+				// if(left)
+				// landscape.setBlock(x, y, z, null);
+				// else{
+				// switch(callback.side){
+				// case 0:
+				// x++;
+				// break;
+				// case 1:
+				// x--;
+				// break;
+				// case 2:
+				// y++;
+				// break;
+				// case 3:
+				// y--;
+				// break;
+				// case 4:
+				// z++;
+				// break;
+				// case 5:
+				// z--;
+				// break;
+				// default:
+				// throw new RuntimeException();
+				// }
+				// landscape.setBlock(x, y, z, Block.Dirt);
+				// }
+				// }
 			}
 		}
 	}
@@ -229,10 +223,10 @@ public class SinglePlayerGame implements Driver{
 		if(x==WraithavensConquest.INSTANCE.getScreenWidth()/2f
 			&&y==WraithavensConquest.INSTANCE.getScreenHeight()/2f)
 			return;
-		camera.ry = (float)(camera.ry+(x-WraithavensConquest.INSTANCE.getScreenWidth()/2f)*mouseSpeed);
-		camera.rx =
+		camera.turnTo((float)(camera.getRY()+(x-WraithavensConquest.INSTANCE.getScreenWidth()/2f)*mouseSpeed),
 			(float)Math.max(
-				Math.min(camera.rx+(y-WraithavensConquest.INSTANCE.getScreenHeight()/2f)*mouseSpeed, 90), -90);
+				Math.min(camera.getRX()+(y-WraithavensConquest.INSTANCE.getScreenHeight()/2f)*mouseSpeed, 89),
+				-89));
 		GLFW.glfwSetCursorPos(WraithavensConquest.INSTANCE.getWindow(),
 			WraithavensConquest.INSTANCE.getScreenWidth()/2, WraithavensConquest.INSTANCE.getScreenHeight()/2f);
 	}
@@ -248,14 +242,14 @@ public class SinglePlayerGame implements Driver{
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
 			renderedSky = 1;
 		}else{
-			skybox.render(camera.x, camera.y, camera.z);
+			skybox.render(camera.getX(), camera.getY(), camera.getZ());
 			GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 			renderedSky = 2;
 		}
 		if(renderedSky!=1)
 			MatrixUtils.setupPerspective(70, WraithavensConquest.INSTANCE.getScreenWidth()
 				/(float)WraithavensConquest.INSTANCE.getScreenHeight(), 0.5f, 5000);
-		landscape.render();
+		world.render();
 		entityDatabase.render();
 		grassLands.render();
 		waterWorks.render();
@@ -267,14 +261,9 @@ public class SinglePlayerGame implements Driver{
 			loadingScreen.update(time);
 			return;
 		}
-		if(time-lastLocationTime>=1){
-			System.out.println("Camera Location: ["+Math.floor(camera.x)+", "+Math.floor(camera.y)+", "
-				+Math.floor(camera.z)+"]");
-			lastLocationTime = time;
-		}
 		frameDelta = delta;
 		move(delta);
-		landscape.update(time);
+		world.update();
 		skybox.update(time);
 		waterWorks.update(time);
 		grassLands.update(time);
@@ -287,33 +276,38 @@ public class SinglePlayerGame implements Driver{
 		if(e)
 			delta *= 50;
 		if(w||walkLock){
-			camera.goalX += delta*(float)Math.sin(Math.toRadians(camera.ry));
-			camera.goalZ -= delta*(float)Math.cos(Math.toRadians(camera.ry));
+			camera.moveTo((float)(camera.getGoalX()+delta*(float)Math.sin(Math.toRadians(camera.getRY()))),
+				camera.getGoalY(),
+				(float)(camera.getGoalX()-delta*(float)Math.cos(Math.toRadians(camera.getRY()))));
 			cameraMoved = true;
 		}
 		if(a){
-			camera.goalX += delta*(float)Math.sin(Math.toRadians(camera.ry-90));
-			camera.goalZ -= delta*(float)Math.cos(Math.toRadians(camera.ry-90));
+			camera.moveTo((float)(camera.getGoalX()+delta*(float)Math.sin(Math.toRadians(camera.getRY()-90))),
+				camera.getGoalY(),
+				(float)(camera.getGoalX()-delta*(float)Math.cos(Math.toRadians(camera.getRY()-90))));
 			cameraMoved = true;
 		}
 		if(s){
-			camera.goalX -= delta*(float)Math.sin(Math.toRadians(camera.ry));
-			camera.goalZ += delta*(float)Math.cos(Math.toRadians(camera.ry));
+			camera.moveTo((float)(camera.getGoalX()-delta*(float)Math.sin(Math.toRadians(camera.getRY()))),
+				camera.getGoalY(),
+				(float)(camera.getGoalX()+delta*(float)Math.cos(Math.toRadians(camera.getRY()))));
 			cameraMoved = true;
 		}
 		if(d){
-			camera.goalX += delta*(float)Math.sin(Math.toRadians(camera.ry+90));
-			camera.goalZ -= delta*(float)Math.cos(Math.toRadians(camera.ry+90));
+			camera.moveTo((float)(camera.getGoalX()+delta*(float)Math.sin(Math.toRadians(camera.getRY()+90))),
+				camera.getGoalY(),
+				(float)(camera.getGoalX()-delta*(float)Math.cos(Math.toRadians(camera.getRY()+90))));
 			cameraMoved = true;
 		}
 		if(grounded){
 			if(cameraMoved)
-				camera.goalY = machine.getGroundLevel((int)camera.goalX, (int)camera.goalZ)+6;
+				camera.moveTo(camera.getGoalX(),
+					machine.getGroundLevel(camera.getGoalBlockX(), camera.getGoalBlockZ())+6, camera.getGoalZ());
 		}else{
 			if(space)
-				camera.goalY += delta;
+				camera.moveTo(camera.getGoalX(), (float)(camera.getGoalY()+delta), camera.getGoalZ());
 			if(shift)
-				camera.goalY -= delta;
+				camera.moveTo(camera.getGoalX(), (float)(camera.getGoalY()-delta), camera.getGoalZ());
 		}
 	}
 }

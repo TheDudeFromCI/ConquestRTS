@@ -1,7 +1,8 @@
 package com.wraithavens.conquest.SinglePlayer.Entities;
 
 import com.wraithavens.conquest.Math.Vector3f;
-import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
+import com.wraithavens.conquest.SinglePlayer.SinglePlayerGame;
+import com.wraithavens.conquest.SinglePlayer.Blocks.World.World;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 
 public class Entity{
@@ -58,11 +59,11 @@ public class Entity{
 		updateMinMax();
 		aabb.calculate(tempMin, tempMax, scale, position);
 	}
-	final boolean canRender(LandscapeWorld landscape, Camera camera){
-		return (mesh.getType().viewDistance==0||camera.distanceSquared(position.x, position.y, position.z)<mesh
-			.getType().viewDistance)
-			&&landscape.isWithinView((int)position.x, (int)position.z)
-			&&aabb.visible(camera);
+	final boolean canRender(){
+		Camera camera = SinglePlayerGame.INSTANCE.getCamera();
+		return (mesh.getType().viewDistance==0
+			||camera.distanceSquared(position.x, position.y, position.z)<mesh.getType().viewDistance)
+			&&World.isWithinView((int)position.x, (int)position.z)&&aabb.visible(camera);
 	}
 	final EntityMesh getMesh(){
 		return mesh;
@@ -92,5 +93,5 @@ public class Entity{
 		return mesh.getType().sways;
 	}
 	@SuppressWarnings("unused")
-	void update(double time){}
+		void update(double time){}
 }

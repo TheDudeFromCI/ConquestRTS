@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.Math.Vector3f;
-import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
-import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 
 public class EntityDatabase{
@@ -21,13 +19,10 @@ public class EntityDatabase{
 		}
 	};
 	private final ShaderProgram shader;
-	private final Camera camera;
-	private LandscapeWorld landscape;
 	private boolean isSwaying = false;
 	private boolean isColorBlended = false;
 	private double time;
-	public EntityDatabase(Camera camera){
-		this.camera = camera;
+	public EntityDatabase(){
 		shader = new ShaderProgram("ModelShader");
 		shader.bind();
 		shader.loadUniforms("uni_swayAmount", "uni_meshCenter", "uni_time", "uni_colorBlended",
@@ -68,7 +63,7 @@ public class EntityDatabase{
 		boolean shaderBound = false;
 		Vector3f textureOffset3d, textureSize3D;
 		for(Entity e : entities){
-			if(!e.canRender(landscape, camera))
+			if(!e.canRender())
 				continue;
 			if(!shaderBound){
 				shaderBound = true;
@@ -97,9 +92,6 @@ public class EntityDatabase{
 			shader.setUniform2f(6, e.getYaw(), e.getScale());
 			e.render();
 		}
-	}
-	public void setLandscape(LandscapeWorld landscape){
-		this.landscape = landscape;
 	}
 	public void update(double time){
 		this.time = time;

@@ -4,7 +4,6 @@ import java.io.File;
 import com.wraithavens.conquest.Launcher.MainLoop;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.SinglePlayer.SinglePlayerGame;
-import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.SecondaryLoop;
 
 public class Settings{
 	/**
@@ -28,9 +27,9 @@ public class Settings{
 	private int chunkLoadDistance;
 	/**
 	 * This is the priority for how much the chunk generator sleeps. <br>
-	 * 0 - Minimal Sleeping<br>
-	 * 1 - Normal Sleeping<br>
-	 * 2 - Maximal Sleeping
+	 * 1 - Minimal Sleeping<br>
+	 * 2 - Normal Sleeping<br>
+	 * 3 - Maximal Sleeping
 	 */
 	private int generatorSleeping;
 	/**
@@ -86,7 +85,7 @@ public class Settings{
 			chunkRenderDistance = 4;
 			chunkCatcheDistance = 5;
 			chunkLoadDistance = 5;
-			generatorSleeping = 1;
+			generatorSleeping = 2;
 			chunkUpdateFrames = 5;
 			fpsCap = 30;
 			screenResolution = 0;
@@ -154,8 +153,9 @@ public class Settings{
 		boolean changed = false;
 		if(request.getChunkRenderDistance()!=chunkRenderDistance){
 			chunkRenderDistance = request.getChunkRenderDistance();
-			if(SinglePlayerGame.INSTANCE!=null)
-				SinglePlayerGame.INSTANCE.getLandscape().setRenderDistance(getChunkRenderDistance());
+			// TODO Fixed render distance updating.
+			// if(SinglePlayerGame.INSTANCE!=null)
+			// SinglePlayerGame.INSTANCE.getLandscape().setRenderDistance(getChunkRenderDistance());
 			changed = true;
 		}
 		if(request.getChunkCatcheDistance()!=chunkCatcheDistance){
@@ -165,13 +165,14 @@ public class Settings{
 		if(request.getChunkLoadDistance()!=chunkLoadDistance){
 			chunkLoadDistance = request.getChunkLoadDistance();
 			if(SinglePlayerGame.INSTANCE!=null){
-				SecondaryLoop loop = SinglePlayerGame.INSTANCE.getLandscape().getLoadingLoop();
-				loop.setMaxLoadDistance(chunkLoadDistance);
+				// TODO Fixed load distance updating.
+				// SecondaryLoop loop =
+				// SinglePlayerGame.INSTANCE.getLandscape().getLoadingLoop();
+				// loop.setMaxLoadDistance(chunkLoadDistance);
 			}
 			changed = true;
 		}
 		if(request.getGeneratorSleeping()!=generatorSleeping){
-			// TODO Make generator sleeping adjustable.
 			generatorSleeping = request.getGeneratorSleeping();
 			changed = true;
 		}

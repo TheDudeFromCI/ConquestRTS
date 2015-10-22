@@ -9,11 +9,23 @@ import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 import com.wraithavens.conquest.Utility.Algorithms;
 
 public class World{
+	public static boolean isWithinView(int x, int z){
+		x = Algorithms.groupLocation(x, 32)/32;
+		z = Algorithms.groupLocation(z, 32)/32;
+		Camera camera = SinglePlayerGame.INSTANCE.getCamera();
+		double a = Algorithms.groupLocation(camera.getBlockX(), 32)/32;
+		double b = Algorithms.groupLocation(camera.getBlockZ(), 32)/32;
+		a -= x;
+		b -= z;
+		double range = WraithavensConquest.Settings.getChunkRenderDistance();
+		return a*a+b*b<range*range;
+	}
 	static int ShadeAttribLocation;
 	static int UvAttribLocation;
 	private final ArrayList<ChunkStack> chunks = new ArrayList();
 	private final BetterChunkLoader chunkLoader;
 	private final ShaderProgram shader;
+	private final LoadingLoop loadingLoop;
 	private int cameraLocationX;
 	private int cameraLocationZ;
 	private int frameId;
@@ -27,6 +39,7 @@ public class World{
 		UvAttribLocation = shader.getAttributeLocation("att_uv");
 		GL20.glEnableVertexAttribArray(ShadeAttribLocation);
 		GL20.glEnableVertexAttribArray(UvAttribLocation);
+		loadingLoop = new LoadingLoop();
 		/**
 		 * TODO Alright, here's how block handling will work. Blocks are stored
 		 * in seperate files from chunk stacks. Each sub chunk, 32x32x32 has
@@ -40,6 +53,12 @@ public class World{
 		 * meshing is saved.
 		 */
 	}
+	public void dispose(){
+		loadingLoop.stop();
+		for(ChunkStack chunk : chunks)
+			chunk.dispose();
+		shader.dispose();
+	}
 	public void render(){
 		shader.bind();
 		for(ChunkStack chunk : chunks)
@@ -52,8 +71,8 @@ public class World{
 			chunk.updateCameraDistance();
 		frameId++;
 		Camera camera = SinglePlayerGame.INSTANCE.getCamera();
-		int x = Algorithms.groupLocation((int)camera.x, 32);
-		int z = Algorithms.groupLocation((int)camera.z, 32);
+		int x = Algorithms.groupLocation(camera.getBlockX(), 32);
+		int z = Algorithms.groupLocation(camera.getBlockZ(), 32);
 		if(x!=cameraLocationX||z!=cameraLocationZ){
 			chunkLoader.reset();
 			cameraLocationX = x;
@@ -77,10 +96,12 @@ public class World{
 	private void loadNextChunk(){
 		if(chunkLoader.hasNext()){
 			chunkLoader.next();
+			int x = chunkLoader.getX()*32+cameraLocationX;
+			int z = chunkLoader.getY()*32+cameraLocationZ;
 			for(ChunkStack chunk : chunks)
-				if(chunk.getX()==chunkLoader.getX()&&chunk.getZ()==chunkLoader.getY())
+				if(chunk.getX()==x&&chunk.getZ()==z)
 					return;
-			chunks.add(new ChunkStack(chunkLoader.getX(), chunkLoader.getY()));
+			chunks.add(new ChunkStack(x, z));
 		}
 	}
 }

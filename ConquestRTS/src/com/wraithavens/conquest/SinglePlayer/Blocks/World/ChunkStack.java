@@ -159,8 +159,8 @@ public class ChunkStack{
 	}
 	public void updateCameraDistance(){
 		Camera camera = SinglePlayerGame.INSTANCE.getCamera();
-		double x = Algorithms.groupLocation((int)camera.x, 32)/32;
-		double z = Algorithms.groupLocation((int)camera.z, 32)/32;
+		double x = Algorithms.groupLocation(camera.getBlockX(), 32)/32;
+		double z = Algorithms.groupLocation(camera.getBlockZ(), 32)/32;
 		x -= getX()/32;
 		z -= getZ()/32;
 		cameraDistance = (int)Math.round(x*x+z*z);

@@ -21,9 +21,9 @@ public class MeshFormatter{
 	private int currentTextureId;
 	public MeshFormatter(){
 		typeList = new BlockTypeList();
-		quads = new byte[64][64];
-		storage = new int[64][64];
-		temp = new int[64][64];
+		quads = new byte[32][32];
+		storage = new int[32][32];
+		temp = new int[32][32];
 		vertexStorage = new VertexStorage();
 		indexStorage = new IndexStorage();
 		waterVertexStorage = new VertexStorage();
@@ -154,18 +154,18 @@ public class MeshFormatter{
 		else
 			for(o = 0; o<quadReferences.length; o++)
 				quadReferences[o] = false;
-		for(x = 0; x<64; x++)
-			for(y = 0; y<64; y++){
+		for(x = 0; x<32; x++)
+			for(y = 0; y<32; y++){
 				if(storage[x][y]==-1)
 					continue;
 				if(quadReferences[storage[x][y]])
 					continue;
 				o = storage[x][y];
 				quadReferences[o] = true;
-				for(w = x; w<64; w++)
+				for(w = x; w<32; w++)
 					if(storage[w][y]!=o)
 						break;
-				for(h = y; h<64; h++)
+				for(h = y; h<32; h++)
 					if(storage[x][h]!=o)
 						break;
 				w -= x;
@@ -177,8 +177,8 @@ public class MeshFormatter{
 		if(basicState)
 			return optimizeSimpleXStrong();
 		int x, y;
-		for(x = 0; x<64; x++)
-			for(y = 0; y<64; y++)
+		for(x = 0; x<32; x++)
+			for(y = 0; y<32; y++)
 				temp[x][y] = storage[x][y];
 		int xS = optimizeXStrong(storage);
 		removeFalse(storage, xS);
@@ -188,8 +188,8 @@ public class MeshFormatter{
 		used.clear();
 		if(xS<=yS)
 			return xS;
-		for(x = 0; x<64; x++)
-			for(y = 0; y<64; y++)
+		for(x = 0; x<32; x++)
+			for(y = 0; y<32; y++)
 				storage[x][y] = temp[x][y];
 		return yS;
 	}
@@ -197,12 +197,12 @@ public class MeshFormatter{
 		int x, y, t, q;
 		int w = -1;
 		int total = 0;
-		for(x = 0; x<64; x++)
-			for(y = 0; y<64; y++)
+		for(x = 0; x<32; x++)
+			for(y = 0; y<32; y++)
 				storage[x][y] = -1;
-		for(y = 0; y<64; y++){
+		for(y = 0; y<32; y++){
 			w = -1;
-			for(x = 0; x<64; x++){
+			for(x = 0; x<32; x++){
 				if(quads[x][y]!=1){
 					w = -1;
 					continue;
@@ -214,9 +214,9 @@ public class MeshFormatter{
 				storage[x][y] = w;
 			}
 		}
-		for(y = 0; y<64-1; y++){
+		for(y = 0; y<32-1; y++){
 			w = 0;
-			for(x = 0; x<64; x++){
+			for(x = 0; x<32; x++){
 				if(quads[x][y]!=1){
 					if(w>0){
 						q = 0;
@@ -250,12 +250,12 @@ public class MeshFormatter{
 				}
 			}
 		}
-		for(x = 0; x<64; x++)
-			for(y = 0; y<64; y++)
+		for(x = 0; x<32; x++)
+			for(y = 0; y<32; y++)
 				if(storage[x][y]>-1&&!used.contains(storage[x][y]))
 					used.add(storage[x][y]);
-		for(x = 0; x<64; x++)
-			for(y = 0; y<64; y++)
+		for(x = 0; x<32; x++)
+			for(y = 0; y<32; y++)
 				if(storage[x][y]>-1)
 					storage[x][y] = used.indexOf(storage[x][y]);
 		return used.size();
@@ -264,12 +264,12 @@ public class MeshFormatter{
 		int x, y, t, q;
 		int w = -1;
 		int total = 0;
-		for(x = 0; x<64; x++)
-			for(y = 0; y<64; y++)
+		for(x = 0; x<32; x++)
+			for(y = 0; y<32; y++)
 				storage[x][y] = -1;
-		for(y = 0; y<64; y++){
+		for(y = 0; y<32; y++){
 			w = -1;
-			for(x = 0; x<64; x++){
+			for(x = 0; x<32; x++){
 				if(quads[x][y]==-1){
 					w = -1;
 					continue;
@@ -281,9 +281,9 @@ public class MeshFormatter{
 				storage[x][y] = w;
 			}
 		}
-		for(y = 0; y<64-1; y++){
+		for(y = 0; y<32-1; y++){
 			w = 0;
-			for(x = 0; x<64; x++){
+			for(x = 0; x<32; x++){
 				if(quads[x][y]==-1){
 					if(w>0){
 						q = 0;
@@ -317,12 +317,12 @@ public class MeshFormatter{
 				}
 			}
 		}
-		for(x = 0; x<64; x++)
-			for(y = 0; y<64; y++)
+		for(x = 0; x<32; x++)
+			for(y = 0; y<32; y++)
 				if(storage[x][y]>-1&&!used.contains(storage[x][y]))
 					used.add(storage[x][y]);
-		for(x = 0; x<64; x++)
-			for(y = 0; y<64; y++)
+		for(x = 0; x<32; x++)
+			for(y = 0; y<32; y++)
 				if(storage[x][y]>-1)
 					storage[x][y] = used.indexOf(storage[x][y]);
 		return used.size();
@@ -331,12 +331,12 @@ public class MeshFormatter{
 		int x, y, t, q;
 		int w = -1;
 		int total = 0;
-		for(x = 0; x<64; x++)
-			for(y = 0; y<64; y++)
+		for(x = 0; x<32; x++)
+			for(y = 0; y<32; y++)
 				storage[x][y] = -1;
-		for(x = 0; x<64; x++){
+		for(x = 0; x<32; x++){
 			w = -1;
-			for(y = 0; y<64; y++){
+			for(y = 0; y<32; y++){
 				if(quads[x][y]==-1){
 					w = -1;
 					continue;
@@ -348,9 +348,9 @@ public class MeshFormatter{
 				storage[x][y] = w;
 			}
 		}
-		for(x = 0; x<64-1; x++){
+		for(x = 0; x<32-1; x++){
 			w = 0;
-			for(y = 0; y<64; y++){
+			for(y = 0; y<32; y++){
 				if(quads[x][y]==-1){
 					if(w>0){
 						q = 0;
@@ -385,12 +385,12 @@ public class MeshFormatter{
 				}
 			}
 		}
-		for(x = 0; x<64; x++)
-			for(y = 0; y<64; y++)
+		for(x = 0; x<32; x++)
+			for(y = 0; y<32; y++)
 				if(storage[x][y]>-1&&!used.contains(storage[x][y]))
 					used.add(storage[x][y]);
-		for(x = 0; x<64; x++)
-			for(y = 0; y<64; y++)
+		for(x = 0; x<32; x++)
+			for(y = 0; y<32; y++)
 				if(storage[x][y]>-1)
 					storage[x][y] = used.indexOf(storage[x][y]);
 		return used.size();
@@ -402,18 +402,18 @@ public class MeshFormatter{
 		else
 			for(o = 0; o<quadReferences.length; o++)
 				quadReferences[o] = false;
-		for(x = 0; x<64; x++){
-			quadLooker:for(y = 0; y<64; y++){
+		for(x = 0; x<32; x++){
+			quadLooker:for(y = 0; y<32; y++){
 				if(storage[x][y]==-1)
 					continue;
 				if(quadReferences[storage[x][y]])
 					continue;
 				o = storage[x][y];
 				quadReferences[o] = true;
-				for(w = x; w<64; w++)
+				for(w = x; w<32; w++)
 					if(storage[w][y]!=o)
 						break;
-				for(h = y; h<64; h++)
+				for(h = y; h<32; h++)
 					if(storage[x][h]!=o)
 						break;
 				for(a = x; a<w; a++)
@@ -435,18 +435,18 @@ public class MeshFormatter{
 		else
 			for(o = 0; o<quadReferences.length; o++)
 				quadReferences[o] = false;
-		for(x = 0; x<64; x++){
-			for(y = 0; y<64; y++){
+		for(x = 0; x<32; x++){
+			for(y = 0; y<32; y++){
 				if(storage[x][y]==-1)
 					continue;
 				if(quadReferences[storage[x][y]])
 					continue;
 				o = storage[x][y];
 				quadReferences[o] = true;
-				for(w = x; w<64; w++)
+				for(w = x; w<32; w++)
 					if(storage[w][y]!=o)
 						break;
-				for(h = y; h<64; h++)
+				for(h = y; h<32; h++)
 					if(storage[x][h]!=o)
 						break;
 				nx = x;

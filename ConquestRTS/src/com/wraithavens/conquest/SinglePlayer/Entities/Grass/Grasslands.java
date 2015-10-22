@@ -9,8 +9,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL33;
-import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
-import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 
 public class Grasslands{
@@ -26,7 +24,7 @@ public class Grasslands{
 	private final GrassBook grassBook;
 	private final HashMap<GrassPatch,Boolean> que = new HashMap();
 	private double time;
-	public Grasslands(LandscapeWorld landscape, Camera camera){
+	public Grasslands(){
 		vbo = GL15.glGenBuffers();
 		ibo = GL15.glGenBuffers();
 		{
@@ -76,8 +74,7 @@ public class Grasslands{
 		GL20.glEnableVertexAttribArray(RotScaleAttribLocation);
 		GL20.glEnableVertexAttribArray(ColorAttribLocation);
 		GL20.glEnableVertexAttribArray(UvAttribLocation);
-		grassBook = new GrassBook(OffsetAttribLocation, RotScaleAttribLocation, ColorAttribLocation, patches,
-			landscape, camera);
+		grassBook = new GrassBook(OffsetAttribLocation, RotScaleAttribLocation, ColorAttribLocation, patches);
 	}
 	public void addPatch(GrassPatch patch){
 		que.put(patch, true);

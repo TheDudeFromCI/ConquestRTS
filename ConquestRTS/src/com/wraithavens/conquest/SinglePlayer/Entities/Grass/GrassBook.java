@@ -14,9 +14,7 @@ import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL31;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
-import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
-import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 
 class GrassBook{
 	private static int loadTexture(EntityType type){
@@ -65,17 +63,13 @@ class GrassBook{
 	private final int OffsetAttribLocation;
 	private final int RotScaleAttribLocation;
 	private final int ColorAttribLocation;
-	private final LandscapeWorld landscape;
-	private final Camera camera;
 	GrassBook(
 		int OffsetAttribLocation, int RotScaleAttribLocation, int ColorAttribLocation,
-		ArrayList<GrassPatch> patches, LandscapeWorld landscape, Camera camera){
+		ArrayList<GrassPatch> patches){
 		this.OffsetAttribLocation = OffsetAttribLocation;
 		this.RotScaleAttribLocation = RotScaleAttribLocation;
 		this.ColorAttribLocation = ColorAttribLocation;
 		this.patches = patches;
-		this.landscape = landscape;
-		this.camera = camera;
 	}
 	private int bindType(EntityType type){
 		GrassTypeData data = types.get(type);
@@ -88,7 +82,7 @@ class GrassBook{
 	private void rebuildDataBuffer(EntityType type){
 		int count = 0;
 		for(GrassPatch patch : patches){
-			patch.calculateView(landscape, camera);
+			patch.calculateView();
 			if(patch.getType()==type&&patch.inView())
 				count += patch.getCount();
 		}

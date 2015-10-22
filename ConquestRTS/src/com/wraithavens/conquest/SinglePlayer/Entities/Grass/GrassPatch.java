@@ -2,7 +2,8 @@ package com.wraithavens.conquest.SinglePlayer.Entities.Grass;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
-import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.LandscapeWorld;
+import com.wraithavens.conquest.SinglePlayer.SinglePlayerGame;
+import com.wraithavens.conquest.SinglePlayer.Blocks.World.World;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 
@@ -29,9 +30,9 @@ public class GrassPatch{
 		centerX = x+32;
 		centerZ = z+32;
 	}
-	void calculateView(LandscapeWorld landscape, Camera camera){
-		inView =
-			camera.distanceSquared(centerX, camera.y, centerZ)<250*250&&landscape.isWithinView(x, z)
+	void calculateView(){
+		Camera camera = SinglePlayerGame.INSTANCE.getCamera();
+		inView = camera.distanceSquared(centerX, camera.getY(), centerZ)<250*250&&World.isWithinView(x, z)
 			&&camera.boxInView(view);
 	}
 	int getCount(){

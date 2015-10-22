@@ -13,7 +13,7 @@ import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.Math.Vector2f;
 import com.wraithavens.conquest.Math.Vector3f;
 import com.wraithavens.conquest.Math.Vector4f;
-import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
+import com.wraithavens.conquest.SinglePlayer.SinglePlayerGame;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 
 public class ParticleBatch{
@@ -29,14 +29,12 @@ public class ParticleBatch{
 	private final ArrayList<Particle> particles = new ArrayList(maxParticleCount);
 	private final Comparator particleSorter = new Comparator<Particle>(){
 		public int compare(Particle a, Particle b){
-			return a.getCameraDistance()==b.getCameraDistance()?0:a.getCameraDistance()<b.getCameraDistance()?1
-				:-1;
+			return a.getCameraDistance()==b.getCameraDistance()?0
+				:a.getCameraDistance()<b.getCameraDistance()?1:-1;
 		}
 	};
-	private final Camera camera;
 	private final ArrayList<ParticleEngine> engines = new ArrayList();
-	public ParticleBatch(Camera camera){
-		this.camera = camera;
+	public ParticleBatch(){
 		maxParticleCount = WraithavensConquest.Settings.getParticleCount();
 		vbo = GL15.glGenBuffers();
 		particleBuffer = GL15.glGenBuffers();
@@ -106,7 +104,7 @@ public class ParticleBatch{
 				particles.remove(i);
 				continue;
 			}
-			particles.get(i).setCameraDistance(camera);
+			particles.get(i).setCameraDistance(SinglePlayerGame.INSTANCE.getCamera());
 			i++;
 		}
 		// ---

@@ -25,9 +25,9 @@ public abstract class Particle{
 		return scale;
 	}
 	final void setCameraDistance(Camera camera){
-		double x = camera.x-location.x;
-		double y = camera.y-location.y;
-		double z = camera.z-location.z;
+		double x = camera.getX()-location.x;
+		double y = camera.getY()-location.y;
+		double z = camera.getZ()-location.z;
 		camDistance = x*x+y*y+z*z;
 	}
 }

@@ -2,7 +2,6 @@ package com.wraithavens.conquest.SinglePlayer.Entities.DynmapEntities;
 
 import java.io.File;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
-import com.wraithavens.conquest.SinglePlayer.Blocks.Landscape.ChunkHeightData;
 import com.wraithavens.conquest.SinglePlayer.Entities.EntityType;
 import com.wraithavens.conquest.SinglePlayer.Noise.WorldNoiseMachine;
 import com.wraithavens.conquest.Utility.BinaryFile;
@@ -10,13 +9,6 @@ import com.wraithavens.conquest.Utility.BinaryFile;
 public class GiantEntityGroundHits{
 	private static boolean getBit(byte b, int index){
 		return (b>>index&1)==1;
-	}
-	private static int getHeight(int x, int z, WorldNoiseMachine machine, ChunkHeightData heightData){
-		try{
-			return heightData.getHeight(x, z);
-		}catch(ArrayIndexOutOfBoundsException exception){
-			return machine.getGroundLevel(x, z);
-		}
 	}
 	private static String sub(String s, int end){
 		return s.substring(0, s.length()-end);
@@ -50,8 +42,7 @@ public class GiantEntityGroundHits{
 		for(int i = 0; i<usesBlock.length; i++)
 			usesBlock[i] = getBit(bytes[i/8], i%8);
 	}
-	public int getGround(WorldNoiseMachine machine, ChunkHeightData heightData, float x, float z, float r,
-		float s){
+	public int getGround(WorldNoiseMachine machine, float x, float z, float r, float s){
 		hits.clear();
 		int lowest = Integer.MAX_VALUE;
 		int a, b;
@@ -67,7 +58,7 @@ public class GiantEntityGroundHits{
 		int size = hits.getSize();
 		int height;
 		for(int i = 0; i<size; i++){
-			height = getHeight(hits.getX(i), hits.getZ(i), machine, heightData);
+			height = machine.getGroundLevel(hits.getX(i), hits.getZ(i));
 			if(height<lowest)
 				lowest = height;
 		}
