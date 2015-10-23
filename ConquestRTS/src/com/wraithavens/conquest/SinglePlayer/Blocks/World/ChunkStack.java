@@ -1,5 +1,6 @@
 package com.wraithavens.conquest.SinglePlayer.Blocks.World;
 
+import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
@@ -30,7 +31,7 @@ public class ChunkStack{
 	private GrassPatch[] grass;
 	private ChunkMesh[] meshes;
 	private int cameraDistance;
-	public ChunkStack(int x, int z){
+	public ChunkStack(int x, int z, File file){
 		this.x = x;
 		this.z = z;
 		cameraBox[0] = x+32;
@@ -39,7 +40,7 @@ public class ChunkStack{
 		cameraBox[3] = Float.MIN_VALUE;
 		cameraBox[4] = z+32;
 		cameraBox[5] = z;
-		BinaryFile bin = new BinaryFile(Algorithms.getChunkStackPath(x, z));
+		BinaryFile bin = new BinaryFile(file);
 		bin.decompress(false);
 		waterPuddles = new WaterPuddle[bin.getInt()];
 		entities = new Entity[bin.getInt()];

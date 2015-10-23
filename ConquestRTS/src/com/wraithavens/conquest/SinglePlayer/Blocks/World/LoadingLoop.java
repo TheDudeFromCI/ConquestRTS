@@ -12,6 +12,9 @@ import com.wraithavens.conquest.Utility.Settings;
 public class LoadingLoop{
 	private volatile boolean running = true;
 	private LinkedBlockingQueue<LoadingLoopTask> que = new LinkedBlockingQueue<>();
+	@SuppressWarnings("unused")
+	private byte[] biomeColors = new byte[32*32*3];
+	private float[][] heights = new float[34][34];
 	public LoadingLoop(){
 		Thread t = new Thread(new Runnable(){
 			public void run(){
@@ -22,6 +25,38 @@ public class LoadingLoop{
 		t.setName("Loading Loop");
 		t.start();
 	}
+	public void genChunk(int x, int z){
+		File file = Algorithms.getChunkStackPath(x, z);
+		if(!(file.exists()&&file.length()>0)){
+			{
+				// ---
+				// Add mesh data.
+				// ---
+				int a, b;
+				int tempA;
+				WorldNoiseMachine machine = SinglePlayerGame.INSTANCE.getWorldNoiseMachine();
+				for(a = 0; a<34; a++){
+					tempA = a-1+x;
+					for(b = 0; b<34; b++)
+						heights[a][b] = machine.getGroundLevel(tempA, b-1+z);
+				}
+				// MeshRenderer render = blockData.mesh(false);
+				// painter.getPackets().add(new
+				// MeshDataPacket(render));
+				// blockData.saveToFile(x, y, z);
+				// blockData.clear();
+			}
+			// TODO Load biome colors.
+			// TODO Load water.
+			// TODO Load entities.
+			// TODO Load grass.
+			// TODO Load meshes.
+			// ChunkStackBuilderData builder =
+			// new ChunkStackBuilderData(biomeColors, null, null,
+			// null, null);
+			// builder.write(x, z);
+		}
+	}
 	private void update(){
 		Settings settings = WraithavensConquest.Settings;
 		BetterChunkLoader loader = new BetterChunkLoader();
@@ -29,9 +64,6 @@ public class LoadingLoop{
 		int lastCameraX = Algorithms.groupLocation(camera.getBlockX(), 32);
 		int lastCameraZ = Algorithms.groupLocation(camera.getBlockZ(), 32);
 		int x, z;
-		byte[] biomeColors = new byte[32*32*3];
-		float[][] heights = new float[34][34];
-		WorldNoiseMachine machine = SinglePlayerGame.INSTANCE.getWorldNoiseMachine();
 		while(running){
 			try{
 				Thread.sleep(settings.getGeneratorSleeping());
@@ -48,38 +80,11 @@ public class LoadingLoop{
 					loader.next();
 					x = loader.getX()*32+lastCameraX;
 					z = loader.getY()*32+lastCameraZ;
-					File file = Algorithms.getChunkStackPath(x, z);
-					if(!(file.exists()&&file.length()>0)){
-						{
-							// ---
-							// Add mesh data.
-							// ---
-							int a, b;
-							int tempA;
-							for(a = 0; a<34; a++){
-								tempA = a-1+x;
-								for(b = 0; b<34; b++)
-									heights[a][b] = machine.getGroundLevel(tempA, b-1+z);
-							}
-							// MeshRenderer render = blockData.mesh(false);
-							// painter.getPackets().add(new
-							// MeshDataPacket(render));
-							// blockData.saveToFile(x, y, z);
-							// blockData.clear();
-						}
-						// TODO Load biome colors.
-						// TODO Load water.
-						// TODO Load entities.
-						// TODO Load grass.
-						// TODO Load meshes.
-						ChunkStackBuilderData builder =
-							new ChunkStackBuilderData(biomeColors, null, null, null, null);
-						builder.write(x, z);
-					}
+					genChunk(x, z);
 				}
 			}else
 				try{
-					que.take().run();
+					que.take().run(this);
 				}catch(InterruptedException e){
 					e.printStackTrace();
 				}

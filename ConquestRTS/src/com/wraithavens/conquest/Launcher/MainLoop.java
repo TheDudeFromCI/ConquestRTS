@@ -34,9 +34,8 @@ public class MainLoop{
 		GLFW.glfwDefaultWindowHints();
 		GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GL11.GL_FALSE);
 		GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GL11.GL_FALSE);
-		window =
-			GLFW.glfwCreateWindow(windowInitalizer.width, windowInitalizer.height, "Wraithaven's Conquest",
-				windowInitalizer.fullscreen?GLFW.glfwGetPrimaryMonitor():MemoryUtil.NULL, MemoryUtil.NULL);
+		window = GLFW.glfwCreateWindow(windowInitalizer.width, windowInitalizer.height, "Wraithaven's Conquest",
+			windowInitalizer.fullscreen?GLFW.glfwGetPrimaryMonitor():MemoryUtil.NULL, MemoryUtil.NULL);
 		if(window==MemoryUtil.NULL)
 			throw new RuntimeException("Failed to create the GLFW window");
 		GLFW.glfwSetKeyCallback(window, keyCallback = new GLFWKeyCallback(){
@@ -82,10 +81,9 @@ public class MainLoop{
 			currentTime = GLFW.glfwGetTime();
 			delta = currentTime-lastTime;
 			lastTime = currentTime;
+			GLFW.glfwPollEvents();
 			windowInitalizer.loopObjective.update(delta, currentTime);
 			windowInitalizer.loopObjective.render();
-			GLFW.glfwSwapBuffers(window);
-			GLFW.glfwPollEvents();
 			if(MainLoop.FPS_SYNC>0)
 				sync();
 			while(!endLoopTasks.isEmpty())
@@ -94,6 +92,7 @@ public class MainLoop{
 				}catch(InterruptedException e){
 					e.printStackTrace();
 				}
+			GLFW.glfwSwapBuffers(window);
 		}
 	}
 	private void runLoop(WindowInitalizer windowInitalizer){

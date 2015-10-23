@@ -1,9 +1,11 @@
 package com.wraithavens.conquest.SinglePlayer.Blocks.World;
 
+import java.io.File;
 import java.util.ArrayList;
 import org.lwjgl.opengl.GL20;
 import com.wraithavens.conquest.Launcher.WraithavensConquest;
 import com.wraithavens.conquest.SinglePlayer.SinglePlayerGame;
+import com.wraithavens.conquest.SinglePlayer.Blocks.World.LoadingLoopTasks.LoadChunkTask;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.Camera;
 import com.wraithavens.conquest.SinglePlayer.RenderHelpers.ShaderProgram;
 import com.wraithavens.conquest.Utility.Algorithms;
@@ -29,6 +31,7 @@ public class World{
 	private int cameraLocationX;
 	private int cameraLocationZ;
 	private int frameId;
+	private final ChunkLoadQue loadingQue = new ChunkLoadQue();
 	public World(){
 		chunkLoader = new BetterChunkLoader();
 		shader = new ShaderProgram("World");
@@ -94,6 +97,13 @@ public class World{
 		}
 	}
 	private void loadNextChunk(){
+		if(loadingQue.isWaiting()){
+			File file = Algorithms.getChunkStackPath(loadingQue.getX(), loadingQue.getZ());
+			if(file.exists()&&file.length()>0)
+				chunks.add(new ChunkStack(loadingQue.getX(), loadingQue.getZ(), file));
+			loadingQue.finish();
+			return;
+		}
 		if(chunkLoader.hasNext()){
 			chunkLoader.next();
 			int x = chunkLoader.getX()*32+cameraLocationX;
@@ -101,7 +111,13 @@ public class World{
 			for(ChunkStack chunk : chunks)
 				if(chunk.getX()==x&&chunk.getZ()==z)
 					return;
-			chunks.add(new ChunkStack(x, z));
+			File file = Algorithms.getChunkStackPath(x, z);
+			if(file.exists()&&file.length()>0)
+				chunks.add(new ChunkStack(x, z, file));
+			else{
+				loadingQue.addQue(x, z);
+				loadingLoop.addTask(new LoadChunkTask(x, z));
+			}
 		}
 	}
 }

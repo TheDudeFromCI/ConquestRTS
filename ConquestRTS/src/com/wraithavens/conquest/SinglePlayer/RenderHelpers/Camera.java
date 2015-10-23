@@ -7,12 +7,12 @@ public class Camera{
 	private static float cameraMoveSpeed = 10.0f;
 	private final Frustum frustum = new Frustum();
 	private final CameraTargetBlock targetBlock;
-	private float goalX, goalY, goalZ;
+	private volatile float goalX, goalY, goalZ;
 	private volatile float x;
 	private volatile float y;
 	private volatile float z;
-	private float rx;
-	private float ry;
+	private volatile float rx;
+	private volatile float ry;
 	private final Vector3f position = new Vector3f();
 	private final Vector3f direction = new Vector3f();
 	public Camera(){

@@ -20,6 +20,9 @@ import com.wraithavens.conquest.Utility.LoadingScreen;
 import com.wraithavens.conquest.Utility.Debug.ColorConsole;
 
 public class SinglePlayerGame implements Driver{
+	private static float clamp(float a, float min, float max){
+		return a<min?min:a>max?max:a;
+	}
 	public static SinglePlayerGame INSTANCE;
 	private boolean w, a, s, d, shift, space, grounded = true, lockedMouse, walkLock, e;
 	private boolean wireframeMode;
@@ -220,15 +223,13 @@ public class SinglePlayerGame implements Driver{
 	public void onMouseMove(double x, double y){
 		if(!lockedMouse)
 			return;
-		if(x==WraithavensConquest.INSTANCE.getScreenWidth()/2f
-			&&y==WraithavensConquest.INSTANCE.getScreenHeight()/2f)
+		float width = WraithavensConquest.INSTANCE.getScreenWidth()/2f;
+		float height = WraithavensConquest.INSTANCE.getScreenHeight()/2f;
+		if(x==width&&y==height)
 			return;
-		camera.turnTo((float)(camera.getRY()+(x-WraithavensConquest.INSTANCE.getScreenWidth()/2f)*mouseSpeed),
-			(float)Math.max(
-				Math.min(camera.getRX()+(y-WraithavensConquest.INSTANCE.getScreenHeight()/2f)*mouseSpeed, 89),
-				-89));
-		GLFW.glfwSetCursorPos(WraithavensConquest.INSTANCE.getWindow(),
-			WraithavensConquest.INSTANCE.getScreenWidth()/2, WraithavensConquest.INSTANCE.getScreenHeight()/2f);
+		camera.turnTo(clamp((float)(camera.getRX()+(y-height)*mouseSpeed), -89, 89),
+			(float)(camera.getRY()+(x-width)*mouseSpeed));
+		GLFW.glfwSetCursorPos(WraithavensConquest.INSTANCE.getWindow(), width, height);
 	}
 	public void onMouseWheel(double x, double y){}
 	public void render(){
